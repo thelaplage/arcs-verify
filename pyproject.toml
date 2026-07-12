@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "arcs-verify"
-version = "0.1.0"
-description = "Independent verifier for signed ARCS/SRS receipt envelopes"
+version = "0.1.1"
+description = "Independent verifier for signed ARCS/SRS receipts and serialized artifact chains"
 requires-python = ">=3.11"
 dependencies = [
   "cryptography>=46.0.4,<47",

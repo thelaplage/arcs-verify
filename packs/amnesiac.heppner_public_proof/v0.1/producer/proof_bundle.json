@@ -1,0 +1,1130 @@
+{
+  "candidates": [
+    {
+      "anchor_refs": [
+        "anchor:heppner:doc27:p1:ruling"
+      ],
+      "candidate_ref": "candidate:heppner:ruling",
+      "content_hash": "sha256:f01782ef6dd528144589b93bed4c4651d3aca7033bf70f3cf9fe1644a59de56e",
+      "extracted_by": "heppner_public_fixture_extractor.v0_1",
+      "normalized_text": "The court ruled that Heppner's AI Documents were protected by neither attorney-client privilege nor the work product doctrine.",
+      "permission_contract_ref": "permission:public-proof:quote-only",
+      "profile_scope": "heppner_public_proof",
+      "source_refs": [
+        "source:heppner:doc27"
+      ],
+      "support_state": "supported",
+      "verification_state": "verified"
+    },
+    {
+      "anchor_refs": [
+        "anchor:heppner:doc27:p5:claude-not-attorney"
+      ],
+      "candidate_ref": "candidate:heppner:claude-not-attorney",
+      "content_hash": "sha256:a0bc7b43693fc7a649288132aec3fd569b259ab046d0b56bd73d1415fca6c2d6",
+      "extracted_by": "heppner_public_fixture_extractor.v0_1",
+      "normalized_text": "The court concluded that Claude was not an attorney and treated that fact as sufficient to defeat Heppner's attorney-client privilege claim.",
+      "permission_contract_ref": "permission:public-proof:quote-only",
+      "profile_scope": "heppner_public_proof",
+      "source_refs": [
+        "source:heppner:doc27"
+      ],
+      "support_state": "supported",
+      "verification_state": "verified"
+    },
+    {
+      "anchor_refs": [
+        "anchor:heppner:doc27:p9:work-product-behest"
+      ],
+      "candidate_ref": "candidate:heppner:work-product-behest",
+      "content_hash": "sha256:b30e3a6d9968e2abbd1c73443b946159c814616b59bd4716f0a588fbf919047e",
+      "extracted_by": "heppner_public_fixture_extractor.v0_1",
+      "normalized_text": "The work-product ruling rested in part on the AI Documents not being prepared by or at the behest of counsel and not reflecting counsel's strategy.",
+      "permission_contract_ref": "permission:public-proof:quote-only",
+      "profile_scope": "heppner_public_proof",
+      "source_refs": [
+        "source:heppner:doc27"
+      ],
+      "support_state": "supported",
+      "verification_state": "verified"
+    },
+    {
+      "anchor_refs": [],
+      "candidate_ref": "candidate:heppner:universal-ai-privilege-rule",
+      "content_hash": "sha256:82c06e34e277a3bbaccc6bbf41034e93cfb3eafd7462d9e4f162f487fecdf39d",
+      "extracted_by": "heppner_public_fixture_extractor.v0_1",
+      "normalized_text": "The decision establishes that no AI-assisted legal work can ever receive privilege or work-product protection.",
+      "permission_contract_ref": "permission:public-proof:quote-only",
+      "profile_scope": "heppner_public_proof",
+      "source_refs": [
+        "source:heppner:doc27"
+      ],
+      "support_state": "unsupported",
+      "verification_state": "unverified"
+    }
+  ],
+  "extractor": {
+    "model_called": false,
+    "name": "heppner_public_fixture_extractor.v0_1",
+    "network_used": false,
+    "semantic_benchmark": false
+  },
+  "initial": {
+    "admission_receipts": [
+      {
+        "attempt_ref": "admission:heppner-public-proof.v0_1:initial:ruling",
+        "candidate_ref": "candidate:heppner:ruling",
+        "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+        "decision": "admit",
+        "reason": "candidate admitted to ClaimGraph",
+        "rejected_candidate_ref": null
+      },
+      {
+        "attempt_ref": "admission:heppner-public-proof.v0_1:initial:claude-not-attorney",
+        "candidate_ref": "candidate:heppner:claude-not-attorney",
+        "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+        "decision": "admit",
+        "reason": "candidate admitted to ClaimGraph",
+        "rejected_candidate_ref": null
+      },
+      {
+        "attempt_ref": "admission:heppner-public-proof.v0_1:initial:work-product-behest",
+        "candidate_ref": "candidate:heppner:work-product-behest",
+        "claim_id": null,
+        "decision": "reject",
+        "reason": "reconsiderable refusal: the proposed source anchor is not in the initial admitted capture",
+        "rejected_candidate_ref": "candidate:heppner:work-product-behest"
+      },
+      {
+        "attempt_ref": "admission:heppner-public-proof.v0_1:initial:universal-ai-privilege-rule",
+        "candidate_ref": "candidate:heppner:universal-ai-privilege-rule",
+        "claim_id": null,
+        "decision": "reject",
+        "reason": "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor",
+        "rejected_candidate_ref": "candidate:heppner:universal-ai-privilege-rule"
+      }
+    ],
+    "admitted_candidate_refs": [
+      "candidate:heppner:ruling",
+      "candidate:heppner:claude-not-attorney"
+    ],
+    "available_anchor_refs": [
+      "anchor:heppner:doc27:p1:ruling",
+      "anchor:heppner:doc27:p5:claude-not-attorney"
+    ],
+    "capture_hash": "sha256:3181417aafdd03e33712b3be7f2b26311914e4f2906010f77e3aa17c798c9fba",
+    "claim_graph": {
+      "edges": [],
+      "nodes": [
+        {
+          "admission_state": "admitted",
+          "anchor_refs": [
+            "anchor:heppner:doc27:p5:claude-not-attorney"
+          ],
+          "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+          "content_hash": "sha256:70ff8667c00dcc89a7399dae3a386d78a31479ad6d6dd07da2e789e344b70319",
+          "created_at": "2026-07-12T00:00:00Z",
+          "lifecycle_state": "active",
+          "normalized_text": "The court concluded that Claude was not an attorney and treated that fact as sufficient to defeat Heppner's attorney-client privilege claim.",
+          "profile_scope": "heppner_public_proof",
+          "source_refs": [
+            "source:heppner:doc27"
+          ],
+          "support_state": "supported",
+          "verification_state": "verified"
+        },
+        {
+          "admission_state": "admitted",
+          "anchor_refs": [
+            "anchor:heppner:doc27:p1:ruling"
+          ],
+          "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+          "content_hash": "sha256:dc214fcb9255f2688ec398dcbf08a26c091e9a6bf84825b8cfa3d77166dbd413",
+          "created_at": "2026-07-12T00:00:00Z",
+          "lifecycle_state": "active",
+          "normalized_text": "The court ruled that Heppner's AI Documents were protected by neither attorney-client privilege nor the work product doctrine.",
+          "profile_scope": "heppner_public_proof",
+          "source_refs": [
+            "source:heppner:doc27"
+          ],
+          "support_state": "supported",
+          "verification_state": "verified"
+        }
+      ]
+    },
+    "context_packet": {
+      "admitted_claim_ids": [
+        "claim:ad875452ef41e86eb4cbd7c4",
+        "claim:8a124bcd999a1b97bd1b1755"
+      ],
+      "claim_bindings": [
+        {
+          "admission_state": "admitted",
+          "anchor_refs": [
+            "anchor:heppner:doc27:p1:ruling"
+          ],
+          "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+          "content_hash": "sha256:dc214fcb9255f2688ec398dcbf08a26c091e9a6bf84825b8cfa3d77166dbd413",
+          "lifecycle_state": "active",
+          "normalized_text": "The court ruled that Heppner's AI Documents were protected by neither attorney-client privilege nor the work product doctrine.",
+          "profile_scope": "heppner_public_proof",
+          "source_refs": [
+            "source:heppner:doc27"
+          ],
+          "support_state": "supported",
+          "verification_state": "verified"
+        },
+        {
+          "admission_state": "admitted",
+          "anchor_refs": [
+            "anchor:heppner:doc27:p5:claude-not-attorney"
+          ],
+          "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+          "content_hash": "sha256:70ff8667c00dcc89a7399dae3a386d78a31479ad6d6dd07da2e789e344b70319",
+          "lifecycle_state": "active",
+          "normalized_text": "The court concluded that Claude was not an attorney and treated that fact as sufficient to defeat Heppner's attorney-client privilege claim.",
+          "profile_scope": "heppner_public_proof",
+          "source_refs": [
+            "source:heppner:doc27"
+          ],
+          "support_state": "supported",
+          "verification_state": "verified"
+        }
+      ],
+      "custody_envelope": {
+        "builder_input_ref": {
+          "source_capture_hash": "sha256:3181417aafdd03e33712b3be7f2b26311914e4f2906010f77e3aa17c798c9fba",
+          "source_ref": "source:heppner:doc27",
+          "stage_id": "initial"
+        },
+        "builder_name": "heppner_public_proof_v0_1",
+        "builder_version": "0.1.0"
+      },
+      "evidence_manifest": {
+        "anchor_refs": [
+          "anchor:heppner:doc27:p1:ruling",
+          "anchor:heppner:doc27:p5:claude-not-attorney"
+        ],
+        "claim_ids": [
+          "claim:8a124bcd999a1b97bd1b1755",
+          "claim:ad875452ef41e86eb4cbd7c4"
+        ],
+        "source_refs": [
+          "source:heppner:doc27"
+        ]
+      },
+      "packet_hash": "sha256:06690ebb470ce9e55636030da00669d99620a170ad72b64800f3d88c1066a926",
+      "packet_id": "context_packet:heppner-public-proof.v0_1:initial",
+      "permission_contract": {
+        "may_draft": false,
+        "may_infer": false,
+        "may_quote": true,
+        "may_summarize": true,
+        "must_refuse_if_unsupported": true
+      },
+      "query_plan": {
+        "operations": [
+          "select",
+          "quote",
+          "refuse"
+        ],
+        "parameters": {
+          "integrity_profile": "packet_time_claim_binding.v0_1",
+          "proofcase_id": "heppner-public-proof.v0_1",
+          "source_capture_hash": "sha256:3181417aafdd03e33712b3be7f2b26311914e4f2906010f77e3aa17c798c9fba"
+        },
+        "seed_claim_ids": [
+          "claim:ad875452ef41e86eb4cbd7c4",
+          "claim:8a124bcd999a1b97bd1b1755"
+        ]
+      },
+      "query_ref": "query:heppner:privilege-scope",
+      "query_text_hash": "sha256:cf09aec63c00fbb980cb3121de58d679eb816b56783462fcb0950bb73bd4c1fb",
+      "refusal_reasons": [
+        "reconsiderable refusal: the proposed source anchor is not in the initial admitted capture",
+        "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor"
+      ],
+      "rejected_candidate_refs": [
+        "candidate:heppner:work-product-behest",
+        "candidate:heppner:universal-ai-privilege-rule"
+      ],
+      "scope": {
+        "actor": "operator:heppner_public_proof",
+        "actor_role": "public_proof_driver",
+        "corpus_ref": "public_case:us_v_heppner:doc27",
+        "matter_ref": null,
+        "profile_id": "heppner_public_proof"
+      },
+      "substrate_state_hash": "sha256:9d93821f23734245b83bbbfd5642cb8aa3f2e91f11cd6db028ae75a6f4e519ba",
+      "unknowns": [],
+      "verifier": {
+        "findings": [],
+        "reason": "all selected claims have admitted public anchors",
+        "status": "approved",
+        "verifier_name": "heppner_public_proof_verifier",
+        "verifier_version": "0.1.0"
+      }
+    },
+    "packet_inspection": {
+      "admitted_claim_ids": [
+        "claim:ad875452ef41e86eb4cbd7c4",
+        "claim:8a124bcd999a1b97bd1b1755"
+      ],
+      "citation_claim_ids": [
+        "claim:ad875452ef41e86eb4cbd7c4",
+        "claim:8a124bcd999a1b97bd1b1755"
+      ],
+      "has_blockers": false,
+      "inspection_hash": "sha256:1dece7529bdd71df2e0833ad246fab26e630439d760c1883b7a7e507cde6ce08",
+      "issues": [],
+      "operation_kinds": [
+        "select",
+        "quote",
+        "select",
+        "quote",
+        "refuse",
+        "refuse"
+      ],
+      "operation_refs": [
+        "op:initial:select:01",
+        "op:initial:quote:01",
+        "op:initial:select:02",
+        "op:initial:quote:02",
+        "op:initial:refuse:01",
+        "op:initial:refuse:02"
+      ],
+      "packet_hash": "sha256:06690ebb470ce9e55636030da00669d99620a170ad72b64800f3d88c1066a926",
+      "packet_id": "context_packet:heppner-public-proof.v0_1:initial",
+      "quoted_claim_ids": [
+        "claim:ad875452ef41e86eb4cbd7c4",
+        "claim:8a124bcd999a1b97bd1b1755"
+      ],
+      "refusal_reasons": [
+        "reconsiderable refusal: the proposed source anchor is not in the initial admitted capture",
+        "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor"
+      ],
+      "render_hash": "sha256:3d115e3030a38f4a73e15df381412349d124ca9fb81089379e40ef39a205abd5",
+      "renderer_template_kind": "summary_with_sources",
+      "selected_claim_ids": [
+        "claim:ad875452ef41e86eb4cbd7c4",
+        "claim:8a124bcd999a1b97bd1b1755"
+      ],
+      "walk_hash": "sha256:6a80eafa461b57a40d43dcbcadca557958b090553de99ecbaad43305e8707bfa",
+      "walk_id": "packet_walk:heppner-public-proof.v0_1:initial"
+    },
+    "packet_walk": {
+      "operations": [
+        {
+          "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+          "kind": "select",
+          "operation_ref": "op:initial:select:01"
+        },
+        {
+          "anchor_refs": [
+            "anchor:heppner:doc27:p1:ruling"
+          ],
+          "claim_content_hash": "sha256:dc214fcb9255f2688ec398dcbf08a26c091e9a6bf84825b8cfa3d77166dbd413",
+          "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+          "kind": "quote",
+          "operation_ref": "op:initial:quote:01",
+          "quote_text": "The court ruled that Heppner's AI Documents were protected by neither attorney-client privilege nor the work product doctrine.",
+          "source_refs": [
+            "source:heppner:doc27"
+          ]
+        },
+        {
+          "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+          "kind": "select",
+          "operation_ref": "op:initial:select:02"
+        },
+        {
+          "anchor_refs": [
+            "anchor:heppner:doc27:p5:claude-not-attorney"
+          ],
+          "claim_content_hash": "sha256:70ff8667c00dcc89a7399dae3a386d78a31479ad6d6dd07da2e789e344b70319",
+          "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+          "kind": "quote",
+          "operation_ref": "op:initial:quote:02",
+          "quote_text": "The court concluded that Claude was not an attorney and treated that fact as sufficient to defeat Heppner's attorney-client privilege claim.",
+          "source_refs": [
+            "source:heppner:doc27"
+          ]
+        },
+        {
+          "kind": "refuse",
+          "operation_ref": "op:initial:refuse:01",
+          "reason": "reconsiderable refusal: the proposed source anchor is not in the initial admitted capture",
+          "unsupported_claim_ids": [
+            "candidate:heppner:work-product-behest"
+          ]
+        },
+        {
+          "kind": "refuse",
+          "operation_ref": "op:initial:refuse:02",
+          "reason": "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor",
+          "unsupported_claim_ids": [
+            "candidate:heppner:universal-ai-privilege-rule"
+          ]
+        }
+      ],
+      "packet_hash": "sha256:06690ebb470ce9e55636030da00669d99620a170ad72b64800f3d88c1066a926",
+      "packet_id": "context_packet:heppner-public-proof.v0_1:initial",
+      "walk_hash": "sha256:6a80eafa461b57a40d43dcbcadca557958b090553de99ecbaad43305e8707bfa",
+      "walk_id": "packet_walk:heppner-public-proof.v0_1:initial"
+    },
+    "rejected_candidate_refs": [
+      "candidate:heppner:work-product-behest",
+      "candidate:heppner:universal-ai-privilege-rule"
+    ],
+    "rendered_packet": {
+      "body": "SUMMARY_WITH_SOURCES\n- item 1: The court ruled that Heppner's AI Documents were protected by neither attorney-client privilege nor the work product doctrine.\n  source: claim=claim:ad875452ef41e86eb4cbd7c4; anchors=anchor:heppner:doc27:p1:ruling; sources=source:heppner:doc27\n- item 2: The court concluded that Claude was not an attorney and treated that fact as sufficient to defeat Heppner's attorney-client privilege claim.\n  source: claim=claim:8a124bcd999a1b97bd1b1755; anchors=anchor:heppner:doc27:p5:claude-not-attorney; sources=source:heppner:doc27",
+      "citations": [
+        {
+          "anchor_refs": [
+            "anchor:heppner:doc27:p1:ruling"
+          ],
+          "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+          "source_refs": [
+            "source:heppner:doc27"
+          ]
+        },
+        {
+          "anchor_refs": [
+            "anchor:heppner:doc27:p5:claude-not-attorney"
+          ],
+          "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+          "source_refs": [
+            "source:heppner:doc27"
+          ]
+        }
+      ],
+      "operation_refs": [
+        "op:initial:quote:01",
+        "op:initial:quote:02"
+      ],
+      "packet_hash": "sha256:06690ebb470ce9e55636030da00669d99620a170ad72b64800f3d88c1066a926",
+      "packet_id": "context_packet:heppner-public-proof.v0_1:initial",
+      "render_hash": "sha256:3d115e3030a38f4a73e15df381412349d124ca9fb81089379e40ef39a205abd5",
+      "template_kind": "summary_with_sources",
+      "walk_hash": "sha256:6a80eafa461b57a40d43dcbcadca557958b090553de99ecbaad43305e8707bfa",
+      "walk_id": "packet_walk:heppner-public-proof.v0_1:initial"
+    },
+    "shadow_candidate_states": [
+      {
+        "candidate_ref": "candidate:heppner:universal-ai-privilege-rule",
+        "lifecycle": "final",
+        "reconsiderability_trigger": null,
+        "rejection_reason": "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor"
+      },
+      {
+        "candidate_ref": "candidate:heppner:work-product-behest",
+        "lifecycle": "rejected",
+        "reconsiderability_trigger": "new_evidence_admitted",
+        "rejection_reason": "reconsiderable refusal: the proposed source anchor is not in the initial admitted capture"
+      }
+    ],
+    "sovereignty_receipt": {
+      "admission_decision_refs": [
+        "admission:heppner-public-proof.v0_1:initial:ruling",
+        "admission:heppner-public-proof.v0_1:initial:claude-not-attorney",
+        "admission:heppner-public-proof.v0_1:initial:work-product-behest",
+        "admission:heppner-public-proof.v0_1:initial:universal-ai-privilege-rule"
+      ],
+      "artifact_hashes": {
+        "context_packet_hash": "sha256:06690ebb470ce9e55636030da00669d99620a170ad72b64800f3d88c1066a926",
+        "packet_inspection_hash": "sha256:1dece7529bdd71df2e0833ad246fab26e630439d760c1883b7a7e507cde6ce08",
+        "packet_walk_hash": "sha256:6a80eafa461b57a40d43dcbcadca557958b090553de99ecbaad43305e8707bfa",
+        "rendered_packet_body_sha256": "sha256:c2288b390de202e8bf0ea347ec3dc0a834df64ccd9d41f9a7bcc26fa27e2a387",
+        "rendered_packet_hash": "sha256:3d115e3030a38f4a73e15df381412349d124ca9fb81089379e40ef39a205abd5",
+        "source_capture_hash": "sha256:3181417aafdd03e33712b3be7f2b26311914e4f2906010f77e3aa17c798c9fba"
+      },
+      "context_packet_ref": {
+        "content_hash": "sha256:06690ebb470ce9e55636030da00669d99620a170ad72b64800f3d88c1066a926",
+        "context_packet_id": "context_packet:heppner-public-proof.v0_1:initial"
+      },
+      "issued_at": "2026-07-12T00:00:00Z",
+      "operator_user_context": {
+        "auth_context_ref": "auth_context:public_fixture",
+        "operator_ref": "operator:heppner_public_proof"
+      },
+      "packet_walk_ref": {
+        "operation_log_hash": "sha256:6a80eafa461b57a40d43dcbcadca557958b090553de99ecbaad43305e8707bfa",
+        "packet_walk_id": "packet_walk:heppner-public-proof.v0_1:initial"
+      },
+      "receipt_hash": "sha256:0aa2ffddb2fe76522bad280752cffe4e4d173511f9d52b5bf72bc9420ef659f9",
+      "receipt_id": "sovereignty_receipt:heppner-public-proof.v0_1:initial",
+      "receipt_kind": "sovereignty_receipt",
+      "review_decision_refs": [],
+      "schema": "garp.sovereignty_receipt.v0.1",
+      "status_vector": {
+        "blockers_by_code": {},
+        "composition_ready": true,
+        "readiness_state": "ready_with_explicit_refusals",
+        "status_vector_id": "status_vector:heppner-public-proof.v0_1:initial"
+      },
+      "subject_ref": "sha256:3d115e3030a38f4a73e15df381412349d124ca9fb81089379e40ef39a205abd5",
+      "subject_type": "render",
+      "tool_call_disposition_refs": []
+    },
+    "stage_id": "initial"
+  },
+  "proofcase_id": "heppner-public-proof.v0_1",
+  "public_projection": {
+    "case": {
+      "court": "United States District Court for the Southern District of New York",
+      "docket_number": "1:25-cr-00503-JSR",
+      "docket_url": "https://www.courtlistener.com/docket/71872024/united-states-v-heppner/",
+      "document_number": 27,
+      "filed_date": "2026-02-17",
+      "name": "United States v. Heppner",
+      "pdf_sha256": "sha256:b7bd04c056563e6864cc4fcb68ed62eff732eaacf812377d2d4f6d24fb9f920c",
+      "pdf_url": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.652138/gov.uscourts.nysd.652138.27.0.pdf"
+    },
+    "initial_state": {
+      "admitted_candidate_refs": [
+        "candidate:heppner:ruling",
+        "candidate:heppner:claude-not-attorney"
+      ],
+      "capture_hash": "sha256:3181417aafdd03e33712b3be7f2b26311914e4f2906010f77e3aa17c798c9fba",
+      "inspection_hash": "sha256:1dece7529bdd71df2e0833ad246fab26e630439d760c1883b7a7e507cde6ce08",
+      "receipt_hash": "sha256:0aa2ffddb2fe76522bad280752cffe4e4d173511f9d52b5bf72bc9420ef659f9",
+      "rejected_candidate_refs": [
+        "candidate:heppner:work-product-behest",
+        "candidate:heppner:universal-ai-privilege-rule"
+      ],
+      "render_hash": "sha256:3d115e3030a38f4a73e15df381412349d124ca9fb81089379e40ef39a205abd5"
+    },
+    "integrity": {
+      "initial_packet_stale_after_reopening": true,
+      "profile": "packet_time_claim_binding.v0_1",
+      "stale_issue_codes": [
+        "claim_graph_drift"
+      ]
+    },
+    "limits": [
+      "deterministic fixture extraction, not a semantic extraction benchmark",
+      "public source digest pinned, remote source authenticity not independently attested",
+      "local hash integrity only, no signature or trusted key identity",
+      "not legal advice and not a claim about all AI-assisted legal work"
+    ],
+    "negative_space": {
+      "candidate_ref": "candidate:heppner:universal-ai-privilege-rule",
+      "lifecycle": "final",
+      "reason": "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor"
+    },
+    "proofcase_id": "heppner-public-proof.v0_1",
+    "record_id": "PUBLIC-HEPPNER-PRIVILEGE-0001",
+    "reopening": {
+      "candidate_ref": "candidate:heppner:work-product-behest",
+      "decision": "reopened",
+      "outcome_ref": "reopening:reopen:heppner:work-product-behest",
+      "request_ref": "reopen:heppner:work-product-behest",
+      "trigger": "new_evidence_admitted"
+    },
+    "revised_state": {
+      "admitted_candidate_refs": [
+        "candidate:heppner:ruling",
+        "candidate:heppner:claude-not-attorney",
+        "candidate:heppner:work-product-behest"
+      ],
+      "capture_hash": "sha256:5fea7192b2dd8399bb121e43772f50e472de801a751415ea6080161c2eee8c63",
+      "inspection_hash": "sha256:344bfbb383b51f0d95e8e0a386e513bed4d194b002a0af0a3157821b79a049ca",
+      "receipt_hash": "sha256:d1b8194b71e95839a67496cfc66ffafc19d909f8b527185d648acc6f9dd49767",
+      "rejected_candidate_refs": [
+        "candidate:heppner:universal-ai-privilege-rule"
+      ],
+      "render_hash": "sha256:af5265465c37cafb0cce63c82d0630d5f024271069b44b1cbed2c7e0419cf93b"
+    },
+    "schema": "garpedia_public_proof_projection.v0_1",
+    "title": "Heppner AI privilege ruling: governed claim lifecycle"
+  },
+  "reopening": {
+    "outcome": {
+      "candidate_ref": "candidate:heppner:work-product-behest",
+      "decision": "reopened",
+      "outcome_ref": "reopening:reopen:heppner:work-product-behest",
+      "rationale": "the supplemental public capture admitted the candidate's pinned page 9 anchor",
+      "request_ref": "reopen:heppner:work-product-behest"
+    },
+    "reopened_candidate_lifecycle": "reopened_for_review",
+    "request": {
+      "arriving_trigger": "new_evidence_admitted",
+      "candidate_ref": "candidate:heppner:work-product-behest",
+      "request_ref": "reopen:heppner:work-product-behest",
+      "submitted_at": "2026-07-12T00:00:00Z",
+      "submitted_by_ref": "operator:heppner_public_proof"
+    }
+  },
+  "revised": {
+    "admission_receipts": [
+      {
+        "attempt_ref": "admission:heppner-public-proof.v0_1:initial:ruling",
+        "candidate_ref": "candidate:heppner:ruling",
+        "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+        "decision": "admit",
+        "reason": "candidate admitted to ClaimGraph",
+        "rejected_candidate_ref": null
+      },
+      {
+        "attempt_ref": "admission:heppner-public-proof.v0_1:initial:claude-not-attorney",
+        "candidate_ref": "candidate:heppner:claude-not-attorney",
+        "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+        "decision": "admit",
+        "reason": "candidate admitted to ClaimGraph",
+        "rejected_candidate_ref": null
+      },
+      {
+        "attempt_ref": "admission:heppner-public-proof.v0_1:initial:work-product-behest",
+        "candidate_ref": "candidate:heppner:work-product-behest",
+        "claim_id": null,
+        "decision": "reject",
+        "reason": "reconsiderable refusal: the proposed source anchor is not in the initial admitted capture",
+        "rejected_candidate_ref": "candidate:heppner:work-product-behest"
+      },
+      {
+        "attempt_ref": "admission:heppner-public-proof.v0_1:initial:universal-ai-privilege-rule",
+        "candidate_ref": "candidate:heppner:universal-ai-privilege-rule",
+        "claim_id": null,
+        "decision": "reject",
+        "reason": "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor",
+        "rejected_candidate_ref": "candidate:heppner:universal-ai-privilege-rule"
+      },
+      {
+        "attempt_ref": "admission:heppner-public-proof.v0_1:revised:work-product-behest",
+        "candidate_ref": "candidate:heppner:work-product-behest",
+        "claim_id": "claim:7d7c6807298ff1e68bdbefce",
+        "decision": "admit",
+        "reason": "candidate admitted to ClaimGraph",
+        "rejected_candidate_ref": null
+      }
+    ],
+    "admitted_candidate_refs": [
+      "candidate:heppner:ruling",
+      "candidate:heppner:claude-not-attorney",
+      "candidate:heppner:work-product-behest"
+    ],
+    "available_anchor_refs": [
+      "anchor:heppner:doc27:p12:case-specific-conclusion",
+      "anchor:heppner:doc27:p1:ruling",
+      "anchor:heppner:doc27:p5:claude-not-attorney",
+      "anchor:heppner:doc27:p9:work-product-behest"
+    ],
+    "capture_hash": "sha256:5fea7192b2dd8399bb121e43772f50e472de801a751415ea6080161c2eee8c63",
+    "claim_graph": {
+      "edges": [],
+      "nodes": [
+        {
+          "admission_state": "admitted",
+          "anchor_refs": [
+            "anchor:heppner:doc27:p9:work-product-behest"
+          ],
+          "claim_id": "claim:7d7c6807298ff1e68bdbefce",
+          "content_hash": "sha256:e473a2d6920edefb27e2566debb8c60f532cbb0a0f3bc581251c60dec63982e1",
+          "created_at": "2026-07-12T00:00:00Z",
+          "lifecycle_state": "active",
+          "normalized_text": "The work-product ruling rested in part on the AI Documents not being prepared by or at the behest of counsel and not reflecting counsel's strategy.",
+          "profile_scope": "heppner_public_proof",
+          "source_refs": [
+            "source:heppner:doc27"
+          ],
+          "support_state": "supported",
+          "verification_state": "verified"
+        },
+        {
+          "admission_state": "admitted",
+          "anchor_refs": [
+            "anchor:heppner:doc27:p5:claude-not-attorney"
+          ],
+          "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+          "content_hash": "sha256:70ff8667c00dcc89a7399dae3a386d78a31479ad6d6dd07da2e789e344b70319",
+          "created_at": "2026-07-12T00:00:00Z",
+          "lifecycle_state": "active",
+          "normalized_text": "The court concluded that Claude was not an attorney and treated that fact as sufficient to defeat Heppner's attorney-client privilege claim.",
+          "profile_scope": "heppner_public_proof",
+          "source_refs": [
+            "source:heppner:doc27"
+          ],
+          "support_state": "supported",
+          "verification_state": "verified"
+        },
+        {
+          "admission_state": "admitted",
+          "anchor_refs": [
+            "anchor:heppner:doc27:p1:ruling"
+          ],
+          "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+          "content_hash": "sha256:dc214fcb9255f2688ec398dcbf08a26c091e9a6bf84825b8cfa3d77166dbd413",
+          "created_at": "2026-07-12T00:00:00Z",
+          "lifecycle_state": "active",
+          "normalized_text": "The court ruled that Heppner's AI Documents were protected by neither attorney-client privilege nor the work product doctrine.",
+          "profile_scope": "heppner_public_proof",
+          "source_refs": [
+            "source:heppner:doc27"
+          ],
+          "support_state": "supported",
+          "verification_state": "verified"
+        }
+      ]
+    },
+    "context_packet": {
+      "admitted_claim_ids": [
+        "claim:ad875452ef41e86eb4cbd7c4",
+        "claim:8a124bcd999a1b97bd1b1755",
+        "claim:7d7c6807298ff1e68bdbefce"
+      ],
+      "claim_bindings": [
+        {
+          "admission_state": "admitted",
+          "anchor_refs": [
+            "anchor:heppner:doc27:p1:ruling"
+          ],
+          "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+          "content_hash": "sha256:dc214fcb9255f2688ec398dcbf08a26c091e9a6bf84825b8cfa3d77166dbd413",
+          "lifecycle_state": "active",
+          "normalized_text": "The court ruled that Heppner's AI Documents were protected by neither attorney-client privilege nor the work product doctrine.",
+          "profile_scope": "heppner_public_proof",
+          "source_refs": [
+            "source:heppner:doc27"
+          ],
+          "support_state": "supported",
+          "verification_state": "verified"
+        },
+        {
+          "admission_state": "admitted",
+          "anchor_refs": [
+            "anchor:heppner:doc27:p5:claude-not-attorney"
+          ],
+          "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+          "content_hash": "sha256:70ff8667c00dcc89a7399dae3a386d78a31479ad6d6dd07da2e789e344b70319",
+          "lifecycle_state": "active",
+          "normalized_text": "The court concluded that Claude was not an attorney and treated that fact as sufficient to defeat Heppner's attorney-client privilege claim.",
+          "profile_scope": "heppner_public_proof",
+          "source_refs": [
+            "source:heppner:doc27"
+          ],
+          "support_state": "supported",
+          "verification_state": "verified"
+        },
+        {
+          "admission_state": "admitted",
+          "anchor_refs": [
+            "anchor:heppner:doc27:p9:work-product-behest"
+          ],
+          "claim_id": "claim:7d7c6807298ff1e68bdbefce",
+          "content_hash": "sha256:e473a2d6920edefb27e2566debb8c60f532cbb0a0f3bc581251c60dec63982e1",
+          "lifecycle_state": "active",
+          "normalized_text": "The work-product ruling rested in part on the AI Documents not being prepared by or at the behest of counsel and not reflecting counsel's strategy.",
+          "profile_scope": "heppner_public_proof",
+          "source_refs": [
+            "source:heppner:doc27"
+          ],
+          "support_state": "supported",
+          "verification_state": "verified"
+        }
+      ],
+      "custody_envelope": {
+        "builder_input_ref": {
+          "source_capture_hash": "sha256:5fea7192b2dd8399bb121e43772f50e472de801a751415ea6080161c2eee8c63",
+          "source_ref": "source:heppner:doc27",
+          "stage_id": "revised"
+        },
+        "builder_name": "heppner_public_proof_v0_1",
+        "builder_version": "0.1.0"
+      },
+      "evidence_manifest": {
+        "anchor_refs": [
+          "anchor:heppner:doc27:p1:ruling",
+          "anchor:heppner:doc27:p5:claude-not-attorney",
+          "anchor:heppner:doc27:p9:work-product-behest"
+        ],
+        "claim_ids": [
+          "claim:7d7c6807298ff1e68bdbefce",
+          "claim:8a124bcd999a1b97bd1b1755",
+          "claim:ad875452ef41e86eb4cbd7c4"
+        ],
+        "source_refs": [
+          "source:heppner:doc27"
+        ]
+      },
+      "packet_hash": "sha256:3b886764a7b07a509197ff37708e9aa39ff7f119ecd9e4bad833bdc5b314b37d",
+      "packet_id": "context_packet:heppner-public-proof.v0_1:revised",
+      "permission_contract": {
+        "may_draft": false,
+        "may_infer": false,
+        "may_quote": true,
+        "may_summarize": true,
+        "must_refuse_if_unsupported": true
+      },
+      "query_plan": {
+        "operations": [
+          "select",
+          "quote",
+          "refuse"
+        ],
+        "parameters": {
+          "integrity_profile": "packet_time_claim_binding.v0_1",
+          "proofcase_id": "heppner-public-proof.v0_1",
+          "source_capture_hash": "sha256:5fea7192b2dd8399bb121e43772f50e472de801a751415ea6080161c2eee8c63"
+        },
+        "seed_claim_ids": [
+          "claim:ad875452ef41e86eb4cbd7c4",
+          "claim:8a124bcd999a1b97bd1b1755",
+          "claim:7d7c6807298ff1e68bdbefce"
+        ]
+      },
+      "query_ref": "query:heppner:privilege-scope",
+      "query_text_hash": "sha256:cf09aec63c00fbb980cb3121de58d679eb816b56783462fcb0950bb73bd4c1fb",
+      "refusal_reasons": [
+        "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor"
+      ],
+      "rejected_candidate_refs": [
+        "candidate:heppner:universal-ai-privilege-rule"
+      ],
+      "scope": {
+        "actor": "operator:heppner_public_proof",
+        "actor_role": "public_proof_driver",
+        "corpus_ref": "public_case:us_v_heppner:doc27",
+        "matter_ref": null,
+        "profile_id": "heppner_public_proof"
+      },
+      "substrate_state_hash": "sha256:9fae2fd85129f1c69646b6366cf976cb4f19d9d060963f98e0655f8f4ba9c171",
+      "unknowns": [],
+      "verifier": {
+        "findings": [],
+        "reason": "all selected claims have admitted public anchors",
+        "status": "approved",
+        "verifier_name": "heppner_public_proof_verifier",
+        "verifier_version": "0.1.0"
+      }
+    },
+    "packet_inspection": {
+      "admitted_claim_ids": [
+        "claim:ad875452ef41e86eb4cbd7c4",
+        "claim:8a124bcd999a1b97bd1b1755",
+        "claim:7d7c6807298ff1e68bdbefce"
+      ],
+      "citation_claim_ids": [
+        "claim:ad875452ef41e86eb4cbd7c4",
+        "claim:8a124bcd999a1b97bd1b1755",
+        "claim:7d7c6807298ff1e68bdbefce"
+      ],
+      "has_blockers": false,
+      "inspection_hash": "sha256:344bfbb383b51f0d95e8e0a386e513bed4d194b002a0af0a3157821b79a049ca",
+      "issues": [],
+      "operation_kinds": [
+        "select",
+        "quote",
+        "select",
+        "quote",
+        "select",
+        "quote",
+        "refuse"
+      ],
+      "operation_refs": [
+        "op:revised:select:01",
+        "op:revised:quote:01",
+        "op:revised:select:02",
+        "op:revised:quote:02",
+        "op:revised:select:03",
+        "op:revised:quote:03",
+        "op:revised:refuse:01"
+      ],
+      "packet_hash": "sha256:3b886764a7b07a509197ff37708e9aa39ff7f119ecd9e4bad833bdc5b314b37d",
+      "packet_id": "context_packet:heppner-public-proof.v0_1:revised",
+      "quoted_claim_ids": [
+        "claim:ad875452ef41e86eb4cbd7c4",
+        "claim:8a124bcd999a1b97bd1b1755",
+        "claim:7d7c6807298ff1e68bdbefce"
+      ],
+      "refusal_reasons": [
+        "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor"
+      ],
+      "render_hash": "sha256:af5265465c37cafb0cce63c82d0630d5f024271069b44b1cbed2c7e0419cf93b",
+      "renderer_template_kind": "summary_with_sources",
+      "selected_claim_ids": [
+        "claim:ad875452ef41e86eb4cbd7c4",
+        "claim:8a124bcd999a1b97bd1b1755",
+        "claim:7d7c6807298ff1e68bdbefce"
+      ],
+      "walk_hash": "sha256:94d3ec5c82661b27dfb749fe77e0e7646d5ca6189c029089e61698b091a7f4a9",
+      "walk_id": "packet_walk:heppner-public-proof.v0_1:revised"
+    },
+    "packet_walk": {
+      "operations": [
+        {
+          "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+          "kind": "select",
+          "operation_ref": "op:revised:select:01"
+        },
+        {
+          "anchor_refs": [
+            "anchor:heppner:doc27:p1:ruling"
+          ],
+          "claim_content_hash": "sha256:dc214fcb9255f2688ec398dcbf08a26c091e9a6bf84825b8cfa3d77166dbd413",
+          "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+          "kind": "quote",
+          "operation_ref": "op:revised:quote:01",
+          "quote_text": "The court ruled that Heppner's AI Documents were protected by neither attorney-client privilege nor the work product doctrine.",
+          "source_refs": [
+            "source:heppner:doc27"
+          ]
+        },
+        {
+          "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+          "kind": "select",
+          "operation_ref": "op:revised:select:02"
+        },
+        {
+          "anchor_refs": [
+            "anchor:heppner:doc27:p5:claude-not-attorney"
+          ],
+          "claim_content_hash": "sha256:70ff8667c00dcc89a7399dae3a386d78a31479ad6d6dd07da2e789e344b70319",
+          "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+          "kind": "quote",
+          "operation_ref": "op:revised:quote:02",
+          "quote_text": "The court concluded that Claude was not an attorney and treated that fact as sufficient to defeat Heppner's attorney-client privilege claim.",
+          "source_refs": [
+            "source:heppner:doc27"
+          ]
+        },
+        {
+          "claim_id": "claim:7d7c6807298ff1e68bdbefce",
+          "kind": "select",
+          "operation_ref": "op:revised:select:03"
+        },
+        {
+          "anchor_refs": [
+            "anchor:heppner:doc27:p9:work-product-behest"
+          ],
+          "claim_content_hash": "sha256:e473a2d6920edefb27e2566debb8c60f532cbb0a0f3bc581251c60dec63982e1",
+          "claim_id": "claim:7d7c6807298ff1e68bdbefce",
+          "kind": "quote",
+          "operation_ref": "op:revised:quote:03",
+          "quote_text": "The work-product ruling rested in part on the AI Documents not being prepared by or at the behest of counsel and not reflecting counsel's strategy.",
+          "source_refs": [
+            "source:heppner:doc27"
+          ]
+        },
+        {
+          "kind": "refuse",
+          "operation_ref": "op:revised:refuse:01",
+          "reason": "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor",
+          "unsupported_claim_ids": [
+            "candidate:heppner:universal-ai-privilege-rule"
+          ]
+        }
+      ],
+      "packet_hash": "sha256:3b886764a7b07a509197ff37708e9aa39ff7f119ecd9e4bad833bdc5b314b37d",
+      "packet_id": "context_packet:heppner-public-proof.v0_1:revised",
+      "walk_hash": "sha256:94d3ec5c82661b27dfb749fe77e0e7646d5ca6189c029089e61698b091a7f4a9",
+      "walk_id": "packet_walk:heppner-public-proof.v0_1:revised"
+    },
+    "rejected_candidate_refs": [
+      "candidate:heppner:universal-ai-privilege-rule"
+    ],
+    "rendered_packet": {
+      "body": "SUMMARY_WITH_SOURCES\n- item 1: The court ruled that Heppner's AI Documents were protected by neither attorney-client privilege nor the work product doctrine.\n  source: claim=claim:ad875452ef41e86eb4cbd7c4; anchors=anchor:heppner:doc27:p1:ruling; sources=source:heppner:doc27\n- item 2: The court concluded that Claude was not an attorney and treated that fact as sufficient to defeat Heppner's attorney-client privilege claim.\n  source: claim=claim:8a124bcd999a1b97bd1b1755; anchors=anchor:heppner:doc27:p5:claude-not-attorney; sources=source:heppner:doc27\n- item 3: The work-product ruling rested in part on the AI Documents not being prepared by or at the behest of counsel and not reflecting counsel's strategy.\n  source: claim=claim:7d7c6807298ff1e68bdbefce; anchors=anchor:heppner:doc27:p9:work-product-behest; sources=source:heppner:doc27",
+      "citations": [
+        {
+          "anchor_refs": [
+            "anchor:heppner:doc27:p1:ruling"
+          ],
+          "claim_id": "claim:ad875452ef41e86eb4cbd7c4",
+          "source_refs": [
+            "source:heppner:doc27"
+          ]
+        },
+        {
+          "anchor_refs": [
+            "anchor:heppner:doc27:p5:claude-not-attorney"
+          ],
+          "claim_id": "claim:8a124bcd999a1b97bd1b1755",
+          "source_refs": [
+            "source:heppner:doc27"
+          ]
+        },
+        {
+          "anchor_refs": [
+            "anchor:heppner:doc27:p9:work-product-behest"
+          ],
+          "claim_id": "claim:7d7c6807298ff1e68bdbefce",
+          "source_refs": [
+            "source:heppner:doc27"
+          ]
+        }
+      ],
+      "operation_refs": [
+        "op:revised:quote:01",
+        "op:revised:quote:02",
+        "op:revised:quote:03"
+      ],
+      "packet_hash": "sha256:3b886764a7b07a509197ff37708e9aa39ff7f119ecd9e4bad833bdc5b314b37d",
+      "packet_id": "context_packet:heppner-public-proof.v0_1:revised",
+      "render_hash": "sha256:af5265465c37cafb0cce63c82d0630d5f024271069b44b1cbed2c7e0419cf93b",
+      "template_kind": "summary_with_sources",
+      "walk_hash": "sha256:94d3ec5c82661b27dfb749fe77e0e7646d5ca6189c029089e61698b091a7f4a9",
+      "walk_id": "packet_walk:heppner-public-proof.v0_1:revised"
+    },
+    "shadow_candidate_states": [
+      {
+        "candidate_ref": "candidate:heppner:universal-ai-privilege-rule",
+        "lifecycle": "final",
+        "reconsiderability_trigger": null,
+        "rejection_reason": "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor"
+      },
+      {
+        "candidate_ref": "candidate:heppner:work-product-behest",
+        "lifecycle": "reopened_for_review",
+        "reconsiderability_trigger": "new_evidence_admitted",
+        "rejection_reason": "reconsiderable refusal: the proposed source anchor is not in the initial admitted capture"
+      }
+    ],
+    "sovereignty_receipt": {
+      "admission_decision_refs": [
+        "admission:heppner-public-proof.v0_1:initial:ruling",
+        "admission:heppner-public-proof.v0_1:initial:claude-not-attorney",
+        "admission:heppner-public-proof.v0_1:initial:work-product-behest",
+        "admission:heppner-public-proof.v0_1:initial:universal-ai-privilege-rule",
+        "admission:heppner-public-proof.v0_1:revised:work-product-behest"
+      ],
+      "artifact_hashes": {
+        "context_packet_hash": "sha256:3b886764a7b07a509197ff37708e9aa39ff7f119ecd9e4bad833bdc5b314b37d",
+        "packet_inspection_hash": "sha256:344bfbb383b51f0d95e8e0a386e513bed4d194b002a0af0a3157821b79a049ca",
+        "packet_walk_hash": "sha256:94d3ec5c82661b27dfb749fe77e0e7646d5ca6189c029089e61698b091a7f4a9",
+        "rendered_packet_body_sha256": "sha256:ce2c9956bfa916f7204a1ed5ed4a38a3eb7a7b6ca451638fe772b44b5bc07c66",
+        "rendered_packet_hash": "sha256:af5265465c37cafb0cce63c82d0630d5f024271069b44b1cbed2c7e0419cf93b",
+        "source_capture_hash": "sha256:5fea7192b2dd8399bb121e43772f50e472de801a751415ea6080161c2eee8c63"
+      },
+      "context_packet_ref": {
+        "content_hash": "sha256:3b886764a7b07a509197ff37708e9aa39ff7f119ecd9e4bad833bdc5b314b37d",
+        "context_packet_id": "context_packet:heppner-public-proof.v0_1:revised"
+      },
+      "issued_at": "2026-07-12T00:00:00Z",
+      "operator_user_context": {
+        "auth_context_ref": "auth_context:public_fixture",
+        "operator_ref": "operator:heppner_public_proof"
+      },
+      "packet_walk_ref": {
+        "operation_log_hash": "sha256:94d3ec5c82661b27dfb749fe77e0e7646d5ca6189c029089e61698b091a7f4a9",
+        "packet_walk_id": "packet_walk:heppner-public-proof.v0_1:revised"
+      },
+      "receipt_hash": "sha256:d1b8194b71e95839a67496cfc66ffafc19d909f8b527185d648acc6f9dd49767",
+      "receipt_id": "sovereignty_receipt:heppner-public-proof.v0_1:revised",
+      "receipt_kind": "sovereignty_receipt",
+      "review_decision_refs": [
+        "reopening:reopen:heppner:work-product-behest"
+      ],
+      "schema": "garp.sovereignty_receipt.v0.1",
+      "status_vector": {
+        "blockers_by_code": {},
+        "composition_ready": true,
+        "readiness_state": "ready_with_explicit_refusals",
+        "status_vector_id": "status_vector:heppner-public-proof.v0_1:revised"
+      },
+      "subject_ref": "sha256:af5265465c37cafb0cce63c82d0630d5f024271069b44b1cbed2c7e0419cf93b",
+      "subject_type": "render",
+      "tool_call_disposition_refs": []
+    },
+    "stage_id": "revised"
+  },
+  "schema": "heppner_public_proof_bundle.v0_1",
+  "source_capture": {
+    "anchors": [
+      {
+        "anchor_ref": "anchor:heppner:doc27:p1:ruling",
+        "fragment": "the written exchanges were not protected by either the attorney-client privilege or the work product doctrine",
+        "page": 1,
+        "stage": "initial"
+      },
+      {
+        "anchor_ref": "anchor:heppner:doc27:p5:claude-not-attorney",
+        "fragment": "Because Claude is not an attorney, that alone disposes of Heppner's claim of privilege",
+        "page": 5,
+        "stage": "initial"
+      },
+      {
+        "anchor_ref": "anchor:heppner:doc27:p9:work-product-behest",
+        "fragment": "the documents were not prepared by or at the behest of counsel, nor did they reflect defense counsel's strategy",
+        "page": 9,
+        "stage": "supplemental"
+      },
+      {
+        "anchor_ref": "anchor:heppner:doc27:p12:case-specific-conclusion",
+        "fragment": "Heppner's use of Claude fails to satisfy either of these rules",
+        "page": 12,
+        "stage": "supplemental"
+      }
+    ],
+    "capture_posture": {
+      "external_authenticity_attested": false,
+      "note": "The committed fixture pins public source metadata and a PDF digest. CI does not fetch or independently authenticate the remote document.",
+      "offline_fixture": true,
+      "public_source_only": true
+    },
+    "case_name": "United States v. Heppner",
+    "court": "United States District Court for the Southern District of New York",
+    "docket_number": "1:25-cr-00503-JSR",
+    "docket_url": "https://www.courtlistener.com/docket/71872024/united-states-v-heppner/",
+    "document_number": 27,
+    "document_type": "memorandum",
+    "filed_date": "2026-02-17",
+    "pdf_sha256": "sha256:b7bd04c056563e6864cc4fcb68ed62eff732eaacf812377d2d4f6d24fb9f920c",
+    "pdf_url": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.652138/gov.uscourts.nysd.652138.27.0.pdf",
+    "proofcase_id": "heppner-public-proof.v0_1",
+    "schema": "heppner_public_source_capture.v0_1"
+  },
+  "stale_initial_inspection_against_revised_graph": {
+    "admitted_claim_ids": [
+      "claim:ad875452ef41e86eb4cbd7c4",
+      "claim:8a124bcd999a1b97bd1b1755"
+    ],
+    "citation_claim_ids": [
+      "claim:ad875452ef41e86eb4cbd7c4",
+      "claim:8a124bcd999a1b97bd1b1755"
+    ],
+    "has_blockers": true,
+    "inspection_hash": "sha256:39e2cb899b542cbf947b22612d210df6573eef5d1f61da4375302b0fc6b68163",
+    "issues": [
+      {
+        "code": "claim_graph_drift",
+        "message": "ClaimGraph state differs from packet-time substrate hash: stored=sha256:9d93821f23734245b83bbbfd5642cb8aa3f2e91f11cd6db028ae75a6f4e519ba recomputed=sha256:9fae2fd85129f1c69646b6366cf976cb4f19d9d060963f98e0655f8f4ba9c171",
+        "ref": "context_packet:heppner-public-proof.v0_1:initial",
+        "severity": "blocker"
+      }
+    ],
+    "operation_kinds": [
+      "select",
+      "quote",
+      "select",
+      "quote",
+      "refuse",
+      "refuse"
+    ],
+    "operation_refs": [
+      "op:initial:select:01",
+      "op:initial:quote:01",
+      "op:initial:select:02",
+      "op:initial:quote:02",
+      "op:initial:refuse:01",
+      "op:initial:refuse:02"
+    ],
+    "packet_hash": "sha256:06690ebb470ce9e55636030da00669d99620a170ad72b64800f3d88c1066a926",
+    "packet_id": "context_packet:heppner-public-proof.v0_1:initial",
+    "quoted_claim_ids": [
+      "claim:ad875452ef41e86eb4cbd7c4",
+      "claim:8a124bcd999a1b97bd1b1755"
+    ],
+    "refusal_reasons": [
+      "reconsiderable refusal: the proposed source anchor is not in the initial admitted capture",
+      "final refusal: the universal proposition is broader than the case-specific memorandum and has no supporting anchor"
+    ],
+    "render_hash": "sha256:3d115e3030a38f4a73e15df381412349d124ca9fb81089379e40ef39a205abd5",
+    "renderer_template_kind": "summary_with_sources",
+    "selected_claim_ids": [
+      "claim:ad875452ef41e86eb4cbd7c4",
+      "claim:8a124bcd999a1b97bd1b1755"
+    ],
+    "walk_hash": "sha256:6a80eafa461b57a40d43dcbcadca557958b090553de99ecbaad43305e8707bfa",
+    "walk_id": "packet_walk:heppner-public-proof.v0_1:initial"
+  }
+}

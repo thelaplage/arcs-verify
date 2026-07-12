@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from .verifier import verify_receipt
@@ -21,7 +22,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
+def _verify_srs(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     receipt = json.loads(args.receipt.read_text(encoding="utf-8"))
     keyring = json.loads(args.keyring.read_text(encoding="utf-8"))
@@ -36,6 +37,15 @@ def main(argv: list[str] | None = None) -> int:
         for code in data["failure_codes"]:
             print(f"failure_code: {code}")
     return 0 if report.passed else 1
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = list(sys.argv[1:] if argv is None else argv)
+    if args and args[0] == "amnesiac-chain":
+        from .amnesiac.cli import main as verify_amnesiac_chain
+
+        return verify_amnesiac_chain(args[1:])
+    return _verify_srs(args)
 
 
 if __name__ == "__main__":
