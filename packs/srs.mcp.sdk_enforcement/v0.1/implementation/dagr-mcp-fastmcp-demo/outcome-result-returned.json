@@ -1,0 +1,45 @@
+{
+  "actor_ref": "actor:anonymous_or_local",
+  "admission_receipt_ref": "urn:srs:receipt:admission:implementation-demo-1",
+  "artifact_classes_covered": [
+    "tool_call_outcome"
+  ],
+  "artifact_classes_excluded": [
+    "raw_prompt",
+    "raw_output",
+    "raw_tool_arguments",
+    "raw_tool_result"
+  ],
+  "attestation_limits": [
+    "The receipt attests only to governance conditions at the named admission boundary.",
+    "The receipt establishes the request, admission disposition, and semantic result returned at the configured boundary. It does not independently establish that the underlying tool body executed for this invocation, because middleware such as caches may satisfy a call without handler execution."
+  ],
+  "boundary_id": "boundary:dagr:fastmcp",
+  "boundary_type": "mcp_tool_call",
+  "extensions": {
+    "mcp": {
+      "binding_version": "fastmcp.middleware.v0.1"
+    }
+  },
+  "issued_at": "2026-07-11T20:10:01Z",
+  "issuer_id": "issuer:dagr:implementation-fixture",
+  "logical_call_id": "call:implementation-demo-1",
+  "outcome": "result_returned",
+  "profile_id": "srs.mcp.sdk_enforcement",
+  "profile_version": "v0.1",
+  "protocol_binding": "mcp",
+  "receipt_id": "urn:srs:receipt:outcome:implementation-demo-1",
+  "receipt_kind": "outcome",
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.dagr.implementation-fixture/receipt-signing/2026-07",
+    "signature": "eBDXz8BIRXhIO9i0mt04zcrARHllgTqsK852vo-mvz1_n1yN0Yg8QDH-tLI3U-9mhp1EQ7OBj0fR9XlMZphHBg"
+  },
+  "receipt_type": "sdk_enforcement",
+  "receipt_version": "srs.core.v5.1",
+  "result_digest": "sha256:edc37ef6631e85681c4968ff5e249be728119a0f757ca769b4c371e3536eb02b",
+  "retention_class_applied": "hash_only",
+  "runtime_instance_id": "runtime:dagr:implementation-fixture",
+  "subject_ref": "tool-call:call:implementation-demo-1"
+}
