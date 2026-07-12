@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://garp.doctrine/schemas/srs/srs-envelope.schema.json",
+  "title": "SRS Envelope Draft",
+  "type": "object",
+  "required": [
+    "receipt_version",
+    "receipt_id",
+    "receipt_type",
+    "boundary_type",
+    "protocol_binding",
+    "subject_ref",
+    "issued_at",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "extensions"
+  ],
+  "properties": {
+    "receipt_id": {
+      "type": "string"
+    },
+    "receipt_type": {
+      "type": "string",
+      "enum": [
+        "sdk_enforcement",
+        "grace_session",
+        "connection",
+        "provenance"
+      ]
+    },
+    "boundary_type": {
+      "type": "string"
+    },
+    "protocol_binding": {
+      "type": "string"
+    },
+    "subject_ref": {
+      "type": "string"
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "attestation_limits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "retention_class_applied": {
+      "type": "string"
+    },
+    "extensions": {
+      "type": "object"
+    },
+    "receipt_version": {
+      "type": "string",
+      "description": "Canonical SRS receipt version. Accepts named form such as srs.core.v5.1 or legacy numeric form such as 2.2."
+    },
+    "artifact_classes_covered": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "artifact_classes_excluded": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "receipt_signature": {
+      "description": "Canonical receipt signature or structured verification block.",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    }
+  },
+  "additionalProperties": true
+}

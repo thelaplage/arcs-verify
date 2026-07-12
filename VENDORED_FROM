@@ -1,0 +1,10 @@
+source: arcs-srs
+source_tree: WP2A delivered tree, independently verified 2026-07-11
+frozen_artifacts:
+  docs/profiles/SRS_SIGNED_RECEIPT_PROFILE_v0_1.md 827cdbbe9a4a836ed70ee4422db0d6ee361568949c5e87cc8c2abcc408d99df1
+  docs/profiles/SRS_MCP_SDK_ENFORCEMENT_PROFILE_v0_1.md 3043993d6297a1c493ee7b2e8ab2627267054ae2de5f8f83d55cd80e1a52f9ce
+  docs/crosswalks/ACTA_CROSSWALK_v0_1.md 9bc9a198d31d43503fa314cfc51e626570aa1c60e405a136e2dff0ceee818035
+  schemas/srs-envelope/v0.2.0/srs-envelope.schema.json d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333
+  vectors/signed-receipt-v0.1/manifest.json 811f76dca369dab0db24377651d129baede4501843487a5340f397ca5a0648c3
+  vectors/signed-receipt-v0.1/trust/issuer-keys.json 8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5
+note: frozen markdown documents are byte-identically archived in frozen-standard-docs.zip so the public release checker can distinguish normative prohibited examples from public marketing copy.

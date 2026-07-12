@@ -1,0 +1,11 @@
+{
+  "schema_name": "srs-envelope",
+  "schema_family": "ARCS-SRS",
+  "published_version": "0.2.0",
+  "release_stage": "pre-release",
+  "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+  "identity": "srs-envelope@0.2.0+sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+  "canonical_artifact": "srs-envelope.schema.json",
+  "supersedes": "0.1.0 without mutating its bytes",
+  "scope": "SRS envelope with structured signature-object support; profile semantics remain separately versioned."
+}

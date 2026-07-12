@@ -1,0 +1,49 @@
+{
+  "actor_ref": "actor:sha256:5e884898da28047151d0e56f8dc62927",
+  "argument_digest": "sha256:83b7f8e6a1a2d366f0b3d6e87f6dbe78f67c9df6f6e52f4344d881cde935b27d",
+  "artifact_classes_covered": [
+    "tool_call_admission"
+  ],
+  "artifact_classes_excluded": [
+    "raw_prompt",
+    "raw_output",
+    "raw_tool_arguments",
+    "raw_tool_result"
+  ],
+  "attestation_limits": [
+    "The receipt attests only to governance conditions at the named admission boundary."
+  ],
+  "boundary_id": "boundary:test:fastmcp",
+  "boundary_type": "mcp_tool_call",
+  "disposition": "deferred_for_review",
+  "extensions": {
+    "mcp": {
+      "binding_version": "fastmcp.tool_result.v1"
+    }
+  },
+  "issued_at": "2026-07-11T20:02:00Z",
+  "issuer_id": "issuer:vcp:test",
+  "logical_call_id": "call-0003",
+  "policy_pack_id": "policy:test:mcp",
+  "policy_pack_version": "2026.07.11",
+  "profile_id": "srs.mcp.sdk_enforcement",
+  "profile_version": "v0.1",
+  "protocol_binding": "mcp",
+  "receipt_id": "urn:srs:receipt:admission:0003",
+  "receipt_kind": "admission",
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.vcp.test/receipt-signing/2026-01",
+    "signature": "MldbIdvRrWnNR5LBL8nGQgWFHdgbQxtiHOUNBkts7gzFoMSh2jy45BqfNeK85DIpVsu-0Ug6Gu6G8ox4R77fBQ"
+  },
+  "receipt_type": "sdk_enforcement",
+  "receipt_version": "srs.core.v5.1",
+  "requested_tool_name": "records.lookup",
+  "retention_class_applied": "hash_only",
+  "retry_contract": "retry_after_approval",
+  "review_object_ref": "review:0003",
+  "runtime_instance_id": "runtime:test:001",
+  "subject_ref": "tool-call:call-0003",
+  "tool_resolution_status": "not_observed"
+}

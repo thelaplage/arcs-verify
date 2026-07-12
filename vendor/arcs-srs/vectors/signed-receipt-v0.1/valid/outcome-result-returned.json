@@ -1,0 +1,50 @@
+{
+  "actor_ref": "actor:sha256:5e884898da28047151d0e56f8dc62927",
+  "admission_receipt_ref": "urn:srs:receipt:admission:0001",
+  "argument_digest": "sha256:83b7f8e6a1a2d366f0b3d6e87f6dbe78f67c9df6f6e52f4344d881cde935b27d",
+  "artifact_classes_covered": [
+    "tool_call_outcome"
+  ],
+  "artifact_classes_excluded": [
+    "raw_prompt",
+    "raw_output",
+    "raw_tool_arguments",
+    "raw_tool_result"
+  ],
+  "attestation_limits": [
+    "The receipt attests only to governance conditions at the named admission boundary.",
+    "The receipt establishes the request, admission disposition, and semantic result returned at the configured boundary. It does not independently establish that the underlying tool body executed for this invocation, because middleware such as caches may satisfy a call without handler execution."
+  ],
+  "boundary_id": "boundary:test:fastmcp",
+  "boundary_type": "mcp_tool_call",
+  "extensions": {
+    "mcp": {
+      "binding_version": "fastmcp.tool_result.v1"
+    }
+  },
+  "issued_at": "2026-07-11T20:00:01Z",
+  "issuer_id": "issuer:vcp:test",
+  "logical_call_id": "call-0001",
+  "outcome": "result_returned",
+  "policy_pack_id": "policy:test:mcp",
+  "policy_pack_version": "2026.07.11",
+  "profile_id": "srs.mcp.sdk_enforcement",
+  "profile_version": "v0.1",
+  "protocol_binding": "mcp",
+  "receipt_id": "urn:srs:receipt:outcome:0001",
+  "receipt_kind": "outcome",
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.vcp.test/receipt-signing/2026-01",
+    "signature": "WEoyYl9RrQJiIHvkROvzUt84jmPzYFYsW7Ga9DtP3nRqqFxdg6uWF-qrh2vwZqA2WaxPcMHbPBl83AbBPOfYDg"
+  },
+  "receipt_type": "sdk_enforcement",
+  "receipt_version": "srs.core.v5.1",
+  "requested_tool_name": "records.lookup",
+  "result_digest": "sha256:469ce6a7227a81c8e40675b02fc880a353201f3dce2641be9e63abed3f6c40f8",
+  "retention_class_applied": "hash_only",
+  "runtime_instance_id": "runtime:test:001",
+  "subject_ref": "tool-call:call-0001",
+  "tool_resolution_status": "not_observed"
+}

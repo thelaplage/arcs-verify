@@ -1,0 +1,13 @@
+{
+  "schema_name": "srs-envelope",
+  "schema_family": "ARCS-SRS",
+  "published_version": "0.1.0",
+  "release_stage": "pre-release",
+  "internal_revision": "0.5.1",
+  "sha256": "e866eabf1cef537df6dc98f56f74021d8af585c94dc689f9fdd4ee97618d6b61",
+  "identity": "srs-envelope@0.1.0+sha256:e866eabf1cef537df6dc98f56f74021d8af585c94dc689f9fdd4ee97618d6b61",
+  "canonical_artifact": "srs-envelope.schema.json",
+  "identity_policy": "Consumers pin to published_version plus sha256 digest, not to repository URL or path. Pre-release: breaking changes may occur before 1.0.",
+  "stewardship": "VCP-stewarded ARCS-family SRS satellite home for now.",
+  "scope": "ARCS SRS envelope only; no GARP body-kind semantics."
+}
