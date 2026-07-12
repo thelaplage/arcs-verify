@@ -2,11 +2,11 @@
   "issuers": [
     {
       "algorithm": "Ed25519",
-      "issuer_id": "issuer:dagr:implementation-fixture",
-      "key_id": "issuer.dagr.implementation-fixture/receipt-signing/2026-07",
+      "issuer_id": "issuer:dagr:fastmcp-fixture",
+      "key_id": "issuer.dagr.fastmcp-fixture/receipt-signing/v1",
       "not_after": "2036-01-01T00:00:00Z",
       "not_before": "2026-01-01T00:00:00Z",
-      "public_key": "yz-xJJVgQJCZYCGLKPbvMFPLTijbozsCmRzt68zLSJA",
+      "public_key": "WWhzV9-MNoorMSfmcwdiBUcpG9mGKTBkDvd0-9tq5Sk",
       "trusted": true
     }
   ],
