@@ -66,3 +66,14 @@ def test_string_signature_is_legacy_unverified():
     report = verify_receipt(receipt, KEYRING, schema_path=SCHEMA)
     assert not report.signature_valid
     assert "legacy_unverified" in report.failure_codes
+
+
+def test_machine_readable_pack_expectations_match_verifier():
+    expected_path = ROOT / "packs/srs.mcp.sdk_enforcement/v0.1/expected/expectations.json"
+    expectations = json.loads(expected_path.read_text())
+    for item in expectations["entries"]:
+        receipt = json.loads((VECTORS / item["path"]).read_text())
+        report = verify_receipt(receipt, KEYRING, schema_path=SCHEMA, selected_profile="srs.mcp.sdk_enforcement.v0.1")
+        assert report.signature_valid is item["signature_valid"]
+        for code in item["expected_failure_codes"]:
+            assert code in report.failure_codes

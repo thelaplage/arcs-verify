@@ -1,0 +1,52 @@
+{
+  "note": "Provenance for the vendor-neutral MCP audit-trail pack. Unlike the root envelope pack (which byte-identically vendors canonical artifacts from arcs-srs), the artifacts in THIS pack are authored in this repository: a public-safe, synthetic, vendor-neutral MCP custody-gateway audit-trail input and the SRS envelope receipt deterministically built from it. They are not copied from any private corpus or external repository.",
+  "pack": "packs/mcp-audit-trail/v0.1",
+  "authored_in_repo": true,
+  "public_safety": {
+    "private_corpus_used": false,
+    "live_credentials_used": false,
+    "network_calls": false,
+    "scanner_used": false,
+    "vendor_profile": "none",
+    "vendor_neutral": true,
+    "explicit_file_input_only": true
+  },
+  "validates_against": {
+    "schema": "schemas/srs-envelope/v0.1.0/srs-envelope.schema.json",
+    "schema_sha256": "e866eabf1cef537df6dc98f56f74021d8af585c94dc689f9fdd4ee97618d6b61",
+    "validator": "tools/validate_srs_envelope.py",
+    "note": "The canonical SRS envelope schema and validator are the artifacts already vendored/reconciled in this repo; this pack does not re-vendor or edit them."
+  },
+  "artifacts": [
+    {
+      "artifact": "input/mcp_audit_trail.input.json",
+      "role": "explicit public-safe MCP audit-trail input",
+      "authored": true,
+      "sha256": "f555ce94e319893e2d05a679ec3449220688e4dc5d007c9ab74b8272dc395471"
+    },
+    {
+      "artifact": "fixtures/valid/mcp_audit_trail.envelope.json",
+      "role": "generated/expected valid SRS envelope receipt",
+      "generated_by": "tools/build_receipt.py",
+      "generated_from": "input/mcp_audit_trail.input.json",
+      "deterministic": true,
+      "sha256": "fe8d8e8859db52458d89b28c380ca17dc91b9879a7c9d6cc187ee2c0556491a0"
+    },
+    {
+      "artifact": "fixtures/invalid/top_level_status_verdict.json",
+      "role": "forbidden-drift fixture (hoists a decision as a top-level verdict instead of using extensions.garp.body.decision_ref)",
+      "authored": true,
+      "rejected_by_canonical_validator": "TOP_LEVEL_BODY_VERDICT",
+      "sha256": "af513d549c397c841c69fc5503653a52fb7b3ab1a7606787b2025c61e1a02d9c"
+    }
+  ],
+  "option_a": {
+    "preserved": true,
+    "decision_ref_only": true,
+    "recorded_by": [
+      "garp-ops PR #87 (R0/R1 Option A)",
+      "garp-sdk PR #78 (admission receipt contract conformed to Option A / decision_ref)"
+    ],
+    "rule": "Any decision/verdict semantics reference extensions.garp.body.decision_ref; never a body-level or top-level verdict/status/disposition/decision/governance_state."
+  }
+}

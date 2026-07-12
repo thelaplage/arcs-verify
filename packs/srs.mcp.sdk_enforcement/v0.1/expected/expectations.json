@@ -1,0 +1,77 @@
+{
+  "entries": [
+    {
+      "expected_failure_codes": [
+        "key_id_unresolved"
+      ],
+      "path": "mutations/key-id-fail.json",
+      "signature_valid": false
+    },
+    {
+      "expected_failure_codes": [],
+      "path": "mutations/reordered-keys-pass.json",
+      "signature_valid": true
+    },
+    {
+      "expected_failure_codes": [
+        "signature_invalid"
+      ],
+      "path": "mutations/semantic-field-change-fail.json",
+      "signature_valid": false
+    },
+    {
+      "expected_failure_codes": [
+        "signature_invalid"
+      ],
+      "path": "mutations/signature-bytes-fail.json",
+      "signature_valid": false
+    },
+    {
+      "expected_failure_codes": [
+        "signature_invalid"
+      ],
+      "path": "mutations/unknown-extension-added-fail.json",
+      "signature_valid": false
+    },
+    {
+      "expected_failure_codes": [
+        "signature_invalid",
+        "version_binding_mismatch"
+      ],
+      "path": "mutations/version-binding-fail.json",
+      "signature_valid": false
+    },
+    {
+      "expected_failure_codes": [],
+      "path": "mutations/whitespace-reserialization-pass.json",
+      "signature_valid": true
+    },
+    {
+      "expected_failure_codes": [],
+      "path": "valid/admission-admitted.json",
+      "signature_valid": true
+    },
+    {
+      "expected_failure_codes": [],
+      "path": "valid/admission-deferred.json",
+      "signature_valid": true
+    },
+    {
+      "expected_failure_codes": [],
+      "path": "valid/admission-refused.json",
+      "signature_valid": true
+    },
+    {
+      "expected_failure_codes": [],
+      "path": "valid/outcome-result-returned.json",
+      "signature_valid": true
+    },
+    {
+      "expected_failure_codes": [],
+      "path": "valid/outcome-task-submitted.json",
+      "signature_valid": true
+    }
+  ],
+  "pack": "srs.mcp.sdk_enforcement.v0.1",
+  "status": "provisional_until_dagr_mcp_real_codepath_fixtures"
+}

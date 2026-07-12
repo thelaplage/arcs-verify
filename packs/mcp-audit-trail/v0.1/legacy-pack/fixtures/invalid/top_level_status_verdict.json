@@ -1,0 +1,67 @@
+{
+  "_invalid_reason": "top-level 'status' asserts the gateway decision as a verdict on the envelope; under Option A (garp-ops PR #87 / garp-sdk PR #78) a decision is referenced via extensions.garp.body.decision_ref, never asserted as a body-level or top-level verdict/status/disposition/decision/governance_state",
+  "artifact_classes_covered": [
+    "trace",
+    "packet_inspection",
+    "provenance"
+  ],
+  "artifact_classes_excluded": [
+    "truth_verification",
+    "automated_citation_detection",
+    "external_fact_checking"
+  ],
+  "attestation_limits": [
+    "this receipt attests SRS envelope shape and input-byte integrity only",
+    "it does not assert that any recorded audit event is true",
+    "it does not assert that any tool call was authorized or any custody claim correct",
+    "any decision is referenced via decision_ref, not asserted as a verdict"
+  ],
+  "boundary_type": "audit_trail_boundary",
+  "extensions": {
+    "garp": {
+      "body": {
+        "artifact_hashes": {
+          "input/mcp_audit_trail.input.json": "sha256:f555ce94e319893e2d05a679ec3449220688e4dc5d007c9ab74b8272dc395471"
+        },
+        "body_kind": "mcp_audit_trail",
+        "decision_ref": "policy-eval://custody-gateway/mcp-session-public-sample-0001#decision-0007",
+        "event_count": 3,
+        "events": [
+          {
+            "args_digest": "sha256:0dbb4949a4435c99408e15285661b7c7b0811830491f062ddb1e9a8fee7369f0",
+            "custody": "gateway_mediated",
+            "kind": "tool_call",
+            "seq": 1,
+            "server_ref": "mcp-server:filesystem",
+            "tool": "fs.read"
+          },
+          {
+            "custody": "gateway_mediated",
+            "kind": "tool_result",
+            "result_digest": "sha256:2da04b69bf9327502bc1aac871577bad7e92c22fe759b401e6d1496596b5b950",
+            "seq": 2,
+            "server_ref": "mcp-server:filesystem",
+            "tool": "fs.read"
+          },
+          {
+            "args_digest": "sha256:59f83b7c101c11a8fcf9d18443e02ce1179188ae5369a4829e76c7d6fc315011",
+            "custody": "gateway_mediated",
+            "kind": "tool_call",
+            "seq": 3,
+            "server_ref": "mcp-server:keyvalue",
+            "tool": "kv.get"
+          }
+        ],
+        "gateway_ref": "custody-gateway",
+        "session_ref": "mcp-session-public-sample-0001"
+      }
+    }
+  },
+  "issued_at": "2026-05-30T00:00:00Z",
+  "protocol_binding": "garp",
+  "receipt_id": "mcp-audit-trail-invalid-top-level-status",
+  "receipt_type": "provenance",
+  "receipt_version": "srs.core.v5.1",
+  "status": "admitted",
+  "subject_ref": "mcp-session-public-sample-0001"
+}

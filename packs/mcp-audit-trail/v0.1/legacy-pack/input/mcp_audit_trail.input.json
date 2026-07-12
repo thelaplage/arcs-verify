@@ -1,0 +1,34 @@
+{
+  "audit_schema": "mcp.audit-trail/v0",
+  "gateway": "custody-gateway",
+  "session_ref": "mcp-session-public-sample-0001",
+  "recorded_at": "2026-05-30T00:00:00Z",
+  "decision_ref": "policy-eval://custody-gateway/mcp-session-public-sample-0001#decision-0007",
+  "note": "Public-safe, vendor-neutral MCP (Model Context Protocol) custody-gateway audit trail. Tool calls are recorded digest-only; raw arguments and results are never carried, which is what makes the trail public-safe. No vendor, product, account, or live-credential identifiers appear. The receipt built from this file binds it by sha256 and asserts SRS envelope form only, not the truth of any recorded event.",
+  "events": [
+    {
+      "seq": 1,
+      "kind": "tool_call",
+      "tool": "fs.read",
+      "server_ref": "mcp-server:filesystem",
+      "custody": "gateway_mediated",
+      "args_digest": "sha256:0dbb4949a4435c99408e15285661b7c7b0811830491f062ddb1e9a8fee7369f0"
+    },
+    {
+      "seq": 2,
+      "kind": "tool_result",
+      "tool": "fs.read",
+      "server_ref": "mcp-server:filesystem",
+      "custody": "gateway_mediated",
+      "result_digest": "sha256:2da04b69bf9327502bc1aac871577bad7e92c22fe759b401e6d1496596b5b950"
+    },
+    {
+      "seq": 3,
+      "kind": "tool_call",
+      "tool": "kv.get",
+      "server_ref": "mcp-server:keyvalue",
+      "custody": "gateway_mediated",
+      "args_digest": "sha256:59f83b7c101c11a8fcf9d18443e02ce1179188ae5369a4829e76c7d6fc315011"
+    }
+  ]
+}
