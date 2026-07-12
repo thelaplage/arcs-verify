@@ -52,3 +52,7 @@ def main(argv: list[str] | None = None) -> int:
     json.dump(report.to_dict(), sys.stdout, indent=2, sort_keys=True)
     sys.stdout.write("\n")
     return 0 if report.passed else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
