@@ -1,0 +1,47 @@
+{
+  "actor_ref": "actor:anonymous_or_local",
+  "argument_digest": "sha256:2985689108fc6142efabf72b17fcd4b25cf4543511403fc9869ccab52354977b",
+  "artifact_classes_covered": [
+    "tool_call_admission"
+  ],
+  "artifact_classes_excluded": [
+    "raw_prompt",
+    "raw_output",
+    "raw_tool_arguments",
+    "raw_tool_result"
+  ],
+  "attestation_limits": [
+    "The receipt attests only to governance conditions at the named admission boundary."
+  ],
+  "boundary_id": "boundary:dagr:fastmcp",
+  "boundary_type": "mcp_tool_call",
+  "disposition": "admitted",
+  "extensions": {
+    "mcp": {
+      "binding_version": "fastmcp.middleware.v0.1"
+    }
+  },
+  "issued_at": "2026-07-11T20:10:00Z",
+  "issuer_id": "issuer:dagr:implementation-fixture",
+  "logical_call_id": "call:implementation-demo-1",
+  "policy_pack_id": "policy:dagr:demo",
+  "policy_pack_version": "v0.1",
+  "profile_id": "srs.mcp.sdk_enforcement",
+  "profile_version": "v0.1",
+  "protocol_binding": "mcp",
+  "receipt_id": "urn:srs:receipt:admission:implementation-demo-1",
+  "receipt_kind": "admission",
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.dagr.implementation-fixture/receipt-signing/2026-07",
+    "signature": "kwAbXLlcdxLJBtKVDLPlT717if5Vsnxl1AIu5DERnNo4fgdynDv3_0HQ_eAH3C_6Lb3WAvI5I1wqS1KZLlTfDA"
+  },
+  "receipt_type": "sdk_enforcement",
+  "receipt_version": "srs.core.v5.1",
+  "requested_tool_name": "records_lookup",
+  "retention_class_applied": "hash_only",
+  "runtime_instance_id": "runtime:dagr:implementation-fixture",
+  "subject_ref": "tool-call:call:implementation-demo-1",
+  "tool_resolution_status": "not_observed"
+}

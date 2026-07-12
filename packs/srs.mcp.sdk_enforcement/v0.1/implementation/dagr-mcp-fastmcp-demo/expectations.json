@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "expected_failure_codes": [],
+      "path": "admission-admitted.json",
+      "signature_valid": true
+    },
+    {
+      "expected_failure_codes": [],
+      "path": "outcome-result-returned.json",
+      "signature_valid": true
+    }
+  ],
+  "implementation": "dagr-mcp-fastmcp-demo",
+  "keyring": "issuer-keys.json",
+  "profile": "srs.mcp.sdk_enforcement.v0.1"
+}
