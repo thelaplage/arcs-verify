@@ -1,17 +1,36 @@
 {
-  "entries": [
+  "keyring": "issuer-keys.json",
+  "profile": "srs.mcp.sdk_enforcement.v0.1",
+  "receipts": [
     {
       "expected_failure_codes": [],
       "path": "admission-admitted.json",
-      "signature_valid": true
+      "verdicts": {
+        "attestation_limits_present": true,
+        "chain_status": "not_applicable",
+        "envelope": true,
+        "issuer_key_resolved": true,
+        "issuer_key_trusted": true,
+        "profile": true,
+        "raw_content_exclusion": true,
+        "schema_digest": true,
+        "signature_valid": true
+      }
     },
     {
       "expected_failure_codes": [],
       "path": "outcome-result-returned.json",
-      "signature_valid": true
+      "verdicts": {
+        "attestation_limits_present": true,
+        "chain_status": "not_applicable",
+        "envelope": true,
+        "issuer_key_resolved": true,
+        "issuer_key_trusted": true,
+        "profile": true,
+        "raw_content_exclusion": true,
+        "schema_digest": true,
+        "signature_valid": true
+      }
     }
-  ],
-  "implementation": "dagr-mcp-fastmcp-demo",
-  "keyring": "issuer-keys.json",
-  "profile": "srs.mcp.sdk_enforcement.v0.1"
+  ]
 }
