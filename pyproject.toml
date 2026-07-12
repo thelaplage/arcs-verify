@@ -21,3 +21,6 @@ dev = ["pytest>=9,<10"]
 
 [tool.setuptools.packages.find]
 include = ["arcs_verify*"]
+
+[tool.setuptools.package-data]
+arcs_verify = ["data/*.json"]

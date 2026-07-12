@@ -8,7 +8,7 @@ from .verifier import verify_receipt
 
 
 def _default_schema() -> Path:
-    return Path(__file__).resolve().parents[1] / "vendor" / "arcs-srs" / "schemas" / "srs-envelope" / "v0.2.0" / "srs-envelope.schema.json"
+    return Path(__file__).resolve().parent / "data" / "srs-envelope-v0.2.0.schema.json"
 
 
 def build_parser() -> argparse.ArgumentParser:
