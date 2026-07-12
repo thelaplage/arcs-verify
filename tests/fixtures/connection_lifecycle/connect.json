@@ -1,0 +1,49 @@
+{
+  "actor_ref": "actor:sha256:5e884898da28047151d0e56f8dc62927",
+  "artifact_classes_covered": [
+    "connection_governance_event"
+  ],
+  "artifact_classes_excluded": [
+    "credential_material",
+    "provider_tokens",
+    "content_payloads"
+  ],
+  "attestation_limits": [
+    "The receipt establishes the governance conditions enforced at the named connection boundary for the declared lifecycle event. It does not establish provider-side behavior.",
+    "The receipt does not establish that the provider accepted, activated, maintained, or continued the connection."
+  ],
+  "boundary_id": "boundary:test:arcs-forum",
+  "boundary_type": "connection_boundary",
+  "extensions": {
+    "forum_projection": {
+      "mapping_version": "forum.receipt.v2.1-to-srs.connection.lifecycle.v0.1",
+      "source_connection_event": "credential_provisioned",
+      "source_receipt_type": "connection",
+      "source_schema_version": "2.1"
+    }
+  },
+  "issued_at": "2026-07-12T18:00:00Z",
+  "issuer_id": "issuer:vcp:test",
+  "profile_id": "srs.connection.lifecycle",
+  "profile_version": "v0.1",
+  "protocol_binding": "arcs-forum",
+  "provider_ref": "provider:openai",
+  "receipt_id": "urn:srs:receipt:connection:0001",
+  "receipt_kind": "connect",
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.vcp.test/forum-projection/2026-01",
+    "signature": "xola30wdkUXFPH2dpr0BJj7lJLlo0hdK7VjDduPtsrRv13fLCZSOA-aqbKZfsD92w6apVTSRkzqpHnOhBKJ4DA"
+  },
+  "receipt_type": "connection",
+  "receipt_version": "srs.core.v5.1",
+  "retention_class": "session",
+  "runtime_instance_id": "runtime:forum:test:001",
+  "source_record_refs": [
+    "forum-receipt:receipt_forum_connection_0001",
+    "sha256:dec614bcfd74c8725e6e05f82eb8ecc0c05e73c8e2b3f80cfd5ea6bfae683d6f"
+  ],
+  "subject_ref": "connection:conn_test_0001",
+  "tenant_id": "tenant:test:001"
+}
