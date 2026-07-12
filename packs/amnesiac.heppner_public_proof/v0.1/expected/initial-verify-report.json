@@ -1,0 +1,28 @@
+{
+  "boundary_note": "Structural integrity only. A fully rewritten, internally coherent artifact set can pass. Historical authenticity requires an external signature, trusted publication record, or previously anchored digest.",
+  "conclusions": {
+    "authenticity_verified": "not_evaluated",
+    "inspection_reproduced": "true",
+    "integrity_valid": "true",
+    "packet_time_bindings_valid": "true",
+    "producer_artifacts_consistent": "true",
+    "receipt_hashes_valid": "true",
+    "signature_verified": "not_evaluated"
+  },
+  "findings": [],
+  "passed": true,
+  "report_hash": "sha256:1ee1fccd38c53678aeee15363e0579cee19a0a19c8455afe2d385b0f3a18a3a2",
+  "schema": "arcs_verify.report.v0_1_1",
+  "verification_profile": "full_artifact_chain.v0_1",
+  "verified_artifacts": {
+    "claim_graph_substrate_hash": "sha256:9d93821f23734245b83bbbfd5642cb8aa3f2e91f11cd6db028ae75a6f4e519ba",
+    "context_packet_hash": "sha256:06690ebb470ce9e55636030da00669d99620a170ad72b64800f3d88c1066a926",
+    "context_packet_id": "context_packet:heppner-public-proof.v0_1:initial",
+    "packet_inspection_hash": "sha256:1dece7529bdd71df2e0833ad246fab26e630439d760c1883b7a7e507cde6ce08",
+    "packet_walk_hash": "sha256:6a80eafa461b57a40d43dcbcadca557958b090553de99ecbaad43305e8707bfa",
+    "packet_walk_id": "packet_walk:heppner-public-proof.v0_1:initial",
+    "rendered_packet_hash": "sha256:3d115e3030a38f4a73e15df381412349d124ca9fb81089379e40ef39a205abd5",
+    "source_capture_hash": "sha256:3181417aafdd03e33712b3be7f2b26311914e4f2906010f77e3aa17c798c9fba",
+    "sovereignty_receipt_hash": "sha256:0aa2ffddb2fe76522bad280752cffe4e4d173511f9d52b5bf72bc9420ef659f9"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "artifact_kind": "arcs_verify_report",
+  "authenticity_claimed": false,
+  "boundary_note": "Structural integrity only. A fully rewritten, internally coherent artifact set can pass. Historical authenticity requires an external signature, trusted publication record, or previously anchored digest.",
+  "conclusions": {
+    "authenticity_verified": "not_evaluated",
+    "inspection_reproduced": "true",
+    "integrity_valid": "true",
+    "packet_time_bindings_valid": "true",
+    "producer_artifacts_consistent": "true",
+    "receipt_hashes_valid": "true",
+    "signature_verified": "not_evaluated"
+  },
+  "not_produced_by": "garpedia",
+  "owned_by": "arcs-verify",
+  "produced_by": "arcs-verify",
+  "report_hash": "sha256:80c18726679e72c53bd13e0b56bc36f98fa21d0f6ad4a5da929746f7cb315fcf",
+  "schema": "garpedia_arcs_verify_projection.v0_1",
+  "signature_claimed": false,
+  "structural_pass": true,
+  "verified_artifacts": {
+    "claim_graph_substrate_hash": "sha256:9fae2fd85129f1c69646b6366cf976cb4f19d9d060963f98e0655f8f4ba9c171",
+    "context_packet_hash": "sha256:3b886764a7b07a509197ff37708e9aa39ff7f119ecd9e4bad833bdc5b314b37d",
+    "context_packet_id": "context_packet:heppner-public-proof.v0_1:revised",
+    "packet_inspection_hash": "sha256:344bfbb383b51f0d95e8e0a386e513bed4d194b002a0af0a3157821b79a049ca",
+    "packet_walk_hash": "sha256:94d3ec5c82661b27dfb749fe77e0e7646d5ca6189c029089e61698b091a7f4a9",
+    "packet_walk_id": "packet_walk:heppner-public-proof.v0_1:revised",
+    "rendered_packet_hash": "sha256:af5265465c37cafb0cce63c82d0630d5f024271069b44b1cbed2c7e0419cf93b",
+    "source_capture_hash": "sha256:5fea7192b2dd8399bb121e43772f50e472de801a751415ea6080161c2eee8c63",
+    "sovereignty_receipt_hash": "sha256:d1b8194b71e95839a67496cfc66ffafc19d909f8b527185d648acc6f9dd49767"
+  }
+}

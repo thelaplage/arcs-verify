@@ -1,0 +1,44 @@
+{
+  "claim_boundary": {
+    "historical_authenticity": "not_evaluated",
+    "signature_validity": "not_evaluated",
+    "structural_integrity": true
+  },
+  "entries": [
+    {
+      "path": "producer/proof_bundle.json",
+      "role": "producer_bundle",
+      "sha256": "39c60e1e0f1ec172e7a0e53ba3a514b90654e9b67aca4c74769aa1e2262c2774"
+    },
+    {
+      "path": "producer/garpedia_projection.json",
+      "role": "producer_public_projection",
+      "sha256": "907a831acd4aa0330bb62506dc61deec3c12e2574775870a15c22033c162b62e"
+    },
+    {
+      "path": "expected/initial-verify-report.json",
+      "role": "expected_report_initial",
+      "sha256": "0356fab249f9e2b74454912fb7b25b890a2d9d13b6bfccc1af53e7c6ff62ffee"
+    },
+    {
+      "path": "expected/revised-verify-report.json",
+      "role": "expected_report_revised",
+      "sha256": "e6dc04eacff9c391ee90276d032e245355a351eedce4d2c9dac460627c00e2c6"
+    },
+    {
+      "path": "expected/revised-verify-projection.json",
+      "role": "expected_public_projection_revised",
+      "sha256": "1141d9252dd852c04fdab857fd87e719f7cf67f910519846c2df15dc9667bd42"
+    }
+  ],
+  "expected_report_hashes": {
+    "initial": "sha256:1ee1fccd38c53678aeee15363e0579cee19a0a19c8455afe2d385b0f3a18a3a2",
+    "revised": "sha256:80c18726679e72c53bd13e0b56bc36f98fa21d0f6ad4a5da929746f7cb315fcf"
+  },
+  "profile_id": "amnesiac.full_artifact_chain",
+  "profile_version": "v0.1",
+  "schema": "arcs_verify.conformance_pack.v0_1",
+  "source_commit": "1dc7660",
+  "source_pull_request": 43,
+  "source_repository": "thelaplage/arcs-amnesiac"
+}
