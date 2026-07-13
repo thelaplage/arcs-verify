@@ -104,6 +104,20 @@ BASE_REQUIRED = {
 
 MCP_REQUIRED = BASE_REQUIRED | {"logical_call_id"}
 
+# Registered binding-owned governance fields for the DAGR MCP receipt/profile.
+# The DAGR emitter records these top-level delivery-state facts as strict JSON
+# Booleans (see dagr_mcp CANCELLATION_FIELD_NAMES). They are deliberately named
+# without a result-shaped token so they do not collide with raw-content
+# exclusion, which means ARCS must independently type-check them: a re-signed
+# receipt can otherwise smuggle raw tool-result material through one of these
+# names. ARCS cannot trust issuer-side validation, so it enforces the Boolean
+# contract itself. Absent is permitted; present requires a JSON Boolean.
+MCP_BOOLEAN_GOVERNANCE_FIELDS = (
+    "delivery_incomplete",
+    "request_cancelled",
+    "execution_state_unknown",
+)
+
 CONNECTION_REQUIRED = BASE_REQUIRED | {
     "tenant_id",
     "actor_ref",
@@ -418,6 +432,15 @@ def _mcp_profile_errors(receipt: dict[str, Any]) -> list[str]:
         and "resolved_tool_ref" in receipt
     ):
         errors.append("profile.resolution_ref_for_not_observed")
+
+    for governance_field in MCP_BOOLEAN_GOVERNANCE_FIELDS:
+        if (
+            governance_field in receipt
+            and not isinstance(receipt[governance_field], bool)
+        ):
+            errors.append(
+                f"profile.non_boolean_governance_field:{governance_field}"
+            )
 
     excluded = set(receipt.get("artifact_classes_excluded") or [])
 
