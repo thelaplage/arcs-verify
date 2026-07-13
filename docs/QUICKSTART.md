@@ -6,7 +6,7 @@ command below is copy-pasteable and every input is committed in this repository.
 ## 1. Clone and enter the repository
 
 ```bash
-git clone <this-repository-url> arcs-verify
+git clone https://github.com/thelaplage/arcs-verify.git arcs-verify
 cd arcs-verify
 ```
 

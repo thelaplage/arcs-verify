@@ -12,12 +12,12 @@ described by the receipt actually occurred.
 |---|---|
 | Standard | ARCS |
 | Receipt protocol and profiles | SRS |
-| Open runtime and adapters | DAGR |
+| Open runtime and adapters | Open receipt-emitter/runtime binding (separate repository) |
 | Public reference implementations | ARCS Verify and examples |
 | Public read and demo surfaces | GARPedia, Overlay, Showcase |
 | Commercial operator products | Countervail, Workbench, managed deployments |
 
-MCP is DAGR's first supported binding. ARCS Verify is the implementation-neutral
+MCP is the first supported receipt-emitter/runtime binding. ARCS Verify is the implementation-neutral
 verifier for signed SRS envelopes, named conformance profiles, and independently
 serialized artifact chains.
 
