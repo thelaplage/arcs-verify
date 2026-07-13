@@ -1,0 +1,13 @@
+# The sdist ships the installable package, its declared package data, the
+# license, and the readme. Development-only trees are not part of the
+# distribution and are pruned so no test code or conformance/vendor data enters
+# an artifact.
+include LICENSE
+include README.md
+include CHANGELOG.md
+prune tests
+prune packs
+prune vendor
+prune docs
+prune tools
+prune .github
