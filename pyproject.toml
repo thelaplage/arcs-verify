@@ -43,4 +43,9 @@ dev = ["pytest>=9,<10"]
 include = ["arcs_verify*"]
 
 [tool.setuptools.package-data]
-arcs_verify = ["data/*.json"]
+arcs_verify = [
+  "data/*.json",
+  "contracts/dagr-srs-verification-report-v0-1/*.json",
+  "contracts/dagr-srs-verification-report-v0-1/*.md",
+  "contracts/dagr-srs-verification-report-v0-1/golden/*.json",
+]
