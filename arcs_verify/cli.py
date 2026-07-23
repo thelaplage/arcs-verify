@@ -45,6 +45,10 @@ def main(argv: list[str] | None = None) -> int:
         from .amnesiac.cli import main as verify_amnesiac_chain
 
         return verify_amnesiac_chain(args[1:])
+    if args and args[0] == "dagr-report":
+        from .dagr_report import main as dagr_report_main
+
+        return dagr_report_main(args[1:])
     return _verify_srs(args)
 
 
