@@ -27,6 +27,15 @@ availability exists.
   failure, and `2` on a usage or unreadable-input error.
 - `arcs-verify amnesiac-chain` subcommand for the independent Amnesiac
   artifact-chain profile.
+- `arcs_verify.amnesiac.verify_public_proof_bundle`, a stable entrypoint for
+  the full two-stage Amnesiac public proof envelope (as produced by
+  `amnesiac-proof`, distinct from the single already-extracted stage that
+  `verify_bundle` requires). Each stage is verified independently, and three
+  cross-stage facts already represented in the artifact are independently
+  recomputed and reported in a separate section: source/proofcase identity
+  continuity, the designated reconsiderable-to-admitted candidate transition,
+  and the initial packet's structural staleness against the revised graph. No
+  aggregate verified badge is produced.
 - Conformance packs, the pinned SRS envelope schema, and the
   `srs.mcp.sdk_enforcement.v0.1` and `srs.connection.lifecycle.v0.1` verifier
   profiles.
