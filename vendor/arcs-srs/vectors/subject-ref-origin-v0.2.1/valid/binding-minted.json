@@ -1,0 +1,24 @@
+{
+  "artifact_classes_covered": [
+    "connection_governance_event"
+  ],
+  "artifact_classes_excluded": [
+    "credential_material",
+    "content_payloads"
+  ],
+  "attestation_limits": [
+    "This receipt attests that a connection was established at the named boundary. It does not establish provider-side behavior.",
+    "The subject reference was minted by the binding. It correlates this receipt only; it does not name a caller-supplied identity."
+  ],
+  "boundary_id": "boundary:test:connection",
+  "boundary_type": "connection_boundary",
+  "extensions": {},
+  "issued_at": "2026-07-31T00:00:02Z",
+  "issuer_id": "issuer:vcp:test",
+  "protocol_binding": "arcs-srs",
+  "receipt_id": "urn:srs:receipt:connection:origin-0003",
+  "receipt_type": "connection",
+  "receipt_version": "srs.core.v5.1",
+  "subject_ref": "subject:minted:8f14e45f-ceea-467a-9575-4c4cbb2d8c73",
+  "subject_ref_origin": "binding_minted"
+}

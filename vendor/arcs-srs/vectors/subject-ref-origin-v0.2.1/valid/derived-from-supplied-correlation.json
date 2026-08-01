@@ -1,0 +1,25 @@
+{
+  "artifact_classes_covered": [
+    "enforcement_decision"
+  ],
+  "artifact_classes_excluded": [
+    "truth_verification",
+    "content_payloads"
+  ],
+  "attestation_limits": [
+    "This receipt attests that a rule was enforced at the named boundary. It does not attest the truth of anything the call carried.",
+    "The declared subject reference origin describes how the subject reference was obtained. It does not attest that the correlation it was derived from is correct."
+  ],
+  "boundary_id": "boundary:test:sdk-enforcement",
+  "boundary_type": "sdk_enforcement_boundary",
+  "extensions": {},
+  "issued_at": "2026-07-31T00:00:01Z",
+  "issuer_id": "issuer:vcp:test",
+  "logical_call_id": "call:operator-supplied:corr_0002",
+  "protocol_binding": "arcs-srs",
+  "receipt_id": "urn:srs:receipt:sdk-enforcement:origin-0002",
+  "receipt_type": "sdk_enforcement",
+  "receipt_version": "srs.core.v5.1",
+  "subject_ref": "subject:derived:corr_0002",
+  "subject_ref_origin": "derived_from_supplied_correlation"
+}

@@ -87,15 +87,25 @@ def trust_bundle_digest(trust_bundle: dict[str, Any]) -> str:
     return _rfc8785_sha256_hex(trust_bundle)
 
 
-def verifier_configuration_digest(*, selected_profile: str) -> str:
+def verifier_configuration_digest(
+    *,
+    selected_profile: str,
+    envelope_schema_sha256: str = FROZEN_SCHEMA_SHA256,
+) -> str:
     """sha256(RFC8785-JCS) over the pinned schema digest, receipt version,
 
     and selected profile that governed this invocation.
+
+    ``envelope_schema_sha256`` defaults to the retained v0.2.0 pin, so every
+    pre-existing caller and every historical v0.2.0-era input produces the
+    identical digest it always has. A caller that verified against a different
+    pinned envelope schema passes that schema's digest so the recorded
+    configuration names the artifact actually used.
     """
 
     return _rfc8785_sha256_hex(
         {
-            "envelope_schema_sha256": FROZEN_SCHEMA_SHA256,
+            "envelope_schema_sha256": envelope_schema_sha256,
             "receipt_version": RECEIPT_VERSION,
             "selected_profile": selected_profile,
         }
@@ -115,6 +125,7 @@ def build_verification_report(
     selected_profile: str,
     trust_bundle: dict[str, Any],
     verifier_commit: str,
+    envelope_schema_sha256: str = FROZEN_SCHEMA_SHA256,
 ) -> dict[str, Any]:
     """Assemble the frozen v0.1 deterministic verification report.
 
@@ -153,7 +164,8 @@ def build_verification_report(
         "verifier_commit": verifier_commit,
         "verifier_entrypoint": VERIFIER_ENTRYPOINT,
         "verifier_configuration_digest": verifier_configuration_digest(
-            selected_profile=selected_profile
+            selected_profile=selected_profile,
+            envelope_schema_sha256=envelope_schema_sha256,
         ),
         "trust_bundle_digest": trust_bundle_digest(trust_bundle),
         "verdicts": {

@@ -39,6 +39,30 @@ availability exists.
 - Conformance packs, the pinned SRS envelope schema, and the
   `srs.mcp.sdk_enforcement.v0.1` and `srs.connection.lifecycle.v0.1` verifier
   profiles.
+- DAGR SRS verification report contract v0.2
+  (`arcs_verify/contracts/dagr-srs-verification-report-v0-2/`), which is the
+  frozen v0.1 report plus exactly one field: `subject_ref_origin_disclosed`.
+  It discloses the SRS envelope v0.2.1 `subject_ref_origin` declaration and
+  carries one of five declared values — `supplied_subject`,
+  `derived_from_session`, `derived_from_request`,
+  `derived_from_supplied_correlation`, `binding_minted` — or `not_declared`
+  for a genuinely absent field. The disclosure is never a verdict: the same
+  eight Booleans and the same `chain_status` are reported unchanged, and no
+  origin value can upgrade, downgrade, override, excuse, or replace any
+  verification result. Absence means the field was not declared and nothing
+  more; it supports no inference about emitter vintage and is never collapsed
+  into any declared class. A present but out-of-vocabulary value is invalid
+  input and is never rendered as `not_declared`. `not_declared` is a report
+  rendering only: it is not an envelope enum member and is never an emitted
+  receipt value. The v0.1 report and execution-record contracts are frozen and
+  unchanged.
+- `arcs-verify dagr-report-v0-2` subcommand emitting the v0.2 report.
+- SRS envelope schema v0.2.1 vendored from arcs-srs merge
+  `ccc4e4bbcd195914be70be392c89094bf8e2781b`
+  (`sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1`),
+  accepted alongside the retained v0.2.0 pin. Accepting the second pin is
+  additive: every input that verified under the v0.2.0 pin verifies
+  identically, and an unpinned schema still fails the `schema_digest` verdict.
 - Apache-2.0 packaging metadata: the complete license text, trove classifiers,
   repository and issue URLs, and declared runtime dependencies (`cryptography`,
   `rfc8785`, `jsonschema`).

@@ -1,0 +1,16 @@
+{
+  "schema_name": "srs-envelope",
+  "schema_family": "ARCS-SRS",
+  "published_version": "0.2.1",
+  "release_stage": "pre-release",
+  "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1",
+  "identity": "srs-envelope@0.2.1+sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1",
+  "canonical_artifact": "srs-envelope.schema.json",
+  "supersedes": "0.2.0 without mutating its bytes",
+  "scope": "SRS envelope with structured signature-object support plus the optional subject_ref_origin declaration; profile semantics remain separately versioned.",
+  "absence_semantics": "An absent field means not declared, full stop; it supports no inference about emitter vintage. Readers and reports render not_declared for absence; no consumer may collapse it into any supplied class.",
+  "notes": [
+    "not_declared is not an enum member and must not appear in the schema. It is the reader-and-report rendering of an absent field, never an emittable value.",
+    "Exact-membership rejection stands: the vocabulary is closed and carries no additional-value tolerance."
+  ]
+}

@@ -19,6 +19,25 @@ FROZEN_SCHEMA_SHA256 = (
     "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333"
 )
 
+# SRS envelope schema pins, keyed by the artifact version each digest names.
+# v0.2.0 is retained verbatim: it is the pin that verifies every historical
+# v0.2.0-era receipt and it keeps FROZEN_SCHEMA_SHA256 as its own value. v0.2.1
+# is the additive successor vendored from arcs-srs merge ccc4e4bb; it differs
+# from v0.2.0 only in $id, title, and the optional subject_ref_origin property.
+#
+# Accepting a second pin is purely additive: an input that verified under the
+# v0.2.0 pin before this change verifies identically after it, and an input
+# offered with any unpinned schema still fails schema_digest. No pre-existing
+# disposition moves.
+ENVELOPE_SCHEMA_PINS = {
+    "v0.2.0": FROZEN_SCHEMA_SHA256,
+    "v0.2.1": (
+        "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+    ),
+}
+
+ACCEPTED_SCHEMA_SHA256 = frozenset(ENVELOPE_SCHEMA_PINS.values())
+
 MCP_PROFILE = "srs.mcp.sdk_enforcement.v0.1"
 CONNECTION_PROFILE = "srs.connection.lifecycle.v0.1"
 
@@ -611,7 +630,7 @@ def verify_receipt(
     schema_bytes = schema_path.read_bytes()
     report.schema_digest = (
         hashlib.sha256(schema_bytes).hexdigest()
-        == FROZEN_SCHEMA_SHA256
+        in ACCEPTED_SCHEMA_SHA256
     )
 
     if not report.schema_digest:

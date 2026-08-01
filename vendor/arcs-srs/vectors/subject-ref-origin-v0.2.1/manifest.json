@@ -1,0 +1,39 @@
+{
+  "absence_semantics": "An absent field means not declared, full stop; it supports no inference about emitter vintage. Readers and reports render not_declared for absence; no consumer may collapse it into any supplied class.",
+  "entries": [
+    {
+      "expected_envelope_valid": true,
+      "expected_origin_reading": "binding_minted",
+      "path": "valid/binding-minted.json",
+      "receipt_file_sha256": "ee0506879037351389b19785b8029da564b08282331175488ff3af7645a97154",
+      "subject_ref_origin_declared": "binding_minted"
+    },
+    {
+      "expected_envelope_valid": true,
+      "expected_origin_reading": "derived_from_supplied_correlation",
+      "path": "valid/derived-from-supplied-correlation.json",
+      "receipt_file_sha256": "989cb13c203f7282f8c526427b75d6e10496c357ccec847a08e777e3852c2574",
+      "subject_ref_origin_declared": "derived_from_supplied_correlation"
+    },
+    {
+      "expected_envelope_valid": true,
+      "expected_origin_reading": "supplied_subject",
+      "path": "valid/supplied-subject.json",
+      "receipt_file_sha256": "08f3795780821e31b70fb6370e4701978f9cb8729aa170bafc35a7c1b7110097",
+      "subject_ref_origin_declared": "supplied_subject"
+    },
+    {
+      "expected_envelope_valid": true,
+      "expected_origin_reading": "not_declared",
+      "path": "valid/v0-2-0-era-not-declared.json",
+      "receipt_file_sha256": "98a9b481891ffcb85712c6c30f3625f6cd4f3a86319ac46dc875a05aa8b067b5",
+      "subject_ref_origin_declared": null
+    }
+  ],
+  "schema": {
+    "identity": "srs-envelope@0.2.1+sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1",
+    "published_version": "0.2.1",
+    "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+  },
+  "vector_set": "srs.envelope.subject-ref-origin.v0.2.1"
+}
