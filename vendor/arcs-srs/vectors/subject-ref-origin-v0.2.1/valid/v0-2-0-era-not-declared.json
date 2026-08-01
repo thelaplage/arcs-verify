@@ -1,0 +1,20 @@
+{
+  "artifact_classes_covered": [
+    "trace"
+  ],
+  "artifact_classes_excluded": [
+    "truth_verification"
+  ],
+  "attestation_limits": [
+    "This receipt attests envelope shape only, not body truth."
+  ],
+  "boundary_type": "provenance_boundary",
+  "extensions": {},
+  "issued_at": "2026-07-12T18:00:00Z",
+  "issuer_id": "issuer:vcp:test",
+  "protocol_binding": "arcs-srs",
+  "receipt_id": "urn:srs:receipt:provenance:origin-0004",
+  "receipt_type": "provenance",
+  "receipt_version": "srs.core.v5.1",
+  "subject_ref": "subject:v0-2-0-era:artifact_0004"
+}

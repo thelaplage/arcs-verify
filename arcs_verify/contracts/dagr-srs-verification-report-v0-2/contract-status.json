@@ -1,0 +1,32 @@
+{
+  "contract_status_id": "srs.dagr_verification_report.v0.2.status",
+  "report_contract_id": "srs.dagr_verification_report.v0.2",
+  "status": "implementation_candidate",
+  "release_closed": false,
+  "deterministic_golden_generation_available": true,
+  "merged_authoritative_report_goldens_exist": false,
+  "golden_directory": "golden",
+  "input_fixture_directory": "input-fixtures",
+  "input_fixture_note": "input-fixtures/ holds deterministic generator inputs only. They are not goldens, not authoritative, and not frozen.",
+  "committed_report_goldens_note": "This implementation branch commits no v0.2 verification reports and therefore makes no verifier_commit claim in generated output.",
+  "generator": "tools/generate_dagr_report_v0_2_goldens.py",
+  "generator_required_arguments": [
+    "--verifier-commit",
+    "--output-dir"
+  ],
+  "verifier_commit_pattern": "^[0-9a-f]{40}$",
+  "verifier_commit_inference_note": "The generator never infers execution identity. There is no branch-base default, no implicit HEAD lookup and no repository-state fallback.",
+  "closure": {
+    "required": true,
+    "stage": "post_merge_closure_pull_request",
+    "verifier_commit_source": "exact implementation squash-merge commit",
+    "prohibited_verifier_commit_sources": [
+      "branch base commit",
+      "implementation branch HEAD",
+      "any mutable ref"
+    ],
+    "command": "python tools/generate_dagr_report_v0_2_goldens.py --verifier-commit <IMPLEMENTATION_MERGE_COMMIT> --output-dir arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden",
+    "committed_by": "the post-merge closure pull request, not the implementation pull request",
+    "closes_contract": true
+  }
+}

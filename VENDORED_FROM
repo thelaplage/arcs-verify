@@ -5,6 +5,21 @@ frozen_artifacts:
   docs/profiles/SRS_MCP_SDK_ENFORCEMENT_PROFILE_v0_1.md 3043993d6297a1c493ee7b2e8ab2627267054ae2de5f8f83d55cd80e1a52f9ce
   docs/crosswalks/ACTA_CROSSWALK_v0_1.md 9bc9a198d31d43503fa314cfc51e626570aa1c60e405a136e2dff0ceee818035
   schemas/srs-envelope/v0.2.0/srs-envelope.schema.json d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333
+  schemas/srs-envelope/v0.2.1/srs-envelope.schema.json 2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1
   vectors/signed-receipt-v0.1/manifest.json 811f76dca369dab0db24377651d129baede4501843487a5340f397ca5a0648c3
   vectors/signed-receipt-v0.1/trust/issuer-keys.json 8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5
+  vectors/subject-ref-origin-v0.2.1/valid/supplied-subject.json 08f3795780821e31b70fb6370e4701978f9cb8729aa170bafc35a7c1b7110097
+  vectors/subject-ref-origin-v0.2.1/valid/derived-from-supplied-correlation.json 989cb13c203f7282f8c526427b75d6e10496c357ccec847a08e777e3852c2574
+  vectors/subject-ref-origin-v0.2.1/valid/binding-minted.json ee0506879037351389b19785b8029da564b08282331175488ff3af7645a97154
+  vectors/subject-ref-origin-v0.2.1/valid/v0-2-0-era-not-declared.json 98a9b481891ffcb85712c6c30f3625f6cd4f3a86319ac46dc875a05aa8b067b5
+envelope_schema_pins:
+  v0.2.0 d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333 retained; verifies historical v0.2.0-era receipts
+  v0.2.1 2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1 added; adds optional subject_ref_origin with exact-membership rejection
+subject_ref_origin_source:
+  source_repository: arcs-srs
+  merge_commit: ccc4e4bbcd195914be70be392c89094bf8e2781b
+  reviewed_head: 31948af33599d9151f16c0ce70de4d0f4e7cb2a9
+  vendored_paths: vendor/arcs-srs/schemas/srs-envelope/v0.2.1/, vendor/arcs-srs/vectors/subject-ref-origin-v0.2.1/
+  runtime_copy: arcs_verify/data/srs-envelope-v0.2.1.schema.json (byte-identical to the vendored schema)
 note: frozen markdown documents are byte-identically archived in frozen-standard-docs.zip so the public release checker can distinguish normative prohibited examples from public marketing copy.
+note: published_version in the vendored envelope manifests is pre-release artifact metadata naming a manifested pre-release envelope artifact version. It is not evidence that a public SRS release occurred.

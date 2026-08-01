@@ -49,6 +49,10 @@ def main(argv: list[str] | None = None) -> int:
         from .dagr_report import main as dagr_report_main
 
         return dagr_report_main(args[1:])
+    if args and args[0] == "dagr-report-v0-2":
+        from .dagr_report_v0_2 import main as dagr_report_v0_2_main
+
+        return dagr_report_v0_2_main(args[1:])
     return _verify_srs(args)
 
 
