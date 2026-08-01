@@ -15,6 +15,13 @@ Covers the eleven required proofs for the subject-reference origin lane:
  9. no emitter package is imported;
 10. the v0.2.1 SRS schema digest is checked against S1;
 11. the retained v0.2.0 pin still verifies historical inputs.
+
+This branch is an implementation candidate and commits no v0.2 verification
+reports, so every report examined here is built in-process from the
+deterministic input fixtures under ``input-fixtures/``, using an explicitly
+synthetic verifier commit. Generator behavior and the absence of authoritative
+v0.2 goldens are proven separately in
+``tests/test_dagr_report_v0_2_generator.py``.
 """
 
 from __future__ import annotations
@@ -49,7 +56,11 @@ ROOT = Path(__file__).resolve().parents[1]
 V0_1_ROOT = dr._CONTRACT_ROOT
 V0_1_GOLDEN = V0_1_ROOT / "golden"
 V0_2_ROOT = dr2._CONTRACT_ROOT
-V0_2_GOLDEN = V0_2_ROOT / "golden"
+
+# Deterministic generator *inputs*, not goldens. This branch is an
+# implementation candidate: it commits no v0.2 reports, so every report this
+# module reasons about is built here, in-process, from these receipts.
+V0_2_INPUTS = V0_2_ROOT / "input-fixtures"
 
 SCHEMA_V0_2_0 = ROOT / "arcs_verify" / "data" / "srs-envelope-v0.2.0.schema.json"
 SCHEMA_V0_2_1 = ROOT / "arcs_verify" / "data" / "srs-envelope-v0.2.1.schema.json"
@@ -133,7 +144,10 @@ V0_1_FROZEN_DIGESTS = {
     ),
 }
 
-VERIFIER_COMMIT = "da89ebe36f1e4d9921aeeb7ff12f377d6804e8f7"
+# Synthetic, explicitly non-repository execution identity. Reports built in
+# this module are test scratch and are never presented as authoritative output,
+# so they must not carry any real commit of this repository.
+VERIFIER_COMMIT = "0" * 40
 
 DECLARED = sro.DECLARED_ORIGINS
 SLUGS = {origin: origin.replace("_", "-") for origin in DECLARED}
@@ -148,8 +162,7 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-V0_2_EXPECTATIONS = _load(V0_2_GOLDEN / "expectations.json")
-V0_2_TRUST_BUNDLE = _load(V0_2_GOLDEN / "trust-bundle.json")
+V0_2_TRUST_BUNDLE = _load(V0_2_INPUTS / "trust-bundle.json")
 V0_2_REPORT_SCHEMA = _load(V0_2_ROOT / "verification-report.schema.json")
 ORIGIN_CONTRACT = _load(V0_2_ROOT / "origin-disclosure-contract.json")
 PIN_CONTRACT = _load(V0_2_ROOT / "envelope-schema-pin-contract.json")
@@ -161,12 +174,20 @@ V0_1_ADMISSION_REPORT = _load(V0_1_GOLDEN / "admission-report.json")
 V0_1_OUTCOME_REPORT = _load(V0_1_GOLDEN / "outcome-report.json")
 
 
-def _golden(state: str) -> tuple[dict, dict]:
-    slug = SLUGS[state]
-    return (
-        _load(V0_2_GOLDEN / f"origin-{slug}-receipt.json"),
-        _load(V0_2_GOLDEN / f"origin-{slug}-report.json"),
-    )
+def _input_receipt(state: str) -> dict:
+    return _load(V0_2_INPUTS / f"origin-{SLUGS[state]}-receipt.json")
+
+
+def _case(state: str) -> tuple[dict, dict]:
+    """An input receipt and the report built from it, in-process.
+
+    This branch commits no v0.2 reports, so the report side of every pair is
+    produced here by the real verification path rather than read from disk.
+    """
+
+    receipt = _input_receipt(state)
+    _, report = _build_v0_2(receipt, V0_2_TRUST_BUNDLE, SCHEMA_V0_2_1)
+    return receipt, report
 
 
 def _build_v0_2(receipt, trust_bundle, schema_path, *, profile=MCP_PROFILE):
@@ -391,7 +412,7 @@ def test_reader_never_infers_origin_from_surrounding_fields() -> None:
 
 
 def test_malformed_present_value_also_fails_the_envelope_verdict() -> None:
-    receipt, _ = _golden("supplied_subject")
+    receipt, _ = _case("supplied_subject")
     mutated = copy.deepcopy(receipt)
     mutated["subject_ref_origin"] = "derived_from_somewhere_else"
 
@@ -472,28 +493,28 @@ def test_v0_2_adds_exactly_one_field_over_v0_1() -> None:
 
 @pytest.mark.parametrize("state", list(DECLARED) + [sro.NOT_DECLARED])
 def test_origin_disclosure_as_a_ninth_verdict_fails_schema(state: str) -> None:
-    _, report = _golden(state)
+    _, report = _case(state)
     mutated = copy.deepcopy(report)
     mutated["verdicts"][dr2.ORIGIN_DISCLOSURE_FIELD] = state
     assert dr2.validate_verification_report(mutated) != []
 
 
 def test_unknown_v0_2_report_field_fails_schema() -> None:
-    _, report = _golden("supplied_subject")
+    _, report = _case("supplied_subject")
     mutated = copy.deepcopy(report)
     mutated["unexpected_field"] = "not part of the contract"
     assert dr2.validate_verification_report(mutated) != []
 
 
 def test_out_of_vocabulary_disclosure_fails_schema() -> None:
-    _, report = _golden("supplied_subject")
+    _, report = _case("supplied_subject")
     mutated = copy.deepcopy(report)
     mutated[dr2.ORIGIN_DISCLOSURE_FIELD] = "derived_from_somewhere_else"
     assert dr2.validate_verification_report(mutated) != []
 
 
 def test_missing_disclosure_fails_schema() -> None:
-    _, report = _golden("supplied_subject")
+    _, report = _case("supplied_subject")
     mutated = copy.deepcopy(report)
     del mutated[dr2.ORIGIN_DISCLOSURE_FIELD]
     assert dr2.validate_verification_report(mutated) != []
@@ -504,21 +525,24 @@ def test_v0_1_report_is_not_a_valid_v0_2_report() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Goldens (proofs 1, 2, 8)
+# Reports built from the input fixtures (proofs 1, 2, 8)
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("state", list(DECLARED) + [sro.NOT_DECLARED])
-def test_golden_report_regenerates_byte_identical(state: str) -> None:
-    receipt, golden_report = _golden(state)
-    _, rebuilt = _build_v0_2(receipt, V0_2_TRUST_BUNDLE, SCHEMA_V0_2_1)
-    rebuilt["verifier_commit"] = golden_report["verifier_commit"]
-    assert rebuilt == golden_report
+def test_report_rebuilds_byte_identical(state: str) -> None:
+    """Two builds of one input agree exactly, including the supplied commit."""
+
+    receipt = _input_receipt(state)
+    _, first = _build_v0_2(receipt, V0_2_TRUST_BUNDLE, SCHEMA_V0_2_1)
+    _, second = _build_v0_2(receipt, V0_2_TRUST_BUNDLE, SCHEMA_V0_2_1)
+    assert first == second
+    assert first["verifier_commit"] == VERIFIER_COMMIT
 
 
 @pytest.mark.parametrize("state", list(DECLARED) + [sro.NOT_DECLARED])
-def test_golden_report_validates_against_its_own_contract(state: str) -> None:
-    _, report = _golden(state)
+def test_built_report_validates_against_its_own_contract(state: str) -> None:
+    _, report = _case(state)
     assert dr2.validate_verification_report(report) == []
 
 
@@ -526,44 +550,47 @@ def test_golden_report_validates_against_its_own_contract(state: str) -> None:
 def test_each_declared_value_survives_into_the_report_unchanged(
     declared: str,
 ) -> None:
-    receipt, report = _golden(declared)
+    receipt, report = _case(declared)
     assert receipt["subject_ref_origin"] == declared
     assert report[dr2.ORIGIN_DISCLOSURE_FIELD] == declared
 
 
-def test_genuine_absence_golden_produces_not_declared() -> None:
-    receipt, report = _golden(sro.NOT_DECLARED)
+def test_genuine_absence_input_produces_not_declared() -> None:
+    receipt, report = _case(sro.NOT_DECLARED)
     assert "subject_ref_origin" not in receipt
     assert report[dr2.ORIGIN_DISCLOSURE_FIELD] == sro.NOT_DECLARED
 
 
-def test_golden_expectations_pin_every_state() -> None:
-    entries = V0_2_EXPECTATIONS["entries"]
-    assert [entry["subject_ref_origin_disclosed"] for entry in entries] == list(
-        sro.ORIGIN_DISCLOSURE_VALUES
-    )
-    for entry in entries:
-        report = _load(V0_2_GOLDEN / entry["report_path"])
-        assert report["receipt_artifact_hash"] == entry["receipt_artifact_hash"]
-        assert report["trust_bundle_digest"] == entry["trust_bundle_digest"]
-        assert (
-            report["verifier_configuration_digest"]
-            == entry["verifier_configuration_digest"]
+def test_every_state_is_covered_and_hash_bound_to_its_input() -> None:
+    """Each of the six states resolves to one report bound to its receipt."""
+
+    disclosed = []
+    digests = set()
+    for state in list(DECLARED) + [sro.NOT_DECLARED]:
+        receipt, report = _case(state)
+        disclosed.append(report[dr2.ORIGIN_DISCLOSURE_FIELD])
+        digests.add(dr2.verification_report_digest(report))
+
+        assert report["receipt_artifact_hash"] == dr.receipt_artifact_hash(receipt)
+        assert report["trust_bundle_digest"] == dr.trust_bundle_digest(
+            V0_2_TRUST_BUNDLE
         )
-        assert report["verdicts"] == entry["verdicts"]
-        assert report["chain_status"] == entry["chain_status"]
-        assert (
-            dr2.verification_report_digest(report)
-            == entry["verification_report_digest"]
+        assert report[
+            "verifier_configuration_digest"
+        ] == dr.verifier_configuration_digest(
+            selected_profile=MCP_PROFILE,
+            envelope_schema_sha256=S1_SCHEMA_SHA256,
         )
-        assert entry["envelope_schema_sha256"] == S1_SCHEMA_SHA256
+
+    assert disclosed == list(sro.ORIGIN_DISCLOSURE_VALUES)
+    assert len(digests) == len(disclosed)
 
 
-def test_all_six_goldens_share_one_subject_ref_and_still_disclose_six_origins() -> None:
+def test_all_six_inputs_share_one_subject_ref_and_still_disclose_six_origins() -> None:
     subject_refs = set()
     disclosed = []
     for state in list(DECLARED) + [sro.NOT_DECLARED]:
-        receipt, report = _golden(state)
+        receipt, report = _case(state)
         subject_refs.add(receipt["subject_ref"])
         disclosed.append(report[dr2.ORIGIN_DISCLOSURE_FIELD])
     assert len(subject_refs) == 1
@@ -579,7 +606,7 @@ def test_no_origin_value_moves_any_boolean_or_chain_status() -> None:
     baseline_verdicts = None
     baseline_chain = None
     for state in list(DECLARED) + [sro.NOT_DECLARED]:
-        _, report = _golden(state)
+        _, report = _case(state)
         if baseline_verdicts is None:
             baseline_verdicts = report["verdicts"]
             baseline_chain = report["chain_status"]
@@ -594,13 +621,13 @@ def test_no_origin_value_moves_any_boolean_or_chain_status() -> None:
 def test_declared_origin_cannot_rescue_a_failing_receipt(declared: str) -> None:
     """A failing input stays failing whatever origin it declares."""
 
-    receipt, _ = _golden(sro.NOT_DECLARED)
+    receipt, _ = _case(sro.NOT_DECLARED)
     untrusted = copy.deepcopy(V0_2_TRUST_BUNDLE)
     untrusted["issuers"][0]["trusted"] = False
 
     _, absent_report = _build_v0_2(receipt, untrusted, SCHEMA_V0_2_1)
 
-    declaring, _ = _golden(declared)
+    declaring, _ = _case(declared)
     _, declared_report = _build_v0_2(declaring, untrusted, SCHEMA_V0_2_1)
 
     assert absent_report["verdicts"]["issuer_key_trusted"] is False
@@ -614,7 +641,7 @@ def test_declared_origin_cannot_rescue_a_failing_receipt(declared: str) -> None:
 
 
 def test_absence_cannot_downgrade_a_passing_receipt() -> None:
-    receipt, report = _golden(sro.NOT_DECLARED)
+    receipt, report = _case(sro.NOT_DECLARED)
     verification, _ = _build_v0_2(receipt, V0_2_TRUST_BUNDLE, SCHEMA_V0_2_1)
     assert verification.passed is True
     assert report["verdicts"] == {name: True for name in dr.VERDICT_FIELDS}
@@ -785,9 +812,9 @@ def test_cli_dagr_report_v0_2_emits_schema_valid_output(state, capsys) -> None:
     code = cli_main(
         [
             "dagr-report-v0-2",
-            str(V0_2_GOLDEN / f"origin-{slug}-receipt.json"),
+            str(V0_2_INPUTS / f"origin-{slug}-receipt.json"),
             "--keyring",
-            str(V0_2_GOLDEN / "trust-bundle.json"),
+            str(V0_2_INPUTS / "trust-bundle.json"),
             "--profile",
             MCP_PROFILE,
             "--schema",
@@ -803,7 +830,7 @@ def test_cli_dagr_report_v0_2_emits_schema_valid_output(state, capsys) -> None:
 
 
 def test_cli_dagr_report_v0_2_refuses_a_malformed_origin(tmp_path, capsys) -> None:
-    receipt, _ = _golden("supplied_subject")
+    receipt, _ = _case("supplied_subject")
     receipt["subject_ref_origin"] = "derived_from_somewhere_else"
     bad = tmp_path / "malformed-origin-receipt.json"
     bad.write_text(json.dumps(receipt), encoding="utf-8")
@@ -813,7 +840,7 @@ def test_cli_dagr_report_v0_2_refuses_a_malformed_origin(tmp_path, capsys) -> No
             "dagr-report-v0-2",
             str(bad),
             "--keyring",
-            str(V0_2_GOLDEN / "trust-bundle.json"),
+            str(V0_2_INPUTS / "trust-bundle.json"),
             "--schema",
             str(SCHEMA_V0_2_1),
             "--verifier-commit",
@@ -833,7 +860,7 @@ def test_cli_dagr_report_v0_2_returns_failure_exit_code(tmp_path, capsys) -> Non
     code = cli_main(
         [
             "dagr-report-v0-2",
-            str(V0_2_GOLDEN / "origin-binding-minted-receipt.json"),
+            str(V0_2_INPUTS / "origin-binding-minted-receipt.json"),
             "--keyring",
             str(bundle),
             "--schema",
@@ -853,9 +880,9 @@ def test_cli_dagr_report_v0_2_requires_verifier_commit() -> None:
         cli_main(
             [
                 "dagr-report-v0-2",
-                str(V0_2_GOLDEN / "origin-supplied-subject-receipt.json"),
+                str(V0_2_INPUTS / "origin-supplied-subject-receipt.json"),
                 "--keyring",
-                str(V0_2_GOLDEN / "trust-bundle.json"),
+                str(V0_2_INPUTS / "trust-bundle.json"),
             ]
         )
     assert exc_info.value.code == 2

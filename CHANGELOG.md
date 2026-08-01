@@ -55,7 +55,13 @@ availability exists.
   input and is never rendered as `not_declared`. `not_declared` is a report
   rendering only: it is not an envelope enum member and is never an emitted
   receipt value. The v0.1 report and execution-record contracts are frozen and
-  unchanged.
+  unchanged. The v0.2 contract is an implementation candidate: deterministic
+  report generation is available
+  (`tools/generate_dagr_report_v0_2_goldens.py`, which requires an explicit
+  `--verifier-commit` and `--output-dir` and never infers execution identity),
+  merged-authoritative report goldens do not yet exist, and the contract is not
+  release-closed until a post-merge closure pull request generates them against
+  the exact implementation merge commit.
 - `arcs-verify dagr-report-v0-2` subcommand emitting the v0.2 report.
 - SRS envelope schema v0.2.1 vendored from arcs-srs merge
   `ccc4e4bbcd195914be70be392c89094bf8e2781b`
