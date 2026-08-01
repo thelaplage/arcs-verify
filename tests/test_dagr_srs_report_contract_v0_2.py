@@ -16,12 +16,13 @@ Covers the eleven required proofs for the subject-reference origin lane:
 10. the v0.2.1 SRS schema digest is checked against S1;
 11. the retained v0.2.0 pin still verifies historical inputs.
 
-This branch is an implementation candidate and commits no v0.2 verification
-reports, so every report examined here is built in-process from the
-deterministic input fixtures under ``input-fixtures/``, using an explicitly
-synthetic verifier commit. Generator behavior and the absence of authoritative
-v0.2 goldens are proven separately in
-``tests/test_dagr_report_v0_2_generator.py``.
+Every report examined here is built in-process from the deterministic input
+fixtures under ``input-fixtures/``, using an explicitly synthetic verifier
+commit, so this module proves contract semantics without depending on the
+authoritative goldens. Generator behavior is proven in
+``tests/test_dagr_report_v0_2_generator.py``, and the committed authoritative
+goldens under ``golden/`` are proven in
+``tests/test_dagr_report_v0_2_golden_closure.py``.
 """
 
 from __future__ import annotations
@@ -57,9 +58,9 @@ V0_1_ROOT = dr._CONTRACT_ROOT
 V0_1_GOLDEN = V0_1_ROOT / "golden"
 V0_2_ROOT = dr2._CONTRACT_ROOT
 
-# Deterministic generator *inputs*, not goldens. This branch is an
-# implementation candidate: it commits no v0.2 reports, so every report this
-# module reasons about is built here, in-process, from these receipts.
+# Deterministic generator *inputs*, not goldens. The authoritative goldens live
+# in golden/ and are gated separately; every report this module reasons about is
+# built here, in-process, from these receipts.
 V0_2_INPUTS = V0_2_ROOT / "input-fixtures"
 
 SCHEMA_V0_2_0 = ROOT / "arcs_verify" / "data" / "srs-envelope-v0.2.0.schema.json"
@@ -181,8 +182,9 @@ def _input_receipt(state: str) -> dict:
 def _case(state: str) -> tuple[dict, dict]:
     """An input receipt and the report built from it, in-process.
 
-    This branch commits no v0.2 reports, so the report side of every pair is
-    produced here by the real verification path rather than read from disk.
+    The report side of every pair is produced here by the real verification
+    path rather than read from disk, so a contract failure is attributable to
+    the builder rather than to a stale committed byte.
     """
 
     receipt = _input_receipt(state)

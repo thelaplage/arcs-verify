@@ -3,8 +3,8 @@
     python -m pytest tests/test_dagr_report_v0_2_generator.py -q
 
 A verification report carries a ``verifier_commit``: a concrete claim about
-which implementation produced it. This branch is the implementation candidate,
-so no such claim can be made truthfully yet, and none is committed. That is
+which implementation produced it. Closure has landed, so that claim is now
+made, exactly once, against the implementation squash-merge commit. That is
 enforced here rather than merely documented.
 
 Six proofs:
@@ -13,10 +13,14 @@ Six proofs:
 2. it rejects a value that is not a full 40-hex lowercase commit SHA;
 3. every generated report carries the supplied commit exactly;
 4. two temporary generations are byte-identical;
-5. this branch contains no authoritative v0.2 report goldens;
-6. the v0.2 README records the post-merge closure requirement.
+5. the authoritative v0.2 report goldens are committed, and only under
+   ``golden/``;
+6. the v0.2 README records completed closure and the merge commit.
 
-Every generation performed here writes into ``tmp_path`` with an explicitly
+Byte-level agreement between the committed goldens and a fresh generation is
+proven in ``tests/test_dagr_report_v0_2_golden_closure.py``.
+
+Every generation performed *here* writes into ``tmp_path`` with an explicitly
 synthetic commit. Such output is scratch and is never an authoritative golden.
 """
 
@@ -42,6 +46,11 @@ V0_2_GOLDEN = V0_2_ROOT / "golden"
 V0_2_INPUTS = V0_2_ROOT / "input-fixtures"
 V0_2_README = V0_2_ROOT / "README.md"
 V0_2_STATUS = V0_2_ROOT / "contract-status.json"
+V0_2_MANIFEST = V0_2_ROOT / "golden-digest-manifest.json"
+
+#: The implementation squash-merge commit closure generated the goldens
+#: against. Supplied to the generator as an input; never inferred from git.
+IMPLEMENTATION_MERGE_COMMIT = "c26af32fcb638489217f4cb43845eca7b2824516"
 
 # Explicitly synthetic. Not a commit of this repository, and deliberately not
 # derivable from one: temporary generations must never look authoritative.
@@ -285,40 +294,62 @@ def test_committed_input_fixtures_are_exactly_what_the_generator_emits(
 
 
 # ---------------------------------------------------------------------------
-# Proof 5: no authoritative v0.2 report goldens exist on this branch
+# Proof 5: authoritative v0.2 report goldens are committed, and only there
 # ---------------------------------------------------------------------------
 
 
-def test_no_v0_2_report_goldens_are_committed() -> None:
+def test_report_goldens_are_committed_only_under_golden() -> None:
     tracked = _tracked_files(V0_2_ROOT.relative_to(ROOT))
     assert tracked is not None, "expected a git checkout"
-    offenders = [
+    generated = sorted(
         path
         for path in tracked
         if path.endswith("-report.json") or path.endswith("expectations.json")
-    ]
-    assert offenders == []
+    )
+    assert generated, "closure commits the authoritative goldens"
+    golden_prefix = V0_2_GOLDEN.relative_to(ROOT).as_posix() + "/"
+    for path in generated:
+        assert path.startswith(golden_prefix), path
 
 
-def test_the_v0_2_golden_directory_holds_no_committed_files() -> None:
+def test_the_v0_2_golden_directory_holds_the_full_generated_surface() -> None:
     tracked = _tracked_files(V0_2_GOLDEN.relative_to(ROOT))
     assert tracked is not None, "expected a git checkout"
-    assert tracked == []
+    prefix = V0_2_GOLDEN.relative_to(ROOT).as_posix() + "/"
+    assert sorted(tracked) == sorted(
+        prefix + name
+        for name in [f"origin-{slug}-receipt.json" for slug in SLUGS]
+        + [f"origin-{slug}-report.json" for slug in SLUGS]
+        + ["trust-bundle.json", "expectations.json"]
+    )
 
 
-def test_no_committed_v0_2_artifact_claims_a_verifier_commit() -> None:
+def test_only_generated_v0_2_artifacts_claim_a_verifier_commit() -> None:
+    """The commit claim lives in generated output and the closure metadata."""
+
     tracked = _tracked_files(V0_2_ROOT.relative_to(ROOT))
     assert tracked is not None, "expected a git checkout"
+    golden_prefix = V0_2_GOLDEN.relative_to(ROOT).as_posix() + "/"
+    manifest_path = (V0_2_MANIFEST.relative_to(ROOT)).as_posix()
+    status_path = (V0_2_STATUS.relative_to(ROOT)).as_posix()
+
     for relative in tracked:
         path = ROOT / relative
         if path.suffix != ".json":
             continue
         payload = json.loads(path.read_text(encoding="utf-8"))
-        if isinstance(payload, dict):
+        may_claim = (
+            relative.startswith(golden_prefix)
+            or relative == manifest_path
+            or relative == status_path
+        )
+        if isinstance(payload, dict) and not may_claim:
             assert "verifier_commit" not in payload, relative
 
-        # And not the branch-base commit this correction removed.
         text = path.read_text(encoding="utf-8")
+        # Never the branch base, and never the implementation branch HEAD: a
+        # squash merge made both stale, which is why closure supplies the
+        # squash-merge commit instead.
         assert "67b4b071980c64b152d574c9b18af536fbe890ef" not in text, relative
 
 
@@ -333,42 +364,57 @@ def test_input_fixtures_are_not_presented_as_goldens() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Proof 6: the closure requirement is recorded
+# Proof 6: completed closure is recorded
 # ---------------------------------------------------------------------------
 
 
-def test_readme_records_the_post_merge_closure_requirement() -> None:
+def test_readme_records_completed_closure() -> None:
     readme = V0_2_README.read_text(encoding="utf-8")
     lowered = readme.lower()
 
-    assert "implementation candidate" in lowered
-    assert "not release-closed" in lowered
+    assert "release-closed" in lowered
+    assert "closure is complete" in lowered
     assert "merged-authoritative report goldens" in lowered
-    assert "do not yet exist" in lowered
     assert "squash-merge commit" in lowered
     assert "closure pr" in lowered
 
+    assert "do not yet exist" not in lowered
+    assert "not release-closed" not in lowered
+
     assert "python tools/generate_dagr_report_v0_2_goldens.py" in readme
-    assert "--verifier-commit <IMPLEMENTATION_MERGE_COMMIT>" in readme
+    assert f"--verifier-commit {IMPLEMENTATION_MERGE_COMMIT}" in readme
+    assert "<IMPLEMENTATION_MERGE_COMMIT>" not in readme
     assert (
         "--output-dir arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden"
         in readme
     )
 
 
-def test_readme_does_not_claim_authoritative_v0_2_reports() -> None:
+def test_readme_identifies_the_implementation_merge_commit() -> None:
     readme = V0_2_README.read_text(encoding="utf-8")
-    assert "golden/origin-" not in readme
-    assert "golden/expectations.json" not in readme
+    assert IMPLEMENTATION_MERGE_COMMIT in readme
+    assert "implementation merge commit" in readme.lower()
+
+
+def test_readme_keeps_the_input_fixture_and_golden_distinction() -> None:
+    readme = V0_2_README.read_text(encoding="utf-8")
+    lowered = readme.lower()
+    assert "generator **inputs**, not goldens, not authoritative" in readme
+    assert "authoritative" in lowered
+    assert "input-fixtures/" in readme
+    assert "golden/" in readme
 
 
 def test_contract_status_metadata_matches_the_readme() -> None:
     status = json.loads(V0_2_STATUS.read_text(encoding="utf-8"))
-    assert status["status"] == "implementation_candidate"
-    assert status["release_closed"] is False
+    assert status["status"] == "release_closed"
+    assert status["release_closed"] is True
     assert status["deterministic_golden_generation_available"] is True
-    assert status["merged_authoritative_report_goldens_exist"] is False
+    assert status["merged_authoritative_report_goldens_exist"] is True
+    assert status["implementation_merge_commit"] == IMPLEMENTATION_MERGE_COMMIT
+    assert status["golden_digest_manifest"] == V0_2_MANIFEST.name
     assert status["verifier_commit_pattern"] == GEN.VERIFIER_COMMIT_RE.pattern
+    assert GEN.VERIFIER_COMMIT_RE.fullmatch(status["implementation_merge_commit"])
     assert set(status["generator_required_arguments"]) == {
         "--verifier-commit",
         "--output-dir",
@@ -376,10 +422,12 @@ def test_contract_status_metadata_matches_the_readme() -> None:
 
     closure = status["closure"]
     assert closure["required"] is True
+    assert closure["completed"] is True
     assert closure["verifier_commit_source"] == (
         "exact implementation squash-merge commit"
     )
-    assert "--verifier-commit <IMPLEMENTATION_MERGE_COMMIT>" in closure["command"]
+    assert closure["verifier_commit"] == IMPLEMENTATION_MERGE_COMMIT
+    assert f"--verifier-commit {IMPLEMENTATION_MERGE_COMMIT}" in closure["command"]
     assert closure["command"].endswith(
         "--output-dir arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden"
     )
