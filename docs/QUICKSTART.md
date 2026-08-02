@@ -91,3 +91,17 @@ SRS envelope schema and named profile and was not modified after issuance under
 the resolved, trusted issuer key. It does not certify the producing
 implementation and does not prove the underlying event was true. See the
 **Limitations and claim discipline** section of the [README](../README.md).
+
+## Verify a DAGR governed-memory receipt set
+
+After running `dagr-mcp governed-memory-demo --output "$OUT"` in the separate
+DAGR environment, verify the serialized set here:
+
+```bash
+arcs-verify receipt-set "$OUT/governed-memory-workflow.json"
+echo "exit code: $?"
+```
+
+A clean result means the index hashes match, every enumerated receipt verifies,
+and every outcome links to its corresponding admission receipt. It does not
+prove durable-memory admission or the truth of the underlying event.

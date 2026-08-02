@@ -17,7 +17,7 @@ described by the receipt actually occurred.
 | Public read and demo surfaces | GARPedia, Overlay, Showcase |
 | Commercial operator products | Countervail, Workbench, managed deployments |
 
-MCP is the first supported receipt-emitter/runtime binding. ARCS Verify is the implementation-neutral
+MCP is the first supported binding: the receipt-emitter/runtime lives in the separate DAGR repository. ARCS Verify is the implementation-neutral
 verifier for signed SRS envelopes, named conformance profiles, and independently
 serialized artifact chains.
 
@@ -126,6 +126,23 @@ verifier bytes, not by prose:
   are retained byte-identically in
   `vendor/arcs-srs/frozen-standard-docs.zip`, with schemas and vectors directly
   addressable under `vendor/arcs-srs/`.
+
+## Verify a DAGR workflow receipt set
+
+A DAGR governed-memory demo writes `governed-memory-workflow.json`, an unsigned
+refs/digests-only index of its receipt files and trust bundle. Verify every
+enumerated receipt and the admission/outcome linkage in one command:
+
+```bash
+arcs-verify receipt-set /path/to/governed-memory-workflow.json
+```
+
+The command verifies manifest hashes, each receipt under its pinned SRS envelope
+schema and named profile, and each outcome receipt's link to an admission receipt
+in the same set. It reports `subject_ref_origin` as a disclosure, never a
+verdict. The command does not verify Amnesiac producer semantics or turn the
+unsigned workflow index into an authenticity claim. Use `--json` for the full
+machine-readable report.
 
 ## Independently serialized artifact chains
 
