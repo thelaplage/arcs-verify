@@ -9,12 +9,13 @@ ECOSYSTEM = ROOT / ".ecosystem"
 EXPECTED_DECLARATIONS = {
     "REPOSITORY.yaml",
     "ARCHITECTURE_PASSPORT.yaml",
-    "CAPABILITIES.yaml",
-    "CONTRACTS.yaml",
+    "AUTHORITY_REFERENCES.yaml",
+    "CAPABILITY_BINDINGS.yaml",
+    "CONTRACT_BINDINGS.yaml",
     "DEPENDENCIES.yaml",
     "LANES.yaml",
-    "COMPATIBILITY.yaml",
-    "CONFORMANCE.yaml",
+    "COMPATIBILITY_PROJECTION.yaml",
+    "CONFORMANCE_PROJECTION.yaml",
     "EXCEPTIONS.yaml",
     "RELEASE_STATE.yaml",
 }
@@ -59,12 +60,71 @@ def test_repository_classification_excludes_producer_roles() -> None:
     assert repository_types == {"verifier", "reference_app"}
     assert "emitter" not in repository_types
     assert "runtime_binding" not in repository_types
+    assert payload["architecture_model"]["status"] == "proposed_not_ratified"
+    assert payload["architecture"]["primary_layer_id"] == "L6"
+    assert payload["architecture"]["owning_layer"] == "independent_verification"
+    assert payload["authority"]["implementation_behavior_authority"] is True
+    assert payload["authority"]["standard_authority"] is False
     assert payload["authority"]["srs_normative_authority"] is False
     assert payload["authority"]["public_truth_authority"] is False
 
 
+def test_authority_references_model_layer_and_srs_authority() -> None:
+    authorities = _load_yaml_subset("AUTHORITY_REFERENCES.yaml")
+
+    assert authorities["architecture_model"]["status"] == "proposed_not_ratified"
+    assert authorities["architecture_model"]["order"] == [
+        "Layer",
+        "Authority",
+        "Contracts",
+        "Implementations",
+        "Repositories",
+    ]
+    assert authorities["layer"]["primary_layer_id"] == "L6"
+    assert authorities["layer"]["primary_layer_name"] == "independent_verification"
+    assert authorities["layer"]["ratified_doctrine"] is False
+
+    arcs_srs = next(
+        item
+        for item in authorities["authorities"]
+        if item["id"] == "authority.arcs_srs"
+    )
+    assert arcs_srs["authority_type"] == "semantic_authority"
+    assert "consumed SRS envelope schemas" in arcs_srs["applies_to"]
+    assert "consumed SRS profile semantics" in arcs_srs["applies_to"]
+    assert arcs_srs["public_ratification_claim"] is False
+
+    arcs_verify = next(
+        item
+        for item in authorities["authorities"]
+        if item["id"] == "authority.arcs_verify_implementation"
+    )
+    assert arcs_verify["authority_type"] == "repository_owned_implementation_behavior"
+    assert arcs_verify["standard_authority"] is False
+    assert arcs_verify["semantic_authority_for_srs"] is False
+
+
+def test_authority_references_distinguish_result_boundary_states() -> None:
+    authorities = _load_yaml_subset("AUTHORITY_REFERENCES.yaml")
+
+    assert set(authorities["state_boundaries"]) == {
+        "emitter_assertion",
+        "independently_recomputed_finding",
+        "not_evaluated",
+        "not_applicable",
+        "validation_error",
+        "source_integrity_error",
+    }
+    assert authorities["compatibility_boundary"] == {
+        "historical_vendored_bytes_are_compatibility_facts": True,
+        "profile_pins_are_compatibility_facts": True,
+        "public_ratification_claim": False,
+    }
+
+
 def test_dagr_mcp_is_not_a_runtime_package_dependency() -> None:
     dependencies = _load_yaml_subset("DEPENDENCIES.yaml")
+    authorities = _load_yaml_subset("AUTHORITY_REFERENCES.yaml")
     runtime_names = {
         item["name"] for item in dependencies["runtime_package_dependencies"]
     }
@@ -78,9 +138,11 @@ def test_dagr_mcp_is_not_a_runtime_package_dependency() -> None:
     )
     assert dagr_relationship["runtime_package_dependency"] is False
 
-    contracts = _load_yaml_subset("CONTRACTS.yaml")
+    contracts = _load_yaml_subset("CONTRACT_BINDINGS.yaml")
     dagr_non_dependency = next(
-        item for item in contracts["runtime_non_dependencies"] if item["name"] == "DAGR MCP"
+        item
+        for item in contracts["runtime_non_dependencies"]
+        if item["name"] == "DAGR MCP"
     )
     assert dagr_non_dependency["imported_by_verifier"] is False
 
@@ -91,10 +153,18 @@ def test_dagr_mcp_is_not_a_runtime_package_dependency() -> None:
     )
     assert producer_relationship["runtime_package_dependency"] is False
 
+    dagr_counterpart = next(
+        item
+        for item in authorities["contract_counterparts"]
+        if item["id"] == "counterpart.dagr_mcp"
+    )
+    assert dagr_counterpart["relationship"] == "producer_and_contract_counterpart"
+    assert dagr_counterpart["imported_runtime_dependency"] is False
+
 
 def test_countervail_receipt_ingest_is_downstream_consumer_only() -> None:
     dependencies = _load_yaml_subset("DEPENDENCIES.yaml")
-    contracts = _load_yaml_subset("CONTRACTS.yaml")
+    contracts = _load_yaml_subset("CONTRACT_BINDINGS.yaml")
 
     runtime_names = {
         item["name"] for item in dependencies["runtime_package_dependencies"]
@@ -151,12 +221,20 @@ def test_not_evaluated_is_preserved_as_a_distinct_result_value() -> None:
 
 
 def test_srs_core_lineage_is_not_declared_public_release() -> None:
-    compatibility = _load_yaml_subset("COMPATIBILITY.yaml")
+    compatibility = _load_yaml_subset("COMPATIBILITY_PROJECTION.yaml")
     lineage = compatibility["srs_lineage"]
 
     assert lineage["receipt_version"] == "srs.core.v5.1"
     assert lineage["status"] == "internal_pre_public_lineage_compatibility_value"
     assert lineage["current_public_release"] is False
+    assert compatibility["semantic_authority_for_consumed_srs_shapes"] == "arcs-srs"
+    assert compatibility["compatibility_fact_boundary"][
+        "historical_vendored_bytes_are_compatibility_facts"
+    ] is True
+    assert compatibility["compatibility_fact_boundary"][
+        "profile_pins_are_compatibility_facts"
+    ] is True
+    assert compatibility["public_standard_ratification_claim"] is False
 
 
 def test_lane_id_is_locally_unique() -> None:
@@ -176,20 +254,26 @@ def test_lane_id_is_locally_unique() -> None:
 
 
 def test_declaration_status_distinguishes_claims_from_evidence() -> None:
-    capabilities = _load_yaml_subset("CAPABILITIES.yaml")
+    capabilities = _load_yaml_subset("CAPABILITY_BINDINGS.yaml")
 
     assert capabilities["declaration_status"] == "declared"
-    for capability in capabilities["capabilities"]:
+    assert capabilities["authority_boundary"][
+        "repository_implementation_behavior_authority"
+    ] == "arcs-verify"
+    assert capabilities["authority_boundary"][
+        "srs_schema_profile_semantic_authority"
+    ] == "arcs-srs"
+    for capability in capabilities["capability_bindings"]:
         assert capability["implementation_claim"] == "declared"
         assert capability["verification_evidence"] == "verified_by_tests"
         assert capability["implementation_claim"] != capability["verification_evidence"]
 
 
 def test_native_verifier_reports_are_repository_owned_outputs() -> None:
-    contracts = _load_yaml_subset("CONTRACTS.yaml")
+    contracts = _load_yaml_subset("CONTRACT_BINDINGS.yaml")
     output_contracts = [
         item
-        for item in contracts["contracts"]
+        for item in contracts["contract_bindings"]
         if item["role"] == "native_verifier_report_output"
     ]
 
@@ -205,3 +289,27 @@ def test_native_verifier_reports_are_repository_owned_outputs() -> None:
         item["authority"] == "repository_owned_output_contract"
         for item in output_contracts
     )
+
+
+def test_contract_bindings_separate_srs_authority_from_verifier_outputs() -> None:
+    contracts = _load_yaml_subset("CONTRACT_BINDINGS.yaml")
+
+    assert contracts["authority_boundary"][
+        "consumed_srs_schema_profile_semantic_authority"
+    ] == "arcs-srs"
+    assert contracts["authority_boundary"][
+        "repository_owned_output_authority"
+    ] == "arcs-verify"
+
+    srs_bindings = {
+        item["id"]: item
+        for item in contracts["contract_bindings"]
+        if item["id"]
+        in {
+            "srs.envelope.schema.v0.2.0",
+            "srs.envelope.schema.v0.2.1",
+            "srs.mcp.sdk_enforcement",
+            "srs.connection.lifecycle",
+        }
+    }
+    assert {item["authority"] for item in srs_bindings.values()} == {"arcs-srs"}

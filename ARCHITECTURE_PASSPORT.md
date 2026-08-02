@@ -6,6 +6,12 @@ This passport is provisional for the distributed ecosystem-doctrine pilot. The
 shared schemas are being developed in `arcs-ecosystem-kit`; this repository does
 not vendor those schemas and does not declare schema validation complete.
 
+The architecture model tested by this pilot is proposed, not ratified doctrine:
+
+```text
+Layer -> Authority -> Contracts -> Implementations -> Repositories
+```
+
 The requested `garp-doctrine` files are not present in this checkout. This
 passport therefore uses repository-local truth: `README.md`, `VENDORED_FROM`,
 the verifier implementation, local contracts, tests, packs, and vendored
@@ -18,21 +24,26 @@ evidence, recomputes findings from that evidence, and emits verification
 reports. It is not an emitter, runtime binding, SRS authority, certification
 service, or public truth authority.
 
-Owning layer: `independent_verification`.
+Primary layer: `L6 independent_verification`.
 
 Role: `substrate`.
 
 Lifecycle stage: `preview`.
 
-## Imported Standards And Profiles
+## Authority Boundary
 
-The verifier imports no producer implementation. It consumes pinned local
-authority bytes and named profile identifiers:
+`arcs-srs` is the semantic authority for consumed SRS schemas, profiles, and
+vectors. ARCS Verify is the implementation authority for verifier behavior and
+for native verifier-report output contracts it owns locally. Those authorities
+are separate.
+
+The verifier imports no producer implementation. It consumes pinned local bytes
+and named profile identifiers:
 
 | Surface | Status | Evidence |
 |---|---|---|
-| SRS Envelope v0.2.0 | Pinned schema bytes | `arcs_verify/data/srs-envelope-v0.2.0.schema.json` |
-| SRS Envelope v0.2.1 | Pinned schema bytes | `arcs_verify/data/srs-envelope-v0.2.1.schema.json` |
+| SRS Envelope v0.2.0 | Compatibility fact from pinned schema bytes | `arcs_verify/data/srs-envelope-v0.2.0.schema.json` |
+| SRS Envelope v0.2.1 | Compatibility fact from pinned schema bytes | `arcs_verify/data/srs-envelope-v0.2.1.schema.json` |
 | arcs-srs vectors | Vendored schema/vector authority | `vendor/arcs-srs/vectors/` |
 | `srs.core.v5.1` | Internal pre-public lineage compatibility value | `arcs_verify/verifier.py` |
 | `srs.mcp.sdk_enforcement.v0.1` | Supported named profile | `arcs_verify/verifier.py` |
@@ -94,9 +105,9 @@ Countervail receipt-ingest verification is referenced as a downstream consumer
 relationship for repository-owned verifier-report outputs. No Countervail code,
 service behavior, or receipt-ingest contract implementation is added here.
 
-## Pinned Authority
+## Compatibility Facts
 
-The implementation enforces local pinned authority:
+The implementation enforces local compatibility facts:
 
 | Authority fact | Status |
 |---|---|

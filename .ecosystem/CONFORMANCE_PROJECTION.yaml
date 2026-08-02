@@ -1,8 +1,18 @@
 {
-  "schema": "provisional.ecosystem.conformance.v0_1",
+  "schema": "provisional.ecosystem.conformance_projection.v0_1",
   "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
   "declaration_status": "declared",
   "repository": "arcs-verify",
+  "layer": {
+    "primary_layer_id": "L6",
+    "primary_layer_name": "independent_verification",
+    "model_status": "proposed_not_ratified"
+  },
+  "authority_boundary": {
+    "conformance_projection_authority": "arcs-verify implementation evidence",
+    "srs_semantic_authority": "arcs-srs",
+    "public_ratification_claim": false
+  },
   "status_domain": [
     "PASS",
     "FAIL",

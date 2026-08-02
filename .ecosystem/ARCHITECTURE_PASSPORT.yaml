@@ -3,11 +3,28 @@
   "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
   "declaration_status": "declared",
   "repository": "arcs-verify",
+  "architecture_model": {
+    "status": "proposed_not_ratified",
+    "order": [
+      "Layer",
+      "Authority",
+      "Contracts",
+      "Implementations",
+      "Repositories"
+    ]
+  },
   "role": {
     "side": "verifier",
+    "primary_layer_id": "L6",
     "owning_layer": "independent_verification",
     "architecture_role": "substrate",
     "reference_app": true
+  },
+  "authority_boundary": {
+    "srs_semantic_authority": "arcs-srs",
+    "repository_owned_authority": "verifier implementation behavior and native verifier-report output contracts",
+    "standard_authority": false,
+    "authority_reference_file": ".ecosystem/AUTHORITY_REFERENCES.yaml"
   },
   "owned_concerns": [
     "verifier implementation behavior",
@@ -51,13 +68,17 @@
   "pinned_authority": [
     {
       "name": "SRS Envelope v0.2.0 schema",
-      "status": "pinned_implementation_fact",
+      "status": "compatibility_fact",
+      "semantic_authority": "arcs-srs",
+      "public_ratification_claim": false,
       "path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
       "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333"
     },
     {
       "name": "SRS Envelope v0.2.1 schema",
-      "status": "pinned_implementation_fact",
+      "status": "compatibility_fact",
+      "semantic_authority": "arcs-srs",
+      "public_ratification_claim": false,
       "path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
       "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
     },

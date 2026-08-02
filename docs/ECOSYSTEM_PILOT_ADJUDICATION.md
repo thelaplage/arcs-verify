@@ -6,6 +6,12 @@ This document evaluates how the emerging ecosystem-doctrine schemas need to
 model ARCS Verify. It is input for `arcs-ecosystem-kit`; it does not patch that
 repository and does not create a local competing schema.
 
+The model being tested here is proposed, not ratified doctrine:
+
+```text
+Layer -> Authority -> Contracts -> Implementations -> Repositories
+```
+
 The requested `garp-doctrine` files are not available in this checkout, so this
 adjudication uses repository-local truth: verifier code, README boundary prose,
 vendored provenance, contracts, fixtures, and tests.
@@ -20,8 +26,8 @@ Status values used here:
 | Schema area | Status | ARCS Verify need |
 |---|---|---|
 | Repository classification | PASS | Support independent `types` such as `verifier` and `reference_app` without forcing emitter or runtime-binding classification. |
-| Authority modeling | PARTIAL | Distinguish `active_implementation` from SRS normative authority and public truth authority. |
-| Architecture layer | PASS | Support `independent_verification` and substrate role without implying runtime admission ownership. |
+| Layer schema | PARTIAL | Support `L6 independent_verification` as a proposed layer without claiming ratified doctrine. |
+| Authority schema | PARTIAL | Declare arcs-srs as semantic authority for consumed SRS schemas/profiles while preserving arcs-verify as implementation authority only. |
 | Capability inventory | PARTIAL | Allow implementation support for verifier capabilities without canonical ownership of capability semantics. |
 | Contract inventory | PARTIAL | Represent consumed, validated, and repository-owned output contracts with authority, version, stability, evidence path, and producer/consumer relationships. |
 | Dependency inventory | PARTIAL | Model DAGR MCP as producer/contract counterpart and fixture source, not a runtime package dependency. |
@@ -29,6 +35,29 @@ Status values used here:
 | Conformance | OVER_SPECIFIED | A single A-E grade is too coarse for a verifier because execution enforcement can be `NOT_APPLICABLE` while verifier independence can be `PASS`. |
 | Release state | PARTIAL | Support provisional declarations whose schema validation is `NOT_EVALUATED` pending external kit schemas. |
 | Exceptions | PASS | Support real transitional exceptions without requiring semantic degradation. |
+
+## Layer Schema Test
+
+ARCS Verify should project to primary layer `L6 independent_verification`. The
+schema must allow a repository to declare a proposed layer mapping while making
+no ratification claim for the layer model itself.
+
+Status: `PARTIAL` until the kit validates layer identity, proposed-model status,
+and non-ratification fields together.
+
+## Authority Schema Test
+
+The authority schema must model three separate facts:
+
+- `arcs-srs` is the semantic authority for consumed SRS envelope schemas,
+  profile semantics, and vectors;
+- `arcs-verify` owns verifier implementation behavior and native
+  verifier-report output contracts;
+- DAGR MCP implementations are producer/contract counterparts, not imported
+  runtime dependencies.
+
+Status: `PARTIAL` until the kit can validate authority scope without promoting
+local compatibility pins into public ratification.
 
 ## Repository Report Value Domains
 
@@ -41,7 +70,8 @@ The kit must support non-Boolean findings. ARCS Verify has:
 - eight signed-SRS Boolean results;
 - separate `chain_status` enum/status values;
 - Amnesiac-chain conclusions in `true`, `false`, and `not_evaluated`;
-- CLI usage/source-integrity errors that are not verification verdicts.
+- validation errors and source-integrity errors that are not Boolean verifier
+  findings.
 
 Status: `MISSING_FROM_SCHEMA` until the shared model explicitly supports these
 domains.
@@ -142,9 +172,10 @@ runtime-enforcement conformance levels.
 
 ## Usage/Source-Integrity Errors Versus Verification Failures
 
-The kit must distinguish source-integrity errors from verification failures.
-CLI exit `2` is not a failed verification result; it means the verifier could
-not evaluate a subject. CLI exit `1` is a negative verification result.
+The kit must distinguish validation errors and source-integrity errors from
+verification failures. CLI exit `2` is not a failed verification result; it
+means the verifier could not evaluate a subject. CLI exit `1` is a negative
+verification result.
 
 Status: `MISSING_FROM_SCHEMA` if result models only represent pass and fail.
 
@@ -153,6 +184,8 @@ Status: `MISSING_FROM_SCHEMA` if result models only represent pass and fail.
 Recommended schema support:
 
 - repository classifications as independent axes;
+- proposed layer declarations, including `L6 independent_verification`, without
+  claiming doctrine ratification;
 - authority status separate from canonical normative ownership;
 - finding domains wider than Boolean;
 - `not_evaluated` and `not_applicable` as first-class values;

@@ -1,9 +1,19 @@
 {
-  "schema": "provisional.ecosystem.contracts.v0_1",
+  "schema": "provisional.ecosystem.contract_bindings.v0_1",
   "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
   "declaration_status": "declared",
   "repository": "arcs-verify",
-  "contracts": [
+  "layer": {
+    "primary_layer_id": "L6",
+    "primary_layer_name": "independent_verification",
+    "model_status": "proposed_not_ratified"
+  },
+  "authority_boundary": {
+    "consumed_srs_schema_profile_semantic_authority": "arcs-srs",
+    "repository_owned_output_authority": "arcs-verify",
+    "producer_counterpart_is_runtime_dependency": false
+  },
+  "contract_bindings": [
     {
       "id": "arcs_verify.signed_srs.input.v0_1",
       "role": "verification_input",
@@ -17,7 +27,7 @@
     {
       "id": "srs.envelope.schema.v0.2.0",
       "role": "schema_consumption",
-      "authority": "vendored_arcs_srs_frozen_authority",
+      "authority": "arcs-srs",
       "version": "v0.2.0",
       "stability": "pinned",
       "evidence_path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
@@ -27,7 +37,7 @@
     {
       "id": "srs.envelope.schema.v0.2.1",
       "role": "schema_consumption",
-      "authority": "vendored_arcs_srs_frozen_authority",
+      "authority": "arcs-srs",
       "version": "v0.2.1",
       "stability": "pinned",
       "evidence_path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
@@ -37,7 +47,7 @@
     {
       "id": "srs.mcp.sdk_enforcement",
       "role": "named_profile_consumption",
-      "authority": "vendored_arcs_srs_profile_material",
+      "authority": "arcs-srs",
       "version": "v0.1",
       "stability": "supported",
       "evidence_path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/manifest.json",
@@ -47,9 +57,9 @@
     {
       "id": "srs.connection.lifecycle",
       "role": "named_profile_consumption",
-      "authority": "local_implementation_profile",
+      "authority": "arcs-srs",
       "version": "v0.1",
-      "stability": "supported",
+      "stability": "supported_local_compatibility",
       "evidence_path": "tests/fixtures/connection_lifecycle/connect.json",
       "relationship": "validates",
       "known_counterpart": "connection lifecycle receipt producers"

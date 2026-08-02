@@ -18,14 +18,28 @@
     ],
     "description": "Independent verifier for signed ARCS/SRS receipts and serialized artifact chains."
   },
+  "architecture_model": {
+    "status": "proposed_not_ratified",
+    "order": [
+      "Layer",
+      "Authority",
+      "Contracts",
+      "Implementations",
+      "Repositories"
+    ],
+    "authority_reference_file": ".ecosystem/AUTHORITY_REFERENCES.yaml"
+  },
   "authority": {
     "status": "active_implementation",
     "canonical_doctrine_repository": "thelaplage/garp-doctrine",
+    "implementation_behavior_authority": true,
+    "standard_authority": false,
     "srs_normative_authority": false,
     "public_truth_authority": false,
     "certifies_producer_implementation": false
   },
   "architecture": {
+    "primary_layer_id": "L6",
     "owning_layer": "independent_verification",
     "role": "substrate",
     "trust_boundary": "serialized_artifacts_only",

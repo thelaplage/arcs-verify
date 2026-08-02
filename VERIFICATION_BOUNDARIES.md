@@ -27,6 +27,8 @@ The pilot declarations preserve these states as separate concepts:
 | `verified` | A concrete verifier check completed with a positive result in its domain. |
 | `not_evaluated` | The verifier deliberately did not evaluate the conclusion. |
 | `not_applicable` | The question was out of scope for the invocation. |
+| `validation_error` | A structural or contract-validation error produced while evaluating an input. |
+| `source_integrity_error` | A missing, unreadable, malformed, or digest-mismatched source artifact condition. |
 | `ratified` | A governing authority has accepted the contract or doctrine. |
 | `canonical` | A governing authority owns the normative definition. |
 
@@ -84,6 +86,11 @@ errors:
 | `2` | Usage or source-integrity error, such as unreadable or malformed input. |
 
 Exit `2` is not a negative verification verdict.
+
+Validation errors and source-integrity errors must remain distinct in ecosystem
+declarations. A validation error means an evaluated artifact failed a structural
+or contract constraint. A source-integrity error means the verifier could not
+reliably obtain or trust the source artifact as an evaluation subject.
 
 ## Unowned Claims
 

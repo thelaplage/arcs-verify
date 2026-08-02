@@ -1,11 +1,21 @@
 {
-  "schema": "provisional.ecosystem.capabilities.v0_1",
+  "schema": "provisional.ecosystem.capability_bindings.v0_1",
   "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
   "declaration_status": "declared",
   "repository": "arcs-verify",
+  "layer": {
+    "primary_layer_id": "L6",
+    "primary_layer_name": "independent_verification",
+    "model_status": "proposed_not_ratified"
+  },
+  "authority_boundary": {
+    "capability_semantics_authority": "not_claimed",
+    "repository_implementation_behavior_authority": "arcs-verify",
+    "srs_schema_profile_semantic_authority": "arcs-srs"
+  },
   "semantic_ownership": "implementation_support_only",
   "canonical_capability_authority": false,
-  "capabilities": [
+  "capability_bindings": [
     {
       "id": "EVIDENCE_VALIDATE_STRUCTURE",
       "status": "implemented",

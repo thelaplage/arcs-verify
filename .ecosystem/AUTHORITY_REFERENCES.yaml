@@ -1,0 +1,102 @@
+{
+  "schema": "provisional.ecosystem.authority_references.v0_1",
+  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
+  "declaration_status": "declared",
+  "repository": "arcs-verify",
+  "architecture_model": {
+    "status": "proposed_not_ratified",
+    "order": [
+      "Layer",
+      "Authority",
+      "Contracts",
+      "Implementations",
+      "Repositories"
+    ],
+    "pilot_use": "test_projection_only"
+  },
+  "layer": {
+    "primary_layer_id": "L6",
+    "primary_layer_name": "independent_verification",
+    "ratified_doctrine": false,
+    "evidence": "README.md"
+  },
+  "authorities": [
+    {
+      "id": "authority.arcs_srs",
+      "name": "arcs-srs",
+      "authority_type": "semantic_authority",
+      "applies_to": [
+        "consumed SRS envelope schemas",
+        "consumed SRS profile semantics",
+        "vendored SRS vectors"
+      ],
+      "local_reference_mode": "vendored_frozen_bytes_and_digest_records",
+      "public_ratification_claim": false,
+      "evidence_paths": [
+        "VENDORED_FROM",
+        "vendor/arcs-srs/schemas/",
+        "vendor/arcs-srs/vectors/",
+        "packs/srs.mcp.sdk_enforcement/v0.1/normative/manifest.json"
+      ]
+    },
+    {
+      "id": "authority.arcs_verify_implementation",
+      "name": "arcs-verify",
+      "authority_type": "repository_owned_implementation_behavior",
+      "applies_to": [
+        "verifier implementation behavior",
+        "native verifier-report output contracts",
+        "CLI exit-code behavior",
+        "public-release guard behavior"
+      ],
+      "standard_authority": false,
+      "semantic_authority_for_srs": false,
+      "evidence_paths": [
+        "arcs_verify/verifier.py",
+        "arcs_verify/amnesiac/verifier.py",
+        "arcs_verify/receipt_set.py",
+        "arcs_verify/contracts/dagr-srs-verification-report-v0-1/",
+        "arcs_verify/contracts/dagr-srs-verification-report-v0-2/",
+        "tools/check_public_release.py"
+      ]
+    },
+    {
+      "id": "authority.garp_doctrine",
+      "name": "thelaplage/garp-doctrine",
+      "authority_type": "canonical_doctrine_repository_reference",
+      "local_material_available": false,
+      "applies_to": [
+        "doctrine reconciliation references only"
+      ],
+      "evidence_paths": [
+        ".ecosystem/REPOSITORY.yaml"
+      ]
+    }
+  ],
+  "contract_counterparts": [
+    {
+      "id": "counterpart.dagr_mcp",
+      "name": "DAGR MCP",
+      "relationship": "producer_and_contract_counterpart",
+      "imported_runtime_dependency": false,
+      "evidence_paths": [
+        "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/",
+        "arcs_verify/contracts/dagr-srs-verification-report-v0-1/",
+        "arcs_verify/contracts/dagr-srs-verification-report-v0-2/"
+      ]
+    }
+  ],
+  "state_boundaries": {
+    "emitter_assertion": "A field or assertion supplied by producer-controlled receipt bytes, such as subject_ref_origin.",
+    "independently_recomputed_finding": "A value recomputed by arcs-verify from serialized artifacts, such as signature_valid or a receipt hash.",
+    "not_evaluated": "A conclusion deliberately outside this verifier's evaluated scope.",
+    "not_applicable": "A status indicating the question was outside the invocation scope.",
+    "validation_error": "A structural or contract-validation failure during evaluation.",
+    "source_integrity_error": "An unreadable, malformed, missing, or digest-mismatched source artifact condition."
+  },
+  "compatibility_boundary": {
+    "historical_vendored_bytes_are_compatibility_facts": true,
+    "profile_pins_are_compatibility_facts": true,
+    "public_ratification_claim": false
+  }
+}

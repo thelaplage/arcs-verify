@@ -13,7 +13,8 @@ ARCS Verify currently uses several result shapes:
 | Enum/status result | `chain_status: not_applicable` | A non-Boolean status reported outside Boolean verdicts. |
 | Gating conclusion | `integrity_valid: true` | A structural Amnesiac-chain conclusion included in `passed`. |
 | Reserved conclusion | `authenticity_verified: not_evaluated` | A conclusion deliberately outside the verifier's current scope. |
-| Usage/source-integrity error | CLI exit `2` | Input could not be read or interpreted as a verification subject. |
+| Validation error | malformed `subject_ref_origin` under the v0.2 report contract | An evaluated artifact failed a structural or contract rule. |
+| Source-integrity error | CLI exit `2` for missing or malformed source input | Input could not be read or trusted as a verification subject. |
 | Verifier limitation | Historical authenticity needs an external anchor. | A documented boundary, not a failed check. |
 | Emitter assertion | `subject_ref_origin` in a receipt. | A producer-declared field read from validated bytes. |
 | Independently recomputed finding | Recomputed receipt hash or signature result. | A verifier-derived result from serialized artifacts. |
@@ -60,11 +61,13 @@ did not evaluate that question.
 A structurally clean Amnesiac-chain report can pass its gating conclusions while
 still leaving authenticity and signature validity as `not_evaluated`.
 
-## Source-Integrity Errors
+## Validation And Source-Integrity Errors
 
-Usage and source-integrity errors are outside the verification-failure domain.
-For example, unreadable files, malformed JSON, invalid arguments, and invalid
-report-generation inputs return CLI exit `2`.
+Validation errors and source-integrity errors are outside the Boolean
+verification-result domain. Some invalid inputs are represented as failed
+validation findings when the verifier can evaluate the artifact; missing,
+unreadable, malformed, or digest-mismatched source artifacts can instead
+produce CLI exit `2`.
 
 That is distinct from exit `1`, where the verifier did evaluate the supplied
 subject and produced a negative verification result.
