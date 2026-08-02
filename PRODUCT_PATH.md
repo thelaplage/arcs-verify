@@ -53,6 +53,6 @@ The same verifier-side boundary can support:
 - proof packs;
 - CI verification;
 - cross-organizational evidence exchange;
-- Countervail supervisory review.
+- Countervail receipt-ingest verification and supervisory review.
 
 The expansion path is verification and review, not certification.

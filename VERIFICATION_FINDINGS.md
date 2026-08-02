@@ -1,9 +1,11 @@
 # Verification Findings
 
-## Finding Domains
+## Repository Report Value Domains
 
-The ecosystem declarations need a finding-value domain broader than Boolean.
-ARCS Verify currently uses several different result shapes:
+This document inventories ARCS Verify's local report values. It is not a
+proposal for a shared, repository-independent findings taxonomy.
+
+ARCS Verify currently uses several result shapes:
 
 | Domain | Example | Meaning |
 |---|---|---|
@@ -16,8 +18,8 @@ ARCS Verify currently uses several different result shapes:
 | Emitter assertion | `subject_ref_origin` in a receipt. | A producer-declared field read from validated bytes. |
 | Independently recomputed finding | Recomputed receipt hash or signature result. | A verifier-derived result from serialized artifacts. |
 
-The shared ecosystem model must be able to represent all of these without
-promoting one into another.
+Any coordination schema that records these repository-owned reports must be able
+to represent these local values without promoting one into another.
 
 ## Signed-SRS Boolean Results
 
@@ -74,5 +76,5 @@ not a verdict. It reports what the validated receipt bytes declared, or
 `not_declared` for genuine absence. It does not upgrade, downgrade, excuse, or
 replace any Boolean result.
 
-The ecosystem schema should allow a report field to be a disclosed emitter
+The coordination schema should allow a report field to be a disclosed emitter
 assertion without treating it as an independently recomputed verifier finding.

@@ -28,10 +28,14 @@
   ],
   "normative_or_schema_sources": [
     {
-      "name": "arcs-srs",
-      "type": "normative_schema_source",
+      "name": "arcs-srs schema and vector authority",
+      "type": "schema_and_vector_authority",
       "mode": "vendored_frozen_authority",
-      "evidence_path": "vendor/arcs-srs/"
+      "evidence_paths": [
+        "vendor/arcs-srs/schemas/",
+        "vendor/arcs-srs/vectors/",
+        "VENDORED_FROM"
+      ]
     }
   ],
   "vendored_frozen_authority": [
@@ -62,7 +66,7 @@
   ],
   "producer_relationships_not_runtime_dependencies": [
     {
-      "name": "DAGR MCP",
+      "name": "DAGR MCP producer fixtures",
       "type": "test_fixture_producer_relationship",
       "runtime_package_dependency": false,
       "evidence_path": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/"
@@ -81,11 +85,19 @@
       "evidence_path": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/README.md"
     },
     {
-      "name": "GARPedia and proof-pack readers",
-      "type": "downstream_consumer",
-      "evidence_path": "packs/amnesiac.heppner_public_proof/v0.1/README.md"
+      "name": "Countervail receipt-ingest verification contract",
+      "type": "downstream_consumer_relationship",
+      "local_contract_artifact_available": false,
+      "evidence_path": "PRODUCT_PATH.md"
     }
   ],
+  "garp_sdk_policy": {
+    "name": "garp-sdk",
+    "runtime_package_dependency": false,
+    "reference_rule": "Reference garp-sdk only where shared envelope or contract shapes are genuinely consumed.",
+    "current_consumed_shared_shapes": [],
+    "current_status": "not_declared_as_dependency_or_authority_in_this_pilot"
+  },
   "optional_profile_families": [
     {
       "name": "srs.connection.lifecycle.v0.1",
@@ -101,6 +113,10 @@
     {
       "name": "DAGR MCP",
       "reason": "producer and contract counterpart only; not imported as a runtime package dependency"
+    },
+    {
+      "name": "garp-sdk",
+      "reason": "not referenced as a dependency because this checkout does not genuinely consume shared envelope or contract shapes from it"
     },
     {
       "name": "arcs-srs Python package",

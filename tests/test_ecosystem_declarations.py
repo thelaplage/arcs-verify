@@ -69,11 +69,12 @@ def test_dagr_mcp_is_not_a_runtime_package_dependency() -> None:
         item["name"] for item in dependencies["runtime_package_dependencies"]
     }
     assert "DAGR MCP" not in runtime_names
+    assert "DAGR MCP producer fixtures" not in runtime_names
 
     dagr_relationship = next(
         item
         for item in dependencies["producer_relationships_not_runtime_dependencies"]
-        if item["name"] == "DAGR MCP"
+        if item["name"] == "DAGR MCP producer fixtures"
     )
     assert dagr_relationship["runtime_package_dependency"] is False
 
@@ -82,6 +83,50 @@ def test_dagr_mcp_is_not_a_runtime_package_dependency() -> None:
         item for item in contracts["runtime_non_dependencies"] if item["name"] == "DAGR MCP"
     )
     assert dagr_non_dependency["imported_by_verifier"] is False
+
+    producer_relationship = next(
+        item
+        for item in contracts["producer_relationships"]
+        if item["name"] == "DAGR MCP producer fixtures"
+    )
+    assert producer_relationship["runtime_package_dependency"] is False
+
+
+def test_countervail_receipt_ingest_is_downstream_consumer_only() -> None:
+    dependencies = _load_yaml_subset("DEPENDENCIES.yaml")
+    contracts = _load_yaml_subset("CONTRACTS.yaml")
+
+    runtime_names = {
+        item["name"] for item in dependencies["runtime_package_dependencies"]
+    }
+    assert "Countervail receipt-ingest verification contract" not in runtime_names
+
+    dependency_consumer = next(
+        item
+        for item in dependencies["downstream_consumers"]
+        if item["name"] == "Countervail receipt-ingest verification contract"
+    )
+    assert dependency_consumer["type"] == "downstream_consumer_relationship"
+    assert dependency_consumer["local_contract_artifact_available"] is False
+
+    contract_consumer = next(
+        item
+        for item in contracts["downstream_consumer_relationships"]
+        if item["name"] == "Countervail receipt-ingest verification contract"
+    )
+    assert contract_consumer["relationship"] == "downstream_consumer_relationship"
+    assert contract_consumer["local_contract_artifact_available"] is False
+
+
+def test_garp_sdk_is_not_declared_without_consumed_shared_shapes() -> None:
+    dependencies = _load_yaml_subset("DEPENDENCIES.yaml")
+    runtime_names = {
+        item["name"] for item in dependencies["runtime_package_dependencies"]
+    }
+
+    assert "garp-sdk" not in runtime_names
+    assert dependencies["garp_sdk_policy"]["runtime_package_dependency"] is False
+    assert dependencies["garp_sdk_policy"]["current_consumed_shared_shapes"] == []
 
 
 def test_chain_status_is_not_modeled_as_a_ninth_boolean() -> None:
@@ -138,3 +183,25 @@ def test_declaration_status_distinguishes_claims_from_evidence() -> None:
         assert capability["implementation_claim"] == "declared"
         assert capability["verification_evidence"] == "verified_by_tests"
         assert capability["implementation_claim"] != capability["verification_evidence"]
+
+
+def test_native_verifier_reports_are_repository_owned_outputs() -> None:
+    contracts = _load_yaml_subset("CONTRACTS.yaml")
+    output_contracts = [
+        item
+        for item in contracts["contracts"]
+        if item["role"] == "native_verifier_report_output"
+    ]
+
+    assert {
+        item["id"] for item in output_contracts
+    } == {
+        "arcs_verify.signed_srs.report.v0_1",
+        "srs.dagr_verification_report.v0.1",
+        "srs.dagr_verification_report.v0.2",
+        "arcs_verify.report.v0_1_1",
+    }
+    assert all(
+        item["authority"] == "repository_owned_output_contract"
+        for item in output_contracts
+    )

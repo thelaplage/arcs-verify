@@ -105,6 +105,6 @@
     "No capability certifies the producer implementation.",
     "No capability proves the underlying real-world event occurred.",
     "No capability upgrades not_evaluated or not_applicable to PASS.",
-    "No capability claims canonical ownership of ecosystem-wide capability semantics."
+    "No capability claims canonical ownership beyond this repository's implementation support."
   ]
 }

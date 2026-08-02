@@ -55,7 +55,8 @@
       "arcs_verify/contracts/dagr-srs-verification-report-v0-2/",
       "packs/",
       "vendor/arcs-srs/"
-    ]
+    ],
+    "authority_reference_scope": "arcs-srs schema and vector authority is referenced through vendored frozen schema/vector bytes and VENDORED_FROM digests only"
   },
   "evidence": [
     {

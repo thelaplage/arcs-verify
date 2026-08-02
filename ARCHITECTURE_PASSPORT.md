@@ -33,6 +33,7 @@ authority bytes and named profile identifiers:
 |---|---|---|
 | SRS Envelope v0.2.0 | Pinned schema bytes | `arcs_verify/data/srs-envelope-v0.2.0.schema.json` |
 | SRS Envelope v0.2.1 | Pinned schema bytes | `arcs_verify/data/srs-envelope-v0.2.1.schema.json` |
+| arcs-srs vectors | Vendored schema/vector authority | `vendor/arcs-srs/vectors/` |
 | `srs.core.v5.1` | Internal pre-public lineage compatibility value | `arcs_verify/verifier.py` |
 | `srs.mcp.sdk_enforcement.v0.1` | Supported named profile | `arcs_verify/verifier.py` |
 | `srs.connection.lifecycle.v0.1` | Supported named profile | `arcs_verify/verifier.py` |
@@ -42,12 +43,17 @@ authority bytes and named profile identifiers:
 `srs.core.v5.1` is a current repository compatibility fact. It is not described
 here as a current public SRS release.
 
-## Exported Reports
+`garp-sdk` is not referenced as an authority or dependency in this pilot because
+this checkout does not genuinely consume shared envelope or contract shapes from
+that package.
+
+## Native Verifier-Report Outputs
 
 Signed-SRS verification exports the existing implementation report with eight
 Boolean results plus a separate `chain_status`.
 
-DAGR-specific report contracts are exported as deterministic contract surfaces:
+Repository-owned verifier-report contracts are exported as deterministic output
+surfaces:
 
 | Contract | Status | Evidence |
 |---|---|---|
@@ -81,6 +87,12 @@ contracts, but it does not import DAGR producer code to verify DAGR receipts.
 
 Amnesiac-chain verification follows the same boundary. It recomputes structure
 from serialized bundle bytes and imports no Amnesiac producer SDK.
+
+## Downstream Consumer Boundary
+
+Countervail receipt-ingest verification is referenced as a downstream consumer
+relationship for repository-owned verifier-report outputs. No Countervail code,
+service behavior, or receipt-ingest contract implementation is added here.
 
 ## Pinned Authority
 

@@ -23,14 +23,18 @@ Status values used here:
 | Authority modeling | PARTIAL | Distinguish `active_implementation` from SRS normative authority and public truth authority. |
 | Architecture layer | PASS | Support `independent_verification` and substrate role without implying runtime admission ownership. |
 | Capability inventory | PARTIAL | Allow implementation support for verifier capabilities without canonical ownership of capability semantics. |
-| Contract inventory | PARTIAL | Represent consumed, validated, and provided contracts with authority, version, stability, evidence path, and producer/consumer relationships. |
+| Contract inventory | PARTIAL | Represent consumed, validated, and repository-owned output contracts with authority, version, stability, evidence path, and producer/consumer relationships. |
 | Dependency inventory | PARTIAL | Model DAGR MCP as producer/contract counterpart and fixture source, not a runtime package dependency. |
 | Compatibility | PARTIAL | Represent pinned implementation compatibility without public standard ratification. |
 | Conformance | OVER_SPECIFIED | A single A-E grade is too coarse for a verifier because execution enforcement can be `NOT_APPLICABLE` while verifier independence can be `PASS`. |
 | Release state | PARTIAL | Support provisional declarations whose schema validation is `NOT_EVALUATED` pending external kit schemas. |
 | Exceptions | PASS | Support real transitional exceptions without requiring semantic degradation. |
 
-## Required Finding-Value Domain
+## Repository Report Value Domains
+
+This pilot does not introduce a shared, repository-independent findings
+taxonomy. It only records the value domains already present in ARCS Verify's
+repository-owned reports.
 
 The kit must support non-Boolean findings. ARCS Verify has:
 
@@ -74,20 +78,39 @@ provenance are separate fields.
 ## Producer Relationships That Are Not Package Dependencies
 
 The kit must support producer relationships that are not runtime package
-dependencies. DAGR MCP produces fixture receipts and is a report-contract
-counterpart, but ARCS Verify does not import DAGR producer code and does not
-depend on a DAGR package to verify receipts.
+dependencies. DAGR MCP is referenced here through DAGR producer fixtures and as
+a report-contract counterpart, but ARCS Verify does not import DAGR producer
+code and does not depend on a DAGR package to verify receipts.
 
 Status: `PARTIAL` if dependency schemas only model package imports.
+
+## Downstream Consumer Relationships
+
+The kit must support downstream consumer relationships separately from local
+runtime dependencies. Countervail receipt-ingest verification is referenced as a
+downstream consumer relationship for native verifier-report outputs. This pilot
+does not add Countervail code or a local Countervail contract implementation.
+
+Status: `MISSING_FROM_SCHEMA` if downstream contract relationships must be
+represented as package dependencies.
 
 ## Pinned Vendored Authority
 
 The kit must support vendored frozen authority records and local runtime copies
-with byte digests. ARCS Verify keeps `VENDORED_FROM`, `vendor/arcs-srs/`, and
-runtime schema copies under `arcs_verify/data/`.
+with byte digests. ARCS Verify references arcs-srs schema and vector authority
+through `VENDORED_FROM`, `vendor/arcs-srs/schemas/`, `vendor/arcs-srs/vectors/`,
+and runtime schema copies under `arcs_verify/data/`.
 
 Status: `PARTIAL` unless normative source, vendored copy, and runtime copy can
 be linked explicitly.
+
+## garp-sdk Reference Rule
+
+`garp-sdk` should be referenced only where shared envelope or contract shapes
+are genuinely consumed. This checkout does not consume such shapes from
+`garp-sdk`, so the pilot does not declare it as an authority or dependency.
+
+Status: `NOT_APPLICABLE` for this repository state.
 
 ## Integrity Digests
 
@@ -135,6 +158,8 @@ Recommended schema support:
 - `not_evaluated` and `not_applicable` as first-class values;
 - assertion provenance separate from recomputation provenance;
 - producer/consumer relationships separate from runtime package dependencies;
+- downstream consumer relationships such as Countervail receipt-ingest without
+  local package dependency implications;
 - pinned vendored authority and digest records;
 - profile-scoped compatibility;
 - verifier-specific conformance dimensions;
