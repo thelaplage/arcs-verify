@@ -14,6 +14,8 @@ SCHEMA_BACKED_DECLARATIONS = {
     "REPOSITORY.yaml": "ecosystem.repository.v0.1.schema.json",
     "ARCHITECTURE_PASSPORT.yaml": "ecosystem.architecture-passport.v0.1.schema.json",
     "AUTHORITY_REFERENCES.yaml": "ecosystem.authority-references.v0.1.schema.json",
+    "BOUNDARIES.yaml": "ecosystem.boundaries.v0.1.schema.json",
+    "RESPONSIBILITIES.yaml": "ecosystem.responsibilities.v0.1.schema.json",
     "CAPABILITY_BINDINGS.yaml": "ecosystem.capability-bindings.v0.1.schema.json",
     "CONTRACT_BINDINGS.yaml": "ecosystem.contract-bindings.v0.1.schema.json",
     "DEPENDENCIES.yaml": "ecosystem.dependencies.v0.1.schema.json",
@@ -28,12 +30,7 @@ SCHEMA_BACKED_DECLARATIONS = {
     "RELEASE_STATE.yaml": "ecosystem.release-state.v0.1.schema.json",
 }
 
-LOCAL_DECLARATIONS = {
-    "BOUNDARIES.yaml",
-    "RESPONSIBILITIES.yaml",
-}
-
-EXPECTED_DECLARATIONS = set(SCHEMA_BACKED_DECLARATIONS) | LOCAL_DECLARATIONS
+EXPECTED_DECLARATIONS = set(SCHEMA_BACKED_DECLARATIONS)
 
 EXPECTED_DOCS = {
     "ARCHITECTURE_PASSPORT.md",
@@ -65,6 +62,10 @@ SIGNED_SRS_BOOLEAN_RESULTS = [
 ]
 
 
+def _find_by_id(items: list[dict], key: str, value: str) -> dict:
+    return next(item for item in items if item[key] == value)
+
+
 def _load_yaml_subset(name: str) -> dict:
     # The declarations are written as JSON-compatible YAML so the repository
     # does not need a YAML parser solely for declaration sanity tests.
@@ -85,12 +86,6 @@ def test_all_ecosystem_files_exist_and_parse() -> None:
         assert payload["repository"] == "arcs-verify" or payload["repository"][
             "name"
         ] == "arcs-verify"
-
-    for name in LOCAL_DECLARATIONS:
-        assert (
-            _load_yaml_subset(name)["schema_status"]
-            == "repository_local_no_arcs_ecosystem_kit_schema_v0_1"
-        )
 
 
 def test_schema_backed_declarations_validate_against_kit_v0_1() -> None:
@@ -146,13 +141,18 @@ def test_a0_a6_inputs_are_declared_unratified_not_canonical() -> None:
         for item in architecture_authority["evidence_refs"]
     )
 
+    architecture_boundary = _find_by_id(
+        boundaries["boundaries"], "id", "arcs-verify-primary-l6-boundary"
+    )
     assert {
-        item["document_id"] for item in boundaries["architecture_inputs"]
+        item["id"] for item in architecture_boundary["evidence_refs"]
     } == EXPECTED_A0_A6_IDS
     assert all(
-        item["ratification_status"] == "unratified" and item["canonical"] is False
-        for item in boundaries["architecture_inputs"]
+        "ratification_status unratified" in item["notes"]
+        and "canonical false" in item["notes"]
+        for item in architecture_boundary["evidence_refs"]
     )
+    assert "does not ratify A0-A6" in architecture_boundary["notes"]
 
 
 def test_arcs_srs_is_consumed_authority_and_arcs_verify_is_not_srs_authority() -> None:
@@ -190,12 +190,8 @@ def test_arcs_srs_is_consumed_authority_and_arcs_verify_is_not_srs_authority() -
         "srs.envelope.schema.v0.2.1",
         "srs.mcp.sdk_enforcement.profile.v0_1",
     }
-    assert responsibilities["authority_separation"]["arcs_verify"][
-        "srs_authority"
-    ] is False
-    assert responsibilities["authority_separation"]["arcs_srs"][
-        "public_ratification_claim_by_arcs_verify"
-    ] is False
+    assert "not SRS authority" in responsibilities["notes"]
+    assert "arcs-srs remains semantic authority" in responsibilities["notes"]
 
 
 def test_dagr_and_countervail_are_not_runtime_dependencies() -> None:
@@ -220,13 +216,16 @@ def test_dagr_and_countervail_are_not_runtime_dependencies() -> None:
     assert countervail["dependency_type"] == "optional_consumer"
     assert countervail["required"] is False
 
+    boundaries = _load_yaml_subset("BOUNDARIES.yaml")
     responsibilities = _load_yaml_subset("RESPONSIBILITIES.yaml")
-    assert responsibilities["authority_separation"]["dagr_mcp"][
-        "runtime_package_dependency"
-    ] is False
-    assert responsibilities["authority_separation"]["countervail"][
-        "runtime_package_dependency"
-    ] is False
+    forbidden = {item["id"] for item in boundaries["forbidden_dependencies"]}
+
+    assert "verifier-must-not-import-producer-runtime" in forbidden
+    assert "DAGR MCP remains a producer and contract counterpart" in responsibilities["notes"]
+    assert "not a runtime package dependency" in responsibilities["notes"]
+    assert "Countervail remains a downstream consumer relationship" in responsibilities[
+        "notes"
+    ]
 
 
 def test_garp_sdk_is_only_referenced_for_genuine_shared_shapes() -> None:
@@ -236,23 +235,25 @@ def test_garp_sdk_is_only_referenced_for_genuine_shared_shapes() -> None:
     assert garp_sdk["dependency_type"] == "optional_consumer"
     assert garp_sdk["required"] is False
     assert "genuinely consumed" in garp_sdk["reason"]
-    assert responsibilities["authority_separation"]["garp_sdk"][
-        "current_runtime_dependency"
-    ] is False
-    assert responsibilities["authority_separation"]["garp_sdk"][
-        "current_consumed_shared_shapes"
-    ] == []
+    assert "garp-sdk is a reference only when shared envelope" in responsibilities[
+        "notes"
+    ]
+    assert "no current runtime dependency" in responsibilities["notes"]
 
 
 def test_chain_status_is_not_modeled_as_a_ninth_boolean() -> None:
     boundaries = _load_yaml_subset("BOUNDARIES.yaml")
-    signed_srs = boundaries["signed_srs_result_boundary"]
+    result_boundary = _find_by_id(
+        boundaries["boundaries"], "id", "result-state-domain-boundary"
+    )
     contract = _load_yaml_subset("CONTRACT_BINDINGS.yaml")
 
-    assert signed_srs["boolean_results"] == SIGNED_SRS_BOOLEAN_RESULTS
-    assert "chain_status" not in signed_srs["boolean_results"]
-    assert signed_srs["separate_status_results"] == ["chain_status"]
-    assert signed_srs["chain_status_not_applicable_is_pass"] is False
+    assert all(result in result_boundary["notes"] for result in SIGNED_SRS_BOOLEAN_RESULTS)
+    assert "exactly eight Boolean results" in result_boundary["notes"]
+    assert "chain_status is a separate non-Boolean status result" in result_boundary[
+        "notes"
+    ]
+    assert "chain_status:not_applicable is not PASS" in result_boundary["notes"]
 
     signed_report = next(
         item
@@ -266,17 +267,16 @@ def test_chain_status_is_not_modeled_as_a_ninth_boolean() -> None:
 
 def test_not_evaluated_and_not_applicable_are_distinct_from_pass() -> None:
     boundaries = _load_yaml_subset("BOUNDARIES.yaml")
-    amnesiac = boundaries["amnesiac_chain_result_boundary"]
-    release = _load_yaml_subset("RELEASE_STATE.yaml")
-
-    assert amnesiac["conclusion_domain"] == ["true", "false", "not_evaluated"]
-    assert "authenticity_verified" in amnesiac["reserved_conclusions"]
-    assert amnesiac["not_evaluated_is_pass"] is False
-    assert amnesiac["not_evaluated_is_failure"] is False
-
-    assert boundaries["result_state_boundaries"]["not_applicable"].endswith(
-        "not PASS."
+    result_boundary = _find_by_id(
+        boundaries["boundaries"], "id", "result-state-domain-boundary"
     )
+    result_notes = result_boundary["notes"]
+
+    assert "Amnesiac-chain conclusions are true, false, and not_evaluated" in result_notes
+    assert "authenticity_verified" in result_notes
+    assert "signature_verified" in result_notes
+    assert "not_evaluated is not PASS and not necessarily FAIL" in result_notes
+    assert "chain_status:not_applicable is not PASS" in result_notes
     conformance = _load_yaml_subset("CONFORMANCE_PROJECTION.yaml")
     assert "not-applicable-preserved" in {
         gate["gate_id"] for gate in conformance["passed_gates"]
@@ -285,18 +285,23 @@ def test_not_evaluated_and_not_applicable_are_distinct_from_pass() -> None:
 
 def test_usage_and_source_integrity_errors_are_not_verification_findings() -> None:
     boundaries = _load_yaml_subset("BOUNDARIES.yaml")
-    states = boundaries["result_state_boundaries"]
+    result_boundary = _find_by_id(
+        boundaries["boundaries"], "id", "result-state-domain-boundary"
+    )
+    result_notes = result_boundary["notes"]
 
-    assert set(states) == {
+    for state in {
         "emitter_assertion",
         "independently_recomputed_finding",
         "not_evaluated",
         "not_applicable",
         "validation_error",
         "source_integrity_error",
-    }
-    assert states["validation_error"] != states["source_integrity_error"]
-    assert "before reliable evaluation" in states["source_integrity_error"]
+    }:
+        assert state in result_notes
+    assert "validation_error differs from source_integrity_error" in result_notes
+    assert "source_integrity_error occurs before reliable evaluation" in result_notes
+    assert "subject_ref_origin is an emitter assertion, not a verifier verdict" in result_notes
 
 
 def test_srs_core_lineage_is_not_declared_public_release() -> None:
@@ -311,9 +316,12 @@ def test_srs_core_lineage_is_not_declared_public_release() -> None:
     assert srs_core["version"] == "v5.1"
     assert srs_core["historical_reference"] is True
     assert "not the current public SRS release" in srs_core["integrity"]["notes"]
-    assert responsibilities["compatibility_fact_boundary"][
-        "srs_core_v5_1_public_release_claim"
-    ] is False
+    assert "Historical vendored bytes and profile pins are compatibility facts" in responsibilities[
+        "notes"
+    ]
+    assert "srs.core.v5.1 is not claimed as a current public SRS release" in responsibilities[
+        "notes"
+    ]
 
 
 def test_lane_id_is_locally_unique_and_semantics_out_of_scope() -> None:

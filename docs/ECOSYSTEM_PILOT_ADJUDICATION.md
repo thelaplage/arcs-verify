@@ -39,13 +39,15 @@ Status values used below:
 
 ## Validation Result
 
-The schema-backed declarations validate against `arcs-ecosystem-kit` v0.1
-schemas from the sibling checkout without adding the kit as a runtime
-dependency:
+All thirteen final declarations validate against checked-out
+`arcs-ecosystem-kit` v0.1 schemas from the sibling checkout without adding the
+kit as a runtime dependency:
 
 - `REPOSITORY.yaml`
 - `ARCHITECTURE_PASSPORT.yaml`
 - `AUTHORITY_REFERENCES.yaml`
+- `BOUNDARIES.yaml`
+- `RESPONSIBILITIES.yaml`
 - `CAPABILITY_BINDINGS.yaml`
 - `CONTRACT_BINDINGS.yaml`
 - `DEPENDENCIES.yaml`
@@ -54,9 +56,6 @@ dependency:
 - `CONFORMANCE_PROJECTION.yaml`
 - `EXCEPTIONS.yaml`
 - `RELEASE_STATE.yaml`
-
-`BOUNDARIES.yaml` and `RESPONSIBILITIES.yaml` are repository-local provisional
-declarations because the kit v0.1 catalog does not define those schema areas.
 
 ## Schema Area Findings
 
@@ -67,13 +66,13 @@ declarations because the kit v0.1 catalog does not define those schema areas.
 | Authority references | PASS | Separates `arcs-srs` consumed SRS authority from `arcs-verify` implementation/output authority. |
 | Capability bindings | PASS | Represents verifier-oriented implementation bindings without declaring canonical ownership of capability semantics. |
 | Contract bindings | PASS | Represents repository-owned verifier-report outputs and consumed SRS contracts with separate semantic authority. |
+| Boundaries | PASS | Current kit boundary schema represents serialized-artifact input, producer/verifier isolation, SRS semantic-authority, trust, report-output, and result-domain boundaries through boundary records, forbidden dependencies, evidence refs, and notes. |
+| Responsibilities | PASS | Current kit responsibility schema represents verifier-owned responsibilities and explicitly unowned concerns without claiming producer, SRS, policy, truth, or certification authority. |
 | Dependency declarations | PARTIAL | Can mark DAGR and Countervail as non-runtime relationships, but richer producer/downstream roles still require local notes. |
 | Compatibility projection | PASS | Represents pinned SRS bytes, profile compatibility, DAGR fixture compatibility, and historical-reference boundaries. |
 | Conformance projection | PARTIAL | Supports A-E projection and gate lists, but verifier-specific status dimensions remain partly expressed in notes. |
 | Release state | PASS | Supports preview release posture and gates without claiming public release. |
 | Exceptions | PASS | Supports real transitional exceptions. |
-| Boundaries | MISSING_FROM_SCHEMA | No kit v0.1 schema for serialized-artifact, trust, producer/verifier, and report-output boundaries. |
-| Responsibilities | MISSING_FROM_SCHEMA | No kit v0.1 schema for owned and explicitly unowned repository concerns. |
 
 ## Required Verifier Boundaries
 
@@ -89,8 +88,9 @@ ARCS Verify needs the coordination model to preserve these boundaries:
 - Verification-report output boundary: native verifier-report contracts are
   repository-owned outputs and must not be confused with SRS standard authority.
 
-Status: `MISSING_FROM_SCHEMA` for first-class boundary declarations in kit
-v0.1.
+Status: `PASS` for schema validation. The current boundary schema can preserve
+these facts, though repository-specific value domains still live in boundary
+notes rather than a dedicated result-domain schema.
 
 ## Repository Report Value Domains
 
@@ -106,8 +106,9 @@ The kit must accommodate:
 - validation errors distinct from source-integrity errors;
 - emitter assertions distinct from independently recomputed findings.
 
-Status: `PARTIAL`. The current schemas can carry these facts in notes and local
-declarations, but do not provide a first-class verifier result-domain schema.
+Status: `PARTIAL`. The current schemas can carry these facts in schema-backed
+boundary notes and contract compatibility notes, but do not provide a
+first-class verifier result-domain schema.
 
 ## `not_evaluated`
 
@@ -115,16 +116,16 @@ declarations, but do not provide a first-class verifier result-domain schema.
 reserved Amnesiac-chain conclusions such as `authenticity_verified` and
 `signature_verified`.
 
-Status: `PARTIAL`. Conformance gates can record the distinction, but report
-value domains need first-class representation.
+Status: `PARTIAL`. Conformance gates and boundary notes record the distinction,
+but report value domains need first-class representation.
 
 ## `not_applicable`
 
 `chain_status: not_applicable` means no chain was in scope for standalone
 signed-SRS verification. It is not a chain PASS.
 
-Status: `PARTIAL`. The conformance projection can gate the distinction, but a
-findings/value-domain model should represent it directly.
+Status: `PARTIAL`. The conformance projection and boundary notes preserve the
+distinction, but a findings/value-domain model should represent it directly.
 
 ## Assertion Versus Recomputed Result
 
@@ -133,7 +134,8 @@ and rendered as `subject_ref_origin_disclosed`; it is not a verifier verdict.
 By contrast, schema digest, signature validity, trust checks, and receipt hashes
 are independently recomputed findings.
 
-Status: `MISSING_FROM_SCHEMA` for a first-class assertion/recomputation axis.
+Status: `PARTIAL`. The distinction is preserved in schema-backed boundary and
+contract notes, but there is no first-class assertion/recomputation axis.
 
 ## Producer Relationships That Are Not Dependencies
 
@@ -141,7 +143,7 @@ DAGR implementations are producer and contract counterparts for serialized
 fixtures. They are not package dependencies and are not imported by the
 verifier. The dependency schema can represent this as a non-required
 implementation relationship, while the richer producer-counterpart semantics
-are recorded in local boundary and responsibility declarations.
+are recorded in schema-backed boundary and responsibility declarations.
 
 Status: `PARTIAL`.
 
@@ -211,16 +213,13 @@ CLI exit `2` means a usage or source-integrity error; it is not a failed
 verification verdict. CLI exit `1` means the verifier evaluated the supplied
 subject and produced a negative verification result.
 
-Status: `MISSING_FROM_SCHEMA` for first-class error-domain separation.
+Status: `PARTIAL`. The distinction is preserved in schema-backed boundary and
+responsibility notes, but there is no first-class error-domain separation.
 
 ## Schema Changes Still Required
 
 Recommended schema support for `arcs-ecosystem-kit`:
 
-- first-class boundary declarations for serialized-artifact, producer/verifier,
-  trust, and report-output boundaries;
-- responsibility declarations for owned and explicitly unowned repository
-  concerns;
 - verifier report value-domain modeling wider than Boolean;
 - `not_evaluated` and `not_applicable` as first-class values;
 - assertion provenance separate from recomputation provenance;
