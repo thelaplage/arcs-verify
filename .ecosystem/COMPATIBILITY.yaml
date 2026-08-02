@@ -1,0 +1,109 @@
+{
+  "schema": "provisional.ecosystem.compatibility.v0_1",
+  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
+  "declaration_status": "declared",
+  "repository": "arcs-verify",
+  "compatibility_claim_status": "repository_implementation_compatibility_only",
+  "public_standard_ratification_claim": false,
+  "srs_lineage": {
+    "receipt_version": "srs.core.v5.1",
+    "status": "internal_pre_public_lineage_compatibility_value",
+    "current_public_release": false
+  },
+  "srs_envelope_versions": [
+    {
+      "version": "v0.2.0",
+      "status": "supported_pinned",
+      "schema_path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
+      "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333"
+    },
+    {
+      "version": "v0.2.1",
+      "status": "supported_pinned",
+      "schema_path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
+      "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+    }
+  ],
+  "receipt_discriminators": [
+    {
+      "field": "receipt_version",
+      "value": "srs.core.v5.1",
+      "status": "required"
+    },
+    {
+      "field": "profile_id",
+      "values": [
+        "srs.mcp.sdk_enforcement",
+        "srs.connection.lifecycle"
+      ],
+      "status": "profile_versioned"
+    }
+  ],
+  "named_profiles": [
+    {
+      "id": "srs.mcp.sdk_enforcement.v0.1",
+      "status": "supported",
+      "evidence": "arcs_verify/verifier.py"
+    },
+    {
+      "id": "srs.connection.lifecycle.v0.1",
+      "status": "supported",
+      "evidence": "arcs_verify/verifier.py"
+    }
+  ],
+  "verification_report_contracts": [
+    {
+      "id": "srs.dagr_verification_report.v0.1",
+      "status": "frozen",
+      "evidence": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/"
+    },
+    {
+      "id": "srs.dagr_verification_report.v0.2",
+      "status": "release_closed",
+      "evidence": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/"
+    }
+  ],
+  "subject_reference_origin_disclosure": {
+    "status": "supported_disclosure_not_verdict",
+    "declared_values": [
+      "supplied_subject",
+      "derived_from_session",
+      "derived_from_request",
+      "derived_from_supplied_correlation",
+      "binding_minted"
+    ],
+    "absence_rendering": "not_declared",
+    "evidence": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/origin-disclosure-contract.json"
+  },
+  "dagr_produced_fixture_versions": [
+    {
+      "name": "dagr-mcp-fastmcp-demo",
+      "profile": "srs.mcp.sdk_enforcement.v0.1",
+      "status": "fixture_compatibility",
+      "evidence": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/"
+    },
+    {
+      "name": "dagr.workflow_receipt_set.v0_1",
+      "status": "workflow_manifest_compatibility",
+      "evidence": "arcs_verify/receipt_set.py"
+    }
+  ],
+  "amnesiac_chain_profile_versions": [
+    {
+      "profile": "full_artifact_chain.v0_1",
+      "input_schema": "packet_time_claim_binding.v0_1",
+      "receipt_schema": "garp.sovereignty_receipt.v0.1",
+      "status": "supported_structural_verification",
+      "evidence": "arcs_verify/amnesiac/verifier.py"
+    }
+  ],
+  "python_versions": {
+    "requires_python": ">=3.11",
+    "classifiers": [
+      "3.11",
+      "3.12",
+      "3.13"
+    ],
+    "evidence": "pyproject.toml"
+  }
+}

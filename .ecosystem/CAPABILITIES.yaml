@@ -1,0 +1,110 @@
+{
+  "schema": "provisional.ecosystem.capabilities.v0_1",
+  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
+  "declaration_status": "declared",
+  "repository": "arcs-verify",
+  "semantic_ownership": "implementation_support_only",
+  "canonical_capability_authority": false,
+  "capabilities": [
+    {
+      "id": "EVIDENCE_VALIDATE_STRUCTURE",
+      "status": "implemented",
+      "implementation_claim": "declared",
+      "verification_evidence": "verified_by_tests",
+      "evidence": [
+        "arcs_verify/verifier.py",
+        "tests/test_verifier.py"
+      ]
+    },
+    {
+      "id": "EVIDENCE_VALIDATE_PROFILE",
+      "status": "implemented",
+      "implementation_claim": "declared",
+      "verification_evidence": "verified_by_tests",
+      "evidence": [
+        "arcs_verify/verifier.py",
+        "tests/test_connection_profile.py",
+        "tests/test_implementation_fixtures.py"
+      ]
+    },
+    {
+      "id": "EVIDENCE_CHECK_RAW_CONTENT_EXCLUSION",
+      "status": "implemented",
+      "implementation_claim": "declared",
+      "verification_evidence": "verified_by_tests",
+      "evidence": [
+        "arcs_verify/verifier.py",
+        "tests/test_connection_profile.py",
+        "tests/test_dagr_delivery_boolean_guard.py"
+      ]
+    },
+    {
+      "id": "EVIDENCE_VERIFY_SIGNATURE",
+      "status": "implemented",
+      "implementation_claim": "declared",
+      "verification_evidence": "verified_by_tests",
+      "evidence": [
+        "arcs_verify/verifier.py",
+        "tests/test_verifier.py",
+        "vendor/arcs-srs/vectors/signed-receipt-v0.1/manifest.json"
+      ]
+    },
+    {
+      "id": "EVIDENCE_RESOLVE_ISSUER_KEY",
+      "status": "implemented",
+      "implementation_claim": "declared",
+      "verification_evidence": "verified_by_tests",
+      "evidence": [
+        "arcs_verify/verifier.py",
+        "tests/test_verifier.py"
+      ]
+    },
+    {
+      "id": "EVIDENCE_EVALUATE_TRUST",
+      "status": "implemented",
+      "implementation_claim": "declared",
+      "verification_evidence": "verified_by_tests",
+      "evidence": [
+        "arcs_verify/verifier.py",
+        "tests/test_verifier.py"
+      ]
+    },
+    {
+      "id": "EVIDENCE_CHECK_ATTESTATION_LIMITS",
+      "status": "implemented",
+      "implementation_claim": "declared",
+      "verification_evidence": "verified_by_tests",
+      "evidence": [
+        "arcs_verify/verifier.py",
+        "README.md"
+      ]
+    },
+    {
+      "id": "EVIDENCE_VERIFY_RECEIPT_SET",
+      "status": "implemented",
+      "implementation_claim": "declared",
+      "verification_evidence": "verified_by_tests",
+      "evidence": [
+        "arcs_verify/receipt_set.py",
+        "tests/test_receipt_set.py"
+      ]
+    },
+    {
+      "id": "EVIDENCE_RECOMPUTE_SERIALIZED_CHAIN",
+      "status": "implemented",
+      "implementation_claim": "declared",
+      "verification_evidence": "verified_by_tests",
+      "evidence": [
+        "arcs_verify/amnesiac/verifier.py",
+        "tests/test_amnesiac_verifier.py",
+        "tests/test_amnesiac_cross_repo_chain.py"
+      ]
+    }
+  ],
+  "capability_limits": [
+    "No capability certifies the producer implementation.",
+    "No capability proves the underlying real-world event occurred.",
+    "No capability upgrades not_evaluated or not_applicable to PASS.",
+    "No capability claims canonical ownership of ecosystem-wide capability semantics."
+  ]
+}

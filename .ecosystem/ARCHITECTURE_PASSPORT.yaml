@@ -1,0 +1,141 @@
+{
+  "schema": "provisional.ecosystem.architecture_passport.v0_1",
+  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
+  "declaration_status": "declared",
+  "repository": "arcs-verify",
+  "role": {
+    "side": "verifier",
+    "owning_layer": "independent_verification",
+    "architecture_role": "substrate",
+    "reference_app": true
+  },
+  "owned_concerns": [
+    "verifier implementation behavior",
+    "verification-report representation owned by this implementation where applicable",
+    "pinned local schema-byte checking",
+    "profile-check execution",
+    "raw-content-exclusion verification",
+    "signature and key resolution checks",
+    "trust-window checking",
+    "attestation-limit presence checking",
+    "serialized receipt-set verification",
+    "independently serialized Amnesiac-chain structural recomputation",
+    "CLI exit-code behavior",
+    "producer-import/public-release guard"
+  ],
+  "explicitly_unowned_concerns": [
+    "receipt emission",
+    "runtime admission",
+    "execution enforcement",
+    "producer truthfulness",
+    "underlying event truth",
+    "operator-independent historical authenticity without an external anchor",
+    "SRS normative authority",
+    "DAGR runtime semantics",
+    "organization policy",
+    "GARPedia presentation",
+    "source system retention behavior"
+  ],
+  "trust_boundary": {
+    "input_surface": [
+      "serialized receipt bytes",
+      "serialized trust-bundle bytes",
+      "pinned schema bytes",
+      "selected profile identifier",
+      "optional serialized artifact chain"
+    ],
+    "producer_boundary": "serialized-artifact-only",
+    "producer_import_allowed": false,
+    "dagr_runtime_dependency": false
+  },
+  "pinned_authority": [
+    {
+      "name": "SRS Envelope v0.2.0 schema",
+      "status": "pinned_implementation_fact",
+      "path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
+      "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333"
+    },
+    {
+      "name": "SRS Envelope v0.2.1 schema",
+      "status": "pinned_implementation_fact",
+      "path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
+      "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+    },
+    {
+      "name": "receipt_version",
+      "value": "srs.core.v5.1",
+      "status": "internal_pre_public_lineage_compatibility_value",
+      "public_release_claim": false
+    }
+  ],
+  "verification_modes": [
+    {
+      "id": "signed_srs_receipt",
+      "finding_shape": "eight_boolean_results_plus_separate_chain_status",
+      "independently_recomputed": true,
+      "producer_code_imported": false
+    },
+    {
+      "id": "amnesiac_chain",
+      "finding_shape": "conclusion_domain_true_false_not_evaluated",
+      "independently_recomputed": true,
+      "producer_code_imported": false
+    },
+    {
+      "id": "receipt_set",
+      "finding_shape": "manifest_integrity_and_receipt_linkage_statuses_with_nested_signed_srs_reports",
+      "independently_recomputed": true,
+      "producer_code_imported": false
+    }
+  ],
+  "result_semantics": {
+    "signed_srs": {
+      "boolean_results": [
+        "schema_digest",
+        "envelope",
+        "profile",
+        "raw_content_exclusion",
+        "signature_valid",
+        "issuer_key_resolved",
+        "issuer_key_trusted",
+        "attestation_limits_present"
+      ],
+      "separate_status_results": [
+        "chain_status"
+      ],
+      "chain_status_not_applicable_is_pass": false
+    },
+    "amnesiac_chain": {
+      "conclusion_domain": [
+        "true",
+        "false",
+        "not_evaluated"
+      ],
+      "reserved_conclusions": [
+        "authenticity_verified",
+        "signature_verified"
+      ]
+    }
+  },
+  "extension_points": [
+    "additional accepted pinned envelope schema versions",
+    "additional named profiles",
+    "additional verification-report contracts",
+    "additional serialized artifact-chain profiles"
+  ],
+  "non_goals": [
+    "certify producer implementation",
+    "prove underlying real-world event occurred",
+    "prove historical authenticity absent an external anchor",
+    "own SRS normative semantics",
+    "import DAGR producer code"
+  ],
+  "evidence": [
+    "README.md",
+    "arcs_verify/verifier.py",
+    "arcs_verify/amnesiac/verifier.py",
+    "arcs_verify/receipt_set.py",
+    "arcs_verify/contracts/dagr-srs-verification-report-v0-1/README.md",
+    "arcs_verify/contracts/dagr-srs-verification-report-v0-2/README.md"
+  ]
+}

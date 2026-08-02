@@ -1,0 +1,166 @@
+{
+  "schema": "provisional.ecosystem.contracts.v0_1",
+  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
+  "declaration_status": "declared",
+  "repository": "arcs-verify",
+  "contracts": [
+    {
+      "id": "arcs_verify.signed_srs.input.v0_1",
+      "role": "verification_input",
+      "authority": "implementation_contract",
+      "version": "v0.1",
+      "stability": "active",
+      "evidence_path": "README.md",
+      "relationship": "consumes",
+      "known_counterpart": "serialized receipt and trust-bundle producers"
+    },
+    {
+      "id": "srs.envelope.schema.v0.2.0",
+      "role": "schema_consumption",
+      "authority": "vendored_arcs_srs_frozen_authority",
+      "version": "v0.2.0",
+      "stability": "pinned",
+      "evidence_path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
+      "relationship": "validates",
+      "known_counterpart": "arcs-srs vendored schema"
+    },
+    {
+      "id": "srs.envelope.schema.v0.2.1",
+      "role": "schema_consumption",
+      "authority": "vendored_arcs_srs_frozen_authority",
+      "version": "v0.2.1",
+      "stability": "pinned",
+      "evidence_path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
+      "relationship": "validates",
+      "known_counterpart": "arcs-srs vendored schema"
+    },
+    {
+      "id": "srs.mcp.sdk_enforcement",
+      "role": "named_profile_consumption",
+      "authority": "vendored_arcs_srs_profile_material",
+      "version": "v0.1",
+      "stability": "supported",
+      "evidence_path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/manifest.json",
+      "relationship": "validates",
+      "known_counterpart": "DAGR MCP receipt producer fixtures"
+    },
+    {
+      "id": "srs.connection.lifecycle",
+      "role": "named_profile_consumption",
+      "authority": "local_implementation_profile",
+      "version": "v0.1",
+      "stability": "supported",
+      "evidence_path": "tests/fixtures/connection_lifecycle/connect.json",
+      "relationship": "validates",
+      "known_counterpart": "connection lifecycle receipt producers"
+    },
+    {
+      "id": "arcs_verify.trust_bundle.input.v0_1",
+      "role": "trust_bundle_consumption",
+      "authority": "implementation_contract",
+      "version": "v0.1",
+      "stability": "active",
+      "evidence_path": "arcs_verify/verifier.py",
+      "relationship": "consumes",
+      "known_counterpart": "issuer-key bundle provider"
+    },
+    {
+      "id": "arcs_verify.signed_srs.report.v0_1",
+      "role": "verification_report_output",
+      "authority": "implementation_contract",
+      "version": "v0.1",
+      "stability": "active",
+      "evidence_path": "arcs_verify/verifier.py",
+      "relationship": "provides",
+      "known_counterpart": "CLI and downstream report readers"
+    },
+    {
+      "id": "srs.dagr_verification_report.v0.1",
+      "role": "DAGR_SRS_verification_report_contract",
+      "authority": "arcs_verify_contract_directory",
+      "version": "v0.1",
+      "stability": "frozen",
+      "evidence_path": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/verification-report.schema.json",
+      "relationship": "provides",
+      "known_counterpart": "DAGR exporter and report consumers"
+    },
+    {
+      "id": "srs.dagr_verification_report.v0.2",
+      "role": "DAGR_SRS_verification_report_contract",
+      "authority": "arcs_verify_contract_directory",
+      "version": "v0.2",
+      "stability": "release_closed",
+      "evidence_path": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/verification-report.schema.json",
+      "relationship": "provides",
+      "known_counterpart": "DAGR exporter and report consumers"
+    },
+    {
+      "id": "dagr.workflow_receipt_set.v0_1",
+      "role": "receipt_set_workflow_manifest_consumption",
+      "authority": "implementation_contract",
+      "version": "v0.1",
+      "stability": "active",
+      "evidence_path": "arcs_verify/receipt_set.py",
+      "relationship": "consumes",
+      "known_counterpart": "DAGR governed-memory workflow index"
+    },
+    {
+      "id": "arcs_verify.amnesiac_chain.input.v0_1",
+      "role": "Amnesiac_chain_input_contract",
+      "authority": "implementation_contract",
+      "version": "v0.1",
+      "stability": "active",
+      "evidence_path": "arcs_verify/amnesiac/verifier.py",
+      "relationship": "consumes",
+      "known_counterpart": "serialized Amnesiac producer bundles"
+    },
+    {
+      "id": "arcs_verify.report.v0_1_1",
+      "role": "Amnesiac_chain_output_contract",
+      "authority": "implementation_contract",
+      "version": "v0.1.1",
+      "stability": "active",
+      "evidence_path": "arcs_verify/amnesiac/verifier.py",
+      "relationship": "provides",
+      "known_counterpart": "Amnesiac proof-pack report readers"
+    },
+    {
+      "id": "arcs_verify.vendored_authority.v0_1",
+      "role": "vendored_authority_provenance_record",
+      "authority": "local_provenance_record",
+      "version": "v0.1",
+      "stability": "pinned",
+      "evidence_path": "VENDORED_FROM",
+      "relationship": "provides",
+      "known_counterpart": "arcs-srs frozen material"
+    },
+    {
+      "id": "arcs_verify.cli_exit_codes.v0_1",
+      "role": "CLI_exit_code_contract",
+      "authority": "implementation_contract",
+      "version": "v0.1",
+      "stability": "active",
+      "evidence_path": "README.md",
+      "relationship": "provides",
+      "known_counterpart": "CLI callers and CI users"
+    },
+    {
+      "id": "arcs_verify.public_release_guard.v0_1",
+      "role": "producer_independence_public_release_guard",
+      "authority": "implementation_guard",
+      "version": "v0.1",
+      "stability": "active",
+      "evidence_path": "tools/check_public_release.py",
+      "relationship": "validates",
+      "known_counterpart": "repository release workflow"
+    }
+  ],
+  "runtime_non_dependencies": [
+    {
+      "name": "DAGR MCP",
+      "classification": "producer_and_contract_counterpart",
+      "runtime_package_dependency": false,
+      "imported_by_verifier": false
+    }
+  ]
+}

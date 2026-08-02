@@ -1,0 +1,110 @@
+{
+  "schema": "provisional.ecosystem.dependencies.v0_1",
+  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
+  "declaration_status": "declared",
+  "repository": "arcs-verify",
+  "runtime_package_dependencies": [
+    {
+      "name": "cryptography",
+      "type": "cryptographic_implementation_dependency",
+      "version_constraint": ">=46.0.4,<47",
+      "evidence_path": "pyproject.toml",
+      "purpose": "Ed25519 signature verification"
+    },
+    {
+      "name": "rfc8785",
+      "type": "canonicalization_dependency",
+      "version_constraint": "==0.1.4",
+      "evidence_path": "pyproject.toml",
+      "purpose": "RFC8785 JCS canonicalization and report digests"
+    },
+    {
+      "name": "jsonschema",
+      "type": "validation_dependency",
+      "version_constraint": ">=4.26,<5",
+      "evidence_path": "pyproject.toml",
+      "purpose": "SRS envelope and report JSON Schema validation"
+    }
+  ],
+  "normative_or_schema_sources": [
+    {
+      "name": "arcs-srs",
+      "type": "normative_schema_source",
+      "mode": "vendored_frozen_authority",
+      "evidence_path": "vendor/arcs-srs/"
+    }
+  ],
+  "vendored_frozen_authority": [
+    {
+      "name": "VENDORED_FROM",
+      "type": "provenance_and_digest_record",
+      "evidence_path": "VENDORED_FROM"
+    },
+    {
+      "name": "frozen standard documents",
+      "type": "vendored_frozen_authority",
+      "evidence_path": "vendor/arcs-srs/frozen-standard-docs.zip"
+    }
+  ],
+  "schema_digest_pins": [
+    {
+      "schema": "SRS Envelope v0.2.0",
+      "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+      "type": "integrity_digest",
+      "evidence_path": "arcs_verify/verifier.py"
+    },
+    {
+      "schema": "SRS Envelope v0.2.1",
+      "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1",
+      "type": "integrity_digest",
+      "evidence_path": "arcs_verify/verifier.py"
+    }
+  ],
+  "producer_relationships_not_runtime_dependencies": [
+    {
+      "name": "DAGR MCP",
+      "type": "test_fixture_producer_relationship",
+      "runtime_package_dependency": false,
+      "evidence_path": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/"
+    },
+    {
+      "name": "arcs-amnesiac",
+      "type": "serialized_fixture_producer_relationship",
+      "runtime_package_dependency": false,
+      "evidence_path": "packs/amnesiac.heppner_public_proof/v0.1/manifest.json"
+    }
+  ],
+  "downstream_consumers": [
+    {
+      "name": "DAGR exporter and verification-report readers",
+      "type": "downstream_consumer",
+      "evidence_path": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/README.md"
+    },
+    {
+      "name": "GARPedia and proof-pack readers",
+      "type": "downstream_consumer",
+      "evidence_path": "packs/amnesiac.heppner_public_proof/v0.1/README.md"
+    }
+  ],
+  "optional_profile_families": [
+    {
+      "name": "srs.connection.lifecycle.v0.1",
+      "type": "optional_profile_family",
+      "evidence_path": "tests/fixtures/connection_lifecycle/"
+    }
+  ],
+  "not_dependencies": [
+    {
+      "name": "arcs-ecosystem-kit",
+      "reason": "schemas are being developed concurrently and are not vendored or imported by this lane"
+    },
+    {
+      "name": "DAGR MCP",
+      "reason": "producer and contract counterpart only; not imported as a runtime package dependency"
+    },
+    {
+      "name": "arcs-srs Python package",
+      "reason": "authority bytes are vendored and pinned; no implementation package is imported"
+    }
+  ]
+}

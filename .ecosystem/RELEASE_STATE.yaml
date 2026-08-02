@@ -1,0 +1,33 @@
+{
+  "schema": "provisional.ecosystem.release_state.v0_1",
+  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
+  "declaration_status": "declared",
+  "repository": "arcs-verify",
+  "release": {
+    "lifecycle_stage": "preview",
+    "implementation_status": "active_implementation",
+    "ecosystem_declaration_status": "provisional",
+    "schema_validation_status": "not_evaluated",
+    "reason_schema_validation_not_evaluated": "arcs-ecosystem-kit schemas are not vendored or imported by this lane"
+  },
+  "unchanged_by_this_lane": [
+    "verification semantics",
+    "supported receipt profiles",
+    "DAGR producer code",
+    "runtime package dependencies",
+    "SRS normative authority"
+  ],
+  "public_release_guard": {
+    "tool": "python tools/check_public_release.py .",
+    "expected_result": "PASS: 0 finding(s)",
+    "last_result_in_this_declaration": "PASS: 0 finding(s)"
+  },
+  "working_tree_expectation": "clean_after_commits",
+  "claims": {
+    "certifies_producer": false,
+    "proves_underlying_event_truth": false,
+    "proves_historical_authenticity_without_external_anchor": false,
+    "converts_not_evaluated_to_pass": false,
+    "treats_chain_status_not_applicable_as_pass": false
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "provisional.ecosystem.repository.v0_1",
+  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
+  "declaration_status": "declared",
+  "repository": {
+    "name": "arcs-verify",
+    "repository": "thelaplage/arcs-verify",
+    "types": [
+      "verifier",
+      "reference_app"
+    ],
+    "prohibited_types": [
+      "emitter",
+      "runtime_binding",
+      "SRS_authority",
+      "certification_service",
+      "public_truth_authority"
+    ],
+    "description": "Independent verifier for signed ARCS/SRS receipts and serialized artifact chains."
+  },
+  "authority": {
+    "status": "active_implementation",
+    "canonical_doctrine_repository": "thelaplage/garp-doctrine",
+    "srs_normative_authority": false,
+    "public_truth_authority": false,
+    "certifies_producer_implementation": false
+  },
+  "architecture": {
+    "owning_layer": "independent_verification",
+    "role": "substrate",
+    "trust_boundary": "serialized_artifacts_only",
+    "producer_code_import_boundary": "no producer or emitter implementation is imported for signed-SRS verification or Amnesiac-chain structural verification"
+  },
+  "lifecycle": {
+    "stage": "preview",
+    "release_state": "implementation_active_declaration_provisional"
+  },
+  "doctrine_reconciliation": {
+    "requested_files_available_in_this_checkout": false,
+    "missing_requested_paths": [
+      ".garp/doctrine_manifest.json",
+      "schemas/garp/doctrine-manifest.schema.json",
+      "schemas/garp/spec-compatibility.schema.json",
+      "registry/repo_conformance_registry.json",
+      "docs/garp/IN___GARP_Reviewable_Assertion_And_Governed_Evolution_v0_1_JUL27.md",
+      "docs/garp/IN___GARP_Substrate_Vertical_Separation_Doctrine_v0_2_AUG01.md"
+    ],
+    "fallback_sources": [
+      "README.md",
+      "VENDORED_FROM",
+      "arcs_verify/verifier.py",
+      "arcs_verify/amnesiac/verifier.py",
+      "arcs_verify/receipt_set.py",
+      "arcs_verify/contracts/dagr-srs-verification-report-v0-1/",
+      "arcs_verify/contracts/dagr-srs-verification-report-v0-2/",
+      "packs/",
+      "vendor/arcs-srs/"
+    ]
+  },
+  "evidence": [
+    {
+      "path": "README.md",
+      "claim": "verifier boundary, result semantics, pinned authority, limitations"
+    },
+    {
+      "path": "pyproject.toml",
+      "claim": "package metadata, runtime dependencies, console script"
+    },
+    {
+      "path": "tools/check_public_release.py",
+      "claim": "producer-import and public-release guard"
+    }
+  ]
+}

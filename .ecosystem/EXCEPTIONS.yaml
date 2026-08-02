@@ -1,0 +1,38 @@
+{
+  "schema": "provisional.ecosystem.exceptions.v0_1",
+  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
+  "declaration_status": "declared",
+  "repository": "arcs-verify",
+  "exceptions": [
+    {
+      "id": "published_distribution_name_unresolved",
+      "status": "open",
+      "type": "transitional_release_exception",
+      "description": "The public distribution name and package-index install command are not finalized.",
+      "evidence_path": "docs/NAMING.md",
+      "impact": "Users install from source during preview; verifier semantics are unaffected."
+    },
+    {
+      "id": "ecosystem_schema_validation_unavailable",
+      "status": "open",
+      "type": "provisional_schema_exception",
+      "description": "The shared ecosystem schemas are being developed concurrently in arcs-ecosystem-kit and are not vendored here.",
+      "evidence_path": ".ecosystem/",
+      "impact": "Declarations are locally parse-checked only; no schema validation claim is made."
+    }
+  ],
+  "non_exceptions": [
+    {
+      "id": "dagr_mcp_not_runtime_dependency",
+      "reason": "This is a boundary property, not an exception."
+    },
+    {
+      "id": "chain_status_not_applicable",
+      "reason": "This is normal signed-SRS result semantics, not an exception."
+    },
+    {
+      "id": "amnesiac_reserved_not_evaluated",
+      "reason": "This is a deliberate verifier limitation and result-domain value, not a failure."
+    }
+  ]
+}

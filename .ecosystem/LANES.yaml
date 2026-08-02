@@ -1,0 +1,31 @@
+{
+  "schema": "provisional.ecosystem.lanes.v0_1",
+  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
+  "declaration_status": "declared",
+  "repository": "arcs-verify",
+  "active_lane": {
+    "id": "arcs-verify-ecosystem-doctrine-pilot-v0-1",
+    "branch": "feat/ecosystem-doctrine-pilot-v0-1",
+    "title": "Add provisional ecosystem declarations for ARCS Verify pilot v0.1",
+    "status": "active",
+    "touches": [
+      "verifier classification",
+      "verification capability mapping",
+      "findings taxonomy",
+      "contract declarations",
+      "producer/verifier separation",
+      "conformance modeling"
+    ],
+    "does_not_touch": [
+      "verifier algorithms",
+      "supported receipt profiles",
+      "DAGR producer code",
+      "runtime package dependencies"
+    ]
+  },
+  "local_uniqueness_basis": {
+    "status": "declared_unique_in_local_lane_file",
+    "other_current_lanes": [],
+    "stale_internal_notes_used": false
+  }
+}
