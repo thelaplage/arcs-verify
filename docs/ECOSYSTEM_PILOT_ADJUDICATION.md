@@ -2,199 +2,231 @@
 
 ## Scope
 
-This document evaluates how the emerging ecosystem-doctrine schemas need to
-model ARCS Verify. It is input for `arcs-ecosystem-kit`; it does not patch that
-repository and does not create a local competing schema.
+This document evaluates how the finalized `arcs-ecosystem-kit` v0.1 schema
+shape accommodates ARCS Verify. It is input for `arcs-ecosystem-kit`; it does
+not patch that repository, vendor its schemas, or create a competing local
+schema.
 
-The model being tested here is proposed, not ratified doctrine:
+The architecture model tested by this pilot is proposed, not ratified doctrine:
 
 ```text
 Layer -> Authority -> Contracts -> Implementations -> Repositories
 ```
 
-The requested `garp-doctrine` files are not available in this checkout, so this
-adjudication uses repository-local truth: verifier code, README boundary prose,
-vendored provenance, contracts, fixtures, and tests.
+ARCS Verify is projected as primary layer `L6 independent_verification`.
 
-Status values used here:
+The A0-A6 architecture inputs referenced by this pilot are exact proposed
+document IDs:
+
+| ID | Status in this pilot |
+|---|---|
+| `arcs.architecture.a0.reference-architecture.v0.1` | Proposed, unratified, not canonical |
+| `arcs.architecture.a1.constitutional-layer-model.v0.1` | Proposed, unratified, not canonical |
+| `arcs.architecture.a2.architectural-ontology.v0.1` | Proposed, unratified, not canonical |
+| `arcs.architecture.a3.authority-model.v0.1` | Proposed, unratified, not canonical |
+| `arcs.architecture.a4.repository-taxonomy.v0.1` | Proposed, unratified, not canonical |
+| `arcs.architecture.a5.federated-repository-development-doctrine.v0.1` | Proposed, unratified, not canonical |
+| `arcs.architecture.a6.ecosystem-coordination-doctrine.v0.1` | Proposed, unratified, not canonical |
+
+The original `garp-doctrine` files requested for doctrine reconciliation are
+not present in this repository checkout. This adjudication therefore uses
+repository-local truth plus the concurrent proposed A0-A6 architecture inputs.
+
+Status values used below:
 
 `PASS`, `FAIL`, `PARTIAL`, `NOT_APPLICABLE`, `NOT_EVALUATED`, `AMBIGUOUS`,
 `OVER_SPECIFIED`, `MISSING_FROM_SCHEMA`.
 
+## Validation Result
+
+The schema-backed declarations validate against `arcs-ecosystem-kit` v0.1
+schemas from the sibling checkout without adding the kit as a runtime
+dependency:
+
+- `REPOSITORY.yaml`
+- `ARCHITECTURE_PASSPORT.yaml`
+- `AUTHORITY_REFERENCES.yaml`
+- `CAPABILITY_BINDINGS.yaml`
+- `CONTRACT_BINDINGS.yaml`
+- `DEPENDENCIES.yaml`
+- `LANES.yaml`
+- `COMPATIBILITY_PROJECTION.yaml`
+- `CONFORMANCE_PROJECTION.yaml`
+- `EXCEPTIONS.yaml`
+- `RELEASE_STATE.yaml`
+
+`BOUNDARIES.yaml` and `RESPONSIBILITIES.yaml` are repository-local provisional
+declarations because the kit v0.1 catalog does not define those schema areas.
+
 ## Schema Area Findings
 
-| Schema area | Status | ARCS Verify need |
+| Schema area | Status | ARCS Verify finding |
 |---|---|---|
-| Repository classification | PASS | Support independent `types` such as `verifier` and `reference_app` without forcing emitter or runtime-binding classification. |
-| Layer schema | PARTIAL | Support `L6 independent_verification` as a proposed layer without claiming ratified doctrine. |
-| Authority schema | PARTIAL | Declare arcs-srs as semantic authority for consumed SRS schemas/profiles while preserving arcs-verify as implementation authority only. |
-| Capability inventory | PARTIAL | Allow implementation support for verifier capabilities without canonical ownership of capability semantics. |
-| Contract inventory | PARTIAL | Represent consumed, validated, and repository-owned output contracts with authority, version, stability, evidence path, and producer/consumer relationships. |
-| Dependency inventory | PARTIAL | Model DAGR MCP as producer/contract counterpart and fixture source, not a runtime package dependency. |
-| Compatibility | PARTIAL | Represent pinned implementation compatibility without public standard ratification. |
-| Conformance | OVER_SPECIFIED | A single A-E grade is too coarse for a verifier because execution enforcement can be `NOT_APPLICABLE` while verifier independence can be `PASS`. |
-| Release state | PARTIAL | Support provisional declarations whose schema validation is `NOT_EVALUATED` pending external kit schemas. |
-| Exceptions | PASS | Support real transitional exceptions without requiring semantic degradation. |
+| Repository classification | PASS | Supports independent `verifier` and `reference_app` repository axes without forcing emitter or runtime-binding classification. |
+| Architecture passport | PASS | Supports primary layer `L6`, imported concerns, exported contracts, prohibited dependencies, and non-ratified model notes. |
+| Authority references | PASS | Separates `arcs-srs` consumed SRS authority from `arcs-verify` implementation/output authority. |
+| Capability bindings | PASS | Represents verifier-oriented implementation bindings without declaring canonical ownership of capability semantics. |
+| Contract bindings | PASS | Represents repository-owned verifier-report outputs and consumed SRS contracts with separate semantic authority. |
+| Dependency declarations | PARTIAL | Can mark DAGR and Countervail as non-runtime relationships, but richer producer/downstream roles still require local notes. |
+| Compatibility projection | PASS | Represents pinned SRS bytes, profile compatibility, DAGR fixture compatibility, and historical-reference boundaries. |
+| Conformance projection | PARTIAL | Supports A-E projection and gate lists, but verifier-specific status dimensions remain partly expressed in notes. |
+| Release state | PASS | Supports preview release posture and gates without claiming public release. |
+| Exceptions | PASS | Supports real transitional exceptions. |
+| Boundaries | MISSING_FROM_SCHEMA | No kit v0.1 schema for serialized-artifact, trust, producer/verifier, and report-output boundaries. |
+| Responsibilities | MISSING_FROM_SCHEMA | No kit v0.1 schema for owned and explicitly unowned repository concerns. |
 
-## Layer Schema Test
+## Required Verifier Boundaries
 
-ARCS Verify should project to primary layer `L6 independent_verification`. The
-schema must allow a repository to declare a proposed layer mapping while making
-no ratification claim for the layer model itself.
+ARCS Verify needs the coordination model to preserve these boundaries:
 
-Status: `PARTIAL` until the kit validates layer identity, proposed-model status,
-and non-ratification fields together.
+- Serialized-artifact input boundary: receipt bytes, trust-bundle bytes, pinned
+  schema bytes, profile identifiers, receipt-set manifests, and optional
+  serialized artifact chains.
+- Producer/verifier independence boundary: DAGR emitters and Amnesiac producers
+  are fixture or contract counterparts, not runtime imports.
+- Trust boundary: supplied trust bundles support key and trust-window checks;
+  they do not prove real-world event truth.
+- Verification-report output boundary: native verifier-report contracts are
+  repository-owned outputs and must not be confused with SRS standard authority.
 
-## Authority Schema Test
-
-The authority schema must model three separate facts:
-
-- `arcs-srs` is the semantic authority for consumed SRS envelope schemas,
-  profile semantics, and vectors;
-- `arcs-verify` owns verifier implementation behavior and native
-  verifier-report output contracts;
-- DAGR MCP implementations are producer/contract counterparts, not imported
-  runtime dependencies.
-
-Status: `PARTIAL` until the kit can validate authority scope without promoting
-local compatibility pins into public ratification.
+Status: `MISSING_FROM_SCHEMA` for first-class boundary declarations in kit
+v0.1.
 
 ## Repository Report Value Domains
 
 This pilot does not introduce a shared, repository-independent findings
-taxonomy. It only records the value domains already present in ARCS Verify's
-repository-owned reports.
+ontology. It records ARCS Verify's existing repository-owned report value
+domains only.
 
-The kit must support non-Boolean findings. ARCS Verify has:
+The kit must accommodate:
 
 - eight signed-SRS Boolean results;
 - separate `chain_status` enum/status values;
 - Amnesiac-chain conclusions in `true`, `false`, and `not_evaluated`;
-- validation errors and source-integrity errors that are not Boolean verifier
-  findings.
+- validation errors distinct from source-integrity errors;
+- emitter assertions distinct from independently recomputed findings.
 
-Status: `MISSING_FROM_SCHEMA` until the shared model explicitly supports these
-domains.
+Status: `PARTIAL`. The current schemas can carry these facts in notes and local
+declarations, but do not provide a first-class verifier result-domain schema.
 
 ## `not_evaluated`
 
-The kit must preserve `not_evaluated` as a first-class value. It is not PASS and
-not necessarily failure. ARCS Verify uses it for reserved Amnesiac-chain
-conclusions such as `authenticity_verified` and `signature_verified`.
+`not_evaluated` is not PASS and not necessarily failure. ARCS Verify uses it for
+reserved Amnesiac-chain conclusions such as `authenticity_verified` and
+`signature_verified`.
 
-Status: `MISSING_FROM_SCHEMA` if the model has only Boolean or pass/fail
-domains.
+Status: `PARTIAL`. Conformance gates can record the distinction, but report
+value domains need first-class representation.
 
 ## `not_applicable`
 
-The kit must preserve `not_applicable` separately from PASS. For signed-SRS
-standalone verification, `chain_status: not_applicable` means no chain was in
-scope. It is not a chain pass.
+`chain_status: not_applicable` means no chain was in scope for standalone
+signed-SRS verification. It is not a chain PASS.
 
-Status: `MISSING_FROM_SCHEMA` if the model collapses not-applicable statuses
-into success.
+Status: `PARTIAL`. The conformance projection can gate the distinction, but a
+findings/value-domain model should represent it directly.
 
 ## Assertion Versus Recomputed Result
 
-The kit must distinguish emitter assertions from independently recomputed
-findings. `subject_ref_origin` is read from validated receipt bytes and rendered
-as `subject_ref_origin_disclosed`; it is a disclosure, not a verifier verdict.
-By contrast, signature validity, schema digest, and receipt hashes are
-recomputed by the verifier.
+`subject_ref_origin` is an emitter assertion read from validated receipt bytes
+and rendered as `subject_ref_origin_disclosed`; it is not a verifier verdict.
+By contrast, schema digest, signature validity, trust checks, and receipt hashes
+are independently recomputed findings.
 
-Status: `MISSING_FROM_SCHEMA` unless assertion provenance and recomputation
-provenance are separate fields.
+Status: `MISSING_FROM_SCHEMA` for a first-class assertion/recomputation axis.
 
-## Producer Relationships That Are Not Package Dependencies
+## Producer Relationships That Are Not Dependencies
 
-The kit must support producer relationships that are not runtime package
-dependencies. DAGR MCP is referenced here through DAGR producer fixtures and as
-a report-contract counterpart, but ARCS Verify does not import DAGR producer
-code and does not depend on a DAGR package to verify receipts.
+DAGR implementations are producer and contract counterparts for serialized
+fixtures. They are not package dependencies and are not imported by the
+verifier. The dependency schema can represent this as a non-required
+implementation relationship, while the richer producer-counterpart semantics
+are recorded in local boundary and responsibility declarations.
 
-Status: `PARTIAL` if dependency schemas only model package imports.
+Status: `PARTIAL`.
 
 ## Downstream Consumer Relationships
 
-The kit must support downstream consumer relationships separately from local
-runtime dependencies. Countervail receipt-ingest verification is referenced as a
-downstream consumer relationship for native verifier-report outputs. This pilot
-does not add Countervail code or a local Countervail contract implementation.
+Countervail receipt-ingest verification is a downstream consumer relationship
+for native verifier-report outputs. This repository does not import Countervail
+code and does not own a local Countervail contract implementation.
 
-Status: `MISSING_FROM_SCHEMA` if downstream contract relationships must be
-represented as package dependencies.
+Status: `PARTIAL`. The dependency schema supports `optional_consumer`, but
+downstream contract role details remain mostly in contract bindings and local
+responsibility notes.
 
-## Pinned Vendored Authority
+## Pinned Authority And Digest Custody
 
-The kit must support vendored frozen authority records and local runtime copies
-with byte digests. ARCS Verify references arcs-srs schema and vector authority
-through `VENDORED_FROM`, `vendor/arcs-srs/schemas/`, `vendor/arcs-srs/vectors/`,
-and runtime schema copies under `arcs_verify/data/`.
+ARCS Verify consumes `arcs-srs` schema and vector authority through vendored
+records and runtime schema copies:
 
-Status: `PARTIAL` unless normative source, vendored copy, and runtime copy can
-be linked explicitly.
+- `VENDORED_FROM`;
+- `vendor/arcs-srs/schemas/`;
+- `vendor/arcs-srs/vectors/`;
+- `arcs_verify/data/srs-envelope-v0.2.0.schema.json`;
+- `arcs_verify/data/srs-envelope-v0.2.1.schema.json`.
+
+Historical vendored bytes and profile pins are compatibility facts. They do not
+ratify public SRS standards, and `srs.core.v5.1` is not described here as the
+current public SRS release.
+
+Status: `PASS` for digest and historical-reference fields; `PARTIAL` for full
+custody-chain modeling across vendored and runtime copies.
 
 ## garp-sdk Reference Rule
 
 `garp-sdk` should be referenced only where shared envelope or contract shapes
 are genuinely consumed. This checkout does not consume such shapes from
-`garp-sdk`, so the pilot does not declare it as an authority or dependency.
+`garp-sdk`, so the pilot records it only as a non-required optional relationship
+with no current runtime dependency.
 
-Status: `NOT_APPLICABLE` for this repository state.
-
-## Integrity Digests
-
-The kit must support integrity digests as first-class facts. This repository
-uses schema SHA-256 pins, receipt artifact hashes, trust-bundle digests,
-configuration digests, report digests, and fixture digests.
-
-Status: `PASS` if digest fields can name algorithm, canonicalization where
-needed, subject, and evidence path.
+Status: `NOT_APPLICABLE` for runtime dependency modeling.
 
 ## Profile-Specific Compatibility
 
-The kit must model compatibility by profile. `srs.mcp.sdk_enforcement.v0.1` and
-`srs.connection.lifecycle.v0.1` are both supported, while the DAGR report
-contracts are scoped only to `srs.mcp.sdk_enforcement.v0.1` admission/outcome
-receipts.
+Compatibility must be profile-scoped. This verifier currently supports:
 
-Status: `MISSING_FROM_SCHEMA` if compatibility is only repository-wide.
+- `srs.mcp.sdk_enforcement.v0.1`;
+- `srs.connection.lifecycle.v0.1`;
+- DAGR report contracts scoped to MCP SDK enforcement admission/outcome
+  receipts;
+- independently serialized Amnesiac-chain structural verification.
+
+Status: `PASS` for compatibility projection shape.
 
 ## Verifier-Specific Conformance
 
-The kit must support verifier-specific dimensions. Execution enforcement is
-`NOT_APPLICABLE` for ARCS Verify, but verifier independence, pinned-schema
-integrity, cryptographic verification, trust evaluation, and report-contract
-stability are meaningful dimensions.
+A-E conformance labels cannot be reduced to one universal runtime-enforcement
+grade for this repository. Execution enforcement is `NOT_APPLICABLE`; verifier
+independence, pinned-schema integrity, cryptographic verification, trust
+evaluation, report-contract stability, and public-release guard behavior remain
+meaningful verifier dimensions.
 
-Status: `OVER_SPECIFIED` for any model that forces all repositories into
-runtime-enforcement conformance levels.
+Status: `PARTIAL`. Gates can express this, but verifier-specific dimensions
+would benefit from a dedicated conformance dimension model.
 
 ## Usage/Source-Integrity Errors Versus Verification Failures
 
-The kit must distinguish validation errors and source-integrity errors from
-verification failures. CLI exit `2` is not a failed verification result; it
-means the verifier could not evaluate a subject. CLI exit `1` is a negative
-verification result.
+CLI exit `2` means a usage or source-integrity error; it is not a failed
+verification verdict. CLI exit `1` means the verifier evaluated the supplied
+subject and produced a negative verification result.
 
-Status: `MISSING_FROM_SCHEMA` if result models only represent pass and fail.
+Status: `MISSING_FROM_SCHEMA` for first-class error-domain separation.
 
-## Coordination Notes For `arcs-ecosystem-kit`
+## Schema Changes Still Required
 
-Recommended schema support:
+Recommended schema support for `arcs-ecosystem-kit`:
 
-- repository classifications as independent axes;
-- proposed layer declarations, including `L6 independent_verification`, without
-  claiming doctrine ratification;
-- authority status separate from canonical normative ownership;
-- finding domains wider than Boolean;
+- first-class boundary declarations for serialized-artifact, producer/verifier,
+  trust, and report-output boundaries;
+- responsibility declarations for owned and explicitly unowned repository
+  concerns;
+- verifier report value-domain modeling wider than Boolean;
 - `not_evaluated` and `not_applicable` as first-class values;
 - assertion provenance separate from recomputation provenance;
-- producer/consumer relationships separate from runtime package dependencies;
-- downstream consumer relationships such as Countervail receipt-ingest without
-  local package dependency implications;
-- pinned vendored authority and digest records;
-- profile-scoped compatibility;
-- verifier-specific conformance dimensions;
-- usage/source-integrity errors separate from verification failures;
-- provisional declaration status separate from validated schema status.
+- producer-counterpart and downstream-consumer roles separate from runtime
+  package dependencies;
+- digest custody across normative source, vendored copy, and runtime copy;
+- verifier-specific conformance dimensions where enforcement-oriented gates are
+  `NOT_APPLICABLE`;
+- usage/source-integrity error domains separate from verification failures.

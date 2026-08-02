@@ -1,38 +1,39 @@
 {
-  "schema": "provisional.ecosystem.exceptions.v0_1",
-  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
-  "declaration_status": "declared",
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.exceptions.v0.1.schema.json",
+  "schema_version": "0.1",
   "repository": "arcs-verify",
   "exceptions": [
     {
-      "id": "published_distribution_name_unresolved",
-      "status": "open",
-      "type": "transitional_release_exception",
-      "description": "The public distribution name and package-index install command are not finalized.",
-      "evidence_path": "docs/NAMING.md",
-      "impact": "Users install from source during preview; verifier semantics are unaffected."
+      "id": "AV-001",
+      "scope": {
+        "type": "release",
+        "target": "packaging_distribution"
+      },
+      "reason": "The public distribution name and package-index install command are not finalized.",
+      "owner": "ARCS Verify maintainers",
+      "approved_by": [],
+      "status": "proposed",
+      "created_date": "2026-08-02",
+      "affected_conformance_level": "B",
+      "mitigation": "Users install from source during preview; verifier semantics are unaffected.",
+      "disposition": "temporary",
+      "notes": "Evidence: docs/NAMING.md."
     },
     {
-      "id": "ecosystem_schema_validation_unavailable",
-      "status": "open",
-      "type": "provisional_schema_exception",
-      "description": "The shared ecosystem schemas are being developed concurrently in arcs-ecosystem-kit and are not vendored here.",
-      "evidence_path": ".ecosystem/",
-      "impact": "Declarations are locally parse-checked only; no schema validation claim is made."
-    }
-  ],
-  "non_exceptions": [
-    {
-      "id": "dagr_mcp_not_runtime_dependency",
-      "reason": "This is a boundary property, not an exception."
-    },
-    {
-      "id": "chain_status_not_applicable",
-      "reason": "This is normal signed-SRS result semantics, not an exception."
-    },
-    {
-      "id": "amnesiac_reserved_not_evaluated",
-      "reason": "This is a deliberate verifier limitation and result-domain value, not a failure."
+      "id": "AV-002",
+      "scope": {
+        "type": "conformance_gate",
+        "target": "boundaries_responsibilities_schema_not_in_kit_v0_1"
+      },
+      "reason": "The kit v0.1 schema catalog does not define BOUNDARIES.yaml or RESPONSIBILITIES.yaml files.",
+      "owner": "ARCS Verify maintainers",
+      "approved_by": [],
+      "status": "proposed",
+      "created_date": "2026-08-02",
+      "affected_conformance_level": "B",
+      "mitigation": "Record verifier boundaries and responsibilities in repository-local provisional declarations and feed the schema gap to arcs-ecosystem-kit.",
+      "disposition": "temporary",
+      "notes": "Evidence: .ecosystem/BOUNDARIES.yaml, .ecosystem/RESPONSIBILITIES.yaml, docs/ECOSYSTEM_PILOT_ADJUDICATION.md."
     }
   ]
 }

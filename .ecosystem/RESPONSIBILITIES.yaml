@@ -1,0 +1,134 @@
+{
+  "schema": "provisional.repository_local.ecosystem.responsibilities.v0.1",
+  "schema_status": "repository_local_no_arcs_ecosystem_kit_schema_v0_1",
+  "repository": "arcs-verify",
+  "primary_constitutional_layer": {
+    "id": "L6",
+    "name": "independent_verification",
+    "model_status": "proposed_unratified"
+  },
+  "owned_responsibilities": [
+    {
+      "id": "verifier_implementation_behavior",
+      "status": "validated",
+      "authority": "arcs-verify",
+      "description": "Implementation behavior for independently evaluating supplied serialized artifacts."
+    },
+    {
+      "id": "native_verification_report_outputs",
+      "status": "validated",
+      "authority": "arcs-verify",
+      "description": "Repository-owned output contracts for verifier reports where applicable."
+    },
+    {
+      "id": "pinned_local_schema_byte_checking",
+      "status": "validated",
+      "authority": "arcs-verify implementation consuming arcs-srs authority",
+      "description": "Local schema digest checking against vendored SRS envelope bytes."
+    },
+    {
+      "id": "profile_check_execution",
+      "status": "validated",
+      "authority": "arcs-verify implementation consuming arcs-srs authority",
+      "description": "Execution of supported named profile checks without adding or changing supported profiles in this lane."
+    },
+    {
+      "id": "raw_content_exclusion_verification",
+      "status": "validated",
+      "authority": "arcs-verify",
+      "description": "Verification that receipts carry references and digests rather than governed source material."
+    },
+    {
+      "id": "signature_and_key_resolution_checks",
+      "status": "validated",
+      "authority": "arcs-verify",
+      "description": "Signature validation, issuer-key resolution, and trust-window checks from supplied artifacts."
+    },
+    {
+      "id": "attestation_limit_presence_checking",
+      "status": "validated",
+      "authority": "arcs-verify",
+      "description": "Verifier checks that attestation limits are present and non-empty."
+    },
+    {
+      "id": "serialized_receipt_set_verification",
+      "status": "validated",
+      "authority": "arcs-verify",
+      "description": "Receipt-set workflow manifest and enumerated receipt verification from serialized inputs."
+    },
+    {
+      "id": "amnesiac_chain_structural_recomputation",
+      "status": "validated",
+      "authority": "arcs-verify",
+      "description": "Independent structural recomputation for serialized Amnesiac-chain artifacts."
+    },
+    {
+      "id": "cli_exit_code_behavior",
+      "status": "validated",
+      "authority": "arcs-verify",
+      "description": "CLI distinction among pass, verification failure, and usage/source-integrity error."
+    },
+    {
+      "id": "producer_import_public_release_guard",
+      "status": "validated",
+      "authority": "arcs-verify",
+      "description": "Guardrail that protects public-release and producer-independence boundaries."
+    }
+  ],
+  "explicitly_unowned_responsibilities": [
+    "receipt emission",
+    "runtime admission",
+    "execution enforcement",
+    "producer truthfulness",
+    "underlying event truth",
+    "operator-independent historical authenticity without an external anchor",
+    "SRS normative authority",
+    "DAGR runtime semantics",
+    "organization policy",
+    "GARPedia presentation",
+    "source system retention behavior",
+    "public truth authority",
+    "certification service"
+  ],
+  "authority_separation": {
+    "arcs_srs": {
+      "role": "semantic authority for consumed SRS schemas, profiles, and vectors",
+      "consumed_by_arcs_verify": true,
+      "public_ratification_claim_by_arcs_verify": false
+    },
+    "arcs_verify": {
+      "role": "L6 verifier implementation and native verifier-report output authority",
+      "srs_authority": false,
+      "producer_authority": false
+    },
+    "dagr_mcp": {
+      "role": "producer and contract counterpart for serialized fixtures",
+      "runtime_package_dependency": false,
+      "imported_by_verifier": false
+    },
+    "countervail": {
+      "role": "downstream receipt-ingest verification contract consumer relationship",
+      "runtime_package_dependency": false,
+      "local_contract_artifact_available": false
+    },
+    "garp_sdk": {
+      "role": "reference only when shared envelope or contract shapes are genuinely consumed",
+      "current_runtime_dependency": false,
+      "current_consumed_shared_shapes": []
+    }
+  },
+  "compatibility_fact_boundary": {
+    "historical_vendored_bytes_are_compatibility_facts": true,
+    "profile_pins_are_compatibility_facts": true,
+    "srs_core_v5_1_public_release_claim": false
+  },
+  "evidence": [
+    "README.md",
+    "VERIFICATION_BOUNDARIES.md",
+    "VERIFICATION_FINDINGS.md",
+    ".ecosystem/AUTHORITY_REFERENCES.yaml",
+    ".ecosystem/CONTRACT_BINDINGS.yaml",
+    ".ecosystem/DEPENDENCIES.yaml",
+    ".ecosystem/COMPATIBILITY_PROJECTION.yaml"
+  ]
+}

@@ -1,33 +1,65 @@
 {
-  "schema": "provisional.ecosystem.release_state.v0_1",
-  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
-  "declaration_status": "declared",
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.release-state.v0.1.schema.json",
+  "schema_version": "0.1",
   "repository": "arcs-verify",
-  "release": {
-    "lifecycle_stage": "preview",
-    "implementation_status": "active_implementation",
-    "ecosystem_declaration_status": "provisional",
-    "schema_validation_status": "not_evaluated",
-    "reason_schema_validation_not_evaluated": "arcs-ecosystem-kit schemas are not vendored or imported by this lane"
-  },
-  "unchanged_by_this_lane": [
-    "verification semantics",
-    "supported receipt profiles",
-    "DAGR producer code",
-    "runtime package dependencies",
-    "SRS normative authority"
+  "release_stage": "preview",
+  "current_version": "v0.1.1",
+  "release_readiness": "ready_with_exceptions",
+  "required_gates": [
+    {
+      "gate_id": "focused-ecosystem-declaration-tests",
+      "description": "Focused declaration sanity and schema validation tests pass.",
+      "status": "passed",
+      "required_for_release": true
+    },
+    {
+      "gate_id": "full-repository-tests",
+      "description": "Full existing repository test suite passes.",
+      "status": "passed",
+      "required_for_release": true
+    },
+    {
+      "gate_id": "public-release-guard",
+      "description": "Public-release guard passes.",
+      "status": "passed",
+      "required_for_release": true
+    },
+    {
+      "gate_id": "verifier-semantics-unchanged",
+      "description": "No verifier algorithms, supported profiles, findings, public-release behavior, or CLI result semantics changed.",
+      "status": "passed",
+      "required_for_release": true
+    },
+    {
+      "gate_id": "runtime-enforcement",
+      "description": "Runtime execution enforcement is outside this L6 verifier repository.",
+      "status": "not_applicable",
+      "required_for_release": false
+    }
   ],
-  "public_release_guard": {
-    "tool": "python tools/check_public_release.py .",
-    "expected_result": "PASS: 0 finding(s)",
-    "last_result_in_this_declaration": "PASS: 0 finding(s)"
+  "passed_gates": [
+    "focused-ecosystem-declaration-tests",
+    "full-repository-tests",
+    "public-release-guard",
+    "verifier-semantics-unchanged"
+  ],
+  "blocking_issues": [],
+  "dependent_releases": [
+    {
+      "repository": "arcs-ecosystem-kit",
+      "version": "v0.1",
+      "relationship": "informs"
+    },
+    {
+      "repository": "arcs-srs",
+      "version": "v0.1",
+      "relationship": "informs"
+    }
+  ],
+  "compatibility_status": {
+    "claim_status": "validated",
+    "summary": "Preview verifier compatibility is validated against pinned local schema bytes, fixture evidence, and repository tests; this is not public standard ratification."
   },
-  "working_tree_expectation": "clean_after_commits",
-  "claims": {
-    "certifies_producer": false,
-    "proves_underlying_event_truth": false,
-    "proves_historical_authenticity_without_external_anchor": false,
-    "converts_not_evaluated_to_pass": false,
-    "treats_chain_status_not_applicable_as_pass": false
-  }
+  "release_notes_ref": "docs/ECOSYSTEM_PILOT_ADJUDICATION.md",
+  "last_reviewed": "2026-08-02"
 }

@@ -1,0 +1,188 @@
+{
+  "schema": "provisional.repository_local.ecosystem.boundaries.v0.1",
+  "schema_status": "repository_local_no_arcs_ecosystem_kit_schema_v0_1",
+  "repository": "arcs-verify",
+  "primary_constitutional_layer": {
+    "id": "L6",
+    "name": "independent_verification",
+    "model_status": "proposed_unratified"
+  },
+  "architecture_inputs": [
+    {
+      "document_id": "arcs.architecture.a0.reference-architecture.v0.1",
+      "status": "proposed",
+      "ratification_status": "unratified",
+      "canonical": false
+    },
+    {
+      "document_id": "arcs.architecture.a1.constitutional-layer-model.v0.1",
+      "status": "proposed",
+      "ratification_status": "unratified",
+      "canonical": false
+    },
+    {
+      "document_id": "arcs.architecture.a2.architectural-ontology.v0.1",
+      "status": "proposed",
+      "ratification_status": "unratified",
+      "canonical": false
+    },
+    {
+      "document_id": "arcs.architecture.a3.authority-model.v0.1",
+      "status": "proposed",
+      "ratification_status": "unratified",
+      "canonical": false
+    },
+    {
+      "document_id": "arcs.architecture.a4.repository-taxonomy.v0.1",
+      "status": "proposed",
+      "ratification_status": "unratified",
+      "canonical": false
+    },
+    {
+      "document_id": "arcs.architecture.a5.federated-repository-development-doctrine.v0.1",
+      "status": "proposed",
+      "ratification_status": "unratified",
+      "canonical": false
+    },
+    {
+      "document_id": "arcs.architecture.a6.ecosystem-coordination-doctrine.v0.1",
+      "status": "proposed",
+      "ratification_status": "unratified",
+      "canonical": false
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "serialized_artifact_input_boundary",
+      "status": "validated",
+      "owned_by": "arcs-verify",
+      "description": "The verifier consumes serialized receipt bytes, serialized trust-bundle bytes, pinned schema bytes, profile identifiers, receipt-set manifests, and optional serialized artifact chains.",
+      "included_inputs": [
+        "serialized signed-SRS receipt",
+        "serialized trust bundle",
+        "pinned SRS envelope schema bytes",
+        "named SRS profile identifier",
+        "DAGR workflow-manifest receipt set",
+        "serialized Amnesiac artifact chain"
+      ],
+      "excluded_inputs": [
+        "producer implementation internals",
+        "producer dashboard state",
+        "operator policy state",
+        "source system retention behavior"
+      ],
+      "evidence": [
+        "README.md",
+        "VERIFICATION_BOUNDARIES.md",
+        "arcs_verify/verifier.py",
+        "arcs_verify/receipt_set.py",
+        "arcs_verify/amnesiac/verifier.py"
+      ]
+    },
+    {
+      "id": "producer_verifier_independence_boundary",
+      "status": "validated",
+      "owned_by": "arcs-verify",
+      "description": "ARCS Verify verifies portable artifacts without importing the implementation that emitted them.",
+      "producer_counterparts": [
+        "DAGR MCP producer fixtures",
+        "arcs-amnesiac serialized proof packs"
+      ],
+      "not_runtime_dependencies": [
+        "DAGR MCP",
+        "arcs-srs producer implementation",
+        "garp-sdk unless shared shapes are genuinely consumed"
+      ],
+      "evidence": [
+        "README.md",
+        ".ecosystem/DEPENDENCIES.yaml",
+        "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/",
+        "packs/amnesiac.heppner_public_proof/v0.1/manifest.json"
+      ]
+    },
+    {
+      "id": "trust_boundary",
+      "status": "validated",
+      "owned_by": "arcs-verify",
+      "description": "The verifier resolves issuer keys and evaluates trust windows from supplied trust-bundle bytes; it does not create external trust or prove real-world event truth.",
+      "checked": [
+        "issuer_key_resolved",
+        "issuer_key_trusted",
+        "trust-window validity for issued_at",
+        "attestation-limit presence"
+      ],
+      "not_checked": [
+        "producer truthfulness",
+        "underlying event truth",
+        "operator-independent historical authenticity without an external anchor",
+        "organization policy"
+      ],
+      "evidence": [
+        "VERIFICATION_BOUNDARIES.md",
+        "arcs_verify/verifier.py"
+      ]
+    },
+    {
+      "id": "verification_report_output_boundary",
+      "status": "validated",
+      "owned_by": "arcs-verify",
+      "description": "Native verifier-report contracts are repository-owned outputs that preserve Boolean findings, enum/status results, reserved conclusions, limitations, and error boundaries.",
+      "provided_outputs": [
+        "arcs_verify.signed_srs.report.v0_1",
+        "srs.dagr_verification_report.v0.1",
+        "srs.dagr_verification_report.v0.2",
+        "arcs_verify.report.v0_1_1"
+      ],
+      "downstream_consumer_relationships": [
+        "DAGR exporter and verification-report readers",
+        "Countervail receipt-ingest verification contract"
+      ],
+      "evidence": [
+        "VERIFICATION_FINDINGS.md",
+        "arcs_verify/contracts/",
+        ".ecosystem/CONTRACT_BINDINGS.yaml"
+      ]
+    }
+  ],
+  "result_state_boundaries": {
+    "emitter_assertion": "A field declared by the producer and read from validated serialized bytes.",
+    "independently_recomputed_finding": "A verifier-derived result recomputed from serialized artifacts.",
+    "not_evaluated": "A conclusion deliberately outside the current verifier scope; not PASS and not necessarily FAIL.",
+    "not_applicable": "A question outside the current invocation scope; not PASS.",
+    "validation_error": "A structural or contract-validation error on an artifact the verifier could evaluate.",
+    "source_integrity_error": "A missing, unreadable, malformed, or digest-mismatched source artifact condition before reliable evaluation."
+  },
+  "signed_srs_result_boundary": {
+    "boolean_results": [
+      "schema_digest",
+      "envelope",
+      "profile",
+      "raw_content_exclusion",
+      "signature_valid",
+      "issuer_key_resolved",
+      "issuer_key_trusted",
+      "attestation_limits_present"
+    ],
+    "separate_status_results": [
+      "chain_status"
+    ],
+    "chain_status_not_applicable_is_pass": false
+  },
+  "amnesiac_chain_result_boundary": {
+    "conclusion_domain": [
+      "true",
+      "false",
+      "not_evaluated"
+    ],
+    "reserved_conclusions": [
+      "authenticity_verified",
+      "signature_verified"
+    ],
+    "not_evaluated_is_pass": false,
+    "not_evaluated_is_failure": false
+  },
+  "ontology_boundary": {
+    "generic_ecosystem_findings_ontology_introduced": false,
+    "scope": "repository-owned report value domains only"
+  }
+}

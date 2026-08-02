@@ -1,199 +1,474 @@
 {
-  "schema": "provisional.ecosystem.contract_bindings.v0_1",
-  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
-  "declaration_status": "declared",
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.contract-bindings.v0.1.schema.json",
+  "schema_version": "0.1",
   "repository": "arcs-verify",
-  "layer": {
-    "primary_layer_id": "L6",
-    "primary_layer_name": "independent_verification",
-    "model_status": "proposed_not_ratified"
-  },
-  "authority_boundary": {
-    "consumed_srs_schema_profile_semantic_authority": "arcs-srs",
-    "repository_owned_output_authority": "arcs-verify",
-    "producer_counterpart_is_runtime_dependency": false
-  },
-  "contract_bindings": [
+  "native_registry_refs": [],
+  "provided": [
     {
-      "id": "arcs_verify.signed_srs.input.v0_1",
-      "role": "verification_input",
-      "authority": "implementation_contract",
-      "version": "v0.1",
-      "stability": "active",
-      "evidence_path": "README.md",
-      "relationship": "consumes",
-      "known_counterpart": "serialized receipt and trust-bundle producers"
-    },
-    {
-      "id": "srs.envelope.schema.v0.2.0",
-      "role": "schema_consumption",
-      "authority": "arcs-srs",
-      "version": "v0.2.0",
-      "stability": "pinned",
-      "evidence_path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
+      "contract_id": "arcs_verify.signed_srs.report.v0_1",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/verifier.py",
+        "version": "v0.1",
+        "status": "resolved"
+      },
+      "provider_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/verifier.py",
+        "version": null
+      },
+      "consumer_implementation": null,
       "relationship": "validates",
-      "known_counterpart": "arcs-srs vendored schema"
-    },
-    {
-      "id": "srs.envelope.schema.v0.2.1",
-      "role": "schema_consumption",
-      "authority": "arcs-srs",
-      "version": "v0.2.1",
-      "stability": "pinned",
-      "evidence_path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
-      "relationship": "validates",
-      "known_counterpart": "arcs-srs vendored schema"
-    },
-    {
-      "id": "srs.mcp.sdk_enforcement",
-      "role": "named_profile_consumption",
-      "authority": "arcs-srs",
       "version": "v0.1",
-      "stability": "supported",
-      "evidence_path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/manifest.json",
-      "relationship": "validates",
-      "known_counterpart": "DAGR MCP receipt producer fixtures"
-    },
-    {
-      "id": "srs.connection.lifecycle",
-      "role": "named_profile_consumption",
-      "authority": "arcs-srs",
-      "version": "v0.1",
-      "stability": "supported_local_compatibility",
-      "evidence_path": "tests/fixtures/connection_lifecycle/connect.json",
-      "relationship": "validates",
-      "known_counterpart": "connection lifecycle receipt producers"
-    },
-    {
-      "id": "arcs_verify.trust_bundle.input.v0_1",
-      "role": "trust_bundle_consumption",
-      "authority": "implementation_contract",
-      "version": "v0.1",
-      "stability": "active",
-      "evidence_path": "arcs_verify/verifier.py",
-      "relationship": "consumes",
-      "known_counterpart": "issuer-key bundle provider"
-    },
-    {
-      "id": "arcs_verify.signed_srs.report.v0_1",
-      "role": "native_verifier_report_output",
-      "authority": "repository_owned_output_contract",
-      "version": "v0.1",
-      "stability": "active",
-      "evidence_path": "arcs_verify/verifier.py",
-      "relationship": "provides",
-      "known_counterpart": "CLI and downstream report readers"
-    },
-    {
-      "id": "srs.dagr_verification_report.v0.1",
-      "role": "native_verifier_report_output",
-      "authority": "repository_owned_output_contract",
-      "version": "v0.1",
-      "stability": "frozen",
-      "evidence_path": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/verification-report.schema.json",
-      "relationship": "provides",
-      "known_counterpart": "DAGR exporter and report consumers"
-    },
-    {
-      "id": "srs.dagr_verification_report.v0.2",
-      "role": "native_verifier_report_output",
-      "authority": "repository_owned_output_contract",
-      "version": "v0.2",
-      "stability": "release_closed",
-      "evidence_path": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/verification-report.schema.json",
-      "relationship": "provides",
-      "known_counterpart": "DAGR exporter and report consumers"
-    },
-    {
-      "id": "dagr.workflow_receipt_set.v0_1",
-      "role": "receipt_set_workflow_manifest_consumption",
-      "authority": "implementation_contract",
-      "version": "v0.1",
-      "stability": "active",
-      "evidence_path": "arcs_verify/receipt_set.py",
-      "relationship": "consumes",
-      "known_counterpart": "DAGR governed-memory workflow index"
-    },
-    {
-      "id": "arcs_verify.amnesiac_chain.input.v0_1",
-      "role": "Amnesiac_chain_input_contract",
-      "authority": "implementation_contract",
-      "version": "v0.1",
-      "stability": "active",
-      "evidence_path": "arcs_verify/amnesiac/verifier.py",
-      "relationship": "consumes",
-      "known_counterpart": "serialized Amnesiac producer bundles"
-    },
-    {
-      "id": "arcs_verify.report.v0_1_1",
-      "role": "native_verifier_report_output",
-      "authority": "repository_owned_output_contract",
-      "version": "v0.1.1",
-      "stability": "active",
-      "evidence_path": "arcs_verify/amnesiac/verifier.py",
-      "relationship": "provides",
-      "known_counterpart": "Amnesiac proof-pack report readers"
-    },
-    {
-      "id": "arcs_verify.vendored_authority.v0_1",
-      "role": "vendored_authority_provenance_record",
-      "authority": "local_provenance_record",
-      "version": "v0.1",
-      "stability": "pinned",
-      "evidence_path": "VENDORED_FROM",
-      "relationship": "provides",
-      "known_counterpart": "arcs-srs frozen material"
-    },
-    {
-      "id": "arcs_verify.cli_exit_codes.v0_1",
-      "role": "CLI_exit_code_contract",
-      "authority": "implementation_contract",
-      "version": "v0.1",
-      "stability": "active",
-      "evidence_path": "README.md",
-      "relationship": "provides",
-      "known_counterpart": "CLI callers and CI users"
-    },
-    {
-      "id": "arcs_verify.public_release_guard.v0_1",
-      "role": "producer_independence_public_release_guard",
-      "authority": "implementation_guard",
-      "version": "v0.1",
-      "stability": "active",
-      "evidence_path": "tools/check_public_release.py",
-      "relationship": "validates",
-      "known_counterpart": "repository release workflow"
-    }
-  ],
-  "runtime_non_dependencies": [
-    {
-      "name": "DAGR MCP",
-      "classification": "producer_and_contract_counterpart",
-      "runtime_package_dependency": false,
-      "imported_by_verifier": false
-    }
-  ],
-  "producer_relationships": [
-    {
-      "name": "DAGR MCP producer fixtures",
-      "relationship": "producer_fixture_relationship",
-      "runtime_package_dependency": false,
-      "evidence_path": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/"
-    }
-  ],
-  "downstream_consumer_relationships": [
-    {
-      "name": "Countervail receipt-ingest verification contract",
-      "relationship": "downstream_consumer_relationship",
-      "local_contract_artifact_available": false,
-      "consumes_repository_owned_outputs": [
-        "arcs_verify.signed_srs.report.v0_1",
-        "srs.dagr_verification_report.v0.1",
-        "srs.dagr_verification_report.v0.2",
-        "arcs_verify.report.v0_1_1"
+      "contract_type": "verification_report",
+      "stability": "preview",
+      "assertion_status": "implemented",
+      "known_consumers": [
+        "CLI callers",
+        "Countervail receipt-ingest verification contract"
       ],
-      "boundary": "consumer relationship only; no Countervail code or contract implementation is added here",
-      "evidence_path": "PRODUCT_PATH.md"
+      "compatibility": {
+        "assertion_status": "validated",
+        "backward_compatible_with": [],
+        "unsupported_versions": [],
+        "migration_notes": "Signed-SRS report keeps eight Boolean results plus separate chain_status."
+      },
+      "evidence_refs": [
+        {
+          "id": "signed-srs-report-shape",
+          "path": "README.md",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "migration": {
+        "current_owner": "arcs-verify",
+        "candidate_owner": null,
+        "candidate_verified": false,
+        "migration_authorized": false,
+        "migration_record_ref": null
+      },
+      "integrity": {}
+    },
+    {
+      "contract_id": "srs.dagr_verification_report.v0.1",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/",
+        "version": "v0.1",
+        "status": "resolved"
+      },
+      "provider_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/dagr_report.py",
+        "version": null
+      },
+      "consumer_implementation": {
+        "repository": "DAGR exporter and report consumers",
+        "role": "consumer",
+        "artifact_ref": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/README.md",
+        "version": "v0.1"
+      },
+      "relationship": "validates",
+      "version": "v0.1",
+      "contract_type": "verification_report",
+      "stability": "frozen",
+      "assertion_status": "implemented",
+      "known_consumers": [
+        "DAGR exporter",
+        "Countervail receipt-ingest verification contract"
+      ],
+      "compatibility": {
+        "assertion_status": "validated",
+        "backward_compatible_with": [],
+        "unsupported_versions": [],
+        "migration_notes": "Frozen v0.1 report contract preserves eight Boolean verdicts and chain_status outside verdicts."
+      },
+      "evidence_refs": [
+        {
+          "id": "dagr-report-v0-1-contract",
+          "path": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/README.md",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "migration": {
+        "current_owner": "arcs-verify",
+        "candidate_owner": null,
+        "candidate_verified": false,
+        "migration_authorized": false,
+        "migration_record_ref": null
+      },
+      "integrity": {}
+    },
+    {
+      "contract_id": "srs.dagr_verification_report.v0.2",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/",
+        "version": "v0.2",
+        "status": "resolved"
+      },
+      "provider_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/dagr_report_v0_2.py",
+        "version": null
+      },
+      "consumer_implementation": {
+        "repository": "DAGR exporter and report consumers",
+        "role": "consumer",
+        "artifact_ref": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/README.md",
+        "version": "v0.2"
+      },
+      "relationship": "validates",
+      "version": "v0.2",
+      "contract_type": "verification_report",
+      "stability": "frozen",
+      "assertion_status": "implemented",
+      "known_consumers": [
+        "DAGR exporter",
+        "Countervail receipt-ingest verification contract"
+      ],
+      "compatibility": {
+        "assertion_status": "validated",
+        "backward_compatible_with": [
+          "v0.1"
+        ],
+        "unsupported_versions": [],
+        "migration_notes": "v0.2 adds subject_ref_origin disclosure only; disclosure is not a verdict."
+      },
+      "evidence_refs": [
+        {
+          "id": "dagr-report-v0-2-contract",
+          "path": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/README.md",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "migration": {
+        "current_owner": "arcs-verify",
+        "candidate_owner": null,
+        "candidate_verified": false,
+        "migration_authorized": false,
+        "migration_record_ref": null
+      },
+      "integrity": {}
+    },
+    {
+      "contract_id": "arcs_verify.report.v0_1_1",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/amnesiac/verifier.py",
+        "version": "v0.1.1",
+        "status": "resolved"
+      },
+      "provider_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/amnesiac/verifier.py",
+        "version": null
+      },
+      "consumer_implementation": {
+        "repository": "Amnesiac proof-pack report readers",
+        "role": "consumer",
+        "artifact_ref": "packs/amnesiac.heppner_public_proof/v0.1/README.md",
+        "version": "v0.1"
+      },
+      "relationship": "validates",
+      "version": "v0.1.1",
+      "contract_type": "verification_report",
+      "stability": "preview",
+      "assertion_status": "implemented",
+      "known_consumers": [
+        "Amnesiac proof-pack readers",
+        "Countervail receipt-ingest verification contract"
+      ],
+      "compatibility": {
+        "assertion_status": "validated",
+        "backward_compatible_with": [],
+        "unsupported_versions": [],
+        "migration_notes": "Reserved conclusions remain not_evaluated and are not converted to PASS."
+      },
+      "evidence_refs": [
+        {
+          "id": "amnesiac-report-shape",
+          "path": "arcs_verify/amnesiac/verifier.py",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "migration": {
+        "current_owner": "arcs-verify",
+        "candidate_owner": null,
+        "candidate_verified": false,
+        "migration_authorized": false,
+        "migration_record_ref": null
+      },
+      "integrity": {}
+    }
+  ],
+  "consumed": [
+    {
+      "contract_id": "srs.envelope.schema.v0.2.0",
+      "owning_layer": "L1",
+      "semantic_authority": {
+        "repository": "arcs-srs",
+        "artifact_ref": "schemas/srs-envelope/v0.2.0/srs-envelope.schema.json",
+        "version": "v0.2.0",
+        "status": "resolved"
+      },
+      "provider_implementation": {
+        "repository": "arcs-srs",
+        "role": "semantic_authority",
+        "artifact_ref": "vendor/arcs-srs/schemas/srs-envelope/v0.2.0/srs-envelope.schema.json",
+        "version": "v0.2.0"
+      },
+      "consumer_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
+        "version": "v0.2.0"
+      },
+      "relationship": "validates",
+      "version": "v0.2.0",
+      "contract_type": "schema",
+      "stability": "frozen",
+      "assertion_status": "validated",
+      "compatibility": {
+        "assertion_status": "validated",
+        "backward_compatible_with": [],
+        "unsupported_versions": [],
+        "migration_notes": "Pinned historical compatibility fact; not public ratification."
+      },
+      "evidence_refs": [
+        {
+          "id": "srs-envelope-v0-2-0-pin",
+          "path": "VENDORED_FROM",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "migration": {
+        "current_owner": "arcs-srs",
+        "candidate_owner": null,
+        "candidate_verified": false,
+        "migration_authorized": false,
+        "migration_record_ref": null
+      },
+      "integrity": {
+        "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "source_path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
+        "notes": "Runtime schema pin."
+      }
+    },
+    {
+      "contract_id": "srs.envelope.schema.v0.2.1",
+      "owning_layer": "L1",
+      "semantic_authority": {
+        "repository": "arcs-srs",
+        "artifact_ref": "schemas/srs-envelope/v0.2.1/srs-envelope.schema.json",
+        "version": "v0.2.1",
+        "status": "resolved"
+      },
+      "provider_implementation": {
+        "repository": "arcs-srs",
+        "role": "semantic_authority",
+        "artifact_ref": "vendor/arcs-srs/schemas/srs-envelope/v0.2.1/srs-envelope.schema.json",
+        "version": "v0.2.1"
+      },
+      "consumer_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
+        "version": "v0.2.1"
+      },
+      "relationship": "validates",
+      "version": "v0.2.1",
+      "contract_type": "schema",
+      "stability": "frozen",
+      "assertion_status": "validated",
+      "compatibility": {
+        "assertion_status": "validated",
+        "backward_compatible_with": [
+          "v0.2.0"
+        ],
+        "unsupported_versions": [],
+        "migration_notes": "Additive schema pin with subject_ref_origin disclosure handling; not public ratification."
+      },
+      "evidence_refs": [
+        {
+          "id": "srs-envelope-v0-2-1-pin",
+          "path": "VENDORED_FROM",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "migration": {
+        "current_owner": "arcs-srs",
+        "candidate_owner": null,
+        "candidate_verified": false,
+        "migration_authorized": false,
+        "migration_record_ref": null
+      },
+      "integrity": {
+        "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1",
+        "source_path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
+        "notes": "Runtime schema pin."
+      }
+    },
+    {
+      "contract_id": "srs.mcp.sdk_enforcement.profile.v0_1",
+      "owning_layer": "L1",
+      "semantic_authority": {
+        "repository": "arcs-srs",
+        "artifact_ref": "docs/profiles/SRS_MCP_SDK_ENFORCEMENT_PROFILE_v0_1.md",
+        "version": "v0.1",
+        "status": "resolved"
+      },
+      "provider_implementation": {
+        "repository": "arcs-srs",
+        "role": "semantic_authority",
+        "artifact_ref": "vendor/arcs-srs/frozen-standard-docs.zip",
+        "version": "v0.1"
+      },
+      "consumer_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/verifier.py",
+        "version": "v0.1"
+      },
+      "relationship": "validates",
+      "version": "v0.1",
+      "contract_type": "evidence_profile",
+      "stability": "frozen",
+      "assertion_status": "validated",
+      "compatibility": {
+        "assertion_status": "validated",
+        "backward_compatible_with": [],
+        "unsupported_versions": [],
+        "migration_notes": "Named profile is a compatibility fact in this repository."
+      },
+      "evidence_refs": [
+        {
+          "id": "mcp-profile-manifest",
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/manifest.json",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "migration": {
+        "current_owner": "arcs-srs",
+        "candidate_owner": null,
+        "candidate_verified": false,
+        "migration_authorized": false,
+        "migration_record_ref": null
+      },
+      "integrity": {}
+    },
+    {
+      "contract_id": "dagr.workflow_receipt_set.v0_1",
+      "owning_layer": "L4",
+      "semantic_authority": {
+        "repository": "dagr-mcp",
+        "artifact_ref": "governed-memory-workflow manifest",
+        "version": "v0.1",
+        "status": "resolved"
+      },
+      "provider_implementation": {
+        "repository": "dagr-mcp",
+        "role": "producer",
+        "artifact_ref": "DAGR governed-memory workflow index",
+        "version": "v0.1"
+      },
+      "consumer_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/receipt_set.py",
+        "version": "v0.1"
+      },
+      "relationship": "validates",
+      "version": "v0.1",
+      "contract_type": "proof_pack_contract",
+      "stability": "preview",
+      "assertion_status": "validated",
+      "compatibility": {
+        "assertion_status": "validated",
+        "backward_compatible_with": [],
+        "unsupported_versions": [],
+        "migration_notes": "DAGR is a producer counterpart and fixture source, not a runtime package dependency."
+      },
+      "evidence_refs": [
+        {
+          "id": "receipt-set-verifier",
+          "path": "arcs_verify/receipt_set.py",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "migration": {
+        "current_owner": "dagr-mcp",
+        "candidate_owner": null,
+        "candidate_verified": false,
+        "migration_authorized": false,
+        "migration_record_ref": null
+      },
+      "integrity": {}
+    },
+    {
+      "contract_id": "countervail.receipt_ingest.verification_contract.v0_1",
+      "owning_layer": "L9",
+      "semantic_authority": {
+        "repository": "Countervail receipt-ingest verification contract",
+        "artifact_ref": "downstream contract relationship",
+        "version": "v0.1",
+        "status": "unresolved"
+      },
+      "provider_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/contracts/",
+        "version": null
+      },
+      "consumer_implementation": {
+        "repository": "Countervail receipt-ingest verification contract",
+        "role": "consumer",
+        "artifact_ref": "downstream contract relationship",
+        "version": "v0.1"
+      },
+      "relationship": "validates",
+      "version": "v0.1",
+      "contract_type": "policy_contract",
+      "stability": "preview",
+      "assertion_status": "declared",
+      "compatibility": {
+        "assertion_status": "declared",
+        "backward_compatible_with": [],
+        "unsupported_versions": [],
+        "migration_notes": "Consumer relationship only; no Countervail code or contract implementation is added here."
+      },
+      "evidence_refs": [
+        {
+          "id": "product-path-countervail",
+          "path": "PRODUCT_PATH.md",
+          "authority": "arcs-verify",
+          "relationship": "projects"
+        }
+      ],
+      "migration": {
+        "current_owner": null,
+        "candidate_owner": null,
+        "candidate_verified": false,
+        "migration_authorized": false,
+        "migration_record_ref": null
+      },
+      "integrity": {}
     }
   ]
 }

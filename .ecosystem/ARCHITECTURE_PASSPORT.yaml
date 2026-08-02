@@ -1,162 +1,268 @@
 {
-  "schema": "provisional.ecosystem.architecture_passport.v0_1",
-  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
-  "declaration_status": "declared",
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.architecture-passport.v0.1.schema.json",
+  "schema_version": "0.1",
   "repository": "arcs-verify",
-  "architecture_model": {
-    "status": "proposed_not_ratified",
-    "order": [
-      "Layer",
-      "Authority",
-      "Contracts",
-      "Implementations",
-      "Repositories"
+  "repository_type": "verifier",
+  "authority_status": "current_implementation",
+  "lifecycle_state": "preview",
+  "substrate_surface_role": "substrate",
+  "owning_layer": "verifier",
+  "constitutional_layers": {
+    "primary": "L6",
+    "secondary": []
+  },
+  "mission": "Independently verify signed ARCS/SRS receipts and serialized artifact chains from supplied artifacts without importing producer implementations.",
+  "owned_concerns": [
+    {
+      "id": "arcs-verify.verifier-implementation-behavior",
+      "description": "Verifier-side implementation behavior for signed-SRS, receipt-set, and Amnesiac-chain verification.",
+      "claim_status": "implemented"
+    },
+    {
+      "id": "arcs-verify.native-verifier-report-outputs",
+      "description": "Repository-owned output report contracts and report representations emitted by this verifier.",
+      "claim_status": "implemented"
+    },
+    {
+      "id": "arcs-verify.public-release-guard",
+      "description": "Producer-import and public-release guard behavior.",
+      "claim_status": "implemented"
+    }
+  ],
+  "imported_concerns": [
+    {
+      "id": "srs.envelope.schema",
+      "constitutional_layer": "L1",
+      "semantic_authority": {
+        "repository": "arcs-srs",
+        "artifact_ref": "schemas/srs-envelope/",
+        "version": null,
+        "status": "resolved"
+      },
+      "relationship": "consumes",
+      "claim_status": "validated",
+      "notes": "Consumed as pinned local schema bytes; compatibility fact only, not public ratification."
+    },
+    {
+      "id": "srs.profile.semantics",
+      "constitutional_layer": "L1",
+      "semantic_authority": {
+        "repository": "arcs-srs",
+        "artifact_ref": "docs/profiles/",
+        "version": null,
+        "status": "resolved"
+      },
+      "relationship": "consumes",
+      "claim_status": "validated",
+      "notes": "ARCS Verify implements profile checks but does not own SRS semantic authority."
+    },
+    {
+      "id": "dagr.producer.fixture.relationships",
+      "constitutional_layer": "L4",
+      "semantic_authority": {
+        "repository": "dagr-mcp",
+        "artifact_ref": "producer fixtures",
+        "version": null,
+        "status": "resolved"
+      },
+      "relationship": "validates",
+      "claim_status": "fixture_reachable",
+      "notes": "DAGR emitters are producer counterparts, not imported runtime dependencies."
+    },
+    {
+      "id": "arcs.constitutional.architecture.inputs",
+      "constitutional_layer": "L0",
+      "semantic_authority": {
+        "repository": "garp-doctrine",
+        "artifact_ref": "docs/architecture/A0-A6",
+        "version": "v0.1",
+        "status": "unresolved"
+      },
+      "relationship": "references",
+      "claim_status": "declared",
+      "notes": "A0-A6 are proposed unratified architecture inputs."
+    }
+  ],
+  "exported_contracts": [
+    {
+      "contract_id": "arcs_verify.signed_srs.report.v0_1",
+      "version": "v0.1",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/verifier.py",
+        "version": "v0.1",
+        "status": "resolved"
+      },
+      "claim_status": "implemented"
+    },
+    {
+      "contract_id": "srs.dagr_verification_report.v0.1",
+      "version": "v0.1",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/",
+        "version": "v0.1",
+        "status": "resolved"
+      },
+      "claim_status": "implemented"
+    },
+    {
+      "contract_id": "srs.dagr_verification_report.v0.2",
+      "version": "v0.2",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/",
+        "version": "v0.2",
+        "status": "resolved"
+      },
+      "claim_status": "implemented"
+    },
+    {
+      "contract_id": "arcs_verify.report.v0_1_1",
+      "version": "v0.1.1",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/amnesiac/verifier.py",
+        "version": "v0.1.1",
+        "status": "resolved"
+      },
+      "claim_status": "implemented"
+    }
+  ],
+  "authority_references": [
+    "arcs_constitutional_architecture_inputs",
+    "srs_schema_profile_authority",
+    "arcs_verify_verifier_implementation",
+    "dagr_producer_counterparts",
+    "countervail_receipt_ingest_consumer"
+  ],
+  "allowed_cross_layer_imports": [
+    {
+      "from_layer": "L6",
+      "to_layer": "L1",
+      "reason": "Verifier consumes SRS schema/profile semantics without owning them.",
+      "authority_ref": "srs_schema_profile_authority"
+    },
+    {
+      "from_layer": "L6",
+      "to_layer": "L4",
+      "reason": "Verifier validates producer fixture bytes without importing producer implementation code.",
+      "authority_ref": "dagr_producer_counterparts"
+    },
+    {
+      "from_layer": "L6",
+      "to_layer": "L0",
+      "reason": "Pilot references proposed A0-A6 architecture inputs without treating them as ratified doctrine.",
+      "authority_ref": "arcs_constitutional_architecture_inputs"
+    }
+  ],
+  "prohibited_dependencies": [
+    {
+      "id": "verifier-must-not-import-producer-runtime",
+      "description": "ARCS Verify must not import DAGR producer or emitter implementation code to verify DAGR receipts.",
+      "status": "prohibited",
+      "source_layer": "L6",
+      "target_layer": "L4",
+      "rationale": "Independent verification requires serialized-artifact-only producer boundaries."
+    },
+    {
+      "id": "verifier-must-not-claim-srs-authority",
+      "description": "ARCS Verify must not own consumed SRS schema or profile semantics.",
+      "status": "prohibited",
+      "source_layer": "L6",
+      "target_layer": "L1",
+      "rationale": "arcs-srs is the consumed SRS schema/profile authority."
+    }
+  ],
+  "dependencies": [
+    {
+      "repository": "arcs-srs",
+      "contract_id": "srs.envelope.schema",
+      "reason": "Consumed schema/profile authority represented through vendored pinned bytes."
+    },
+    {
+      "repository": "arcs-ecosystem-kit",
+      "contract_id": "ecosystem.declaration.schemas.v0_1",
+      "reason": "Validation-only schema dependency; not a runtime package dependency."
+    }
+  ],
+  "extension_points": [
+    {
+      "id": "additional-pinned-envelope-schema",
+      "description": "Additional accepted pinned SRS envelope schemas may be added without weakening existing pins.",
+      "status": "declared",
+      "owner": "arcs-verify"
+    },
+    {
+      "id": "additional-native-verifier-report-contract",
+      "description": "Additional repository-owned verifier-report contracts may be added for downstream consumers.",
+      "status": "declared",
+      "owner": "arcs-verify"
+    }
+  ],
+  "compatibility_guarantees": [
+    {
+      "scope": "signed-SRS result semantics",
+      "claim_status": "validated",
+      "description": "The signed-SRS path keeps eight Boolean results and a separate non-Boolean chain_status."
+    },
+    {
+      "scope": "Amnesiac-chain reserved conclusions",
+      "claim_status": "validated",
+      "description": "not_evaluated remains distinct from PASS and FAIL."
+    }
+  ],
+  "current_owners": [
+    {
+      "repository": "arcs-verify",
+      "role": "verifier_counterpart",
+      "notes": "Owns verifier implementation behavior and native verifier-report outputs."
+    }
+  ],
+  "candidate_owners": [],
+  "migration": {
+    "authorized": false,
+    "record_ref": null,
+    "notes": "No ownership migration is authorized by this pilot."
+  },
+  "security_boundary": {
+    "summary": "Serialized artifact verifier boundary: receipt bytes, trust-bundle bytes, pinned schema bytes, selected profile, and optional serialized artifact chain.",
+    "trusted_inputs": [
+      "pinned local schema bytes",
+      "explicitly supplied trust bundle bytes",
+      "explicitly supplied serialized evidence artifacts"
+    ],
+    "protected_assets": [
+      "verifier independence",
+      "native verifier-report output semantics",
+      "source-integrity distinction"
+    ],
+    "non_authoritative_for": [
+      "SRS semantic authority",
+      "DAGR runtime behavior",
+      "producer truthfulness",
+      "underlying event truth",
+      "public standard ratification"
     ]
   },
-  "role": {
-    "side": "verifier",
-    "primary_layer_id": "L6",
-    "owning_layer": "independent_verification",
-    "architecture_role": "substrate",
-    "reference_app": true
-  },
-  "authority_boundary": {
-    "srs_semantic_authority": "arcs-srs",
-    "repository_owned_authority": "verifier implementation behavior and native verifier-report output contracts",
-    "standard_authority": false,
-    "authority_reference_file": ".ecosystem/AUTHORITY_REFERENCES.yaml"
-  },
-  "owned_concerns": [
-    "verifier implementation behavior",
-    "verification-report representation owned by this implementation where applicable",
-    "pinned local schema-byte checking",
-    "profile-check execution",
-    "raw-content-exclusion verification",
-    "signature and key resolution checks",
-    "trust-window checking",
-    "attestation-limit presence checking",
-    "serialized receipt-set verification",
-    "independently serialized Amnesiac-chain structural recomputation",
-    "CLI exit-code behavior",
-    "producer-import/public-release guard"
-  ],
-  "explicitly_unowned_concerns": [
-    "receipt emission",
-    "runtime admission",
-    "execution enforcement",
-    "producer truthfulness",
-    "underlying event truth",
-    "operator-independent historical authenticity without an external anchor",
-    "SRS normative authority",
-    "DAGR runtime semantics",
-    "organization policy",
-    "GARPedia presentation",
-    "source system retention behavior"
-  ],
-  "trust_boundary": {
-    "input_surface": [
-      "serialized receipt bytes",
-      "serialized trust-bundle bytes",
-      "pinned schema bytes",
-      "selected profile identifier",
-      "optional serialized artifact chain"
-    ],
-    "producer_boundary": "serialized-artifact-only",
-    "producer_import_allowed": false,
-    "dagr_runtime_dependency": false
-  },
-  "pinned_authority": [
-    {
-      "name": "SRS Envelope v0.2.0 schema",
-      "status": "compatibility_fact",
-      "semantic_authority": "arcs-srs",
-      "public_ratification_claim": false,
-      "path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
-      "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333"
-    },
-    {
-      "name": "SRS Envelope v0.2.1 schema",
-      "status": "compatibility_fact",
-      "semantic_authority": "arcs-srs",
-      "public_ratification_claim": false,
-      "path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
-      "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
-    },
-    {
-      "name": "receipt_version",
-      "value": "srs.core.v5.1",
-      "status": "internal_pre_public_lineage_compatibility_value",
-      "public_release_claim": false
-    }
-  ],
-  "verification_modes": [
-    {
-      "id": "signed_srs_receipt",
-      "finding_shape": "eight_boolean_results_plus_separate_chain_status",
-      "independently_recomputed": true,
-      "producer_code_imported": false
-    },
-    {
-      "id": "amnesiac_chain",
-      "finding_shape": "conclusion_domain_true_false_not_evaluated",
-      "independently_recomputed": true,
-      "producer_code_imported": false
-    },
-    {
-      "id": "receipt_set",
-      "finding_shape": "manifest_integrity_and_receipt_linkage_statuses_with_nested_signed_srs_reports",
-      "independently_recomputed": true,
-      "producer_code_imported": false
-    }
-  ],
-  "result_semantics": {
-    "signed_srs": {
-      "boolean_results": [
-        "schema_digest",
-        "envelope",
-        "profile",
-        "raw_content_exclusion",
-        "signature_valid",
-        "issuer_key_resolved",
-        "issuer_key_trusted",
-        "attestation_limits_present"
-      ],
-      "separate_status_results": [
-        "chain_status"
-      ],
-      "chain_status_not_applicable_is_pass": false
-    },
-    "amnesiac_chain": {
-      "conclusion_domain": [
-        "true",
-        "false",
-        "not_evaluated"
-      ],
-      "reserved_conclusions": [
-        "authenticity_verified",
-        "signature_verified"
-      ]
-    }
-  },
-  "extension_points": [
-    "additional accepted pinned envelope schema versions",
-    "additional named profiles",
-    "additional verification-report contracts",
-    "additional serialized artifact-chain profiles"
-  ],
   "non_goals": [
-    "certify producer implementation",
-    "prove underlying real-world event occurred",
-    "prove historical authenticity absent an external anchor",
-    "own SRS normative semantics",
-    "import DAGR producer code"
+    "Do not change verifier algorithms, profiles, findings, public-release behavior, or CLI result semantics.",
+    "Do not certify producer implementations.",
+    "Do not prove underlying real-world events occurred.",
+    "Do not convert not_evaluated or not_applicable into PASS.",
+    "Do not add arcs-ecosystem-kit as a runtime dependency."
   ],
-  "evidence": [
-    "README.md",
-    "arcs_verify/verifier.py",
-    "arcs_verify/amnesiac/verifier.py",
-    "arcs_verify/receipt_set.py",
-    "arcs_verify/contracts/dagr-srs-verification-report-v0-1/README.md",
-    "arcs_verify/contracts/dagr-srs-verification-report-v0-2/README.md"
+  "conformance": {
+    "declared_level": "B",
+    "status": "validated",
+    "notes": "Verifier-specific projection: independent verification gates validate, while runtime enforcement gates are not applicable."
+  },
+  "known_exceptions": [
+    "AV-001",
+    "AV-002"
   ]
 }

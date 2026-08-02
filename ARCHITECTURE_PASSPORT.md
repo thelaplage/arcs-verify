@@ -3,8 +3,9 @@
 ## Status
 
 This passport is provisional for the distributed ecosystem-doctrine pilot. The
-shared schemas are being developed in `arcs-ecosystem-kit`; this repository does
-not vendor those schemas and does not declare schema validation complete.
+schema-backed declarations validate against `arcs-ecosystem-kit` v0.1 from a
+sibling checkout; this repository does not vendor those schemas and does not add
+the kit as a runtime dependency.
 
 The architecture model tested by this pilot is proposed, not ratified doctrine:
 
@@ -12,10 +13,11 @@ The architecture model tested by this pilot is proposed, not ratified doctrine:
 Layer -> Authority -> Contracts -> Implementations -> Repositories
 ```
 
-The requested `garp-doctrine` files are not present in this checkout. This
-passport therefore uses repository-local truth: `README.md`, `VENDORED_FROM`,
-the verifier implementation, local contracts, tests, packs, and vendored
-provenance.
+The requested historical `garp-doctrine` files are not present in this checkout.
+The A0-A6 architecture inputs were inspected from concurrent proposed doctrine
+material and are referenced only as unratified inputs. This passport otherwise
+uses repository-local truth: `README.md`, `VENDORED_FROM`, the verifier
+implementation, local contracts, tests, packs, and vendored provenance.
 
 ## Verifier Role
 

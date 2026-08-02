@@ -1,126 +1,142 @@
 {
-  "schema": "provisional.ecosystem.dependencies.v0_1",
-  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
-  "declaration_status": "declared",
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.dependencies.v0.1.schema.json",
+  "schema_version": "0.1",
   "repository": "arcs-verify",
-  "runtime_package_dependencies": [
+  "dependencies": [
     {
-      "name": "cryptography",
-      "type": "cryptographic_implementation_dependency",
-      "version_constraint": ">=46.0.4,<47",
-      "evidence_path": "pyproject.toml",
-      "purpose": "Ed25519 signature verification"
+      "repository": "arcs-srs",
+      "dependency_type": "schema",
+      "contract": {
+        "contract_id": "srs.envelope.schema.v0.2.x",
+        "semantic_authority": "arcs-srs schema and vector authority"
+      },
+      "version_requirement": {
+        "version_range": "v0.2.0 - v0.2.1"
+      },
+      "required": true,
+      "required_for_release": true,
+      "reason": "ARCS Verify consumes pinned SRS envelope schema bytes and validates serialized receipts against those bytes.",
+      "compatibility_notes": "Vendored bytes and digest pins are compatibility facts, not public ratification claims."
     },
     {
-      "name": "rfc8785",
-      "type": "canonicalization_dependency",
-      "version_constraint": "==0.1.4",
-      "evidence_path": "pyproject.toml",
-      "purpose": "RFC8785 JCS canonicalization and report digests"
+      "repository": "arcs-srs",
+      "dependency_type": "normative",
+      "contract": {
+        "contract_id": "srs.profile.semantics",
+        "semantic_authority": "arcs-srs schema and vector authority"
+      },
+      "version_requirement": {
+        "version_range": "v0.1 - v5.1"
+      },
+      "required": true,
+      "required_for_release": true,
+      "reason": "Named profile checks and receipt_version compatibility are consumed from SRS lineage without making ARCS Verify the SRS authority.",
+      "compatibility_notes": "srs.core.v5.1 is treated as internal/pre-public lineage for local compatibility only."
     },
     {
-      "name": "jsonschema",
-      "type": "validation_dependency",
-      "version_constraint": ">=4.26,<5",
-      "evidence_path": "pyproject.toml",
-      "purpose": "SRS envelope and report JSON Schema validation"
-    }
-  ],
-  "normative_or_schema_sources": [
-    {
-      "name": "arcs-srs schema and vector authority",
-      "type": "schema_and_vector_authority",
-      "mode": "vendored_frozen_authority",
-      "evidence_paths": [
-        "vendor/arcs-srs/schemas/",
-        "vendor/arcs-srs/vectors/",
-        "VENDORED_FROM"
-      ]
-    }
-  ],
-  "vendored_frozen_authority": [
-    {
-      "name": "VENDORED_FROM",
-      "type": "provenance_and_digest_record",
-      "evidence_path": "VENDORED_FROM"
+      "repository": "pypi:cryptography",
+      "dependency_type": "runtime",
+      "contract": {
+        "contract_id": "ed25519.signature.verification",
+        "semantic_authority": "cryptography project"
+      },
+      "version_requirement": {
+        "version_range": ">=46.0.4,<47"
+      },
+      "required": true,
+      "required_for_release": true,
+      "reason": "Runtime cryptographic implementation used for Ed25519 signature verification.",
+      "compatibility_notes": "Declared package dependency in pyproject.toml."
     },
     {
-      "name": "frozen standard documents",
-      "type": "vendored_frozen_authority",
-      "evidence_path": "vendor/arcs-srs/frozen-standard-docs.zip"
-    }
-  ],
-  "schema_digest_pins": [
-    {
-      "schema": "SRS Envelope v0.2.0",
-      "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
-      "type": "integrity_digest",
-      "evidence_path": "arcs_verify/verifier.py"
+      "repository": "pypi:jsonschema",
+      "dependency_type": "runtime",
+      "contract": {
+        "contract_id": "json.schema.validation",
+        "semantic_authority": "jsonschema project"
+      },
+      "version_requirement": {
+        "version_range": ">=4.26,<5"
+      },
+      "required": true,
+      "required_for_release": true,
+      "reason": "Runtime JSON Schema validation for SRS envelope and report contracts.",
+      "compatibility_notes": "Declared package dependency in pyproject.toml."
     },
     {
-      "schema": "SRS Envelope v0.2.1",
-      "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1",
-      "type": "integrity_digest",
-      "evidence_path": "arcs_verify/verifier.py"
-    }
-  ],
-  "producer_relationships_not_runtime_dependencies": [
-    {
-      "name": "DAGR MCP producer fixtures",
-      "type": "test_fixture_producer_relationship",
-      "runtime_package_dependency": false,
-      "evidence_path": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/"
+      "repository": "pypi:rfc8785",
+      "dependency_type": "runtime",
+      "contract": {
+        "contract_id": "rfc8785.canonicalization",
+        "semantic_authority": "rfc8785 project"
+      },
+      "version_requirement": {
+        "exact_version": "v0.1.4"
+      },
+      "required": true,
+      "required_for_release": true,
+      "reason": "Runtime JCS canonicalization dependency used for signature preimages and report digest material.",
+      "compatibility_notes": "Declared package dependency in pyproject.toml."
     },
     {
-      "name": "arcs-amnesiac",
-      "type": "serialized_fixture_producer_relationship",
-      "runtime_package_dependency": false,
-      "evidence_path": "packs/amnesiac.heppner_public_proof/v0.1/manifest.json"
-    }
-  ],
-  "downstream_consumers": [
-    {
-      "name": "DAGR exporter and verification-report readers",
-      "type": "downstream_consumer",
-      "evidence_path": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/README.md"
+      "repository": "dagr-mcp",
+      "dependency_type": "implementation",
+      "contract": {
+        "contract_id": "srs.mcp.sdk_enforcement.fixture.producer",
+        "semantic_authority": "DAGR producer fixture authority"
+      },
+      "version_requirement": {
+        "exact_version": "v0.1"
+      },
+      "required": false,
+      "required_for_release": false,
+      "reason": "DAGR implementations provide producer fixtures and contract counterparts; they are not imported runtime package dependencies.",
+      "compatibility_notes": "Producer relationship is exercised through serialized fixture artifacts under packs/."
     },
     {
-      "name": "Countervail receipt-ingest verification contract",
-      "type": "downstream_consumer_relationship",
-      "local_contract_artifact_available": false,
-      "evidence_path": "PRODUCT_PATH.md"
-    }
-  ],
-  "garp_sdk_policy": {
-    "name": "garp-sdk",
-    "runtime_package_dependency": false,
-    "reference_rule": "Reference garp-sdk only where shared envelope or contract shapes are genuinely consumed.",
-    "current_consumed_shared_shapes": [],
-    "current_status": "not_declared_as_dependency_or_authority_in_this_pilot"
-  },
-  "optional_profile_families": [
-    {
-      "name": "srs.connection.lifecycle.v0.1",
-      "type": "optional_profile_family",
-      "evidence_path": "tests/fixtures/connection_lifecycle/"
-    }
-  ],
-  "not_dependencies": [
-    {
-      "name": "arcs-ecosystem-kit",
-      "reason": "schemas are being developed concurrently and are not vendored or imported by this lane"
+      "repository": "countervail",
+      "dependency_type": "optional_consumer",
+      "contract": {
+        "contract_id": "countervail.receipt_ingest.verification",
+        "semantic_authority": "Countervail receipt-ingest contract"
+      },
+      "version_requirement": {
+        "exact_version": "v0.1"
+      },
+      "required": false,
+      "required_for_release": false,
+      "reason": "Countervail receipt-ingest is a downstream consumer relationship for verification reports, not an imported runtime dependency.",
+      "compatibility_notes": "No local Countervail contract artifact is owned by this repository."
     },
     {
-      "name": "DAGR MCP",
-      "reason": "producer and contract counterpart only; not imported as a runtime package dependency"
+      "repository": "arcs-ecosystem-kit",
+      "dependency_type": "validation",
+      "contract": {
+        "contract_id": "ecosystem.declaration.schemas.v0.1",
+        "semantic_authority": "arcs-ecosystem-kit schema authority"
+      },
+      "version_requirement": {
+        "exact_version": "v0.1"
+      },
+      "required": false,
+      "required_for_release": true,
+      "reason": "This lane validates declarations against kit schemas from a sibling checkout without adding the kit as a runtime dependency.",
+      "compatibility_notes": "The kit is not vendored and is not imported by verifier code."
     },
     {
-      "name": "garp-sdk",
-      "reason": "not referenced as a dependency because this checkout does not genuinely consume shared envelope or contract shapes from it"
-    },
-    {
-      "name": "arcs-srs Python package",
-      "reason": "authority bytes are vendored and pinned; no implementation package is imported"
+      "repository": "garp-sdk",
+      "dependency_type": "optional_consumer",
+      "contract": {
+        "contract_id": "shared.envelope.or.contract.shapes",
+        "semantic_authority": "garp-sdk"
+      },
+      "version_requirement": {
+        "exact_version": "v0.1"
+      },
+      "required": false,
+      "required_for_release": false,
+      "reason": "garp-sdk is referenced only under the policy that shared envelope or contract shapes must be genuinely consumed before declaring it as a dependency.",
+      "compatibility_notes": "No current runtime package dependency is declared for garp-sdk in this pilot."
     }
   ]
 }

@@ -1,132 +1,377 @@
 {
-  "schema": "provisional.ecosystem.compatibility_projection.v0_1",
-  "schema_status": "provisional_pending_arcs_ecosystem_kit_validation",
-  "declaration_status": "declared",
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.compatibility-projection.v0.1.schema.json",
+  "schema_version": "0.1",
   "repository": "arcs-verify",
-  "layer": {
-    "primary_layer_id": "L6",
-    "primary_layer_name": "independent_verification",
-    "model_status": "proposed_not_ratified"
-  },
-  "compatibility_claim_status": "repository_implementation_compatibility_only",
-  "public_standard_ratification_claim": false,
-  "semantic_authority_for_consumed_srs_shapes": "arcs-srs",
-  "compatibility_fact_boundary": {
-    "historical_vendored_bytes_are_compatibility_facts": true,
-    "profile_pins_are_compatibility_facts": true,
-    "public_ratification_claim": false
-  },
-  "srs_lineage": {
-    "receipt_version": "srs.core.v5.1",
-    "status": "internal_pre_public_lineage_compatibility_value",
-    "current_public_release": false
-  },
-  "srs_envelope_versions": [
+  "native_registry_refs": [
     {
+      "id": "arcs-verify.compatibility.local",
+      "path": ".ecosystem/COMPATIBILITY_PROJECTION.yaml",
+      "authority": "arcs-verify",
+      "summary_role": "Repository-local compatibility projection for the L6 verifier implementation"
+    }
+  ],
+  "arcs_profiles": [],
+  "srs_profiles": [
+    {
+      "id": "srs.envelope.schema",
       "version": "v0.2.0",
-      "status": "supported_pinned",
-      "semantic_authority": "arcs-srs",
-      "compatibility_fact": true,
-      "public_ratification_claim": false,
-      "schema_path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
-      "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333"
-    },
-    {
-      "version": "v0.2.1",
-      "status": "supported_pinned",
-      "semantic_authority": "arcs-srs",
-      "compatibility_fact": true,
-      "public_ratification_claim": false,
-      "schema_path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
-      "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
-    }
-  ],
-  "receipt_discriminators": [
-    {
-      "field": "receipt_version",
-      "value": "srs.core.v5.1",
-      "status": "required"
-    },
-    {
-      "field": "profile_id",
-      "values": [
-        "srs.mcp.sdk_enforcement",
-        "srs.connection.lifecycle"
+      "semantic_authority": "arcs-srs schema and vector authority",
+      "relationship": "validates",
+      "assertion_status": "validated",
+      "authority_repository": "arcs-srs",
+      "authority_artifact_ref": "schemas/srs-envelope/v0.2.0/srs-envelope.schema.json",
+      "authority_version": "v0.2.0",
+      "evidence_refs": [
+        {
+          "id": "vendored-srs-envelope-v0.2.0",
+          "path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
+          "authority": "arcs-srs",
+          "relationship": "validates",
+          "notes": "Pinned local schema bytes consumed by the verifier"
+        },
+        {
+          "id": "vendored-provenance",
+          "path": "VENDORED_FROM",
+          "authority": "arcs-verify",
+          "relationship": "projects",
+          "notes": "Records vendored authority provenance and digest custody"
+        }
       ],
-      "status": "profile_versioned"
-    }
-  ],
-  "named_profiles": [
-    {
-      "id": "srs.mcp.sdk_enforcement.v0.1",
-      "status": "supported",
-      "semantic_authority": "arcs-srs",
-      "compatibility_fact": true,
-      "public_ratification_claim": false,
-      "evidence": "arcs_verify/verifier.py"
+      "integrity": {
+        "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "source_path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
+        "notes": "Compatibility fact for current verifier implementation; not a public ratification claim"
+      },
+      "historical_reference": true,
+      "notes": "Consumed SRS envelope bytes are pinned compatibility facts, not repository-owned standard authority."
     },
     {
-      "id": "srs.connection.lifecycle.v0.1",
-      "status": "supported",
-      "semantic_authority": "arcs-srs",
-      "compatibility_fact": true,
-      "public_ratification_claim": false,
-      "evidence": "arcs_verify/verifier.py"
-    }
-  ],
-  "verification_report_contracts": [
-    {
-      "id": "srs.dagr_verification_report.v0.1",
-      "status": "frozen",
-      "evidence": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/"
+      "id": "srs.envelope.schema",
+      "version": "v0.2.1",
+      "semantic_authority": "arcs-srs schema and vector authority",
+      "relationship": "validates",
+      "assertion_status": "validated",
+      "authority_repository": "arcs-srs",
+      "authority_artifact_ref": "schemas/srs-envelope/v0.2.1/srs-envelope.schema.json",
+      "authority_version": "v0.2.1",
+      "evidence_refs": [
+        {
+          "id": "vendored-srs-envelope-v0.2.1",
+          "path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
+          "authority": "arcs-srs",
+          "relationship": "validates",
+          "notes": "Pinned local schema bytes consumed by the verifier"
+        },
+        {
+          "id": "origin-disclosure-contract",
+          "path": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/origin-disclosure-contract.json",
+          "authority": "arcs-verify",
+          "relationship": "projects",
+          "notes": "Subject-reference-origin disclosure compatibility handling"
+        }
+      ],
+      "integrity": {
+        "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1",
+        "source_path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
+        "notes": "Compatibility fact for current verifier implementation; not a public ratification claim"
+      },
+      "historical_reference": true,
+      "notes": "Consumed SRS envelope bytes are pinned compatibility facts, not repository-owned standard authority."
     },
     {
-      "id": "srs.dagr_verification_report.v0.2",
-      "status": "release_closed",
-      "evidence": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/"
-    }
-  ],
-  "subject_reference_origin_disclosure": {
-    "status": "supported_disclosure_not_verdict",
-    "declared_values": [
-      "supplied_subject",
-      "derived_from_session",
-      "derived_from_request",
-      "derived_from_supplied_correlation",
-      "binding_minted"
-    ],
-    "absence_rendering": "not_declared",
-    "evidence": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/origin-disclosure-contract.json"
-  },
-  "dagr_produced_fixture_versions": [
-    {
-      "name": "dagr-mcp-fastmcp-demo",
-      "profile": "srs.mcp.sdk_enforcement.v0.1",
-      "status": "fixture_compatibility",
-      "evidence": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/"
+      "id": "srs.core",
+      "version": "v5.1",
+      "semantic_authority": "arcs-srs schema and vector authority",
+      "relationship": "validates",
+      "assertion_status": "validated",
+      "authority_repository": "arcs-srs",
+      "authority_artifact_ref": "receipt_version discriminator",
+      "authority_version": "v5.1",
+      "evidence_refs": [
+        {
+          "id": "receipt-version-check",
+          "path": "arcs_verify/verifier.py",
+          "authority": "arcs-verify",
+          "relationship": "implements",
+          "notes": "Verifier checks receipt_version == srs.core.v5.1"
+        },
+        {
+          "id": "srs-lineage-provenance",
+          "path": "VENDORED_FROM",
+          "authority": "arcs-verify",
+          "relationship": "projects",
+          "notes": "Repository compatibility lineage only"
+        }
+      ],
+      "integrity": {
+        "source_path": "arcs_verify/verifier.py",
+        "notes": "The value is an internal/pre-public compatibility discriminator, not the current public SRS release."
+      },
+      "historical_reference": true,
+      "notes": "Do not read srs.core.v5.1 as public SRS ratification; this file records local compatibility with pinned implementation facts."
     },
     {
-      "name": "dagr.workflow_receipt_set.v0_1",
-      "status": "workflow_manifest_compatibility",
-      "evidence": "arcs_verify/receipt_set.py"
-    }
-  ],
-  "amnesiac_chain_profile_versions": [
+      "id": "srs.mcp.sdk_enforcement",
+      "version": "v0.1",
+      "semantic_authority": "arcs-srs schema and vector authority",
+      "relationship": "validates",
+      "assertion_status": "validated",
+      "authority_repository": "arcs-srs",
+      "authority_artifact_ref": "profiles/srs.mcp.sdk_enforcement.v0.1",
+      "authority_version": "v0.1",
+      "evidence_refs": [
+        {
+          "id": "profile-implementation",
+          "path": "arcs_verify/verifier.py",
+          "authority": "arcs-verify",
+          "relationship": "implements",
+          "notes": "Profile-check execution implemented by this verifier"
+        },
+        {
+          "id": "dagr-profile-fixtures",
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/",
+          "authority": "dagr-mcp",
+          "relationship": "emits",
+          "notes": "DAGR producer fixtures are counterpart evidence, not imported runtime dependencies"
+        }
+      ],
+      "integrity": {
+        "source_path": "arcs_verify/verifier.py",
+        "notes": "Named profile support is an implementation compatibility fact."
+      },
+      "historical_reference": true,
+      "notes": "Profile compatibility is consumed from arcs-srs authority and executed by arcs-verify."
+    },
     {
-      "profile": "full_artifact_chain.v0_1",
-      "input_schema": "packet_time_claim_binding.v0_1",
-      "receipt_schema": "garp.sovereignty_receipt.v0.1",
-      "status": "supported_structural_verification",
-      "evidence": "arcs_verify/amnesiac/verifier.py"
+      "id": "srs.connection.lifecycle",
+      "version": "v0.1",
+      "semantic_authority": "arcs-srs schema and vector authority",
+      "relationship": "validates",
+      "assertion_status": "validated",
+      "authority_repository": "arcs-srs",
+      "authority_artifact_ref": "profiles/srs.connection.lifecycle.v0.1",
+      "authority_version": "v0.1",
+      "evidence_refs": [
+        {
+          "id": "connection-lifecycle-fixtures",
+          "path": "tests/fixtures/connection_lifecycle/",
+          "authority": "arcs-verify",
+          "relationship": "validates",
+          "notes": "Local fixtures exercise the optional profile family"
+        }
+      ],
+      "integrity": {
+        "source_path": "tests/fixtures/connection_lifecycle/",
+        "notes": "Named profile support is an implementation compatibility fact."
+      },
+      "historical_reference": true,
+      "notes": "Profile compatibility is consumed from arcs-srs authority and executed by arcs-verify."
     }
   ],
-  "python_versions": {
-    "requires_python": ">=3.11",
-    "classifiers": [
-      "3.11",
-      "3.12",
-      "3.13"
-    ],
-    "evidence": "pyproject.toml"
-  }
+  "governed_action_model_versions": [],
+  "host_product_versions": [
+    {
+      "product": "dagr-mcp-fastmcp-demo",
+      "version": "v0.1",
+      "semantic_authority": "DAGR producer fixture authority",
+      "relationship": "emits",
+      "assertion_status": "fixture_reachable",
+      "authority_repository": "dagr-mcp",
+      "authority_artifact_ref": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/",
+      "authority_version": "v0.1",
+      "evidence_refs": [
+        {
+          "id": "dagr-produced-fixtures",
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/",
+          "authority": "dagr-mcp",
+          "relationship": "emits",
+          "notes": "Serialized fixture relationship only"
+        }
+      ],
+      "integrity": {
+        "source_path": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/",
+        "notes": "Producer counterpart compatibility is not a runtime package dependency."
+      },
+      "notes": "DAGR implementations are modeled as producer and contract counterparts for fixtures."
+    },
+    {
+      "product": "dagr.workflow_receipt_set",
+      "version": "v0.1",
+      "semantic_authority": "DAGR workflow manifest fixture authority",
+      "relationship": "emits",
+      "assertion_status": "fixture_reachable",
+      "authority_repository": "dagr-mcp",
+      "authority_artifact_ref": "workflow receipt-set manifest fixtures",
+      "authority_version": "v0.1",
+      "evidence_refs": [
+        {
+          "id": "receipt-set-verifier",
+          "path": "arcs_verify/receipt_set.py",
+          "authority": "arcs-verify",
+          "relationship": "validates",
+          "notes": "Verifier consumes serialized workflow-manifest inputs"
+        }
+      ],
+      "integrity": {
+        "source_path": "arcs_verify/receipt_set.py",
+        "notes": "Receipt-set compatibility is evaluated from serialized inputs."
+      },
+      "notes": "Receipt-set workflow-manifest compatibility is not a DAGR runtime import."
+    }
+  ],
+  "adapter_versions": [],
+  "verifier_versions": [
+    {
+      "product": "arcs-verify",
+      "version": "v0.1.1",
+      "semantic_authority": "ARCS Verify verifier-report contracts",
+      "relationship": "implements",
+      "assertion_status": "validated",
+      "authority_repository": "arcs-verify",
+      "authority_artifact_ref": "pyproject.toml",
+      "authority_version": "v0.1.1",
+      "evidence_refs": [
+        {
+          "id": "readme-verifier-scope",
+          "path": "README.md",
+          "authority": "arcs-verify",
+          "relationship": "projects",
+          "notes": "Defines the verifier as independent verification of serialized artifacts"
+        },
+        {
+          "id": "native-report-contracts",
+          "path": "arcs_verify/contracts/",
+          "authority": "arcs-verify",
+          "relationship": "implements",
+          "notes": "Native verifier-report contracts are repository-owned outputs"
+        }
+      ],
+      "integrity": {
+        "source_path": "pyproject.toml",
+        "notes": "Repository package metadata for current preview implementation"
+      },
+      "notes": "Verifier-owned behavior is separate from SRS semantic authority."
+    }
+  ],
+  "backward_compatibility": [
+    {
+      "scope": "DAGR SRS verification-report contract",
+      "from_version": "v0.1",
+      "to_version": "v0.2",
+      "relationship": "projects",
+      "assertion_status": "validated",
+      "authority_repository": "arcs-verify",
+      "authority_artifact_ref": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/README.md",
+      "authority_version": "v0.2",
+      "evidence_refs": [
+        {
+          "id": "dagr-v0.1-contract",
+          "path": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/",
+          "authority": "arcs-verify",
+          "relationship": "implements",
+          "notes": "Frozen v0.1 report contract"
+        },
+        {
+          "id": "dagr-v0.2-contract",
+          "path": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/",
+          "authority": "arcs-verify",
+          "relationship": "implements",
+          "notes": "Release-closed v0.2 report contract"
+        }
+      ],
+      "integrity": {
+        "source_path": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/",
+        "notes": "Backward compatibility is repository-owned output contract posture."
+      },
+      "notes": "Report-contract stability is distinct from public SRS standard ratification."
+    },
+    {
+      "scope": "SRS envelope schema consumption",
+      "from_version": "v0.2.0",
+      "to_version": "v0.2.1",
+      "relationship": "consumes",
+      "assertion_status": "validated",
+      "authority_repository": "arcs-srs",
+      "authority_artifact_ref": "schemas/srs-envelope/",
+      "authority_version": "v0.2.1",
+      "evidence_refs": [
+        {
+          "id": "schema-v0.2.0",
+          "path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
+          "authority": "arcs-srs",
+          "relationship": "consumes",
+          "notes": "Pinned consumed schema"
+        },
+        {
+          "id": "schema-v0.2.1",
+          "path": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
+          "authority": "arcs-srs",
+          "relationship": "consumes",
+          "notes": "Pinned consumed schema"
+        }
+      ],
+      "integrity": {
+        "source_path": "VENDORED_FROM",
+        "notes": "Digest custody is recorded as compatibility evidence."
+      },
+      "notes": "Both schema versions are consumed compatibility facts."
+    }
+  ],
+  "unsupported_versions": [
+    {
+      "scope": "public SRS release label",
+      "version": "v5.1",
+      "reason": "srs.core.v5.1 is treated only as an internal/pre-public compatibility discriminator in this repository.",
+      "relationship": "not_applicable",
+      "assertion_status": "not_applicable",
+      "authority_repository": "arcs-srs",
+      "authority_artifact_ref": "receipt_version discriminator",
+      "authority_version": "v5.1",
+      "evidence_refs": [
+        {
+          "id": "lineage-boundary",
+          "path": "VERIFICATION_BOUNDARIES.md",
+          "authority": "arcs-verify",
+          "relationship": "projects",
+          "notes": "Explains compatibility versus public ratification boundary"
+        }
+      ],
+      "integrity": {
+        "source_path": "VERIFICATION_BOUNDARIES.md",
+        "notes": "No public release assertion is made."
+      }
+    }
+  ],
+  "migration_notes": [
+    {
+      "scope": "ecosystem declaration schemas",
+      "note": "Compatibility projections are aligned to arcs-ecosystem-kit v0.1 shapes while keeping repository-specific boundary details in local BOUNDARIES and RESPONSIBILITIES declarations.",
+      "relationship": "projects",
+      "assertion_status": "validated",
+      "authority_repository": "arcs-ecosystem-kit",
+      "authority_artifact_ref": "schemas/ecosystem.compatibility-projection.v0.1.schema.json",
+      "authority_version": "v0.1",
+      "evidence_refs": [
+        {
+          "id": "ecosystem-pilot-adjudication",
+          "path": "docs/ECOSYSTEM_PILOT_ADJUDICATION.md",
+          "authority": "arcs-verify",
+          "relationship": "projects",
+          "notes": "Records remaining schema needs for verifier-specific boundaries"
+        }
+      ],
+      "integrity": {
+        "source_path": ".ecosystem/COMPATIBILITY_PROJECTION.yaml",
+        "notes": "Projection file validates against the kit v0.1 schema."
+      }
+    }
+  ],
+  "ownership_transitions": [
+    {
+      "current_owner": "arcs-srs for consumed SRS schemas and profiles; arcs-verify for native verifier-report outputs",
+      "candidate_verified": false,
+      "migration_authorized": false,
+      "migration_record_ref": "No authority migration is authorized by this pilot."
+    }
+  ]
 }
