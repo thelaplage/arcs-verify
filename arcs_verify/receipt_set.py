@@ -226,14 +226,19 @@ def verify_receipt_set(workflow_path: Path) -> ReceiptSetReport:
                 f"outcome {receipt.get('receipt_id')!r} references {parent_ref!r}",
             )
             continue
-        for field in ("logical_call_id", "requested_tool_name"):
-            if receipt.get(field) != admission.get(field):
-                report.receipt_linkage_valid = False
-                _finding(
-                    report,
-                    "admission_outcome_linkage_mismatch",
-                    f"{field} differs for outcome {receipt.get('receipt_id')!r}",
-                )
+        # ``requested_tool_name`` belongs to the admission receipt. Outcome
+        # receipts link back through ``admission_receipt_ref`` and preserve the
+        # neutral ``logical_call_id``; they do not repeat the requested tool.
+        if receipt.get("logical_call_id") != admission.get("logical_call_id"):
+            report.receipt_linkage_valid = False
+            _finding(
+                report,
+                "admission_outcome_linkage_mismatch",
+                (
+                    "logical_call_id differs for outcome "
+                    f"{receipt.get('receipt_id')!r}"
+                ),
+            )
 
     return report
 

@@ -78,6 +78,20 @@ def test_valid_receipt_set_passes_and_links_outcome(tmp_path: Path):
     assert report.receipt_linkage_valid is True
     assert len(report.receipt_reports) == 2
 
+    admission_report = next(
+        item
+        for item in report.receipt_reports
+        if item["receipt_kind"] == "admission"
+    )
+    outcome_report = next(
+        item
+        for item in report.receipt_reports
+        if item["receipt_kind"] == "outcome"
+    )
+
+    assert admission_report["requested_tool_name"] == "records_lookup"
+    assert outcome_report["requested_tool_name"] is None
+
 
 @pytest.mark.skipif(
     importlib.util.find_spec("rfc8785") is None,
@@ -107,3 +121,32 @@ def test_unresolved_admission_link_fails_set(tmp_path: Path):
     assert report.passed is False
     assert report.receipt_linkage_valid is False
     assert any(item["code"] == "admission_receipt_unresolved" for item in report.findings)
+
+
+@pytest.mark.skipif(
+    importlib.util.find_spec("rfc8785") is None,
+    reason="runtime verifier dependencies are not installed",
+)
+def test_logical_call_id_mismatch_fails_linkage(tmp_path: Path):
+    workflow = _workflow(tmp_path)
+
+    outcome_path = tmp_path / "outcome-result-returned.json"
+    outcome = json.loads(outcome_path.read_text(encoding="utf-8"))
+    outcome["logical_call_id"] = "call:dagr:different"
+    outcome_path.write_text(json.dumps(outcome), encoding="utf-8")
+
+    payload = json.loads(workflow.read_text(encoding="utf-8"))
+    for entry in payload["receipt_set"]:
+        if entry["path"] == outcome_path.name:
+            entry["sha256"] = _sha(outcome_path)
+    workflow.write_text(json.dumps(payload), encoding="utf-8")
+
+    report = receipt_set_module.verify_receipt_set(workflow)
+
+    assert report.passed is False
+    assert report.receipt_linkage_valid is False
+    assert any(
+        item["code"] == "admission_outcome_linkage_mismatch"
+        and "logical_call_id" in item["detail"]
+        for item in report.findings
+    )
