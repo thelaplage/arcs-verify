@@ -25,15 +25,15 @@
         "type": "conformance_gate",
         "target": "kit_schema_validation_not_enforced_in_ci"
       },
-      "reason": "arcs-ecosystem-kit is not checked out in this repository's CI runners, so tests/test_ecosystem_declarations.py::test_schema_backed_declarations_validate_against_kit_v0_1 skips in CI instead of running.",
+      "reason": "arcs-ecosystem-kit is a private repository. tests/test_ecosystem_declarations.py::test_schema_backed_declarations_validate_against_kit_v0_1 now enforces a pinned kit commit (0a0e25674fbe8afca9705d16ca937cb4940969a0) and .github/workflows/test.yml checks that exact commit out into the CI runner (dev/test-only, non-vendored, not a runtime dependency) whenever the ECOSYSTEM_KIT_CHECKOUT_TOKEN repository secret is configured. Until that secret is added, the checkout step is skipped and the test skips with a reason that documents the exact pin instead of faking a pass.",
       "owner": "ARCS Verify maintainers",
       "approved_by": [],
       "status": "proposed",
       "created_date": "2026-08-02",
       "affected_conformance_level": "B",
-      "mitigation": "Kit-schema conformance is exercised locally against a sibling arcs-ecosystem-kit checkout; CI enforces declaration existence, YAML parseability, and the repository-local boundary/semantics assertions in the same test file. Revisit once kit schemas can be consumed in CI without vendoring them or adding arcs-ecosystem-kit as a runtime dependency.",
+      "mitigation": "Kit-schema conformance runs for real, against the pinned commit, in any environment (local or CI) that provides a checkout of that commit via $ARCS_ECOSYSTEM_KIT_PATH or the local sibling checkout path; a checkout on a different commit is treated as absent and skipped, not silently validated against drifted schemas. CI enforces declaration existence, YAML parseability, and the repository-local boundary/semantics assertions unconditionally in the same test file. Fully closing this exception requires an org/repo admin to provision ECOSYSTEM_KIT_CHECKOUT_TOKEN as a repository secret scoped to read arcs-ecosystem-kit; that provisioning step is outside this repository's code.",
       "disposition": "temporary",
-      "notes": "Evidence: tests/test_ecosystem_declarations.py, docs/ECOSYSTEM_PILOT_ADJUDICATION.md."
+      "notes": "Evidence: tests/test_ecosystem_declarations.py, .github/workflows/test.yml, docs/ECOSYSTEM_PILOT_ADJUDICATION.md."
     }
   ]
 }

@@ -57,13 +57,20 @@ checkout's v0.1 schemas without adding the kit as a runtime dependency:
 - `RELEASE_STATE.yaml`
 
 This validation runs in `tests/test_ecosystem_declarations.py` against a
-sibling `arcs-ecosystem-kit` checkout at a fixed local path. That checkout is
-not present in this repository's CI runners, so the validation test skips
-there; CI only enforces file existence, YAML parseability, and the
-repository-local boundary/semantics assertions in the same file. Kit-schema
-conformance is currently a locally-run check, not a continuously enforced
-CI gate, until the kit schemas are consumable in CI without vendoring them
-or adding `arcs-ecosystem-kit` as a dependency.
+pinned `arcs-ecosystem-kit` commit (`0a0e25674fbe8afca9705d16ca937cb4940969a0`),
+resolved from `$ARCS_ECOSYSTEM_KIT_PATH` or a local sibling checkout. A
+checkout on any other commit is treated the same as no checkout at all.
+`.github/workflows/test.yml` performs a dev/test-only, non-vendored
+`actions/checkout` of that exact commit from the private `arcs-ecosystem-kit`
+repository whenever the `ECOSYSTEM_KIT_CHECKOUT_TOKEN` repository secret is
+configured, and points `$ARCS_ECOSYSTEM_KIT_PATH` at the result; the kit is
+never installed as a package and never imported by verifier code. Without
+that secret configured, the checkout step is skipped and the schema-validation
+test skips with a reason that names the exact pin, instead of faking a pass.
+CI unconditionally enforces file existence, YAML parseability, and the
+repository-local boundary/semantics assertions in the same test file
+regardless of whether the secret is present. See `.ecosystem/EXCEPTIONS.yaml`
+`AV-003`.
 
 ## Fixture Drift Against `arcs-ecosystem-kit`
 
@@ -78,7 +85,7 @@ three files with byte-level drift, all confined to a single closed exception:
 
 | File | Drift |
 |---|---|
-| `.ecosystem/EXCEPTIONS.yaml` | Fixture has open exception `AV-002` ("The kit v0.1 schema catalog does not define BOUNDARIES.yaml or RESPONSIBILITIES.yaml files."). That gap no longer exists: the kit now ships `ecosystem.boundaries.v0.1.schema.json` and `ecosystem.responsibilities.v0.1.schema.json` (see `schemas/` in the kit checkout). This lane instead carries exception `AV-003`, which records that kit-schema validation is a local, not CI-enforced, check. |
+| `.ecosystem/EXCEPTIONS.yaml` | Fixture has open exception `AV-002` ("The kit v0.1 schema catalog does not define BOUNDARIES.yaml or RESPONSIBILITIES.yaml files."). That gap no longer exists: the kit now ships `ecosystem.boundaries.v0.1.schema.json` and `ecosystem.responsibilities.v0.1.schema.json` (see `schemas/` in the kit checkout). This lane instead carries exception `AV-003`, which records that kit-schema validation is pinned to a specific kit commit and CI-wireable, but only runs for real in CI once the `ECOSYSTEM_KIT_CHECKOUT_TOKEN` repository secret is provisioned for the private kit repository. |
 | `.ecosystem/ARCHITECTURE_PASSPORT.yaml` | `known_exceptions` references `AV-002` in the fixture; this lane references `AV-003`, consistent with the exception rename above. |
 | `.ecosystem/CONFORMANCE_PROJECTION.yaml` | `unresolved_exceptions` names `boundaries_responsibilities_schema_not_in_kit_v0_1` in the fixture; this lane names `kit_schema_validation_not_enforced_in_ci`, consistent with the same rename. |
 

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -8,7 +10,51 @@ from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1]
 ECOSYSTEM = ROOT / ".ecosystem"
-KIT_SCHEMAS = Path.home() / "Developer/repos/arcs-ecosystem-kit/schemas"
+
+# arcs-ecosystem-kit is a dev/test-only, non-vendored validation dependency:
+# it is never imported by verifier code and never added as a runtime package
+# dependency (see .ecosystem/DEPENDENCIES.yaml and BOUNDARIES.yaml's
+# ecosystem-kit-runtime-dependency prohibition). This pin identifies the
+# exact commit this repository's declarations are validated against, so a
+# stray or ahead/behind sibling checkout cannot silently pass or fail this
+# check.
+KIT_REPOSITORY = "https://github.com/thelaplage/arcs-ecosystem-kit"
+KIT_PINNED_COMMIT = "0a0e25674fbe8afca9705d16ca937cb4940969a0"
+KIT_PATH_ENV_VAR = "ARCS_ECOSYSTEM_KIT_PATH"
+KIT_LOCAL_DEV_CHECKOUT = Path.home() / "Developer/repos/arcs-ecosystem-kit"
+
+
+def _resolve_kit_checkout() -> Path | None:
+    env_path = os.environ.get(KIT_PATH_ENV_VAR)
+    for candidate in (
+        Path(env_path) if env_path else None,
+        KIT_LOCAL_DEV_CHECKOUT,
+    ):
+        if candidate is not None and candidate.is_dir():
+            return candidate
+    return None
+
+
+def _kit_checkout_commit(kit_root: Path) -> str | None:
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(kit_root), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return completed.stdout.strip()
+
+
+KIT_PIN_SKIP_REASON = (
+    "arcs-ecosystem-kit is a dev/test-only, non-vendored validation "
+    f"dependency pinned to commit {KIT_PINNED_COMMIT} of {KIT_REPOSITORY} "
+    f"(see .ecosystem/EXCEPTIONS.yaml AV-003). Provide a checkout of that "
+    f"exact commit via ${KIT_PATH_ENV_VAR} (CI) or the local sibling "
+    f"checkout at {KIT_LOCAL_DEV_CHECKOUT} (local dev) to run this check."
+)
 
 SCHEMA_BACKED_DECLARATIONS = {
     "REPOSITORY.yaml": "ecosystem.repository.v0.1.schema.json",
@@ -89,17 +135,30 @@ def test_all_ecosystem_files_exist_and_parse() -> None:
 
 
 def test_schema_backed_declarations_validate_against_kit_v0_1() -> None:
-    # arcs-ecosystem-kit is not checked out in this repository's CI runners
-    # (see .ecosystem/EXCEPTIONS.yaml AV-003), so this test only exercises
-    # real schema validation locally, against a sibling checkout. CI still
-    # runs every other test in this file, including declaration existence,
-    # YAML parseability, and the repository-local boundary/semantics checks.
-    if not KIT_SCHEMAS.is_dir():
-        pytest.skip("arcs-ecosystem-kit sibling checkout not available")
+    # This test enforces a pinned arcs-ecosystem-kit commit (see
+    # .ecosystem/EXCEPTIONS.yaml AV-003). CI performs a dev/test-only,
+    # non-vendored checkout of that exact pin (.github/workflows/test.yml)
+    # when a repository secret grants access to the private kit repository;
+    # otherwise, and in any local checkout that is missing or not on the
+    # pinned commit, this test skips with the reason below instead of
+    # faking a pass. Every other test in this file still runs regardless,
+    # including declaration existence, YAML parseability, and the
+    # repository-local boundary/semantics checks.
+    kit_root = _resolve_kit_checkout()
+    if kit_root is None:
+        pytest.skip(KIT_PIN_SKIP_REASON)
 
+    actual_commit = _kit_checkout_commit(kit_root)
+    if actual_commit != KIT_PINNED_COMMIT:
+        pytest.skip(
+            f"{KIT_PIN_SKIP_REASON} Found a checkout at {kit_root} on "
+            f"commit {actual_commit!r}, which does not match the pin."
+        )
+
+    kit_schemas = kit_root / "schemas"
     for declaration_name, schema_name in SCHEMA_BACKED_DECLARATIONS.items():
         payload = _load_yaml_subset(declaration_name)
-        schema = json.loads((KIT_SCHEMAS / schema_name).read_text())
+        schema = json.loads((kit_schemas / schema_name).read_text())
         errors = sorted(
             Draft202012Validator(schema).iter_errors(payload),
             key=lambda error: list(error.path),

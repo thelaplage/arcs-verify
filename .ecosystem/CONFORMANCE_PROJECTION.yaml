@@ -105,9 +105,9 @@
   "test_command_refs": [
     {
       "id": "kit-schema-validation",
-      "command": "$HOME/Developer/repos/arcs-ecosystem-kit/.venv/bin/python -m pytest tests/test_ecosystem_declarations.py -q",
+      "command": ".venv/bin/python -m pytest tests/test_ecosystem_declarations.py::test_schema_backed_declarations_validate_against_kit_v0_1 -q",
       "assertion_status": "validated",
-      "notes": "Focused local tests validate schema-backed declarations against arcs-ecosystem-kit v0.1 schemas when the sibling checkout is available."
+      "notes": "Validates schema-backed declarations against arcs-ecosystem-kit v0.1 schemas at the pinned commit 0a0e25674fbe8afca9705d16ca937cb4940969a0, resolved via $ARCS_ECOSYSTEM_KIT_PATH or the local sibling checkout. In CI (.github/workflows/test.yml) this runs against a dev/test-only, non-vendored checkout of that same pinned commit when ECOSYSTEM_KIT_CHECKOUT_TOKEN is configured; otherwise it skips with a reason documenting the exact pin (see .ecosystem/EXCEPTIONS.yaml AV-003)."
     },
     {
       "id": "focused-ecosystem-declaration-tests",

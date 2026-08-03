@@ -187,7 +187,7 @@
     {
       "repository": "arcs-ecosystem-kit",
       "contract_id": "ecosystem.declaration.schemas.v0_1",
-      "reason": "Validation-only schema dependency; not a runtime package dependency."
+      "reason": "Validation-only schema dependency, pinned to commit 0a0e25674fbe8afca9705d16ca937cb4940969a0; not a runtime package dependency."
     }
   ],
   "extension_points": [

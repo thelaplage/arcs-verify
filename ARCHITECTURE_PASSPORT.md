@@ -3,9 +3,11 @@
 ## Status
 
 This passport is provisional for the distributed ecosystem-doctrine pilot. The
-schema-backed declarations validate against `arcs-ecosystem-kit` v0.1 from a
-sibling checkout; this repository does not vendor those schemas and does not add
-the kit as a runtime dependency.
+schema-backed declarations validate against `arcs-ecosystem-kit` v0.1 at a
+pinned commit (`0a0e25674fbe8afca9705d16ca937cb4940969a0`); this repository
+does not vendor those schemas and does not add the kit as a runtime
+dependency. See `.ecosystem/EXCEPTIONS.yaml` `AV-003` for how CI enforces
+that pin.
 
 The architecture model tested by this pilot is proposed, not ratified doctrine:
 

@@ -120,8 +120,8 @@
       },
       "required": false,
       "required_for_release": true,
-      "reason": "This lane validates declarations against kit schemas from a sibling checkout without adding the kit as a runtime dependency.",
-      "compatibility_notes": "The kit is not vendored and is not imported by verifier code."
+      "reason": "This lane validates declarations against kit schemas from a pinned checkout without adding the kit as a runtime dependency.",
+      "compatibility_notes": "The kit is not vendored and is not imported by verifier code. Validation is pinned to commit 0a0e25674fbe8afca9705d16ca937cb4940969a0; see .ecosystem/EXCEPTIONS.yaml AV-003 and tests/test_ecosystem_declarations.py."
     },
     {
       "repository": "garp-sdk",
