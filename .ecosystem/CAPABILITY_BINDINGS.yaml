@@ -1,0 +1,300 @@
+{
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.capability-bindings.v0.1.schema.json",
+  "schema_version": "0.1",
+  "repository": "arcs-verify",
+  "native_registry_refs": [],
+  "declarations": {
+    "defines": [],
+    "implements": [
+      {
+        "capability_ref": "EVIDENCE_VALIDATE_STRUCTURE",
+        "constitutional_layer": "L6",
+        "version": "v0.1",
+        "semantic_authority": {
+          "repository": null,
+          "artifact_ref": null,
+          "version": null,
+          "status": "unresolved"
+        },
+        "stability": "preview",
+        "relationship": "implements",
+        "assertion_status": "validated",
+        "reachability": "validated",
+        "native_mapping": {
+          "implementation_role": "verifier_counterpart",
+          "native_identifier": "verify_receipt",
+          "source_path": "arcs_verify/verifier.py",
+          "assertion_status": "implemented",
+          "notes": "Implementation support only; canonical capability semantics are not claimed here."
+        },
+        "evidence_profile_refs": [
+          {
+            "id": "srs.envelope.schema",
+            "version": "v0.2.0",
+            "semantic_authority": {
+              "repository": "arcs-srs",
+              "artifact_ref": "schemas/srs-envelope/",
+              "version": null,
+              "status": "resolved"
+            },
+            "notes": "Consumed schema/profile authority."
+          }
+        ],
+        "evidence_refs": [
+          {
+            "id": "structure-tests",
+            "path": "tests/test_verifier.py",
+            "authority": "arcs-verify",
+            "relationship": "validates"
+          }
+        ],
+        "integrity": {}
+      },
+      {
+        "capability_ref": "EVIDENCE_VALIDATE_PROFILE",
+        "constitutional_layer": "L6",
+        "version": "v0.1",
+        "semantic_authority": {
+          "repository": "arcs-srs",
+          "artifact_ref": "docs/profiles/",
+          "version": null,
+          "status": "resolved"
+        },
+        "stability": "preview",
+        "relationship": "implements",
+        "assertion_status": "validated",
+        "reachability": "validated",
+        "native_mapping": {
+          "implementation_role": "verifier_counterpart",
+          "native_identifier": "PROFILE_IDENTITIES",
+          "source_path": "arcs_verify/verifier.py",
+          "assertion_status": "implemented"
+        },
+        "evidence_refs": [
+          {
+            "id": "profile-tests",
+            "path": "tests/test_connection_profile.py",
+            "authority": "arcs-verify",
+            "relationship": "validates"
+          }
+        ],
+        "integrity": {},
+        "notes": "arcs-srs is the consumed profile authority; ARCS Verify owns only local verifier behavior."
+      },
+      {
+        "capability_ref": "EVIDENCE_CHECK_RAW_CONTENT_EXCLUSION",
+        "constitutional_layer": "L6",
+        "version": "v0.1",
+        "semantic_authority": {
+          "repository": "arcs-verify",
+          "artifact_ref": "arcs_verify/verifier.py",
+          "version": "v0.1",
+          "status": "resolved"
+        },
+        "stability": "preview",
+        "relationship": "implements",
+        "assertion_status": "validated",
+        "reachability": "validated",
+        "native_mapping": {
+          "implementation_role": "verifier_counterpart",
+          "native_identifier": "raw_content_exclusion",
+          "source_path": "arcs_verify/verifier.py",
+          "assertion_status": "implemented"
+        },
+        "evidence_refs": [
+          {
+            "id": "raw-content-tests",
+            "path": "tests/test_dagr_delivery_boolean_guard.py",
+            "authority": "arcs-verify",
+            "relationship": "validates"
+          }
+        ],
+        "integrity": {}
+      },
+      {
+        "capability_ref": "EVIDENCE_VERIFY_SIGNATURE",
+        "constitutional_layer": "L6",
+        "version": "v0.1",
+        "semantic_authority": {
+          "repository": "arcs-verify",
+          "artifact_ref": "arcs_verify/verifier.py",
+          "version": "v0.1",
+          "status": "resolved"
+        },
+        "stability": "preview",
+        "relationship": "implements",
+        "assertion_status": "validated",
+        "reachability": "validated",
+        "native_mapping": {
+          "implementation_role": "verifier_counterpart",
+          "native_identifier": "signature_valid",
+          "source_path": "arcs_verify/verifier.py",
+          "assertion_status": "implemented"
+        },
+        "evidence_refs": [
+          {
+            "id": "signature-vectors",
+            "path": "vendor/arcs-srs/vectors/signed-receipt-v0.1/manifest.json",
+            "authority": "arcs-srs",
+            "relationship": "validates"
+          }
+        ],
+        "integrity": {}
+      },
+      {
+        "capability_ref": "EVIDENCE_RESOLVE_ISSUER_KEY",
+        "constitutional_layer": "L6",
+        "version": "v0.1",
+        "semantic_authority": {
+          "repository": "arcs-verify",
+          "artifact_ref": "arcs_verify/verifier.py",
+          "version": "v0.1",
+          "status": "resolved"
+        },
+        "stability": "preview",
+        "relationship": "implements",
+        "assertion_status": "validated",
+        "reachability": "validated",
+        "native_mapping": {
+          "implementation_role": "verifier_counterpart",
+          "native_identifier": "issuer_key_resolved",
+          "source_path": "arcs_verify/verifier.py",
+          "assertion_status": "implemented"
+        },
+        "evidence_refs": [
+          {
+            "id": "issuer-key-tests",
+            "path": "tests/test_verifier.py",
+            "authority": "arcs-verify",
+            "relationship": "validates"
+          }
+        ],
+        "integrity": {}
+      },
+      {
+        "capability_ref": "EVIDENCE_EVALUATE_TRUST",
+        "constitutional_layer": "L6",
+        "version": "v0.1",
+        "semantic_authority": {
+          "repository": "arcs-verify",
+          "artifact_ref": "arcs_verify/verifier.py",
+          "version": "v0.1",
+          "status": "resolved"
+        },
+        "stability": "preview",
+        "relationship": "implements",
+        "assertion_status": "validated",
+        "reachability": "validated",
+        "native_mapping": {
+          "implementation_role": "verifier_counterpart",
+          "native_identifier": "issuer_key_trusted",
+          "source_path": "arcs_verify/verifier.py",
+          "assertion_status": "implemented"
+        },
+        "evidence_refs": [
+          {
+            "id": "trust-tests",
+            "path": "tests/test_verifier.py",
+            "authority": "arcs-verify",
+            "relationship": "validates"
+          }
+        ],
+        "integrity": {}
+      },
+      {
+        "capability_ref": "EVIDENCE_CHECK_ATTESTATION_LIMITS",
+        "constitutional_layer": "L6",
+        "version": "v0.1",
+        "semantic_authority": {
+          "repository": "arcs-verify",
+          "artifact_ref": "arcs_verify/verifier.py",
+          "version": "v0.1",
+          "status": "resolved"
+        },
+        "stability": "preview",
+        "relationship": "implements",
+        "assertion_status": "validated",
+        "reachability": "validated",
+        "native_mapping": {
+          "implementation_role": "verifier_counterpart",
+          "native_identifier": "attestation_limits_present",
+          "source_path": "arcs_verify/verifier.py",
+          "assertion_status": "implemented"
+        },
+        "evidence_refs": [
+          {
+            "id": "attestation-limit-readme",
+            "path": "README.md",
+            "authority": "arcs-verify",
+            "relationship": "validates"
+          }
+        ],
+        "integrity": {}
+      },
+      {
+        "capability_ref": "EVIDENCE_VERIFY_RECEIPT_SET",
+        "constitutional_layer": "L6",
+        "version": "v0.1",
+        "semantic_authority": {
+          "repository": "arcs-verify",
+          "artifact_ref": "arcs_verify/receipt_set.py",
+          "version": "v0.1",
+          "status": "resolved"
+        },
+        "stability": "preview",
+        "relationship": "implements",
+        "assertion_status": "validated",
+        "reachability": "validated",
+        "native_mapping": {
+          "implementation_role": "verifier_counterpart",
+          "native_identifier": "verify_receipt_set",
+          "source_path": "arcs_verify/receipt_set.py",
+          "assertion_status": "implemented"
+        },
+        "evidence_refs": [
+          {
+            "id": "receipt-set-tests",
+            "path": "tests/test_receipt_set.py",
+            "authority": "arcs-verify",
+            "relationship": "validates"
+          }
+        ],
+        "integrity": {}
+      },
+      {
+        "capability_ref": "EVIDENCE_RECOMPUTE_SERIALIZED_CHAIN",
+        "constitutional_layer": "L6",
+        "version": "v0.1",
+        "semantic_authority": {
+          "repository": "arcs-verify",
+          "artifact_ref": "arcs_verify/amnesiac/verifier.py",
+          "version": "v0.1",
+          "status": "resolved"
+        },
+        "stability": "preview",
+        "relationship": "implements",
+        "assertion_status": "validated",
+        "reachability": "validated",
+        "native_mapping": {
+          "implementation_role": "verifier_counterpart",
+          "native_identifier": "verify_bundle",
+          "source_path": "arcs_verify/amnesiac/verifier.py",
+          "assertion_status": "implemented"
+        },
+        "evidence_refs": [
+          {
+            "id": "amnesiac-verifier-tests",
+            "path": "tests/test_amnesiac_verifier.py",
+            "authority": "arcs-verify",
+            "relationship": "validates"
+          }
+        ],
+        "integrity": {},
+        "notes": "Reserved conclusions remain not_evaluated."
+      }
+    ],
+    "consumes": [],
+    "extends": [],
+    "deprecates": []
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.release-state.v0.1.schema.json",
+  "schema_version": "0.1",
+  "repository": "arcs-verify",
+  "release_stage": "preview",
+  "current_version": "v0.1.1",
+  "release_readiness": "ready_with_exceptions",
+  "required_gates": [
+    {
+      "gate_id": "focused-ecosystem-declaration-tests",
+      "description": "Focused declaration sanity and schema validation tests pass.",
+      "status": "passed",
+      "required_for_release": true
+    },
+    {
+      "gate_id": "full-repository-tests",
+      "description": "Full existing repository test suite passes.",
+      "status": "passed",
+      "required_for_release": true
+    },
+    {
+      "gate_id": "public-release-guard",
+      "description": "Public-release guard passes.",
+      "status": "passed",
+      "required_for_release": true
+    },
+    {
+      "gate_id": "verifier-semantics-unchanged",
+      "description": "No verifier algorithms, supported profiles, findings, public-release behavior, or CLI result semantics changed.",
+      "status": "passed",
+      "required_for_release": true
+    },
+    {
+      "gate_id": "runtime-enforcement",
+      "description": "Runtime execution enforcement is outside this L6 verifier repository.",
+      "status": "not_applicable",
+      "required_for_release": false
+    }
+  ],
+  "passed_gates": [
+    "focused-ecosystem-declaration-tests",
+    "full-repository-tests",
+    "public-release-guard",
+    "verifier-semantics-unchanged"
+  ],
+  "blocking_issues": [],
+  "dependent_releases": [
+    {
+      "repository": "arcs-ecosystem-kit",
+      "version": "v0.1",
+      "relationship": "informs"
+    },
+    {
+      "repository": "arcs-srs",
+      "version": "v0.1",
+      "relationship": "informs"
+    }
+  ],
+  "compatibility_status": {
+    "claim_status": "validated",
+    "summary": "Preview verifier compatibility is validated against pinned local schema bytes, fixture evidence, and repository tests; this is not public standard ratification."
+  },
+  "release_notes_ref": "docs/ECOSYSTEM_PILOT_ADJUDICATION.md",
+  "last_reviewed": "2026-08-02"
+}

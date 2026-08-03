@@ -1,0 +1,268 @@
+{
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.architecture-passport.v0.1.schema.json",
+  "schema_version": "0.1",
+  "repository": "arcs-verify",
+  "repository_type": "verifier",
+  "authority_status": "current_implementation",
+  "lifecycle_state": "preview",
+  "substrate_surface_role": "substrate",
+  "owning_layer": "verifier",
+  "constitutional_layers": {
+    "primary": "L6",
+    "secondary": []
+  },
+  "mission": "Independently verify signed ARCS/SRS receipts and serialized artifact chains from supplied artifacts without importing producer implementations.",
+  "owned_concerns": [
+    {
+      "id": "arcs-verify.verifier-implementation-behavior",
+      "description": "Verifier-side implementation behavior for signed-SRS, receipt-set, and Amnesiac-chain verification.",
+      "claim_status": "implemented"
+    },
+    {
+      "id": "arcs-verify.native-verifier-report-outputs",
+      "description": "Repository-owned output report contracts and report representations emitted by this verifier.",
+      "claim_status": "implemented"
+    },
+    {
+      "id": "arcs-verify.public-release-guard",
+      "description": "Producer-import and public-release guard behavior.",
+      "claim_status": "implemented"
+    }
+  ],
+  "imported_concerns": [
+    {
+      "id": "srs.envelope.schema",
+      "constitutional_layer": "L1",
+      "semantic_authority": {
+        "repository": "arcs-srs",
+        "artifact_ref": "schemas/srs-envelope/",
+        "version": null,
+        "status": "resolved"
+      },
+      "relationship": "consumes",
+      "claim_status": "validated",
+      "notes": "Consumed as pinned local schema bytes; compatibility fact only, not public ratification."
+    },
+    {
+      "id": "srs.profile.semantics",
+      "constitutional_layer": "L1",
+      "semantic_authority": {
+        "repository": "arcs-srs",
+        "artifact_ref": "docs/profiles/",
+        "version": null,
+        "status": "resolved"
+      },
+      "relationship": "consumes",
+      "claim_status": "validated",
+      "notes": "ARCS Verify implements profile checks but does not own SRS semantic authority."
+    },
+    {
+      "id": "dagr.producer.fixture.relationships",
+      "constitutional_layer": "L4",
+      "semantic_authority": {
+        "repository": "dagr-mcp",
+        "artifact_ref": "producer fixtures",
+        "version": null,
+        "status": "resolved"
+      },
+      "relationship": "validates",
+      "claim_status": "fixture_reachable",
+      "notes": "DAGR emitters are producer counterparts, not imported runtime dependencies."
+    },
+    {
+      "id": "arcs.constitutional.architecture.inputs",
+      "constitutional_layer": "L0",
+      "semantic_authority": {
+        "repository": "garp-doctrine",
+        "artifact_ref": "docs/architecture/A0-A6",
+        "version": "v0.1",
+        "status": "unresolved"
+      },
+      "relationship": "references",
+      "claim_status": "declared",
+      "notes": "A0-A6 are proposed unratified architecture inputs."
+    }
+  ],
+  "exported_contracts": [
+    {
+      "contract_id": "arcs_verify.signed_srs.report.v0_1",
+      "version": "v0.1",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/verifier.py",
+        "version": "v0.1",
+        "status": "resolved"
+      },
+      "claim_status": "implemented"
+    },
+    {
+      "contract_id": "srs.dagr_verification_report.v0.1",
+      "version": "v0.1",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/",
+        "version": "v0.1",
+        "status": "resolved"
+      },
+      "claim_status": "implemented"
+    },
+    {
+      "contract_id": "srs.dagr_verification_report.v0.2",
+      "version": "v0.2",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/contracts/dagr-srs-verification-report-v0-2/",
+        "version": "v0.2",
+        "status": "resolved"
+      },
+      "claim_status": "implemented"
+    },
+    {
+      "contract_id": "arcs_verify.report.v0_1_1",
+      "version": "v0.1.1",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/amnesiac/verifier.py",
+        "version": "v0.1.1",
+        "status": "resolved"
+      },
+      "claim_status": "implemented"
+    }
+  ],
+  "authority_references": [
+    "arcs_constitutional_architecture_inputs",
+    "srs_schema_profile_authority",
+    "arcs_verify_verifier_implementation",
+    "dagr_producer_counterparts",
+    "countervail_receipt_ingest_consumer"
+  ],
+  "allowed_cross_layer_imports": [
+    {
+      "from_layer": "L6",
+      "to_layer": "L1",
+      "reason": "Verifier consumes SRS schema/profile semantics without owning them.",
+      "authority_ref": "srs_schema_profile_authority"
+    },
+    {
+      "from_layer": "L6",
+      "to_layer": "L4",
+      "reason": "Verifier validates producer fixture bytes without importing producer implementation code.",
+      "authority_ref": "dagr_producer_counterparts"
+    },
+    {
+      "from_layer": "L6",
+      "to_layer": "L0",
+      "reason": "Pilot references proposed A0-A6 architecture inputs without treating them as ratified doctrine.",
+      "authority_ref": "arcs_constitutional_architecture_inputs"
+    }
+  ],
+  "prohibited_dependencies": [
+    {
+      "id": "verifier-must-not-import-producer-runtime",
+      "description": "ARCS Verify must not import DAGR producer or emitter implementation code to verify DAGR receipts.",
+      "status": "prohibited",
+      "source_layer": "L6",
+      "target_layer": "L4",
+      "rationale": "Independent verification requires serialized-artifact-only producer boundaries."
+    },
+    {
+      "id": "verifier-must-not-claim-srs-authority",
+      "description": "ARCS Verify must not own consumed SRS schema or profile semantics.",
+      "status": "prohibited",
+      "source_layer": "L6",
+      "target_layer": "L1",
+      "rationale": "arcs-srs is the consumed SRS schema/profile authority."
+    }
+  ],
+  "dependencies": [
+    {
+      "repository": "arcs-srs",
+      "contract_id": "srs.envelope.schema",
+      "reason": "Consumed schema/profile authority represented through vendored pinned bytes."
+    },
+    {
+      "repository": "arcs-ecosystem-kit",
+      "contract_id": "ecosystem.declaration.schemas.v0_1",
+      "reason": "Validation-only schema dependency; not a runtime package dependency."
+    }
+  ],
+  "extension_points": [
+    {
+      "id": "additional-pinned-envelope-schema",
+      "description": "Additional accepted pinned SRS envelope schemas may be added without weakening existing pins.",
+      "status": "declared",
+      "owner": "arcs-verify"
+    },
+    {
+      "id": "additional-native-verifier-report-contract",
+      "description": "Additional repository-owned verifier-report contracts may be added for downstream consumers.",
+      "status": "declared",
+      "owner": "arcs-verify"
+    }
+  ],
+  "compatibility_guarantees": [
+    {
+      "scope": "signed-SRS result semantics",
+      "claim_status": "validated",
+      "description": "The signed-SRS path keeps eight Boolean results and a separate non-Boolean chain_status."
+    },
+    {
+      "scope": "Amnesiac-chain reserved conclusions",
+      "claim_status": "validated",
+      "description": "not_evaluated remains distinct from PASS and FAIL."
+    }
+  ],
+  "current_owners": [
+    {
+      "repository": "arcs-verify",
+      "role": "verifier_counterpart",
+      "notes": "Owns verifier implementation behavior and native verifier-report outputs."
+    }
+  ],
+  "candidate_owners": [],
+  "migration": {
+    "authorized": false,
+    "record_ref": null,
+    "notes": "No ownership migration is authorized by this pilot."
+  },
+  "security_boundary": {
+    "summary": "Serialized artifact verifier boundary: receipt bytes, trust-bundle bytes, pinned schema bytes, selected profile, and optional serialized artifact chain.",
+    "trusted_inputs": [
+      "pinned local schema bytes",
+      "explicitly supplied trust bundle bytes",
+      "explicitly supplied serialized evidence artifacts"
+    ],
+    "protected_assets": [
+      "verifier independence",
+      "native verifier-report output semantics",
+      "source-integrity distinction"
+    ],
+    "non_authoritative_for": [
+      "SRS semantic authority",
+      "DAGR runtime behavior",
+      "producer truthfulness",
+      "underlying event truth",
+      "public standard ratification"
+    ]
+  },
+  "non_goals": [
+    "Do not change verifier algorithms, profiles, findings, public-release behavior, or CLI result semantics.",
+    "Do not certify producer implementations.",
+    "Do not prove underlying real-world events occurred.",
+    "Do not convert not_evaluated or not_applicable into PASS.",
+    "Do not add arcs-ecosystem-kit as a runtime dependency."
+  ],
+  "conformance": {
+    "declared_level": "B",
+    "status": "validated",
+    "notes": "Verifier-specific projection: independent verification gates validate, while runtime enforcement gates are not applicable."
+  },
+  "known_exceptions": [
+    "AV-001",
+    "AV-003"
+  ]
+}

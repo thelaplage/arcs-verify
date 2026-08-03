@@ -1,0 +1,176 @@
+{
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.lanes.v0.1.schema.json",
+  "schema_version": "0.1",
+  "repository": "arcs-verify",
+  "lanes": [
+    {
+      "lane_id": "arcs-verify-ecosystem-declarations-pilot-v0-1",
+      "status": "active",
+      "owner": {
+        "name": "ARCS Verify maintainers"
+      },
+      "start_date": "2026-08-02",
+      "objective": "Add a repository-local .ecosystem/ declaration tree for ARCS Verify under arcs-ecosystem-kit v0.1 schemas, reconciled against proposed A0-A6 architecture inputs and live repository bytes, while preserving verifier semantics.",
+      "repositories_touched": [
+        "arcs-verify"
+      ],
+      "capabilities_touched": [
+        "EVIDENCE_VALIDATE_STRUCTURE",
+        "EVIDENCE_VALIDATE_PROFILE",
+        "EVIDENCE_CHECK_RAW_CONTENT_EXCLUSION",
+        "EVIDENCE_VERIFY_SIGNATURE",
+        "EVIDENCE_RESOLVE_ISSUER_KEY",
+        "EVIDENCE_EVALUATE_TRUST",
+        "EVIDENCE_CHECK_ATTESTATION_LIMITS",
+        "EVIDENCE_VERIFY_RECEIPT_SET",
+        "EVIDENCE_RECOMPUTE_SERIALIZED_CHAIN"
+      ],
+      "contracts_touched": [
+        "arcs_verify.signed_srs.report.v0_1",
+        "arcs_verify.receipt_set_report.v0_1",
+        "srs.dagr_verification_report.v0.1",
+        "srs.dagr_verification_report.v0.2",
+        "arcs_verify.report.v0_1_1",
+        "srs.envelope.schema.v0.2.0",
+        "srs.envelope.schema.v0.2.1",
+        "srs.mcp.sdk_enforcement.v0.1",
+        "dagr.workflow_receipt_set.v0.1",
+        "countervail.receipt_ingest.verification"
+      ],
+      "produced_artifacts": [
+        {
+          "artifact_id": "ecosystem-declarations",
+          "artifact_type": "schema",
+          "path_or_ref": ".ecosystem/",
+          "claim_status": "validated"
+        },
+        {
+          "artifact_id": "architecture-passport",
+          "artifact_type": "document",
+          "path_or_ref": "ARCHITECTURE_PASSPORT.md",
+          "claim_status": "validated"
+        },
+        {
+          "artifact_id": "verification-boundaries",
+          "artifact_type": "document",
+          "path_or_ref": "VERIFICATION_BOUNDARIES.md",
+          "claim_status": "validated"
+        },
+        {
+          "artifact_id": "product-path",
+          "artifact_type": "document",
+          "path_or_ref": "PRODUCT_PATH.md",
+          "claim_status": "validated"
+        },
+        {
+          "artifact_id": "verification-findings",
+          "artifact_type": "document",
+          "path_or_ref": "VERIFICATION_FINDINGS.md",
+          "claim_status": "validated"
+        },
+        {
+          "artifact_id": "pilot-adjudication",
+          "artifact_type": "document",
+          "path_or_ref": "docs/ECOSYSTEM_PILOT_ADJUDICATION.md",
+          "claim_status": "validated"
+        },
+        {
+          "artifact_id": "ecosystem-declaration-tests",
+          "artifact_type": "test",
+          "path_or_ref": "tests/test_ecosystem_declarations.py",
+          "claim_status": "validated"
+        }
+      ],
+      "consumed_upstream_work": [
+        {
+          "work_id": "arcs.architecture.a0.reference-architecture.v0.1",
+          "semantic_authority": "garp-doctrine",
+          "claim_status": "declared",
+          "notes": "Proposed and unratified architecture input."
+        },
+        {
+          "work_id": "arcs.architecture.a1.constitutional-layer-model.v0.1",
+          "semantic_authority": "garp-doctrine",
+          "claim_status": "declared",
+          "notes": "Proposed and unratified architecture input."
+        },
+        {
+          "work_id": "arcs.architecture.a2.architectural-ontology.v0.1",
+          "semantic_authority": "garp-doctrine",
+          "claim_status": "declared",
+          "notes": "Proposed and unratified architecture input."
+        },
+        {
+          "work_id": "arcs.architecture.a3.authority-model.v0.1",
+          "semantic_authority": "garp-doctrine",
+          "claim_status": "declared",
+          "notes": "Proposed and unratified architecture input."
+        },
+        {
+          "work_id": "arcs.architecture.a4.repository-taxonomy.v0.1",
+          "semantic_authority": "garp-doctrine",
+          "claim_status": "declared",
+          "notes": "Proposed and unratified architecture input."
+        },
+        {
+          "work_id": "arcs.architecture.a5.federated-repository-development-doctrine.v0.1",
+          "semantic_authority": "garp-doctrine",
+          "claim_status": "declared",
+          "notes": "Proposed and unratified architecture input."
+        },
+        {
+          "work_id": "arcs.architecture.a6.ecosystem-coordination-doctrine.v0.1",
+          "semantic_authority": "garp-doctrine",
+          "claim_status": "declared",
+          "notes": "Proposed and unratified architecture input."
+        },
+        {
+          "work_id": "arcs-ecosystem-kit.v0.1.schemas",
+          "semantic_authority": "arcs-ecosystem-kit",
+          "claim_status": "validated",
+          "notes": "Used for declaration validation without runtime dependency."
+        },
+        {
+          "work_id": "arcs-srs.schema-and-vector-authority",
+          "semantic_authority": "arcs-srs",
+          "claim_status": "validated",
+          "notes": "Consumed schema and profile authority for verifier compatibility."
+        }
+      ],
+      "overlap_keys": [
+        "L6 independent_verification",
+        "verifier-owned implementation behavior",
+        "arcs-srs consumed authority",
+        "producer-counterpart relationships",
+        "non-Boolean finding values",
+        "usage/source-integrity error separation"
+      ],
+      "blockers": [],
+      "downstream_blocks": [],
+      "expected_completion_milestone": "PR P2 ready for review after focused tests, full tests, and public-release guard pass",
+      "completion_gates": [
+        {
+          "gate_id": "focused-ecosystem-declaration-tests",
+          "description": "Focused declaration sanity and schema validation tests pass.",
+          "status": "passed"
+        },
+        {
+          "gate_id": "full-repository-tests",
+          "description": "Full existing repository test suite passes.",
+          "status": "passed"
+        },
+        {
+          "gate_id": "public-release-guard",
+          "description": "Public-release guard passes.",
+          "status": "passed"
+        },
+        {
+          "gate_id": "verifier-semantics-unchanged",
+          "description": "No verifier algorithms, supported profiles, findings, public-release behavior, or CLI result semantics changed.",
+          "status": "passed"
+        }
+      ],
+      "notes": "This lane does not modify verifier algorithms, supported receipt profiles, DAGR producer code, or runtime package dependencies."
+    }
+  ]
+}

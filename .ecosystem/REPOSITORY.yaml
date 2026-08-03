@@ -1,0 +1,85 @@
+{
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.repository.v0.1.schema.json",
+  "schema_version": "0.1",
+  "repository": {
+    "name": "arcs-verify",
+    "types": [
+      "verifier",
+      "reference_app"
+    ],
+    "lifecycle_state": "preview",
+    "owning_layer": "verifier",
+    "substrate_surface_role": "substrate",
+    "canonical_repository_url": "https://github.com/thelaplage/arcs-verify",
+    "doctrine": {
+      "canonical_doctrine_repo": "thelaplage/garp-doctrine",
+      "pinned_doctrine_release": "unratified-A0-A6-proposed-inputs",
+      "last_doctrine_sync": "2026-08-02"
+    }
+  },
+  "constitutional_roles": {
+    "primary_layer": "L6",
+    "secondary_layers": []
+  },
+  "authority": {
+    "status": "current_implementation",
+    "canonical_doctrine_repository": "thelaplage/garp-doctrine",
+    "semantic_authority_for": [
+      "native verifier-report output contracts only"
+    ],
+    "implementation_roles": [
+      "verifier_counterpart",
+      "current_implementation",
+      "consumer"
+    ],
+    "notes": "ARCS Verify is verifier implementation authority for its local behavior and native report outputs. It is not SRS semantic authority, receipt emitter, runtime binding, certification service, or public truth authority."
+  },
+  "mission": "Independently verify signed ARCS/SRS receipts and serialized artifact chains from supplied artifacts without importing producer implementations.",
+  "owned_concerns": [
+    "verifier implementation behavior",
+    "native verifier-report output contracts",
+    "pinned local schema-byte checking",
+    "profile-check execution",
+    "raw-content-exclusion verification",
+    "signature and issuer-key resolution checks",
+    "trust-window checking",
+    "attestation-limit presence checking",
+    "serialized receipt-set verification",
+    "independently serialized Amnesiac-chain structural recomputation",
+    "CLI exit-code behavior",
+    "producer-import and public-release guard"
+  ],
+  "unowned_concerns": [
+    "receipt emission",
+    "runtime admission",
+    "execution enforcement",
+    "producer truthfulness",
+    "underlying event truth",
+    "operator-independent historical authenticity without an external anchor",
+    "SRS normative authority",
+    "DAGR runtime semantics",
+    "organization policy",
+    "GARPedia presentation",
+    "source system retention behavior"
+  ],
+  "ownership": {
+    "owners": [
+      {
+        "name": "Vega Commons Project, Inc.",
+        "role": "repository owner"
+      }
+    ],
+    "maintainers": [
+      "ARCS Verify maintainers"
+    ]
+  },
+  "status_metadata": {
+    "claim_status": "validated",
+    "last_reviewed": "2026-08-02",
+    "known_drifts": [
+      "Boundary and responsibility declarations are repository-local because arcs-ecosystem-kit v0.1 has no matching schemas."
+    ],
+    "requires_threat_audit": true,
+    "notes": "Declaration validation is not ratification; historical pinned bytes and profile pins are compatibility facts."
+  }
+}

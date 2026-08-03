@@ -1,0 +1,385 @@
+{
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.boundaries.v0.1.schema.json",
+  "schema_version": "0.1",
+  "repository": "arcs-verify",
+  "boundaries": [
+    {
+      "id": "arcs-verify-primary-l6-boundary",
+      "boundary_type": "verifier_isolation",
+      "constitutional_layer": "L6",
+      "owner_repository": "arcs-verify",
+      "description": "ARCS Verify is projected as primary L6 independent verification under proposed, unratified A0-A6 inputs.",
+      "allowed_imports": [],
+      "prohibited_imports": [],
+      "authority_refs": [
+        "arcs_constitutional_architecture_inputs",
+        "arcs_verify_verifier_implementation"
+      ],
+      "assertion_status": "validated",
+      "evidence_refs": [
+        {
+          "id": "arcs.architecture.a0.reference-architecture.v0.1",
+          "path": "garp-doctrine/docs/architecture/A0_ARCS_REFERENCE_ARCHITECTURE_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a1.constitutional-layer-model.v0.1",
+          "path": "garp-doctrine/docs/architecture/A1_ARCS_CONSTITUTIONAL_LAYER_MODEL_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a2.architectural-ontology.v0.1",
+          "path": "garp-doctrine/docs/architecture/A2_ARCS_ARCHITECTURAL_ONTOLOGY_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a3.authority-model.v0.1",
+          "path": "garp-doctrine/docs/architecture/A3_ARCS_AUTHORITY_MODEL_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a4.repository-taxonomy.v0.1",
+          "path": "garp-doctrine/docs/architecture/A4_ARCS_REPOSITORY_TAXONOMY_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a5.federated-repository-development-doctrine.v0.1",
+          "path": "garp-doctrine/docs/architecture/A5_ARCS_FEDERATED_REPOSITORY_DEVELOPMENT_DOCTRINE_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a6.ecosystem-coordination-doctrine.v0.1",
+          "path": "garp-doctrine/docs/architecture/A6_ARCS_ECOSYSTEM_COORDINATION_DOCTRINE_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        }
+      ],
+      "notes": "The architecture model is a proposed, unratified input only; this declaration does not ratify A0-A6 or make them canonical."
+    },
+    {
+      "id": "serialized-artifact-input-boundary",
+      "boundary_type": "data",
+      "constitutional_layer": "L6",
+      "owner_repository": "arcs-verify",
+      "description": "The verifier consumes serialized receipt bytes, serialized trust-bundle bytes, pinned schema bytes, profile identifiers, receipt-set manifests, and optional serialized artifact chains.",
+      "allowed_imports": [
+        {
+          "repository": "arcs-srs",
+          "relationship": "consumes",
+          "reason": "ARCS Verify consumes SRS schema and profile authority through pinned local bytes."
+        }
+      ],
+      "prohibited_imports": [
+        {
+          "repository": "dagr-mcp",
+          "relationship": "not_applicable",
+          "reason": "Producer implementation internals are excluded from verifier inputs."
+        }
+      ],
+      "authority_refs": [
+        "srs_schema_profile_authority",
+        "arcs_verify_verifier_implementation"
+      ],
+      "assertion_status": "validated",
+      "evidence_refs": [
+        {
+          "id": "verifier-boundaries",
+          "path": "VERIFICATION_BOUNDARIES.md",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        },
+        {
+          "id": "signed-srs-verifier",
+          "path": "arcs_verify/verifier.py",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        },
+        {
+          "id": "receipt-set-verifier",
+          "path": "arcs_verify/receipt_set.py",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        },
+        {
+          "id": "amnesiac-chain-verifier",
+          "path": "arcs_verify/amnesiac/verifier.py",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "notes": "Included inputs are serialized signed-SRS receipts, serialized trust bundles, pinned SRS envelope schema bytes, named SRS profile identifiers, DAGR workflow-manifest receipt sets, and serialized Amnesiac artifact chains. Excluded inputs are producer implementation internals, producer dashboard state, operator policy state, and source system retention behavior."
+    },
+    {
+      "id": "producer-verifier-independence-boundary",
+      "boundary_type": "runtime_import",
+      "constitutional_layer": "L6",
+      "owner_repository": "arcs-verify",
+      "description": "ARCS Verify verifies portable artifacts without importing the implementation that emitted them.",
+      "allowed_imports": [],
+      "prohibited_imports": [
+        {
+          "repository": "dagr-mcp",
+          "relationship": "not_applicable",
+          "reason": "DAGR emitters are producer counterparts and fixture sources, not runtime dependencies."
+        },
+        {
+          "repository": "garp-sdk",
+          "relationship": "not_applicable",
+          "reason": "garp-sdk is not a runtime dependency unless shared shapes are genuinely consumed."
+        }
+      ],
+      "authority_refs": [
+        "dagr_producer_counterparts"
+      ],
+      "assertion_status": "validated",
+      "evidence_refs": [
+        {
+          "id": "dependencies",
+          "path": ".ecosystem/DEPENDENCIES.yaml",
+          "authority": "arcs-verify",
+          "relationship": "projects"
+        },
+        {
+          "id": "dagr-fixture-pack",
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        },
+        {
+          "id": "amnesiac-proof-pack",
+          "path": "packs/amnesiac.heppner_public_proof/v0.1/manifest.json",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "notes": "Producer counterparts include DAGR MCP producer fixtures and arcs-amnesiac serialized proof packs; neither counterpart is an imported runtime package dependency."
+    },
+    {
+      "id": "srs-semantic-authority-boundary",
+      "boundary_type": "semantic_authority",
+      "constitutional_layer": "L1",
+      "owner_repository": "arcs-srs",
+      "description": "SRS schemas, profiles, and vectors remain semantic authority owned by arcs-srs and consumed by ARCS Verify.",
+      "allowed_imports": [
+        {
+          "repository": "arcs-srs",
+          "relationship": "consumes",
+          "reason": "Pinned schema and profile bytes are consumed authority, not ARCS Verify-owned semantics."
+        }
+      ],
+      "prohibited_imports": [],
+      "authority_refs": [
+        "srs_schema_profile_authority"
+      ],
+      "assertion_status": "validated",
+      "evidence_refs": [
+        {
+          "id": "vendored-arcs-srs",
+          "path": "VENDORED_FROM",
+          "authority": "arcs-verify",
+          "relationship": "projects"
+        },
+        {
+          "id": "runtime-schema-pins",
+          "path": "arcs_verify/data/",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "notes": "Historical pinned bytes and profile pins are compatibility facts, not public ratification; srs.core.v5.1 is not claimed as a current public SRS release."
+    },
+    {
+      "id": "trust-boundary",
+      "boundary_type": "security",
+      "constitutional_layer": "L6",
+      "owner_repository": "arcs-verify",
+      "description": "The verifier resolves issuer keys and evaluates trust windows from supplied trust-bundle bytes; it does not create external trust or prove real-world event truth.",
+      "allowed_imports": [],
+      "prohibited_imports": [],
+      "authority_refs": [
+        "arcs_verify_verifier_implementation"
+      ],
+      "assertion_status": "validated",
+      "evidence_refs": [
+        {
+          "id": "verifier-boundaries",
+          "path": "VERIFICATION_BOUNDARIES.md",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        },
+        {
+          "id": "signed-srs-verifier",
+          "path": "arcs_verify/verifier.py",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "notes": "Checked facts include issuer_key_resolved, issuer_key_trusted, trust-window validity for issued_at, and attestation-limit presence. Not-checked facts include producer truthfulness, underlying event truth, operator-independent historical authenticity without an external anchor, and organization policy."
+    },
+    {
+      "id": "verification-report-output-boundary",
+      "boundary_type": "evidence_presentation",
+      "constitutional_layer": "L6",
+      "owner_repository": "arcs-verify",
+      "description": "Native verifier-report contracts are repository-owned outputs that preserve Boolean findings, enum/status results, reserved conclusions, limitations, and error boundaries.",
+      "allowed_imports": [],
+      "prohibited_imports": [],
+      "authority_refs": [
+        "arcs_verify_verifier_implementation",
+        "countervail_receipt_ingest_consumer"
+      ],
+      "assertion_status": "validated",
+      "evidence_refs": [
+        {
+          "id": "verification-findings",
+          "path": "VERIFICATION_FINDINGS.md",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        },
+        {
+          "id": "contract-bindings",
+          "path": ".ecosystem/CONTRACT_BINDINGS.yaml",
+          "authority": "arcs-verify",
+          "relationship": "projects"
+        },
+        {
+          "id": "native-report-contracts",
+          "path": "arcs_verify/contracts/",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "notes": "Provided outputs are arcs_verify.signed_srs.report.v0_1, srs.dagr_verification_report.v0.1, srs.dagr_verification_report.v0.2, and arcs_verify.report.v0_1_1. Downstream relationships include DAGR report readers and Countervail receipt-ingest verification consumers."
+    },
+    {
+      "id": "result-state-domain-boundary",
+      "boundary_type": "schema_ownership",
+      "constitutional_layer": "L6",
+      "owner_repository": "arcs-verify",
+      "description": "ARCS Verify preserves repository-owned result value domains without introducing a generic ecosystem findings ontology.",
+      "allowed_imports": [],
+      "prohibited_imports": [],
+      "authority_refs": [
+        "arcs_verify_verifier_implementation"
+      ],
+      "assertion_status": "validated",
+      "evidence_refs": [
+        {
+          "id": "verification-findings",
+          "path": "VERIFICATION_FINDINGS.md",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        },
+        {
+          "id": "signed-srs-contract",
+          "path": ".ecosystem/CONTRACT_BINDINGS.yaml",
+          "authority": "arcs-verify",
+          "relationship": "projects"
+        }
+      ],
+      "notes": "Signed-SRS reports have exactly eight Boolean results: schema_digest, envelope, profile, raw_content_exclusion, signature_valid, issuer_key_resolved, issuer_key_trusted, and attestation_limits_present. chain_status is a separate non-Boolean status result; chain_status:not_applicable is not PASS. Amnesiac-chain conclusions are true, false, and not_evaluated; reserved conclusions include authenticity_verified and signature_verified. not_evaluated is not PASS and not necessarily FAIL. Result-state boundaries distinguish emitter_assertion, independently_recomputed_finding, not_evaluated, not_applicable, validation_error, and source_integrity_error. validation_error differs from source_integrity_error; source_integrity_error occurs before reliable evaluation. subject_ref_origin is an emitter assertion, not a verifier verdict. No generic ecosystem findings ontology is introduced."
+    }
+  ],
+  "forbidden_dependencies": [
+    {
+      "id": "verifier-must-not-import-producer-runtime",
+      "description": "ARCS Verify must not import DAGR producer or emitter implementation code to verify DAGR receipts.",
+      "source": {
+        "repository": "arcs-verify",
+        "constitutional_layer": "L6",
+        "concern": "independent verification"
+      },
+      "target": {
+        "repository": "dagr-mcp",
+        "constitutional_layer": "L4",
+        "concern": "producer runtime"
+      },
+      "status": "prohibited",
+      "rationale": "Independent verification requires serialized-artifact-only producer boundaries.",
+      "evidence_refs": [
+        {
+          "id": "dependencies",
+          "path": ".ecosystem/DEPENDENCIES.yaml",
+          "authority": "arcs-verify",
+          "relationship": "projects"
+        }
+      ]
+    },
+    {
+      "id": "verifier-must-not-claim-srs-authority",
+      "description": "ARCS Verify must not own consumed SRS schema or profile semantics.",
+      "source": {
+        "repository": "arcs-verify",
+        "constitutional_layer": "L6",
+        "concern": "verifier implementation"
+      },
+      "target": {
+        "repository": "arcs-srs",
+        "constitutional_layer": "L1",
+        "concern": "schema and profile semantic authority"
+      },
+      "status": "prohibited",
+      "rationale": "arcs-srs is the consumed SRS schema and profile authority.",
+      "evidence_refs": [
+        {
+          "id": "authority-references",
+          "path": ".ecosystem/AUTHORITY_REFERENCES.yaml",
+          "authority": "arcs-verify",
+          "relationship": "projects"
+        }
+      ]
+    },
+    {
+      "id": "ecosystem-kit-runtime-dependency",
+      "description": "ARCS Verify must not add arcs-ecosystem-kit as a runtime dependency for this pilot.",
+      "source": {
+        "repository": "arcs-verify",
+        "constitutional_layer": "L6",
+        "concern": "verifier runtime package"
+      },
+      "target": {
+        "repository": "arcs-ecosystem-kit",
+        "constitutional_layer": "L10",
+        "concern": "schema validation"
+      },
+      "status": "prohibited",
+      "rationale": "Kit schemas are checked-out validation inputs only.",
+      "evidence_refs": [
+        {
+          "id": "declaration-tests",
+          "path": "tests/test_ecosystem_declarations.py",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ]
+    }
+  ],
+  "native_registry_refs": [
+    {
+      "id": "verification-boundaries",
+      "path": "VERIFICATION_BOUNDARIES.md",
+      "authority": "arcs-verify",
+      "summary_role": "Repository-local verifier boundary truth."
+    },
+    {
+      "id": "verification-findings",
+      "path": "VERIFICATION_FINDINGS.md",
+      "authority": "arcs-verify",
+      "summary_role": "Repository-local result-domain and error-domain truth."
+    }
+  ],
+  "notes": "These boundaries describe the existing ARCS Verify pilot and do not change verifier algorithms, supported profiles, result semantics, CLI behavior, or public-release behavior."
+}

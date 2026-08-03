@@ -1,0 +1,187 @@
+{
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.conformance-projection.v0.1.schema.json",
+  "schema_version": "0.1",
+  "repository": "arcs-verify",
+  "standard_identifier": "arcs.architecture.a0-a6.proposed-inputs.v0.1",
+  "standard_version": "v0.1",
+  "declared_conformance_level": "B",
+  "status": "validated",
+  "relationship": "projects",
+  "assertion_status": "validated",
+  "authority_repository": "garp-doctrine",
+  "authority_artifact_ref": "docs/architecture/A0-A6",
+  "authority_version": "v0.1",
+  "native_registry_refs": [
+    {
+      "id": "arcs-verify.conformance.local",
+      "path": ".ecosystem/CONFORMANCE_PROJECTION.yaml",
+      "authority": "arcs-verify",
+      "summary_role": "Verifier-specific conformance projection against unratified A0-A6 architecture inputs"
+    }
+  ],
+  "passed_gates": [
+    {
+      "gate_id": "verifier-independence",
+      "description": "Verification runs from serialized receipt, trust-bundle, schema, profile, and optional chain artifacts without importing the producer runtime.",
+      "evidence_ref": "README.md",
+      "assertion_status": "validated"
+    },
+    {
+      "gate_id": "pinned-schema-integrity",
+      "description": "SRS envelope schema digests are pinned and reported as schema_digest findings.",
+      "evidence_ref": "arcs_verify/verifier.py",
+      "assertion_status": "validated"
+    },
+    {
+      "gate_id": "eight-boolean-result-boundary",
+      "description": "Signed-SRS verification exposes eight Boolean results and keeps chain_status as a separate status.",
+      "evidence_ref": "VERIFICATION_FINDINGS.md",
+      "assertion_status": "validated"
+    },
+    {
+      "gate_id": "not-evaluated-preserved",
+      "description": "Amnesiac-chain reserved conclusions preserve not_evaluated as distinct from PASS and FAIL.",
+      "evidence_ref": "VERIFICATION_FINDINGS.md",
+      "assertion_status": "validated"
+    },
+    {
+      "gate_id": "not-applicable-preserved",
+      "description": "chain_status: not_applicable is not represented as PASS.",
+      "evidence_ref": "VERIFICATION_FINDINGS.md",
+      "assertion_status": "validated"
+    },
+    {
+      "gate_id": "source-integrity-errors-separated",
+      "description": "Usage and source-integrity errors remain separate from verification findings.",
+      "evidence_ref": "VERIFICATION_BOUNDARIES.md",
+      "assertion_status": "validated"
+    },
+    {
+      "gate_id": "dagr-counterpart-not-runtime-dependency",
+      "description": "DAGR implementations are modeled as producer and contract counterparts, not imported runtime package dependencies.",
+      "evidence_ref": ".ecosystem/DEPENDENCIES.yaml",
+      "assertion_status": "validated"
+    },
+    {
+      "gate_id": "historical-pins-not-public-ratification",
+      "description": "Vendored historical bytes and profile pins are compatibility facts, not public ratification claims.",
+      "evidence_ref": ".ecosystem/COMPATIBILITY_PROJECTION.yaml",
+      "assertion_status": "validated"
+    },
+    {
+      "gate_id": "public-release-guard",
+      "description": "The repository public-release guard is expected to pass for this lane.",
+      "evidence_ref": "tools/check_public_release.py",
+      "assertion_status": "validated"
+    }
+  ],
+  "failed_gates": [],
+  "not_applicable_gates": [
+    {
+      "gate_id": "runtime-execution-enforcement",
+      "description": "ARCS Verify is not a runtime admission or execution-enforcement repository.",
+      "evidence_ref": "README.md",
+      "assertion_status": "not_applicable"
+    },
+    {
+      "gate_id": "receipt-emission",
+      "description": "ARCS Verify does not emit signed receipts and does not own DAGR producer behavior.",
+      "evidence_ref": "VERIFICATION_BOUNDARIES.md",
+      "assertion_status": "not_applicable"
+    },
+    {
+      "gate_id": "srs-public-standard-ratification",
+      "description": "This repository consumes SRS schemas and profiles but does not ratify public SRS standards.",
+      "evidence_ref": ".ecosystem/AUTHORITY_REFERENCES.yaml",
+      "assertion_status": "not_applicable"
+    },
+    {
+      "gate_id": "organization-policy-enforcement",
+      "description": "Organization policy and source system retention behavior are outside this verifier repository.",
+      "evidence_ref": ".ecosystem/RESPONSIBILITIES.yaml",
+      "assertion_status": "not_applicable"
+    }
+  ],
+  "test_command_refs": [
+    {
+      "id": "kit-schema-validation",
+      "command": "$HOME/Developer/repos/arcs-ecosystem-kit/.venv/bin/python -m pytest tests/test_ecosystem_declarations.py -q",
+      "assertion_status": "validated",
+      "notes": "Focused local tests validate schema-backed declarations against arcs-ecosystem-kit v0.1 schemas when the sibling checkout is available."
+    },
+    {
+      "id": "focused-ecosystem-declaration-tests",
+      "command": ".venv/bin/python -m pytest tests/test_ecosystem_declarations.py -q",
+      "assertion_status": "validated",
+      "notes": "Local declaration sanity tests."
+    },
+    {
+      "id": "full-repository-tests",
+      "command": ".venv/bin/python -m pytest -q",
+      "assertion_status": "validated",
+      "notes": "Full existing test suite."
+    },
+    {
+      "id": "public-release-guard",
+      "command": ".venv/bin/python tools/check_public_release.py .",
+      "assertion_status": "validated",
+      "notes": "Public-release guard."
+    }
+  ],
+  "proof_pack_refs": [
+    {
+      "proof_pack_id": "srs.mcp.sdk_enforcement.dagr-mcp-fastmcp-demo",
+      "version": "v0.1",
+      "assertion_status": "fixture_reachable",
+      "authority_repository": "dagr-mcp",
+      "authority_artifact_ref": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/",
+      "path_or_ref": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/"
+    },
+    {
+      "proof_pack_id": "amnesiac.heppner_public_proof",
+      "version": "v0.1",
+      "assertion_status": "validated",
+      "authority_repository": "arcs-verify",
+      "authority_artifact_ref": "packs/amnesiac.heppner_public_proof/v0.1/manifest.json",
+      "path_or_ref": "packs/amnesiac.heppner_public_proof/v0.1/manifest.json"
+    }
+  ],
+  "unresolved_exceptions": [
+    "published_distribution_name_unresolved",
+    "kit_schema_validation_not_enforced_in_ci"
+  ],
+  "evidence_refs": [
+    {
+      "id": "readme-independent-verifier",
+      "path": "README.md",
+      "authority": "arcs-verify",
+      "relationship": "projects",
+      "notes": "Defines repository scope as independent verifier."
+    },
+    {
+      "id": "verification-findings",
+      "path": "VERIFICATION_FINDINGS.md",
+      "authority": "arcs-verify",
+      "relationship": "projects",
+      "notes": "Documents Boolean, enum/status, reserved, error, limitation, assertion, and recomputed finding domains."
+    },
+    {
+      "id": "ecosystem-adjudication",
+      "path": "docs/ECOSYSTEM_PILOT_ADJUDICATION.md",
+      "authority": "arcs-verify",
+      "relationship": "projects",
+      "notes": "Adjudicates schema support for verifier-specific boundaries."
+    }
+  ],
+  "integrity": {
+    "source_path": ".ecosystem/CONFORMANCE_PROJECTION.yaml",
+    "notes": "Projection validates against the kit v0.1 schema but does not ratify the proposed A0-A6 model."
+  },
+  "ownership_transition": {
+    "current_owner": "arcs-verify for verifier implementation behavior and native verifier-report outputs",
+    "candidate_verified": false,
+    "migration_authorized": false,
+    "migration_record_ref": "No authority migration is authorized by this pilot."
+  },
+  "notes": "A-E labels are reported as a conformance projection only. Enforcement-oriented gates are NOT_APPLICABLE for this L6 verifier while verifier-independence gates pass independently."
+}

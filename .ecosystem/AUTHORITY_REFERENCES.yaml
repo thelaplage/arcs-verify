@@ -1,0 +1,266 @@
+{
+  "schema": "https://schemas.arcs.dev/ecosystem/ecosystem.authority-references.v0.1.schema.json",
+  "schema_version": "0.1",
+  "repository": "arcs-verify",
+  "authorities": [
+    {
+      "concern": "arcs_constitutional_architecture_inputs",
+      "constitutional_layer": "L0",
+      "semantic_authority": {
+        "repository": "garp-doctrine",
+        "artifact_ref": "docs/architecture/",
+        "version": "v0.1",
+        "status": "unresolved"
+      },
+      "current_implementation": null,
+      "candidate_implementation": null,
+      "historical_implementations": [],
+      "consumers": [
+        {
+          "repository": "arcs-verify",
+          "role": "consumer",
+          "artifact_ref": ".ecosystem/AUTHORITY_REFERENCES.yaml",
+          "version": "v0.1"
+        }
+      ],
+      "producers": [],
+      "verifier_counterparts": [],
+      "operational_owners": [],
+      "migration": {
+        "authorized": false,
+        "record_ref": null,
+        "notes": "A0-A6 are referenced as proposed unratified architecture inputs only."
+      },
+      "assertion_status": "declared",
+      "evidence_refs": [
+        {
+          "id": "arcs.architecture.a0.reference-architecture.v0.1",
+          "path": "garp-doctrine/docs/architecture/A0_ARCS_REFERENCE_ARCHITECTURE_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a1.constitutional-layer-model.v0.1",
+          "path": "garp-doctrine/docs/architecture/A1_ARCS_CONSTITUTIONAL_LAYER_MODEL_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a2.architectural-ontology.v0.1",
+          "path": "garp-doctrine/docs/architecture/A2_ARCS_ARCHITECTURAL_ONTOLOGY_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a3.authority-model.v0.1",
+          "path": "garp-doctrine/docs/architecture/A3_ARCS_AUTHORITY_MODEL_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a4.repository-taxonomy.v0.1",
+          "path": "garp-doctrine/docs/architecture/A4_ARCS_REPOSITORY_TAXONOMY_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a5.federated-repository-development-doctrine.v0.1",
+          "path": "garp-doctrine/docs/architecture/A5_ARCS_FEDERATED_REPOSITORY_DEVELOPMENT_DOCTRINE_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        },
+        {
+          "id": "arcs.architecture.a6.ecosystem-coordination-doctrine.v0.1",
+          "path": "garp-doctrine/docs/architecture/A6_ARCS_ECOSYSTEM_COORDINATION_DOCTRINE_v0_1.md",
+          "authority": "garp-doctrine",
+          "relationship": "projects",
+          "notes": "status proposed; ratification_status unratified; canonical false"
+        }
+      ],
+      "notes": "The constitutional model is tested by this pilot but not claimed as ratified doctrine."
+    },
+    {
+      "concern": "srs_schema_profile_authority",
+      "constitutional_layer": "L1",
+      "semantic_authority": {
+        "repository": "arcs-srs",
+        "artifact_ref": "schemas/srs-envelope/ and docs/profiles/",
+        "version": null,
+        "status": "resolved"
+      },
+      "current_implementation": {
+        "repository": "arcs-srs",
+        "role": "semantic_authority",
+        "artifact_ref": "vendor/arcs-srs/",
+        "version": null
+      },
+      "candidate_implementation": null,
+      "historical_implementations": [],
+      "consumers": [
+        {
+          "repository": "arcs-verify",
+          "role": "consumer",
+          "artifact_ref": ".ecosystem/CONTRACT_BINDINGS.yaml",
+          "version": "v0.1"
+        }
+      ],
+      "producers": [
+        {
+          "repository": "dagr-mcp",
+          "role": "producer",
+          "artifact_ref": "DAGR-produced signed-SRS fixture receipts",
+          "version": null
+        }
+      ],
+      "verifier_counterparts": [
+        {
+          "repository": "arcs-verify",
+          "role": "verifier_counterpart",
+          "artifact_ref": "arcs_verify/verifier.py",
+          "version": null
+        }
+      ],
+      "operational_owners": [],
+      "migration": {
+        "authorized": false,
+        "record_ref": null,
+        "notes": "ARCS Verify consumes SRS schema/profile authority and does not own it."
+      },
+      "assertion_status": "validated",
+      "evidence_refs": [
+        {
+          "id": "vendored-arcs-srs-authority",
+          "path": "VENDORED_FROM",
+          "authority": "arcs-verify",
+          "relationship": "projects"
+        },
+        {
+          "id": "runtime-schema-pins",
+          "path": "arcs_verify/verifier.py",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "notes": "Historical vendored bytes and profile pins are compatibility facts, not public ratification."
+    },
+    {
+      "concern": "arcs_verify_verifier_implementation",
+      "constitutional_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/contracts/",
+        "version": "v0.1",
+        "status": "resolved"
+      },
+      "current_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/verifier.py",
+        "version": null
+      },
+      "candidate_implementation": null,
+      "historical_implementations": [],
+      "consumers": [
+        {
+          "repository": "Countervail receipt-ingest verification contract",
+          "role": "consumer",
+          "artifact_ref": "downstream relationship declaration",
+          "version": null
+        }
+      ],
+      "producers": [],
+      "verifier_counterparts": [
+        {
+          "repository": "arcs-verify",
+          "role": "verifier_counterpart",
+          "artifact_ref": "arcs_verify/verifier.py",
+          "version": null
+        }
+      ],
+      "operational_owners": [],
+      "migration": {
+        "authorized": false,
+        "record_ref": null
+      },
+      "assertion_status": "validated",
+      "evidence_refs": [
+        {
+          "id": "signed-srs-result-semantics",
+          "path": "README.md",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        },
+        {
+          "id": "native-report-contracts",
+          "path": "arcs_verify/contracts/",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "notes": "Verifier-owned behavior is separate from standard authority."
+    },
+    {
+      "concern": "dagr_producer_counterparts",
+      "constitutional_layer": "L4",
+      "semantic_authority": {
+        "repository": "dagr-mcp",
+        "artifact_ref": "DAGR producer implementation and fixtures",
+        "version": null,
+        "status": "resolved"
+      },
+      "current_implementation": {
+        "repository": "dagr-mcp",
+        "role": "producer",
+        "artifact_ref": "DAGR MCP emitter implementation",
+        "version": null
+      },
+      "candidate_implementation": null,
+      "historical_implementations": [],
+      "consumers": [
+        {
+          "repository": "arcs-verify",
+          "role": "verifier_counterpart",
+          "artifact_ref": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/",
+          "version": "v0.1"
+        }
+      ],
+      "producers": [
+        {
+          "repository": "dagr-mcp",
+          "role": "producer",
+          "artifact_ref": "DAGR-produced fixture receipts",
+          "version": null
+        }
+      ],
+      "verifier_counterparts": [
+        {
+          "repository": "arcs-verify",
+          "role": "verifier_counterpart",
+          "artifact_ref": "arcs_verify/verifier.py",
+          "version": null
+        }
+      ],
+      "operational_owners": [],
+      "migration": {
+        "authorized": false,
+        "record_ref": null,
+        "notes": "Producer counterpart relationship is not a runtime package dependency."
+      },
+      "assertion_status": "fixture_reachable",
+      "evidence_refs": [
+        {
+          "id": "dagr-producer-fixtures",
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/implementation/dagr-mcp-fastmcp-demo/",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ]
+    }
+  ]
+}
