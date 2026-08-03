@@ -148,7 +148,7 @@
   ],
   "unresolved_exceptions": [
     "published_distribution_name_unresolved",
-    "boundaries_responsibilities_schema_not_in_kit_v0_1"
+    "kit_schema_validation_not_enforced_in_ci"
   ],
   "evidence_refs": [
     {

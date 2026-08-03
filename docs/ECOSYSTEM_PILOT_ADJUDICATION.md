@@ -57,6 +57,15 @@ kit as a runtime dependency:
 - `EXCEPTIONS.yaml`
 - `RELEASE_STATE.yaml`
 
+This validation runs in `tests/test_ecosystem_declarations.py` against a
+sibling `arcs-ecosystem-kit` checkout at a fixed local path. That checkout is
+not present in this repository's CI runners, so the validation test skips
+there; CI only enforces file existence, YAML parseability, and the
+repository-local boundary/semantics assertions in the same file. Kit-schema
+conformance is currently a locally-run check, not a continuously enforced
+CI gate, until the kit schemas are consumable in CI without vendoring them
+or adding `arcs-ecosystem-kit` as a dependency.
+
 ## Schema Area Findings
 
 | Schema area | Status | ARCS Verify finding |

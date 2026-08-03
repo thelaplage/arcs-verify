@@ -89,6 +89,11 @@ def test_all_ecosystem_files_exist_and_parse() -> None:
 
 
 def test_schema_backed_declarations_validate_against_kit_v0_1() -> None:
+    # arcs-ecosystem-kit is not checked out in this repository's CI runners
+    # (see .ecosystem/EXCEPTIONS.yaml AV-003), so this test only exercises
+    # real schema validation locally, against a sibling checkout. CI still
+    # runs every other test in this file, including declaration existence,
+    # YAML parseability, and the repository-local boundary/semantics checks.
     if not KIT_SCHEMAS.is_dir():
         pytest.skip("arcs-ecosystem-kit sibling checkout not available")
 
