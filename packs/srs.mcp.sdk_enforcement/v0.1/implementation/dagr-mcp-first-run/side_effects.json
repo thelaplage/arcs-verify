@@ -1,0 +1,34 @@
+{
+  "arcs_verify_command": "for receipt in dagr-first-run-output/urn_srs_receipt_*.json; do arcs-verify \"$receipt\" --keyring dagr-first-run-output/issuer-keys.json --profile srs.mcp.sdk_enforcement.v0.1; done",
+  "capture_mode": true,
+  "mfd_frontdoor_01_linkage": "proposed_action -> native_action -> native_result_or_non_execution -> receipt_chain",
+  "quickstart_commands": [
+    "python -m venv .venv",
+    "source .venv/bin/activate  # Windows: .venv\\Scripts\\activate",
+    "python -m pip install dagr-mcp",
+    "dagr-mcp first-run --output ./dagr-first-run-output"
+  ],
+  "scenarios": {
+    "admitted": {
+      "admission_receipt_ref": "urn:srs:receipt:admission:first-run-capture-0001",
+      "failure_reason": null,
+      "governed_ok": true,
+      "inner_invocation_count_after": 1,
+      "inner_invocation_count_before": 0,
+      "native_action_executed": true,
+      "outcome_receipt_ref": "urn:srs:receipt:outcome:first-run-capture-0001",
+      "policy_decision": "allow"
+    },
+    "refused": {
+      "admission_receipt_ref": "urn:srs:receipt:admission:first-run-capture-0002",
+      "failure_reason": "denied",
+      "governed_ok": false,
+      "inner_invocation_count_after": 1,
+      "inner_invocation_count_before": 1,
+      "native_action_executed": false,
+      "outcome_receipt_ref": null,
+      "policy_decision": "deny"
+    }
+  },
+  "schema": "dagr.first_run.side_effects.v0.1"
+}

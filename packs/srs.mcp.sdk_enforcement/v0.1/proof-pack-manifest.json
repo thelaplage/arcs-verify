@@ -1,0 +1,79 @@
+{
+  "journey": [
+    {
+      "evidence": {
+        "expectations": "implementation/dagr-mcp-first-run/expectations.json",
+        "receipts": [
+          "implementation/dagr-mcp-first-run/urn_srs_receipt_admission_first-run-capture-0001.json",
+          "implementation/dagr-mcp-first-run/urn_srs_receipt_outcome_first-run-capture-0001.json"
+        ]
+      },
+      "expected_signature_valid": true,
+      "note": "The native action executed. Authenticity is established by the verifier; execution itself is the producer's observed fact, recorded in side_effects.json.",
+      "step": "admitted"
+    },
+    {
+      "evidence": {
+        "expectations": "implementation/dagr-mcp-first-run/expectations.json",
+        "receipts": [
+          "implementation/dagr-mcp-first-run/urn_srs_receipt_admission_first-run-capture-0002.json"
+        ]
+      },
+      "expected_signature_valid": true,
+      "note": "A refused admission receipt is a valid, signature-valid receipt. Verifying it PASSES: it is authentic evidence that a refusal occurred. Refusal is NOT modelled as a verification failure. Non-execution is not a verifier verdict; it is the producer's observed fact (side_effects.json: native_action_executed false, inner_invocation_count delta 0).",
+      "step": "refused"
+    },
+    {
+      "evidence": {
+        "expectations": "implementation/dagr-mcp-first-run/expectations.json",
+        "receipts": [
+          "implementation/dagr-mcp-first-run/mutations/admitted-admission-disposition-flip.json"
+        ],
+        "result": "implementation/dagr-mcp-first-run/verification/admitted-admission-disposition-flip.json"
+      },
+      "expected_failure_codes": [
+        "signature_invalid"
+      ],
+      "expected_signature_valid": false,
+      "note": "Derived from this pack's own captured admitted admission receipt by tools/generate_first_run_proof_pack.py, which flips the single signed semantic field /disposition from admitted to refused and leaves the signature untouched. Trust, envelope, profile and raw-content exclusion all still pass: only the signature fails, so the failure is attributable to the mutated field and not to broken JSON or altered trust material. The permanent WP2A vector at normative/mutations/semantic-field-change-fail.json remains asserted independently by expected/expectations.json.",
+      "related_normative_vector": "normative/mutations/semantic-field-change-fail.json",
+      "step": "mutation"
+    }
+  ],
+  "mfd_frontdoor_01_linkage": {
+    "admission_receipt_ref": "urn:srs:receipt:admission:first-run-capture-0001",
+    "chain": "proposed_action -> native_action -> native_result_or_non_execution -> receipt_chain",
+    "logical_call_id_admitted": "call:dagr:first-run:admitted",
+    "logical_call_id_refused": "call:dagr:first-run:refused",
+    "outcome_receipt_ref": "urn:srs:receipt:outcome:first-run-capture-0001",
+    "refused_admission_receipt_ref": "urn:srs:receipt:admission:first-run-capture-0002",
+    "requested_tool_name": "frontdoor.native_action",
+    "source": "implementation/dagr-mcp-first-run/side_effects.json"
+  },
+  "pack": "srs.mcp.sdk_enforcement",
+  "producer": {
+    "capture_mode": true,
+    "commit": "acb6943b63da51e5513d9ab4906e02d41069328d",
+    "command": "python -m dagr_mcp.demo first-run --capture --output ./dagr-first-run-output",
+    "observed_execution_record": "implementation/dagr-mcp-first-run/side_effects.json",
+    "repo": "dagr-mcp",
+    "source_commit": "362f7a565a3813924892b0fb7da046b63b1b080a",
+    "tree": "493d78b300567418f3464288d978385f9519e788"
+  },
+  "verifier": {
+    "command": "arcs-verify <receipt> --keyring issuer-keys.json --profile srs.mcp.sdk_enforcement.v0.1 --json",
+    "generated_results": "implementation/dagr-mcp-first-run/verification/",
+    "repo": "arcs-verify"
+  },
+  "scope": {
+    "asserts": [
+      "The admitted, refused, and mutation receipts are independently verifiable from bytes alone, with no emitter code imported.",
+      "The refused admission receipt is authentic evidence that a refusal was recorded."
+    ],
+    "does_not_assert": [
+      "Any AEDS conformance level. Level promotion is a separate, review-gated decision and is not claimed here.",
+      "That the verifier enforces anything or prevents side effects. The verifier checks evidence authenticity; non-execution is the producer's observed fact."
+    ]
+  },
+  "version": "v0.1"
+}

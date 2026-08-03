@@ -1,0 +1,14 @@
+{
+  "issuers": [
+    {
+      "algorithm": "Ed25519",
+      "issuer_id": "issuer:dagr:first-run-capture",
+      "key_id": "issuer.dagr.first-run-capture/receipt-signing/fixed",
+      "not_after": "2036-01-01T00:00:00Z",
+      "not_before": "2026-01-01T00:00:00Z",
+      "public_key": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+      "trusted": true
+    }
+  ],
+  "trust_bundle_version": "srs.trust_bundle.v0.1"
+}

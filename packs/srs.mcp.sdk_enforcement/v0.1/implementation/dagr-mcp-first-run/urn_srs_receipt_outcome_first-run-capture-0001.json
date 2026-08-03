@@ -1,0 +1,46 @@
+{
+  "actor_ref": "actor:dagr:first-run",
+  "admission_receipt_ref": "urn:srs:receipt:admission:first-run-capture-0001",
+  "artifact_classes_covered": [
+    "tool_call_outcome"
+  ],
+  "artifact_classes_excluded": [
+    "raw_prompt",
+    "raw_output",
+    "raw_tool_arguments",
+    "raw_tool_result"
+  ],
+  "attestation_limits": [
+    "The receipt attests only to governance conditions at the named admission boundary.",
+    "The receipt establishes the request, admission disposition, and semantic result returned at the configured boundary. It does not independently establish that the underlying tool body executed for this invocation, because middleware such as caches may satisfy a call without handler execution."
+  ],
+  "boundary_id": "boundary:dagr:first-run-harness",
+  "boundary_type": "mcp_tool_call",
+  "extensions": {
+    "mcp": {
+      "binding_version": "direct-harness.v0.1"
+    }
+  },
+  "issued_at": "2026-01-01T00:00:01Z",
+  "issuer_id": "issuer:dagr:first-run-capture",
+  "logical_call_id": "call:dagr:first-run:admitted",
+  "outcome": "result_returned",
+  "profile_id": "srs.mcp.sdk_enforcement",
+  "profile_version": "v0.1",
+  "protocol_binding": "mcp",
+  "receipt_id": "urn:srs:receipt:outcome:first-run-capture-0001",
+  "receipt_kind": "outcome",
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.dagr.first-run-capture/receipt-signing/fixed",
+    "signature": "-pHmDKDtEW6eWr-XbQfDV5fOz6Qf0nziaw-ZuAl5QDFBl1hHH2S-bSSDIbgEDON_M9M_lDri1M535FNqQSVeCg"
+  },
+  "receipt_type": "sdk_enforcement",
+  "receipt_version": "srs.core.v5.1",
+  "result_digest": "sha256:59908744d93162740dc50b240fdaf8d18ef6b611a69feba5cbde8ef4b8f1f02e",
+  "retention_class_applied": "hash_only",
+  "runtime_instance_id": "runtime:dagr:first-run",
+  "subject_ref": "call:dagr:first-run:admitted",
+  "subject_ref_origin": "derived_from_request"
+}
