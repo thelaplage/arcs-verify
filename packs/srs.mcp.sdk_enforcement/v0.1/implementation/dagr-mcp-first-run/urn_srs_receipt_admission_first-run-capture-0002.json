@@ -1,0 +1,49 @@
+{
+  "actor_ref": "actor:dagr:first-run",
+  "argument_digest": "sha256:b59f7468f81b784a26f2501a172032a66c6570c8b49a775c66168937c064a601",
+  "artifact_classes_covered": [
+    "tool_call_admission"
+  ],
+  "artifact_classes_excluded": [
+    "raw_prompt",
+    "raw_output",
+    "raw_tool_arguments",
+    "raw_tool_result"
+  ],
+  "attestation_limits": [
+    "The receipt attests only to governance conditions at the named admission boundary."
+  ],
+  "boundary_id": "boundary:dagr:first-run-harness",
+  "boundary_type": "mcp_tool_call",
+  "disposition": "refused",
+  "extensions": {
+    "mcp": {
+      "binding_version": "direct-harness.v0.1"
+    }
+  },
+  "issued_at": "2026-01-01T00:00:02Z",
+  "issuer_id": "issuer:dagr:first-run-capture",
+  "logical_call_id": "call:dagr:first-run:refused",
+  "policy_pack_id": "policy:dagr:first-run",
+  "policy_pack_version": "v0.1",
+  "profile_id": "srs.mcp.sdk_enforcement",
+  "profile_version": "v0.1",
+  "protocol_binding": "mcp",
+  "reason_code": "policy_refused",
+  "receipt_id": "urn:srs:receipt:admission:first-run-capture-0002",
+  "receipt_kind": "admission",
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.dagr.first-run-capture/receipt-signing/fixed",
+    "signature": "z0oJjiSH-Zor3pr1wvjYIsq-zIC5AP27ub6PpufTnxya4N9F2ulNrtAHrWw46M1x7t5J7s0XflhWoLwpqd49Ag"
+  },
+  "receipt_type": "sdk_enforcement",
+  "receipt_version": "srs.core.v5.1",
+  "requested_tool_name": "frontdoor.native_action",
+  "retention_class_applied": "hash_only",
+  "runtime_instance_id": "runtime:dagr:first-run",
+  "subject_ref": "call:dagr:first-run:refused",
+  "subject_ref_origin": "derived_from_request",
+  "tool_resolution_status": "not_observed"
+}

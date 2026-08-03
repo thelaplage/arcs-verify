@@ -1,0 +1,40 @@
+{
+  "capture_mode": true,
+  "entries": [
+    {
+      "canonical_preimage_sha256": "efa12b4ed0d0d8f8524f3566d5ce077d708c246124d661a23a2315148241a467",
+      "expected_signature_valid": true,
+      "generator_commit": "362f7a565a3813924892b0fb7da046b63b1b080a",
+      "path": "urn_srs_receipt_admission_first-run-capture-0001.json",
+      "public_key_sha256": "34750f98bd59fcfc946da45aaabe933be154a4b5094e1c4abf42866505f3c97e",
+      "receipt_file_sha256": "f364df8d438a75f8d50f09ba36ec53ad44a28608b0c2175f7fac4a13c5adb214",
+      "receipt_id": "urn:srs:receipt:admission:first-run-capture-0001"
+    },
+    {
+      "canonical_preimage_sha256": "9fa56c188af481eb82185ad243175004a59e641670baf1495e257fced8dbae08",
+      "expected_signature_valid": true,
+      "generator_commit": "362f7a565a3813924892b0fb7da046b63b1b080a",
+      "path": "urn_srs_receipt_admission_first-run-capture-0002.json",
+      "public_key_sha256": "34750f98bd59fcfc946da45aaabe933be154a4b5094e1c4abf42866505f3c97e",
+      "receipt_file_sha256": "3e9f9e0268bb0770c1b3232b9dd4cb69f58600b604efca2fe0e3f4b49e7be5ee",
+      "receipt_id": "urn:srs:receipt:admission:first-run-capture-0002"
+    },
+    {
+      "canonical_preimage_sha256": "7b081170bc5d1cd59af00ec7fdb2f9a1e97fdddfa5e46ec262187074511e9cd8",
+      "expected_signature_valid": true,
+      "generator_commit": "362f7a565a3813924892b0fb7da046b63b1b080a",
+      "path": "urn_srs_receipt_outcome_first-run-capture-0001.json",
+      "public_key_sha256": "34750f98bd59fcfc946da45aaabe933be154a4b5094e1c4abf42866505f3c97e",
+      "receipt_file_sha256": "f4828bb2598be2ace699b240b030e9bbb7fb9249fe8075ffff440b612e4e44c6",
+      "receipt_id": "urn:srs:receipt:outcome:first-run-capture-0001"
+    }
+  ],
+  "generator_commit": "362f7a565a3813924892b0fb7da046b63b1b080a",
+  "generator_repo": "dagr-mcp",
+  "key_id": "issuer.dagr.first-run-capture/receipt-signing/fixed",
+  "keyring": "issuer-keys.json",
+  "keyring_sha256": "edea1389bd2d7a861a4a0f61f81f3bb68197cd184f3363278a35b993598064a4",
+  "profile": "srs.mcp.sdk_enforcement.v0.1",
+  "side_effects_sha256": "a8758dc7644e0aa27acf37d6b02ceb3671e0218628d389ae24ade279a1efa9eb",
+  "vector_set": "srs.signed_receipt.v0.1"
+}
