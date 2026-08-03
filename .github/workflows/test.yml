@@ -9,5 +9,23 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -e '.[dev]'
+      # Dev/test-only, non-vendored checkout of the pinned arcs-ecosystem-kit
+      # commit (see .ecosystem/EXCEPTIONS.yaml AV-003 and
+      # tests/test_ecosystem_declarations.py). arcs-ecosystem-kit is private
+      # and never a runtime dependency: without ECOSYSTEM_KIT_CHECKOUT_TOKEN
+      # configured as a repository secret, this step is skipped and the
+      # kit-schema test below skips with a reason documenting the exact pin,
+      # instead of faking a pass.
+      - name: Checkout pinned arcs-ecosystem-kit
+        if: ${{ secrets.ECOSYSTEM_KIT_CHECKOUT_TOKEN != '' }}
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          repository: thelaplage/arcs-ecosystem-kit
+          ref: 0a0e25674fbe8afca9705d16ca937cb4940969a0
+          token: ${{ secrets.ECOSYSTEM_KIT_CHECKOUT_TOKEN }}
+          path: .ecosystem-kit-pinned
       - run: pytest -q
+        env:
+          ARCS_ECOSYSTEM_KIT_PATH: ${{ github.workspace }}/.ecosystem-kit-pinned
       - run: python3 tools/check_public_release.py .
