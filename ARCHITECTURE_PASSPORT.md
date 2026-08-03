@@ -73,6 +73,11 @@ surfaces:
 | `srs.dagr_verification_report.v0.1` | Frozen | `arcs_verify/contracts/dagr-srs-verification-report-v0-1/` |
 | `srs.dagr_verification_report.v0.2` | Release-closed | `arcs_verify/contracts/dagr-srs-verification-report-v0-2/` |
 
+Receipt-set verification exports `arcs_verify.receipt_set_report.v0_1`, which
+wraps the enumerated per-receipt signed-SRS reports with manifest integrity
+and admission/outcome linkage findings without changing the per-receipt eight
+Boolean results.
+
 Amnesiac-chain verification exports `arcs_verify.report.v0_1_1`, whose
 conclusion domain includes `true`, `false`, and `not_evaluated`.
 

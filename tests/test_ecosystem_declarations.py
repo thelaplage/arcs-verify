@@ -99,7 +99,7 @@ def test_schema_backed_declarations_validate_against_kit_v0_1() -> None:
 
     for declaration_name, schema_name in SCHEMA_BACKED_DECLARATIONS.items():
         payload = _load_yaml_subset(declaration_name)
-        schema = json.loads((KIT_SCHEMAS / schema_name).read_text(encoding="utf-8"))
+        schema = json.loads((KIT_SCHEMAS / schema_name).read_text())
         errors = sorted(
             Draft202012Validator(schema).iter_errors(payload),
             key=lambda error: list(error.path),
@@ -335,7 +335,7 @@ def test_lane_id_is_locally_unique_and_semantics_out_of_scope() -> None:
     active = next(
         lane
         for lane in lanes
-        if lane["lane_id"] == "arcs-verify-ecosystem-doctrine-pilot-v0-1"
+        if lane["lane_id"] == "arcs-verify-ecosystem-declarations-pilot-v0-1"
     )
 
     assert len(lane_ids) == len(set(lane_ids))
@@ -368,6 +368,7 @@ def test_native_verifier_reports_are_repository_owned_outputs() -> None:
 
     assert output_ids == {
         "arcs_verify.signed_srs.report.v0_1",
+        "arcs_verify.receipt_set_report.v0_1",
         "srs.dagr_verification_report.v0.1",
         "srs.dagr_verification_report.v0.2",
         "arcs_verify.report.v0_1_1",

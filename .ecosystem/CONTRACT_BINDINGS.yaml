@@ -53,6 +53,54 @@
       "integrity": {}
     },
     {
+      "contract_id": "arcs_verify.receipt_set_report.v0_1",
+      "owning_layer": "L6",
+      "semantic_authority": {
+        "repository": "arcs-verify",
+        "artifact_ref": "arcs_verify/receipt_set.py",
+        "version": "v0.1",
+        "status": "resolved"
+      },
+      "provider_implementation": {
+        "repository": "arcs-verify",
+        "role": "verifier_counterpart",
+        "artifact_ref": "arcs_verify/receipt_set.py",
+        "version": null
+      },
+      "consumer_implementation": null,
+      "relationship": "validates",
+      "version": "v0.1",
+      "contract_type": "verification_report",
+      "stability": "preview",
+      "assertion_status": "implemented",
+      "known_consumers": [
+        "CLI callers",
+        "Countervail receipt-ingest verification contract"
+      ],
+      "compatibility": {
+        "assertion_status": "validated",
+        "backward_compatible_with": [],
+        "unsupported_versions": [],
+        "migration_notes": "Receipt-set report adds manifest_integrity, receipt_linkage_valid, and receipts_valid alongside the enumerated per-receipt signed-SRS reports; it does not alter the per-receipt eight Boolean results."
+      },
+      "evidence_refs": [
+        {
+          "id": "receipt-set-report-shape",
+          "path": "arcs_verify/receipt_set.py",
+          "authority": "arcs-verify",
+          "relationship": "validates"
+        }
+      ],
+      "migration": {
+        "current_owner": "arcs-verify",
+        "candidate_owner": null,
+        "candidate_verified": false,
+        "migration_authorized": false,
+        "migration_record_ref": null
+      },
+      "integrity": {}
+    },
+    {
       "contract_id": "srs.dagr_verification_report.v0.1",
       "owning_layer": "L6",
       "semantic_authority": {

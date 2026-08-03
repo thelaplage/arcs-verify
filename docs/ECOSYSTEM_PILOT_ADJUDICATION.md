@@ -39,9 +39,8 @@ Status values used below:
 
 ## Validation Result
 
-All thirteen final declarations validate against checked-out
-`arcs-ecosystem-kit` v0.1 schemas from the sibling checkout without adding the
-kit as a runtime dependency:
+All thirteen declarations validate against a sibling `arcs-ecosystem-kit`
+checkout's v0.1 schemas without adding the kit as a runtime dependency:
 
 - `REPOSITORY.yaml`
 - `ARCHITECTURE_PASSPORT.yaml`
@@ -65,6 +64,43 @@ repository-local boundary/semantics assertions in the same file. Kit-schema
 conformance is currently a locally-run check, not a continuously enforced
 CI gate, until the kit schemas are consumable in CI without vendoring them
 or adding `arcs-ecosystem-kit` as a dependency.
+
+## Fixture Drift Against `arcs-ecosystem-kit`
+
+`arcs-ecosystem-kit` carries an imported pilot fixture for this repository at
+`fixtures/pilots/arcs-verify/.ecosystem/`, captured (per
+`fixtures/pilots/arcs-verify/FIXTURE.yaml`) from `arcs-verify` commit
+`489daf1e995cb794d98124261edc3c09131d9704` on the (separate, still-open,
+unmerged) `feat/ecosystem-doctrine-pilot-v0-1` branch. That commit is not the
+tip of that branch, and it is not this lane's source commit. Comparing the
+kit's imported fixture against the declarations produced by this lane found
+three files with byte-level drift, all confined to a single closed exception:
+
+| File | Drift |
+|---|---|
+| `.ecosystem/EXCEPTIONS.yaml` | Fixture has open exception `AV-002` ("The kit v0.1 schema catalog does not define BOUNDARIES.yaml or RESPONSIBILITIES.yaml files."). That gap no longer exists: the kit now ships `ecosystem.boundaries.v0.1.schema.json` and `ecosystem.responsibilities.v0.1.schema.json` (see `schemas/` in the kit checkout). This lane instead carries exception `AV-003`, which records that kit-schema validation is a local, not CI-enforced, check. |
+| `.ecosystem/ARCHITECTURE_PASSPORT.yaml` | `known_exceptions` references `AV-002` in the fixture; this lane references `AV-003`, consistent with the exception rename above. |
+| `.ecosystem/CONFORMANCE_PROJECTION.yaml` | `unresolved_exceptions` names `boundaries_responsibilities_schema_not_in_kit_v0_1` in the fixture; this lane names `kit_schema_validation_not_enforced_in_ci`, consistent with the same rename. |
+
+No other declaration file differs from the kit's imported fixture at the
+field level; this lane's content is otherwise the same shape produced against
+the same finalized kit v0.1 schema set.
+
+This lane also adds one output contract that is not present in the kit
+fixture at all: `arcs_verify.receipt_set_report.v0_1` in
+`CONTRACT_BINDINGS.yaml`'s `provided` list. `arcs_verify/receipt_set.py`
+emits a `"schema": "arcs_verify.receipt_set_report.v0_1"` field on every
+receipt-set report it produces (see `ReceiptSetReport.to_dict`), so it is a
+repository-owned output contract independent of the already-declared
+`dagr.workflow_receipt_set.v0_1` consumed input contract for the DAGR
+workflow manifest shape. Its absence from both the kit fixture and this
+repository's prior provisional declarations was a gap, not an intentional
+omission.
+
+`arcs-ecosystem-kit` should refresh `fixtures/pilots/arcs-verify/.ecosystem/`
+from this lane's commit in a follow-up kit-side PR so the imported fixture
+tracks a merged `arcs-verify` state rather than an intermediate commit on an
+unmerged branch.
 
 ## Schema Area Findings
 
@@ -201,6 +237,7 @@ Compatibility must be profile-scoped. This verifier currently supports:
 - `srs.connection.lifecycle.v0.1`;
 - DAGR report contracts scoped to MCP SDK enforcement admission/outcome
   receipts;
+- serialized DAGR workflow receipt-set verification;
 - independently serialized Amnesiac-chain structural verification.
 
 Status: `PASS` for compatibility projection shape.
@@ -212,6 +249,15 @@ grade for this repository. Execution enforcement is `NOT_APPLICABLE`; verifier
 independence, pinned-schema integrity, cryptographic verification, trust
 evaluation, report-contract stability, and public-release guard behavior remain
 meaningful verifier dimensions.
+
+This lane declares conformance level `B` only: verifier-specific gates
+(independence, pinned-schema integrity, Boolean/status-result boundary,
+public-release guard) validate against live repository behavior. Levels `C`
+and `D` are not declared. Nothing in this lane or in the fact that DAGR MCP
+adapters use this verifier makes runtime-enforcement or execution-oriented
+conformance levels automatically applicable to an L6 serialized-artifact
+verifier; those levels would require evidence this repository does not have
+(it does not enforce execution, admission, or policy).
 
 Status: `PARTIAL`. Gates can express this, but verifier-specific dimensions
 would benefit from a dedicated conformance dimension model.

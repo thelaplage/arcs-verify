@@ -4,13 +4,13 @@
   "repository": "arcs-verify",
   "lanes": [
     {
-      "lane_id": "arcs-verify-ecosystem-doctrine-pilot-v0-1",
+      "lane_id": "arcs-verify-ecosystem-declarations-pilot-v0-1",
       "status": "active",
       "owner": {
         "name": "ARCS Verify maintainers"
       },
       "start_date": "2026-08-02",
-      "objective": "Reconcile the ARCS Verify ecosystem-doctrine pilot with proposed A0-A6 architecture inputs and arcs-ecosystem-kit v0.1 schemas while preserving verifier semantics.",
+      "objective": "Add a repository-local .ecosystem/ declaration tree for ARCS Verify under arcs-ecosystem-kit v0.1 schemas, reconciled against proposed A0-A6 architecture inputs and live repository bytes, while preserving verifier semantics.",
       "repositories_touched": [
         "arcs-verify"
       ],
@@ -27,6 +27,7 @@
       ],
       "contracts_touched": [
         "arcs_verify.signed_srs.report.v0_1",
+        "arcs_verify.receipt_set_report.v0_1",
         "srs.dagr_verification_report.v0.1",
         "srs.dagr_verification_report.v0.2",
         "arcs_verify.report.v0_1_1",
