@@ -1,0 +1,29 @@
+{
+  "keyring": "issuer-keys.json",
+  "mutation": {
+    "changed_from": "admitted",
+    "changed_to": "refused",
+    "json_pointer": "/disposition",
+    "signature_preserved": true,
+    "source_receipt": "urn_srs_receipt_admission_first-run-capture-0001.json"
+  },
+  "profile": "srs.mcp.sdk_enforcement.v0.1",
+  "result": {
+    "attestation_limits_present": true,
+    "chain_status": "not_applicable",
+    "details": [],
+    "envelope": true,
+    "failure_codes": [
+      "signature_invalid"
+    ],
+    "issuer_key_resolved": true,
+    "issuer_key_trusted": true,
+    "passed": false,
+    "profile": true,
+    "raw_content_exclusion": true,
+    "schema_digest": true,
+    "signature_valid": false
+  },
+  "subject": "mutations/admitted-admission-disposition-flip.json",
+  "subject_role": "mutation"
+}

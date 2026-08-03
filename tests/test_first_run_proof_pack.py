@@ -11,6 +11,8 @@ import base64
 import copy
 import hashlib
 import json
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +28,17 @@ FIXTURES = PACK / "implementation" / "dagr-mcp-first-run"
 PACK_MANIFEST_PATH = PACK / "proof-pack-manifest.json"
 
 GENERATOR_COMMIT = "362f7a565a3813924892b0fb7da046b63b1b080a"
+
+# The pinned producer: the exact dagr-mcp commit and tree the captured bytes
+# were generated from. GENERATOR_COMMIT above authored the producer and is an
+# ancestor of this commit; the producer sources are identical between them.
+PRODUCER_COMMIT = "acb6943b63da51e5513d9ab4906e02d41069328d"
+PRODUCER_TREE = "493d78b300567418f3464288d978385f9519e788"
+PRODUCER_COMMAND = (
+    "python -m dagr_mcp.demo first-run --capture --output ./dagr-first-run-output"
+)
+
+MUTATION_NAME = "admitted-admission-disposition-flip.json"
 
 ADMITTED_ADMISSION = "urn_srs_receipt_admission_first-run-capture-0001.json"
 ADMITTED_OUTCOME = "urn_srs_receipt_outcome_first-run-capture-0001.json"
@@ -150,22 +163,56 @@ def test_negative_control_detects_tampered_refused_receipt() -> None:
     assert "signature_invalid" in report["failure_codes"]
 
 
-def test_mutation_step_is_referenced_not_regenerated() -> None:
-    steps = {step["step"]: step for step in PACK_MANIFEST["journey"]}
-    mutation = steps["mutation"]
+def test_mutation_is_derived_from_a_captured_receipt() -> None:
+    """The mutation changes exactly one signed field of a captured receipt."""
+    declared = MANIFEST["mutation"]
+    mutated = _load(FIXTURES / declared["path"])
+    source = _load(FIXTURES / declared["source_receipt"])
 
-    assert mutation["evidence"]["receipts"] == [MUTATION_PATH]
-    assert mutation["expected_signature_valid"] is False
-    assert mutation["expected_failure_codes"] == ["signature_invalid"]
+    assert declared["source_receipt"] == ADMITTED_ADMISSION
+    assert declared["json_pointer"] == "/disposition"
 
-    # The expectation is asserted by the normative set, not restated here.
+    # Exactly one field differs, and it is the declared one.
+    differing = {k for k in set(mutated) | set(source) if mutated.get(k) != source.get(k)}
+    assert differing == {"disposition"}
+    assert source["disposition"] == declared["changed_from"] == "admitted"
+    assert mutated["disposition"] == declared["changed_to"] == "refused"
+
+    # The signature is carried over untouched: the failure must come from the
+    # mutated field, not from re-signing or from corrupted trust material.
+    assert mutated["receipt_signature"] == source["receipt_signature"]
+
+
+def test_mutation_fails_with_signature_invalid_only() -> None:
+    """The mutation fails on signature alone; structure and trust still pass."""
+    declared = MANIFEST["mutation"]
+    mutated = _load(FIXTURES / declared["path"])
+
+    report = verify_receipt(
+        mutated,
+        _load(FIXTURES / "issuer-keys.json"),
+        schema_path=SCHEMA_PATH,
+        selected_profile="srs.mcp.sdk_enforcement.v0.1",
+    ).to_dict()
+
+    assert report["signature_valid"] is False
+    assert report["failure_codes"] == ["signature_invalid"]
+    assert report["passed"] is False
+
+    # Trust material and structure are untouched, so these must still hold.
+    assert report["envelope"] is True
+    assert report["profile"] is True
+    assert report["issuer_key_trusted"] is True
+    assert report["raw_content_exclusion"] is True
+
+
+def test_permanent_normative_mutation_vector_is_still_asserted() -> None:
+    """The WP2A standard vector keeps its own independent expectation."""
     normative = _load(PACK / "expected" / "expectations.json")
     declared = {entry["path"]: entry for entry in normative["entries"]}
     entry = declared["mutations/semantic-field-change-fail.json"]
     assert entry["signature_valid"] is False
     assert entry["expected_failure_codes"] == ["signature_invalid"]
-
-    # And the fixture it points at is a real file under normative/.
     assert (PACK / MUTATION_PATH).is_file()
 
 
@@ -281,19 +328,120 @@ def test_runtime_package_contains_no_producer_imports() -> None:
 def test_fixture_directory_ships_bytes_only() -> None:
     """The fixture set is evidence, not code: no importable module lands here."""
     assert not list(FIXTURES.rglob("*.py"))
-    assert sorted(p.name for p in FIXTURES.iterdir()) == sorted(
+    assert sorted(p.relative_to(FIXTURES).as_posix() for p in FIXTURES.rglob("*") if p.is_file()) == sorted(
         [
             "README.md",
             ADMITTED_ADMISSION,
             REFUSED_ADMISSION,
             ADMITTED_OUTCOME,
+            "digests.json",
             "expectations.json",
             "issuer-keys.json",
             "manifest.json",
             "quickstart.txt",
             "side_effects.json",
+            f"mutations/{MUTATION_NAME}",
+            f"verification/{ADMITTED_ADMISSION}",
+            f"verification/{ADMITTED_OUTCOME}",
+            f"verification/{REFUSED_ADMISSION}",
+            f"verification/{MUTATION_NAME}",
         ]
     )
+
+
+def test_pinned_producer_commit_and_tree_are_recorded_exactly() -> None:
+    """Both manifests name the same pinned producer commit, tree and command."""
+    for producer in (MANIFEST["producer"], PACK_MANIFEST["producer"]):
+        assert producer["repo"] == "dagr-mcp"
+        assert producer["commit"] == PRODUCER_COMMIT
+        assert producer["tree"] == PRODUCER_TREE
+        assert producer["source_commit"] == GENERATOR_COMMIT
+        assert producer["capture_mode"] is True
+
+    assert MANIFEST["producer"]["command"] == PRODUCER_COMMAND
+    assert PACK_MANIFEST["producer"]["command"] == PRODUCER_COMMAND
+
+    # Every per-receipt entry still attributes itself to the authoring commit.
+    for entry in MANIFEST["entries"]:
+        assert entry["generator_commit"] == GENERATOR_COMMIT
+
+
+@pytest.mark.parametrize(
+    "relative", sorted(_load(FIXTURES / "digests.json")["artifacts"])
+)
+def test_every_declared_digest_recomputes(relative: str) -> None:
+    declared = _load(FIXTURES / "digests.json")["artifacts"][relative]
+    path = FIXTURES / relative
+    assert path.is_file(), f"declared artifact missing: {relative}"
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == declared
+
+
+def test_digest_inventory_declares_every_committed_artifact() -> None:
+    """No undeclared artifact may sit in the pack directory."""
+    declared = set(_load(FIXTURES / "digests.json")["artifacts"])
+    on_disk = {
+        p.relative_to(FIXTURES).as_posix()
+        for p in FIXTURES.rglob("*")
+        if p.is_file() and p.name != "digests.json"
+    }
+    assert declared == on_disk
+
+
+@pytest.mark.parametrize(
+    "name", [ADMITTED_ADMISSION, ADMITTED_OUTCOME, REFUSED_ADMISSION]
+)
+def test_committed_verification_result_matches_the_live_verifier(name: str) -> None:
+    """The committed report is what this verifier actually produces today."""
+    record = _load(FIXTURES / "verification" / name)
+    assert record["subject"] == name
+    assert record["subject_role"] == "captured_receipt"
+    assert record["profile"] == "srs.mcp.sdk_enforcement.v0.1"
+    assert record["result"] == _verify(name)
+    assert record["result"]["passed"] is True
+    assert record["result"]["failure_codes"] == []
+
+
+def test_committed_mutation_result_matches_the_live_verifier() -> None:
+    record = _load(FIXTURES / "verification" / MUTATION_NAME)
+    mutated = _load(FIXTURES / "mutations" / MUTATION_NAME)
+
+    report = verify_receipt(
+        mutated,
+        _load(FIXTURES / "issuer-keys.json"),
+        schema_path=SCHEMA_PATH,
+        selected_profile="srs.mcp.sdk_enforcement.v0.1",
+    ).to_dict()
+
+    assert record["result"] == report
+    assert record["result"]["failure_codes"] == ["signature_invalid"]
+
+
+def test_committed_artifacts_contain_no_machine_local_paths() -> None:
+    """Nothing in the pack may leak a home directory, temp dir or username."""
+    # Assembled rather than written literally so this test does not itself
+    # trip tools/check_public_release.py's absolute-path scanner (PR003).
+    sep = "/"
+    forbidden = tuple(
+        sep + part + sep
+        for part in ("Users", "home", "tmp", "var" + sep + "folders")
+    ) + (sep + "private" + sep + "tmp",)
+    for path in sorted(FIXTURES.rglob("*")):
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for needle in forbidden:
+            assert needle not in text, f"{path.name} leaks {needle!r}"
+
+
+def test_derived_artifacts_regenerate_identically() -> None:
+    """`--check` must be clean: the committed derived half is reproducible."""
+    result = subprocess.run(
+        [sys.executable, "tools/generate_first_run_proof_pack.py", "--check"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 def test_verifier_declares_no_producer_dependency() -> None:

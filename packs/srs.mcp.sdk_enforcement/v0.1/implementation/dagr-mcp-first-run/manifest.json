@@ -29,12 +29,36 @@
       "receipt_id": "urn:srs:receipt:outcome:first-run-capture-0001"
     }
   ],
+  "digest_inventory": "digests.json",
   "generator_commit": "362f7a565a3813924892b0fb7da046b63b1b080a",
   "generator_repo": "dagr-mcp",
   "key_id": "issuer.dagr.first-run-capture/receipt-signing/fixed",
   "keyring": "issuer-keys.json",
   "keyring_sha256": "edea1389bd2d7a861a4a0f61f81f3bb68197cd184f3363278a35b993598064a4",
+  "mutation": {
+    "changed_from": "admitted",
+    "changed_to": "refused",
+    "expected_failure_code": "signature_invalid",
+    "generated_by": "tools/generate_first_run_proof_pack.py",
+    "json_pointer": "/disposition",
+    "path": "mutations/admitted-admission-disposition-flip.json",
+    "result": "verification/admitted-admission-disposition-flip.json",
+    "signature_preserved": true,
+    "source_receipt": "urn_srs_receipt_admission_first-run-capture-0001.json"
+  },
+  "producer": {
+    "capture_mode": true,
+    "command": "python -m dagr_mcp.demo first-run --capture --output ./dagr-first-run-output",
+    "commit": "acb6943b63da51e5513d9ab4906e02d41069328d",
+    "output_dir_arg": "./dagr-first-run-output",
+    "reproduction_note": "side_effects.json embeds the --output argument in its arcs_verify_command field, so byte-exact reproduction requires the recorded relative output path. The three receipts, issuer-keys.json and quickstart.txt are output-path independent.",
+    "repo": "dagr-mcp",
+    "source_commit": "362f7a565a3813924892b0fb7da046b63b1b080a",
+    "source_commit_note": "The commit that authored the producer. It is an ancestor of the pinned commit, and the producer sources are identical between them.",
+    "tree": "493d78b300567418f3464288d978385f9519e788"
+  },
   "profile": "srs.mcp.sdk_enforcement.v0.1",
   "side_effects_sha256": "a8758dc7644e0aa27acf37d6b02ceb3671e0218628d389ae24ade279a1efa9eb",
-  "vector_set": "srs.signed_receipt.v0.1"
+  "vector_set": "srs.signed_receipt.v0.1",
+  "verification_results": "verification/"
 }

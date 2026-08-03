@@ -25,16 +25,18 @@
     },
     {
       "evidence": {
-        "expectations": "expected/expectations.json",
+        "expectations": "implementation/dagr-mcp-first-run/expectations.json",
         "receipts": [
-          "normative/mutations/semantic-field-change-fail.json"
-        ]
+          "implementation/dagr-mcp-first-run/mutations/admitted-admission-disposition-flip.json"
+        ],
+        "result": "implementation/dagr-mcp-first-run/verification/admitted-admission-disposition-flip.json"
       },
       "expected_failure_codes": [
         "signature_invalid"
       ],
       "expected_signature_valid": false,
-      "note": "Referenced, not regenerated. This is a permanent byte-identical WP2A standard vector; its expectation is already declared in expected/expectations.json and is asserted there, not restated here.",
+      "note": "Derived from this pack's own captured admitted admission receipt by tools/generate_first_run_proof_pack.py, which flips the single signed semantic field /disposition from admitted to refused and leaves the signature untouched. Trust, envelope, profile and raw-content exclusion all still pass: only the signature fails, so the failure is attributable to the mutated field and not to broken JSON or altered trust material. The permanent WP2A vector at normative/mutations/semantic-field-change-fail.json remains asserted independently by expected/expectations.json.",
+      "related_normative_vector": "normative/mutations/semantic-field-change-fail.json",
       "step": "mutation"
     }
   ],
@@ -51,10 +53,17 @@
   "pack": "srs.mcp.sdk_enforcement",
   "producer": {
     "capture_mode": true,
-    "commit": "362f7a565a3813924892b0fb7da046b63b1b080a",
-    "command": "dagr-mcp first-run --capture --output ./dagr-first-run-output",
+    "commit": "acb6943b63da51e5513d9ab4906e02d41069328d",
+    "command": "python -m dagr_mcp.demo first-run --capture --output ./dagr-first-run-output",
     "observed_execution_record": "implementation/dagr-mcp-first-run/side_effects.json",
-    "repo": "dagr-mcp"
+    "repo": "dagr-mcp",
+    "source_commit": "362f7a565a3813924892b0fb7da046b63b1b080a",
+    "tree": "493d78b300567418f3464288d978385f9519e788"
+  },
+  "verifier": {
+    "command": "arcs-verify <receipt> --keyring issuer-keys.json --profile srs.mcp.sdk_enforcement.v0.1 --json",
+    "generated_results": "implementation/dagr-mcp-first-run/verification/",
+    "repo": "arcs-verify"
   },
   "scope": {
     "asserts": [

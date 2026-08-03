@@ -1,0 +1,20 @@
+{
+  "keyring": "issuer-keys.json",
+  "profile": "srs.mcp.sdk_enforcement.v0.1",
+  "result": {
+    "attestation_limits_present": true,
+    "chain_status": "not_applicable",
+    "details": [],
+    "envelope": true,
+    "failure_codes": [],
+    "issuer_key_resolved": true,
+    "issuer_key_trusted": true,
+    "passed": true,
+    "profile": true,
+    "raw_content_exclusion": true,
+    "schema_digest": true,
+    "signature_valid": true
+  },
+  "subject": "urn_srs_receipt_admission_first-run-capture-0002.json",
+  "subject_role": "captured_receipt"
+}
