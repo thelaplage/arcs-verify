@@ -1,0 +1,39 @@
+{
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.broadcast_control",
+  "profile_version": "v0.1",
+  "receipt_id": "urn:srs:receipt:broadcast_control:invalid:missing_target:0001",
+  "receipt_type": "provenance",
+  "receipt_kind": "execution",
+  "boundary_type": "broadcast_control_boundary",
+  "protocol_binding": "93c_webhook",
+  "subject_ref": "broadcast:93c:scene:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "issuer_id": "issuer:broadcast:test",
+  "runtime_instance_id": "runtime:broadcast:test:001",
+  "boundary_id": "boundary:broadcast:93c:test",
+  "issued_at": "2026-08-05T10:00:00Z",
+  "capture_posture": "native_emission",
+  "artifact_classes_covered": [
+    "broadcast_governance_event"
+  ],
+  "artifact_classes_excluded": [
+    "raw_arguments",
+    "raw_product_state",
+    "raw_event_payload"
+  ],
+  "attestation_limits": [
+    "The receipt declares a governed broadcast control operation under the srs.broadcast_control profile. It does not independently establish that the broadcast product received, executed, or entered the declared target state. MCP call success does not establish delivery; delivery requires a correlated native product state event."
+  ],
+  "extensions": {
+    "broadcast_control": {
+      "operation_type": "scene_switch",
+      "source_adapter": "93c_webhook"
+    }
+  },
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.broadcast.test/test/2026-01",
+    "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  }
+}

@@ -40,10 +40,12 @@ ACCEPTED_SCHEMA_SHA256 = frozenset(ENVELOPE_SCHEMA_PINS.values())
 
 MCP_PROFILE = "srs.mcp.sdk_enforcement.v0.1"
 CONNECTION_PROFILE = "srs.connection.lifecycle.v0.1"
+BROADCAST_CONTROL_PROFILE = "srs.broadcast_control.v0.1"
 
 PROFILE_IDENTITIES = {
     MCP_PROFILE: ("srs.mcp.sdk_enforcement", "v0.1"),
     CONNECTION_PROFILE: ("srs.connection.lifecycle", "v0.1"),
+    BROADCAST_CONTROL_PROFILE: ("srs.broadcast_control", "v0.1"),
 }
 
 RECEIPT_VERSION = "srs.core.v5.1"
@@ -604,6 +606,93 @@ def _connection_profile_errors(
     return errors
 
 
+BROADCAST_CONTROL_BASE_LIMIT = (
+    "The receipt declares a governed broadcast control operation under the "
+    "srs.broadcast_control profile. It does not independently establish that "
+    "the broadcast product received, executed, or entered the declared target "
+    "state. MCP call success does not establish delivery; delivery requires a "
+    "correlated native product state event."
+)
+
+BROADCAST_CONTROL_RECEIPT_KINDS = frozenset(
+    ["request", "acceptance", "execution", "observed_consequence", "delivery"]
+)
+
+BROADCAST_CONTROL_TARGET_STATE_KINDS = frozenset(
+    ["execution", "observed_consequence", "delivery"]
+)
+
+BROADCAST_CONTROL_CAPTURE_POSTURES = frozenset(
+    ["observed", "native_emission", "dagr_governed", "lifecycle_assembled"]
+)
+
+BROADCAST_CONTROL_REQUIRED_EXCLUSIONS = frozenset(
+    ["raw_arguments", "raw_product_state", "raw_event_payload"]
+)
+
+
+def _broadcast_control_profile_errors(receipt: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+
+    if receipt.get("receipt_type") != "provenance":
+        errors.append("broadcast_control.invalid_receipt_type")
+
+    if receipt.get("boundary_type") != "broadcast_control_boundary":
+        errors.append("broadcast_control.invalid_boundary_type")
+
+    if receipt.get("profile_id") != "srs.broadcast_control":
+        errors.append("broadcast_control.invalid_profile_id")
+
+    if receipt.get("profile_version") != "v0.1":
+        errors.append("broadcast_control.invalid_profile_version")
+
+    kind = receipt.get("receipt_kind")
+
+    if kind not in BROADCAST_CONTROL_RECEIPT_KINDS:
+        errors.append("broadcast_control.invalid_receipt_kind")
+    elif kind in BROADCAST_CONTROL_TARGET_STATE_KINDS:
+        target_state = receipt.get("target_state")
+        if (
+            not isinstance(target_state, str)
+            or SHA256_REF_RE.fullmatch(target_state) is None
+        ):
+            errors.append("broadcast_control.missing_target_state")
+
+    excluded = set(receipt.get("artifact_classes_excluded") or [])
+
+    if not BROADCAST_CONTROL_REQUIRED_EXCLUSIONS.issubset(excluded):
+        errors.append("broadcast_control.missing_required_exclusions")
+
+    capture_posture = receipt.get("capture_posture")
+
+    if capture_posture is not None and capture_posture not in BROADCAST_CONTROL_CAPTURE_POSTURES:
+        errors.append("broadcast_control.invalid_capture_posture")
+
+    extensions = receipt.get("extensions")
+
+    if isinstance(extensions, dict):
+        for ext_value in extensions.values():
+            if isinstance(ext_value, dict):
+                if ext_value.get("mcp_success_proves_delivery") is True:
+                    errors.append(
+                        "broadcast_control.invalid_assurance_claim"
+                    )
+                if ext_value.get("operation_type") == "toggle":
+                    errors.append(
+                        "broadcast_control.forbidden_operation_type"
+                    )
+
+    limits = receipt.get("attestation_limits")
+    limit_values = set(limits) if isinstance(limits, list) else set()
+
+    if BROADCAST_CONTROL_BASE_LIMIT not in limit_values:
+        errors.append(
+            "broadcast_control.missing_base_attestation_limit"
+        )
+
+    return errors
+
+
 def _profile_errors(
     receipt: dict[str, Any],
     selected_profile: str,
@@ -613,6 +702,9 @@ def _profile_errors(
 
     if selected_profile == CONNECTION_PROFILE:
         return _connection_profile_errors(receipt)
+
+    if selected_profile == BROADCAST_CONTROL_PROFILE:
+        return _broadcast_control_profile_errors(receipt)
 
     return ["profile.unsupported_selection"]
 
