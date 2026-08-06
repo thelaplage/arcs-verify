@@ -24,9 +24,16 @@ The versioning policy is described in [docs/VERSIONING.md](docs/VERSIONING.md).
   CLI report shapes under `docs/schemas/`.
 - `docs/examples/verify-receipts.yml`: copy-ready GitHub Actions workflow that
   verifies a directory of receipts against a pinned verifier ref.
-- `tools/check_public_release.py` now warns when the brand denylist is empty
-  (the PR012 brand check was vacuous) and grows `--require-denylist`, which
-  converts the vacuous state into a failing PR013 finding.
+- `srs.editorial.publication_ingest.v0.1` profile support in the signed-SRS
+  verifier, with its `editorial_ingest.*` failure codes (twelve static codes
+  and two dynamic families) documented in `docs/FAILURE_CODES.md`.
+- `tools/check_public_release.py` brand gate is **fail-closed** on an empty
+  denylist: an empty `brand_denylist.txt` emits PR013 and the gate fails.
+  An explicit `# BRAND_GATE: acknowledged-empty` waiver keeps the gate green
+  while disclosing (WARNING and `brand_check_performed: false` under `--json`)
+  that brand exposure is not covered. `--require-denylist` rejects even the
+  waiver, requiring real brand tokens. This supersedes the earlier
+  pass-by-default-with-warning behavior.
 - Source-integrity errors on the default subcommand now honor the documented
   exit-code contract: missing, unreadable, non-UTF-8, malformed, and
   non-object receipt, keyring, and schema inputs (including a malformed

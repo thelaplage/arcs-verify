@@ -137,6 +137,25 @@ fields.
 | `deferred_operation.execution_outcome_missing_<field>` | Dynamic. Completions: `defer_receipt_ref`, `operation_digest`, `outcome`, `predecessor_receipt_ref`, `terminal_admission_ref`. |
 | `deferred_operation.receipt_gap_missing_gap_reason` | A receipt-gap receipt does not state its gap reason. |
 
+### Profile: `srs.editorial.publication_ingest.v0.1`
+
+| Code | Meaning |
+|---|---|
+| `editorial_ingest.invalid_profile_id` | `profile_id` is not `srs.editorial.publication_ingest`. |
+| `editorial_ingest.invalid_profile_version` | `profile_version` is not `v0.1`. |
+| `editorial_ingest.invalid_receipt_type` | `receipt_type` is not `provenance`. |
+| `editorial_ingest.invalid_boundary_type` | `boundary_type` is not `editorial_corpus_boundary`. |
+| `editorial_ingest.invalid_receipt_kind` | `receipt_kind` is not `ingest`. |
+| `editorial_ingest.subject_binding_mismatch` | `publication_artifact_id` and `subject_ref` are both present but not equal. |
+| `editorial_ingest.invalid_publication_artifact_id` | `publication_artifact_id` is not a `sha256:`-prefixed string. |
+| `editorial_ingest.invalid_occurrence_posture` | `occurrence_posture` is present but outside the allowed set (`unique_artifact`, `duplicate_location`). |
+| `editorial_ingest.missing_required_covered_classes` | `artifact_classes_covered` omits a required class (`publication_artifact_digest`, `declared_reference_manifest_digest`). |
+| `editorial_ingest.missing_required_excluded_classes` | `artifact_classes_excluded` omits a required exclusion (`raw_publication_bytes`, `raw_frontmatter_yaml`, `raw_body_text`). |
+| `editorial_ingest.missing_base_attestation_limit` | `attestation_limits` does not carry the profile's base limitation statement. |
+| `editorial_ingest.missing_ingest_attestation_limit` | `attestation_limits` does not carry the profile's ingest-kind limitation statement. |
+| `editorial_ingest.missing_required:<field>` | Dynamic. A required top-level field is absent; the code carries the field name. Completions: `corpus_manifest_ref`, `corpus_scope`, `declaration_manifest_ref`, `occurrence_posture`, `parser_identity`, `publication_artifact_id`, `relative_path`, `root_id`. |
+| `editorial_ingest.missing_required_limitation_code:<code>` | Dynamic. A required `machine_limitations` entry is absent; the code carries the missing limitation code. Completions: `ARTICLE_TRUTH_NOT_EVALUATED`, `EVIDENCE_COMPLETENESS_NOT_EVALUATED`. |
+
 ### Source-integrity errors (exit 2, not failure codes)
 
 Unreadable or malformed inputs are reported before verification begins, as
