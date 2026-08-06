@@ -3,8 +3,9 @@
 The two report shapes documented in this release are described by committed
 JSON Schemas so CI consumers can pin what they parse. The CLI has further
 JSON-producing surfaces (`receipt-set --json`, `deferred-sequence --json`,
-and the DAGR report generators) whose shapes are not yet schema-documented;
-treat them as undocumented until schemas land here:
+`governed-memory-sequence --json`, and the DAGR report generators) whose shapes
+are not yet schema-documented; treat them as undocumented until schemas land
+here:
 
 | Subcommand | Schema file |
 |---|---|

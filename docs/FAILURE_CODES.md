@@ -264,6 +264,40 @@ The reserved conclusions `authenticity_verified` and `signature_verified` are
 always `not_evaluated` and never produce failure codes; see the README's
 Reserved conclusions section.
 
+## `governed-memory-sequence` subcommand
+
+Emitted by `arcs_verify/governed_memory_sequence.py` when recomputing a governed
+memory-read sequence bundle. All codes are static; there are no dynamic families.
+
+| Code | Meaning |
+|---|---|
+| `bundle_not_a_dict` | The bundle is not a JSON object. |
+| `memory_read_request_absent` | `bundle.memory_read_request` is missing or not a JSON object. |
+| `authorization_decision_absent` | `bundle.authorization_decision` is missing or not a JSON object. |
+| `context_packet_absent` | `bundle.context_packet` is missing or not a JSON object. |
+| `request_missing_request_id` | `memory_read_request.request_id` is absent or empty. |
+| `request_missing_subject_ref` | `memory_read_request.subject_ref` is absent or empty. |
+| `decision_missing_decision_id` | `authorization_decision.decision_id` is absent or empty. |
+| `decision_missing_disposition` | `authorization_decision.disposition` is absent or empty. |
+| `decision_missing_request_ref` | `authorization_decision` has no `request_ref` linking it to the request. |
+| `decision_request_ref_mismatch` | `authorization_decision.request_ref` does not match `memory_read_request.request_id`. |
+| `decision_packet_hash_malformed` | `authorization_decision.packet_hash` is present but not a non-empty string. |
+| `packet_missing_packet_id` | `context_packet.packet_id` is absent or empty. |
+| `packet_missing_packet_hash` | `context_packet.packet_hash` is absent or empty. |
+| `packet_missing_decision_ref` | `context_packet` has no `decision_ref` linking it to the decision. |
+| `packet_decision_ref_mismatch` | `context_packet.decision_ref` does not match `authorization_decision.decision_id`. |
+| `packet_digest_mismatch` | `authorization_decision.packet_hash` does not match `context_packet.packet_hash`. |
+| `subject_ref_absent` | No non-empty `subject_ref` is present across request, decision, or packet. |
+| `subject_ref_discontinuity` | `subject_ref` is not consistent across request, decision, and packet. |
+| `scope_ref_discontinuity` | `scope_ref` is not continuous across the sequence. |
+| `reopening_ref_unresolved` | `context_packet.reopening_ref` does not resolve to a known `artifact_id` in the sequence. |
+| `duplicate_artifact_id` | An `artifact_id` appears more than once in the sequence. |
+| `source_descriptors_malformed` | `bundle.source_descriptors` is present but not a list. |
+| `source_descriptor_refs_unresolved` | A source-descriptor reference does not resolve to a known artifact. |
+| `exclusion_declarations_malformed` | `bundle.exclusion_declarations` is present but not a list. |
+| `exclusion_declarations_incomplete` | Required raw-content exclusion declarations are absent or incomplete. |
+| `raw_content_posture_violation` | A raw-content field appears where only hash references are permitted. |
+
 ## Stability
 
 Codes are append-only in intent: existing codes keep their meaning, and new

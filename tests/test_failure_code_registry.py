@@ -24,9 +24,25 @@ MODULES = [
     "arcs_verify/verifier.py",
     "arcs_verify/receipt_set.py",
     "arcs_verify/deferred_sequence.py",
+    "arcs_verify/governed_memory_sequence.py",
     "arcs_verify/amnesiac/verifier.py",
     "arcs_verify/amnesiac/public_proof.py",
 ]
+
+# Signatures that mark a module as one that emits verifier failure codes. The
+# fixed MODULES list above is itself a recognition-level allowlist at the module
+# granularity: a newly added emitting module escapes it silently (as
+# governed_memory_sequence.py once did). test_no_emitting_module_is_unregistered
+# discovers emitting modules structurally and fails if one is missing from
+# MODULES, so module-level drift cannot reopen the gap that code-level
+# extraction closes.
+EMISSION_SIGNATURES = (
+    "_fail(",
+    "_finding(",
+    "failure_codes.append(",
+    ".findings.append(",
+    "SequenceFinding(",
+)
 
 HELPER_NAMES = {"_fail", "_finding"}
 HELPER_CODE_ARG = 1
@@ -128,6 +144,27 @@ def test_registry_lists_no_phantom_static_codes() -> None:
     assert not phantoms, (
         "registry documents codes the receipt-set/deferred-sequence modules "
         "do not emit:\n" + "\n".join(phantoms)
+    )
+
+
+def test_no_emitting_module_is_unregistered() -> None:
+    """Every module under arcs_verify/ that carries a code-emission signature
+    must appear in MODULES. This is the module-level analogue of the code-level
+    coverage test: it prevents a new emitting module (e.g. a future subcommand)
+    from silently escaping the structural sweep, the failure mode that left
+    governed_memory_sequence.py's codes undocumented after a merge."""
+    registered = set(MODULES)
+    discovered: list[str] = []
+    for path in sorted((ROOT / "arcs_verify").rglob("*.py")):
+        rel = path.relative_to(ROOT).as_posix()
+        source = path.read_text(encoding="utf-8")
+        if any(sig in source for sig in EMISSION_SIGNATURES):
+            discovered.append(rel)
+    missing = sorted(set(discovered) - registered)
+    assert not missing, (
+        "modules emit failure codes but are absent from MODULES in this test, "
+        "so their codes are never checked against docs/FAILURE_CODES.md:\n"
+        + "\n".join(missing)
     )
 
 

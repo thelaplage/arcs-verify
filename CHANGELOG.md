@@ -26,7 +26,13 @@ The versioning policy is described in [docs/VERSIONING.md](docs/VERSIONING.md).
   verifies a directory of receipts against a pinned verifier ref.
 - `srs.editorial.publication_ingest.v0.1` profile support in the signed-SRS
   verifier, with its `editorial_ingest.*` failure codes (twelve static codes
-  and two dynamic families) documented in `docs/FAILURE_CODES.md`.
+  and two dynamic families) documented in `docs/FAILURE_CODES.md`, and listed
+  by `--list-profiles` and the README profile table.
+- Failure-code registry coverage extended to `arcs_verify/governed_memory_sequence.py`
+  (the `governed-memory-sequence` subcommand): its twenty-six codes are
+  documented in `docs/FAILURE_CODES.md`, its `--json` surface is named among the
+  not-yet-schema-documented reports, and a module-discovery guard now fails if
+  any emitting module under `arcs_verify/` is absent from the registry sweep.
 - `tools/check_public_release.py` brand gate is **fail-closed** on an empty
   denylist: an empty `brand_denylist.txt` emits PR013 and the gate fails.
   An explicit `# BRAND_GATE: acknowledged-empty` waiver keeps the gate green

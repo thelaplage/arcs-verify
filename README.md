@@ -88,6 +88,7 @@ Failure codes (for example `profile.invalid_disposition`,
 | `srs.connection.lifecycle.v0.1` | MCP connection lifecycle receipts (connect, scope grant, revoke, disconnect). |
 | `srs.broadcast_control.v0.1` | Broadcast-control receipts for governed one-to-many distribution events. |
 | `srs.deferred_operation.v0.1` | Deferred-operation receipts (deferral, review linkage, outcome, disclosed gaps). |
+| `srs.editorial.publication_ingest.v0.1` | Editorial corpus publication-ingest receipts (provenance of a parsed publication artifact). |
 
 Profile selection is explicit. A name outside this set yields the
 `profile.unsupported_selection` failure code rather than a silent fallback,

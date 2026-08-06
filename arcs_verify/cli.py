@@ -23,6 +23,9 @@ SUPPORTED_PROFILES: dict[str, str] = {
     "srs.deferred_operation.v0.1": (
         "Deferred-operation receipts (deferral, review linkage, outcome, disclosed gaps)."
     ),
+    "srs.editorial.publication_ingest.v0.1": (
+        "Editorial corpus publication-ingest receipts (provenance of a parsed publication artifact)."
+    ),
 }
 
 _EXAMPLE = (
@@ -36,6 +39,7 @@ _EXAMPLE = (
     "  arcs-verify receipt-set WORKFLOW      verify every receipt in a DAGR workflow index\n"
     "  arcs-verify amnesiac-chain BUNDLE     recompute an independently serialized artifact chain\n"
     "  arcs-verify deferred-sequence ...     verify a deferred-operation receipt sequence\n"
+    "  arcs-verify governed-memory-sequence  verify a governed memory read sequence bundle\n"
     "\n"
     "exit codes: 0 all results passed; 1 verification failed; 2 usage or\n"
     "source-integrity error (not a verification verdict)."
