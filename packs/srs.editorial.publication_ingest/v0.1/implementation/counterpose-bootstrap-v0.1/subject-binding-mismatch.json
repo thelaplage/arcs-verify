@@ -1,0 +1,68 @@
+{
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.editorial.publication_ingest",
+  "profile_version": "v0.1",
+  "receipt_id": "urn:counterpose.bootstrap:receipt:editorial-ingest-acceptance-0002",
+  "receipt_type": "provenance",
+  "receipt_kind": "ingest",
+  "boundary_type": "editorial_corpus_boundary",
+  "protocol_binding": "counterpose-bootstrap-parser/0.2.0",
+  "subject_ref": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "issuer_id": "counterpose.bootstrap/emitter/v0.1",
+  "runtime_instance_id": "runtime-counterpose-canonical-v0",
+  "boundary_id": "boundary-counterpose-canonical-v0",
+  "issued_at": "2026-08-06T00:00:00Z",
+  "publication_artifact_id": "sha256:187ca3b9462b63176806ad43f0a3ed6a56f7092c861a52258fd2d47c3846902a",
+  "declared_record_id": "CP-15",
+  "corpus_scope": {
+    "scope_id": "counterpose.corpus.v0",
+    "repository_ref": {
+      "repository": "https://github.com/thelaplage/counterpose.git",
+      "commit": "ddc22b1940cd559bae6529a0fd3510ddec32b25a"
+    },
+    "roots": [
+      {
+        "root_id": "signal-corpus",
+        "relative_path": "signal-corpus",
+        "tree_digest": "sha256:187ca3b9462b63176806ad43f0a3ed6a56f7092c861a52258fd2d47c3846902a",
+        "file_count": 130
+      },
+      {
+        "root_id": "counterpose-frontend/signal-corpus",
+        "relative_path": "counterpose-frontend/signal-corpus",
+        "tree_digest": "sha256:c6869e9f1b86eca28938ccd066889f61073a2d45633374722a0e424b1088c172",
+        "file_count": 10
+      }
+    ],
+    "file_occurrence_count": 140,
+    "unique_artifact_count": 132
+  },
+  "root_id": "signal-corpus",
+  "relative_path": "CP_15_OPENAI_EQUITY_GIFT_TERMS.md",
+  "occurrence_posture": "unique_artifact",
+  "corpus_manifest_ref": "sha256:06624fcf87058b177b67da1832fae6cd1c969dd1221394c950addbc384db8bae",
+  "parser_identity": "counterpose-bootstrap-parser/0.2.0",
+  "declaration_manifest_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "artifact_classes_covered": [
+    "publication_artifact_digest",
+    "declared_reference_manifest_digest"
+  ],
+  "artifact_classes_excluded": [
+    "raw_publication_bytes",
+    "raw_frontmatter_yaml",
+    "raw_body_text"
+  ],
+  "attestation_limits": [
+    "The receipt declares that an editorial publication artifact was ingested and parsed by the stated parser. It does not establish article truth, evidence completeness, or source verification. Declared references are not independently captured.",
+    "The receipt does not establish that any declared source was captured, verified, or independently confirmed."
+  ],
+  "machine_limitations": [
+    {
+      "code": "ARTICLE_TRUTH_NOT_EVALUATED"
+    },
+    {
+      "code": "EVIDENCE_COMPLETENESS_NOT_EVALUATED"
+    }
+  ],
+  "extensions": {}
+}

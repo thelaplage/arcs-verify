@@ -1,0 +1,96 @@
+{
+  "profile": "srs.editorial.publication_ingest.v0.1",
+  "keyring": "issuer-keys.json",
+  "receipts": [
+    {
+      "path": "publication-ingest-canonical.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": true,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "subject-binding-mismatch.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "editorial_ingest.subject_binding_mismatch",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "missing-machine-limitations.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "editorial_ingest.missing_required_limitation_code:ARTICLE_TRUTH_NOT_EVALUATED",
+        "editorial_ingest.missing_required_limitation_code:EVIDENCE_COMPLETENESS_NOT_EVALUATED",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "wrong-receipt-kind.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "editorial_ingest.invalid_receipt_kind",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "wrong-boundary-type.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "editorial_ingest.invalid_boundary_type",
+        "signature_object_invalid"
+      ]
+    }
+  ]
+}
