@@ -25,6 +25,7 @@ sys.modules["check_public_release"] = _mod
 _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
 
 load_brand_denylist = _mod.load_brand_denylist
+brand_waiver_declared = _mod.brand_waiver_declared
 check = _mod.check
 Finding = _mod.Finding
 
@@ -66,6 +67,32 @@ class TestLoadBrandDenylist:
             "Acme\n\n  \nWidgetCo\n", encoding="utf-8"
         )
         assert load_brand_denylist(tmp_path) == ["Acme", "WidgetCo"]
+
+    def test_real_tokens_win_over_sentinel(self, tmp_path: Path) -> None:
+        # A stale waiver line left alongside real tokens must not suppress the
+        # tokens: real tokens take precedence (issue #22).
+        (tmp_path / "brand_denylist.txt").write_text(
+            "# BRAND_GATE: acknowledged-empty\nAcme\nWidgetCo\n", encoding="utf-8"
+        )
+        assert load_brand_denylist(tmp_path) == ["Acme", "WidgetCo"]
+
+    def test_sentinel_only_still_returns_sentinel(self, tmp_path: Path) -> None:
+        (tmp_path / "brand_denylist.txt").write_text(
+            "# BRAND_GATE: acknowledged-empty\n", encoding="utf-8"
+        )
+        assert load_brand_denylist(tmp_path) == ["__acknowledged_empty__"]
+
+    def test_brand_waiver_declared_tracks_sentinel_independently(self, tmp_path: Path) -> None:
+        (tmp_path / "brand_denylist.txt").write_text(
+            "# BRAND_GATE: acknowledged-empty\nAcme\n", encoding="utf-8"
+        )
+        # Tokens win in the loader, but the waiver line is still detectable.
+        assert load_brand_denylist(tmp_path) == ["Acme"]
+        assert brand_waiver_declared(tmp_path) is True
+
+    def test_brand_waiver_declared_false_without_sentinel(self, tmp_path: Path) -> None:
+        (tmp_path / "brand_denylist.txt").write_text("Acme\n", encoding="utf-8")
+        assert brand_waiver_declared(tmp_path) is False
 
 
 # ---------------------------------------------------------------------------
@@ -146,3 +173,51 @@ class TestBrandGateFailClosed:
         pr013 = [f for f in findings if f.rule_id == "PR013"]
         assert len(pr013) == 1
         assert "acknowledged-empty" in pr013[0].message
+
+
+class TestStaleWaiver:
+    """Issue #22: a waiver line left alongside real tokens must not silently
+    override the tokens; it fails loudly as PR014 while the tokens still
+    enforce (PR012 runs)."""
+
+    def test_sentinel_plus_tokens_emits_pr014_and_runs_pr012(self, tmp_path: Path) -> None:
+        _minimal_repo(
+            tmp_path,
+            brand_denylist_content="# BRAND_GATE: acknowledged-empty\nWidgetCo\n",
+        )
+        (tmp_path / "README.md").write_text(
+            "Receipt protocol and profiles\n<!-- layer-map -->\n"
+            "This project is powered by WidgetCo technology.\n",
+            encoding="utf-8",
+        )
+        findings = check(tmp_path, script_dir=tmp_path / "tools")
+        codes = [f.rule_id for f in findings]
+        assert "PR014" in codes, f"expected stale-waiver PR014 in {codes}"
+        assert "PR012" in codes, "tokens must still enforce"
+        assert "PR013" not in codes, "not empty and not a pure waiver"
+
+    def test_pr014_not_emitted_for_sentinel_only(self, tmp_path: Path) -> None:
+        _minimal_repo(
+            tmp_path,
+            brand_denylist_content="# BRAND_GATE: acknowledged-empty\n",
+        )
+        findings = check(tmp_path, script_dir=tmp_path / "tools")
+        codes = [f.rule_id for f in findings]
+        assert "PR014" not in codes
+        assert "PR013" not in codes
+
+    def test_pr014_not_emitted_for_tokens_without_waiver(self, tmp_path: Path) -> None:
+        _minimal_repo(tmp_path, brand_denylist_content="Acme\n")
+        findings = check(tmp_path, script_dir=tmp_path / "tools")
+        assert "PR014" not in [f.rule_id for f in findings]
+
+    def test_pr014_message_names_the_waiver_line(self, tmp_path: Path) -> None:
+        _minimal_repo(
+            tmp_path,
+            brand_denylist_content="# BRAND_GATE: acknowledged-empty\nAcme\n",
+        )
+        findings = check(tmp_path, script_dir=tmp_path / "tools")
+        pr014 = [f for f in findings if f.rule_id == "PR014"]
+        assert len(pr014) == 1
+        assert "acknowledged-empty" in pr014[0].message
+        assert "must be removed" in pr014[0].message

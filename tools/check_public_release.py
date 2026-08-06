@@ -121,26 +121,42 @@ _ACKNOWLEDGED_EMPTY_SENTINEL = "# BRAND_GATE: acknowledged-empty"
 
 def load_brand_denylist(script_dir: Path) -> list[str]:
     """Return brand tokens from brand_denylist.txt, or a sentinel list when
-    explicitly waived.
+    the file has no real tokens but carries the explicit waiver.
 
-    Returns:
-        A list of brand token strings (non-empty means active denylist).
-        Returns the singleton ``["__acknowledged_empty__"]`` when the file
-        carries the explicit waiver comment so the caller can distinguish a
-        waived-empty from an unanticipated empty.
+    Real tokens take precedence: if the file contains any real brand token,
+    that list is returned even when the acknowledged-empty waiver line is also
+    present (a stale waiver). The singleton ``["__acknowledged_empty__"]`` is
+    returned only when there are no real tokens and the waiver line is present,
+    so the caller can distinguish a deliberately-waived-empty from an
+    unanticipated empty. The stale-waiver case (tokens present *and* waiver
+    declared) is surfaced loudly as PR014 by ``check`` rather than silently
+    overridden here; use ``brand_waiver_declared`` to detect it.
     """
     path = script_dir / "brand_denylist.txt"
     if not path.exists():
         return []
     raw_text = path.read_text(encoding="utf-8")
-    if _ACKNOWLEDGED_EMPTY_SENTINEL in raw_text:
-        return ["__acknowledged_empty__"]
     values: list[str] = []
     for raw in raw_text.splitlines():
         value = raw.strip()
         if value and not value.startswith("#"):
             values.append(value)
-    return values
+    if values:
+        return values
+    if _ACKNOWLEDGED_EMPTY_SENTINEL in raw_text:
+        return ["__acknowledged_empty__"]
+    return []
+
+
+def brand_waiver_declared(script_dir: Path) -> bool:
+    """Whether brand_denylist.txt carries the acknowledged-empty waiver line,
+    independent of whether real tokens are also present. Real tokens win in
+    load_brand_denylist; this lets check() still detect a stale waiver line
+    left behind alongside real tokens and fail loudly (PR014)."""
+    path = script_dir / "brand_denylist.txt"
+    if not path.exists():
+        return False
+    return _ACKNOWLEDGED_EMPTY_SENTINEL in path.read_text(encoding="utf-8")
 
 
 def check(
@@ -211,7 +227,9 @@ def check(
                 if phrase.lower() in lower:
                     findings.append(Finding("PR011", rel, f"withdrawn language found: {phrase}"))
 
-    denylist = load_brand_denylist(script_dir or Path(__file__).resolve().parent)
+    script_root = script_dir or Path(__file__).resolve().parent
+    denylist = load_brand_denylist(script_root)
+    waiver_declared = brand_waiver_declared(script_root)
     naming_path = "docs/NAMING.md"
     waived = denylist == ["__acknowledged_empty__"]
     if not denylist:
@@ -235,6 +253,18 @@ def check(
             "was set; populate brand_denylist.txt with real brand tokens",
         ))
     elif not waived:
+        if waiver_declared:
+            # Real tokens win over the waiver (see load_brand_denylist), but a
+            # waiver line left behind alongside real tokens is a stale waiver
+            # that has silently outlived its justification. Fail loudly rather
+            # than override quietly, so the dead line is removed.
+            findings.append(Finding(
+                "PR014",
+                "tools/brand_denylist.txt",
+                "stale brand-gate waiver: '# BRAND_GATE: acknowledged-empty' is "
+                "present alongside real brand tokens; the tokens are enforced and "
+                "the waiver line must be removed",
+            ))
         for brand in denylist:
             for rel, text in text_by_rel.items():
                 if rel in {naming_path, "brand_denylist.txt"}:
