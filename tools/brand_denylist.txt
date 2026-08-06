@@ -4,5 +4,6 @@
 # empty denylist: an empty file emits PR013 and the gate fails. The line below
 # is the explicit waiver that keeps the gate green while the denylist is
 # genuinely empty, pending the naming gate populating real brand tokens.
-# Remove this line once real tokens are added.
+# Remove this line once real tokens are added: real tokens take precedence,
+# and leaving this line alongside them fails the gate loudly (PR014).
 # BRAND_GATE: acknowledged-empty

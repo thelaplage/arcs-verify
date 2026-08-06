@@ -40,6 +40,10 @@ The versioning policy is described in [docs/VERSIONING.md](docs/VERSIONING.md).
   that brand exposure is not covered. `--require-denylist` rejects even the
   waiver, requiring real brand tokens. This supersedes the earlier
   pass-by-default-with-warning behavior.
+- `tools/check_public_release.py`: real brand tokens now take precedence over
+  the acknowledged-empty waiver in `load_brand_denylist`, and a waiver line left
+  behind alongside real tokens fails loudly as **PR014** (rather than silently
+  overriding the tokens). Closes the stale-waiver footgun (#22).
 - Source-integrity errors on the default subcommand now honor the documented
   exit-code contract: missing, unreadable, non-UTF-8, malformed, and
   non-object receipt, keyring, and schema inputs (including a malformed
