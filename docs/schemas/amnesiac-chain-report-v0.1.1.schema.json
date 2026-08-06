@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcs.example/schemas/arcs-verify/amnesiac-chain-report-v0.1.1.schema.json",
+  "title": "ARCS Verify amnesiac-chain report (arcs_verify.report.v0_1_1)",
+  "description": "Descriptive schema for the amnesiac-chain subcommand's JSON report. Non-normative: the verifier code is the source of truth. Consumers must tolerate additional properties.",
+  "type": "object",
+  "required": [
+    "schema",
+    "verification_profile",
+    "boundary_note",
+    "conclusions",
+    "findings",
+    "passed",
+    "report_hash",
+    "verified_artifacts"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "description": "Report schema identifier, e.g. arcs_verify.report.v0_1_1."
+    },
+    "verification_profile": {"type": "string"},
+    "boundary_note": {
+      "type": "string",
+      "description": "States that structural integrity only is established and what an authenticity claim would additionally require."
+    },
+    "conclusions": {
+      "type": "object",
+      "description": "Conclusion values are in the domain true / false / not_evaluated, serialized as strings. authenticity_verified and signature_verified are reserved and always not_evaluated.",
+      "required": [
+        "integrity_valid",
+        "producer_artifacts_consistent",
+        "packet_time_bindings_valid",
+        "inspection_reproduced",
+        "receipt_hashes_valid",
+        "authenticity_verified",
+        "signature_verified"
+      ],
+      "properties": {
+        "integrity_valid": {"enum": ["true", "false", "not_evaluated"]},
+        "producer_artifacts_consistent": {"enum": ["true", "false", "not_evaluated"]},
+        "packet_time_bindings_valid": {"enum": ["true", "false", "not_evaluated"]},
+        "inspection_reproduced": {"enum": ["true", "false", "not_evaluated"]},
+        "receipt_hashes_valid": {"enum": ["true", "false", "not_evaluated"]},
+        "authenticity_verified": {"const": "not_evaluated"},
+        "signature_verified": {"const": "not_evaluated"}
+      },
+      "additionalProperties": true
+    },
+    "findings": {
+      "type": "array",
+      "items": {"type": ["object", "string"]},
+      "description": "Empty on a clean run; otherwise names the artifact and property that failed to recompute."
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "Computed from the gating conclusions only; reserved conclusions never contribute."
+    },
+    "report_hash": {"type": "string"},
+    "verified_artifacts": {
+      "type": "object",
+      "description": "Identifiers and recomputed hashes of the artifact set this run verified.",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

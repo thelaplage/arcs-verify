@@ -233,6 +233,12 @@ def check(root: Path, *, script_dir: Path | None = None) -> list[Finding]:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", dest="as_json")
+    parser.add_argument(
+        "--require-denylist",
+        action="store_true",
+        dest="require_denylist",
+        help="fail (PR013) when the brand denylist is empty instead of passing vacuously",
+    )
     parser.add_argument("repo_root", type=Path)
     return parser
 
@@ -248,11 +254,27 @@ def main(argv: list[str] | None = None) -> int:
         print(f"usage error: repository root is not a directory: {root}", file=sys.stderr)
         return 2
     findings = check(root)
+    denylist = load_brand_denylist(Path(__file__).resolve().parent)
+    brand_check_performed = bool(denylist)
+    if not brand_check_performed and args.require_denylist:
+        findings.append(
+            Finding(
+                "PR013",
+                "tools/brand_denylist.txt",
+                "brand denylist is empty; PR012 brand check was not performed",
+            )
+        )
+        findings = sorted(findings, key=lambda item: (item.rule_id, item.path, item.message))
     if args.as_json:
-        print(json.dumps({"repo_root": str(root), "finding_count": len(findings), "findings": [asdict(item) for item in findings]}, indent=2, sort_keys=True))
+        print(json.dumps({"brand_check_performed": brand_check_performed, "repo_root": str(root), "finding_count": len(findings), "findings": [asdict(item) for item in findings]}, indent=2, sort_keys=True))
     else:
         for item in findings:
             print(f"{item.rule_id} {item.path}: {item.message}")
+        if not brand_check_performed:
+            print(
+                "WARNING: brand denylist is empty; the PR012 brand check was "
+                "vacuous and this PASS does not cover brand exposure"
+            )
         print(f"{'PASS' if not findings else 'FAIL'}: {len(findings)} finding(s)")
     return 1 if findings else 0
 

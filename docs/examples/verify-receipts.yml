@@ -1,0 +1,62 @@
+# Verify every SRS receipt in a repository directory on push and pull request.
+#
+# Copy into .github/workflows/ in the repository that stores your receipts,
+# and adjust RECEIPTS_DIR, KEYRING, PROFILE, and ARCS_VERIFY_COMMIT. The
+# verifier runs offline: checkout and pip install are the only network steps.
+#
+# Until the published distribution name is finalized (docs/NAMING.md), the
+# verifier installs from an exact, immutable commit of this repository that
+# you have reviewed. Branch and tag names are mutable and are not pins; the
+# placeholder below fails loudly until replaced with a 40-character SHA.
+
+name: verify-receipts
+
+on:
+  push:
+  pull_request:
+
+env:
+  RECEIPTS_DIR: receipts
+  KEYRING: trust/issuer-keys.json
+  PROFILE: srs.mcp.sdk_enforcement.v0.1
+  ARCS_VERIFY_REPO: https://github.com/thelaplage/arcs-verify.git
+  # Replace with the exact commit SHA you reviewed. The workflow fails until
+  # you do, on purpose.
+  ARCS_VERIFY_COMMIT: REPLACE_WITH_REVIEWED_COMMIT_SHA
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ARCS Verify from an exact commit
+        run: |
+          git init arcs-verify-src
+          git -C arcs-verify-src remote add origin "$ARCS_VERIFY_REPO"
+          git -C arcs-verify-src fetch --depth 1 origin "$ARCS_VERIFY_COMMIT"
+          git -C arcs-verify-src checkout --detach FETCH_HEAD
+          python -m pip install ./arcs-verify-src
+
+      - name: Verify every receipt
+        run: |
+          set -u
+          shopt -s nullglob
+          receipts=("$RECEIPTS_DIR"/*.json)
+          if [ "${#receipts[@]}" -eq 0 ]; then
+            echo "no receipts found under $RECEIPTS_DIR; refusing to pass an empty gate" >&2
+            exit 1
+          fi
+          status=0
+          for receipt in "${receipts[@]}"; do
+            echo "::group::$receipt"
+            if ! arcs-verify "$receipt" --keyring "$KEYRING" --profile "$PROFILE"; then
+              status=1
+            fi
+            echo "::endgroup::"
+          done
+          exit "$status"

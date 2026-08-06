@@ -103,3 +103,14 @@ ARCS Verify does not claim to:
 - treat `chain_status: not_applicable` as PASS;
 - import DAGR producer code to verify DAGR receipts;
 - own SRS normative semantics.
+
+## One Name, Two Domains
+
+The signed-SRS path reports `signature_valid` as a Boolean result: the
+signature check ran and verified, or ran and failed. The `amnesiac-chain`
+profile reports `signature_verified` as a reserved conclusion that is always
+`not_evaluated`: no signature check is in scope for the chain profile. The
+adjacent names carry different domains on purpose, and the README's
+"One name, two domains" table is the reading guide. A
+`signature_verified: not_evaluated` in a chain report is a disclosure of
+scope, never a failed check.
