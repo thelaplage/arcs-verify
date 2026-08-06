@@ -1,0 +1,40 @@
+{
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.deferred_operation",
+  "profile_version": "v0.1",
+  "receipt_id": "signed-defer-0001",
+  "receipt_type": "provenance",
+  "receipt_kind": "defer_request",
+  "boundary_type": "mcp_tool_call",
+  "protocol_binding": "mcp",
+  "subject_ref": "fixture:deferred-op-signed-subject",
+  "issuer_id": "issuer.test/deferred-op/2026-01",
+  "issued_at": "2026-01-01T00:00:00Z",
+  "artifact_classes_covered": [
+    "trace"
+  ],
+  "artifact_classes_excluded": [
+    "raw_prompt",
+    "raw_output",
+    "raw_tool_arguments",
+    "raw_tool_result"
+  ],
+  "attestation_limits": [
+    "The receipt establishes the declared event role and associated metadata at the time of issuance. It does not independently establish that the governed operation executed, that conditions were actually met, or that the sequence is complete. Receipt presence is not equivalent to operational compliance."
+  ],
+  "extensions": {},
+  "disposition": "deferred_for_review",
+  "retry_contract": "retry_after_condition",
+  "review_condition": "Requires manager approval",
+  "argument_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "operation_digest": "sha256:28ab23369357229694c1e8fcbcfdbea26734a7049f91dde11c21f39c2c008218",
+  "policy_pack_id": "test-pack",
+  "policy_pack_version": "v0.1",
+  "sequence_id": "test-deferred-seq-signed-0001",
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.test/deferred-op/2026-01",
+    "signature": "kl1PfK7PS-FmOkUFlDOGqWpDP3J0Cy5xkx2NCvA-jCitb6vUyj6WFpTTl5mWaXDD4O4wO9s2UyxTDS71uDU2Cg"
+  }
+}

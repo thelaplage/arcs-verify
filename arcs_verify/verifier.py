@@ -41,11 +41,13 @@ ACCEPTED_SCHEMA_SHA256 = frozenset(ENVELOPE_SCHEMA_PINS.values())
 MCP_PROFILE = "srs.mcp.sdk_enforcement.v0.1"
 CONNECTION_PROFILE = "srs.connection.lifecycle.v0.1"
 BROADCAST_CONTROL_PROFILE = "srs.broadcast_control.v0.1"
+DEFERRED_OPERATION_PROFILE = "srs.deferred_operation.v0.1"
 
 PROFILE_IDENTITIES = {
     MCP_PROFILE: ("srs.mcp.sdk_enforcement", "v0.1"),
     CONNECTION_PROFILE: ("srs.connection.lifecycle", "v0.1"),
     BROADCAST_CONTROL_PROFILE: ("srs.broadcast_control", "v0.1"),
+    DEFERRED_OPERATION_PROFILE: ("srs.deferred_operation", "v0.1"),
 }
 
 RECEIPT_VERSION = "srs.core.v5.1"
@@ -693,6 +695,212 @@ def _broadcast_control_profile_errors(receipt: dict[str, Any]) -> list[str]:
     return errors
 
 
+DEFERRED_OPERATION_BASE_LIMIT = (
+    "The receipt establishes the declared event role and associated metadata "
+    "at the time of issuance. It does not independently establish that the "
+    "governed operation executed, that conditions were actually met, or that "
+    "the sequence is complete. Receipt presence is not equivalent to "
+    "operational compliance."
+)
+
+DEFERRED_OPERATION_RECEIPT_KINDS = frozenset([
+    "defer_request",
+    "condition_response",
+    "reevaluation",
+    "terminal_admission",
+    "execution_outcome",
+    "receipt_gap",
+])
+
+DEFERRED_OPERATION_OUTCOME_VALUES = frozenset([
+    "result_returned",
+    "error_returned",
+    "exception",
+    "task_submitted",
+    "indeterminate",
+])
+
+DEFERRED_OPERATION_REQUIRED_EXCLUSIONS = frozenset([
+    "raw_prompt",
+    "raw_output",
+    "raw_tool_arguments",
+    "raw_tool_result",
+])
+
+
+def _deferred_operation_profile_errors(receipt: dict[str, Any]) -> list[str]:
+    """Independent structural findings for a single srs.deferred_operation.v0.1 receipt.
+
+    Authority boundaries (per profile manifest §7 / spec §7):
+    - Sequence linkage (sequence_id continuity, operation_digest chain,
+      predecessor_receipt_ref chain) CANNOT be verified from a single receipt.
+      Cross-receipt findings belong to the sequence verifier.
+    - condition_response.response_status == approved does NOT make the
+      operation admissible. This verifier does not assert admissibility.
+    - key_resolved and key_trusted are evaluated by the signature path, not here.
+    - NOT_EVALUATED is not PASS.
+    """
+    errors: list[str] = []
+
+    if receipt.get("profile_id") != "srs.deferred_operation":
+        errors.append("deferred_operation.invalid_profile_id")
+
+    if receipt.get("profile_version") != "v0.1":
+        errors.append("deferred_operation.invalid_profile_version")
+
+    if receipt.get("receipt_type") != "provenance":
+        errors.append("deferred_operation.invalid_receipt_type")
+
+    kind = receipt.get("receipt_kind")
+
+    if kind not in DEFERRED_OPERATION_RECEIPT_KINDS:
+        errors.append("deferred_operation.invalid_receipt_kind")
+        return errors
+
+    # sequence_id required on all kinds
+    seq_id = receipt.get("sequence_id")
+    if not isinstance(seq_id, str) or not seq_id:
+        errors.append("deferred_operation.missing_sequence_id")
+
+    # base attestation limit required on all kinds
+    limits = receipt.get("attestation_limits")
+    limit_values = set(limits) if isinstance(limits, list) else set()
+    if DEFERRED_OPERATION_BASE_LIMIT not in limit_values:
+        errors.append("deferred_operation.missing_base_attestation_limit")
+
+    # raw content exclusions required on all kinds
+    excluded = set(receipt.get("artifact_classes_excluded") or [])
+    if not DEFERRED_OPERATION_REQUIRED_EXCLUSIONS.issubset(excluded):
+        errors.append("deferred_operation.missing_required_exclusions")
+
+    # --- kind-specific checks ---
+
+    if kind == "defer_request":
+        for field_name in (
+            "argument_digest",
+            "policy_pack_id",
+            "policy_pack_version",
+            "review_condition",
+            "operation_digest",
+        ):
+            if not receipt.get(field_name):
+                errors.append(
+                    f"deferred_operation.defer_request_missing_{field_name}"
+                )
+
+        if receipt.get("disposition") != "deferred_for_review":
+            errors.append("deferred_operation.defer_request_invalid_disposition")
+
+        if receipt.get("retry_contract") != "retry_after_condition":
+            errors.append("deferred_operation.defer_request_invalid_retry_contract")
+
+        op_digest = receipt.get("operation_digest")
+        if op_digest and not SHA256_REF_RE.fullmatch(op_digest):
+            errors.append("deferred_operation.defer_request_invalid_operation_digest")
+
+        arg_digest = receipt.get("argument_digest")
+        if arg_digest and not SHA256_REF_RE.fullmatch(arg_digest):
+            errors.append("deferred_operation.defer_request_invalid_argument_digest")
+
+    elif kind == "condition_response":
+        for field_name in (
+            "predecessor_receipt_ref",
+            "condition_digest",
+            "responder_ref",
+            "response_status",
+        ):
+            if not receipt.get(field_name):
+                errors.append(
+                    f"deferred_operation.condition_response_missing_{field_name}"
+                )
+
+        resp_status = receipt.get("response_status")
+        if resp_status not in {"approved", "rejected", "expired"}:
+            errors.append(
+                "deferred_operation.condition_response_invalid_response_status"
+            )
+
+        cond_digest = receipt.get("condition_digest")
+        if cond_digest and not SHA256_REF_RE.fullmatch(cond_digest):
+            errors.append(
+                "deferred_operation.condition_response_invalid_condition_digest"
+            )
+
+    elif kind == "reevaluation":
+        for field_name in (
+            "predecessor_receipt_ref",
+            "condition_receipt_ref",
+            "operation_digest",
+            "policy_pack_id",
+            "policy_pack_version",
+        ):
+            if not receipt.get(field_name):
+                errors.append(
+                    f"deferred_operation.reevaluation_missing_{field_name}"
+                )
+
+        op_digest = receipt.get("operation_digest")
+        if op_digest and not SHA256_REF_RE.fullmatch(op_digest):
+            errors.append("deferred_operation.reevaluation_invalid_operation_digest")
+
+    elif kind == "terminal_admission":
+        for field_name in (
+            "predecessor_receipt_ref",
+            "condition_receipt_ref",
+            "defer_receipt_ref",
+            "operation_digest",
+            "disposition",
+            "policy_pack_id",
+            "policy_pack_version",
+        ):
+            if not receipt.get(field_name):
+                errors.append(
+                    f"deferred_operation.terminal_admission_missing_{field_name}"
+                )
+
+        disposition = receipt.get("disposition")
+        if disposition not in {"admitted", "refused"}:
+            errors.append(
+                "deferred_operation.terminal_admission_invalid_disposition"
+            )
+
+        op_digest = receipt.get("operation_digest")
+        if op_digest and not SHA256_REF_RE.fullmatch(op_digest):
+            errors.append(
+                "deferred_operation.terminal_admission_invalid_operation_digest"
+            )
+
+    elif kind == "execution_outcome":
+        for field_name in (
+            "predecessor_receipt_ref",
+            "defer_receipt_ref",
+            "terminal_admission_ref",
+            "operation_digest",
+            "outcome",
+        ):
+            if not receipt.get(field_name):
+                errors.append(
+                    f"deferred_operation.execution_outcome_missing_{field_name}"
+                )
+
+        outcome = receipt.get("outcome")
+        if outcome not in DEFERRED_OPERATION_OUTCOME_VALUES:
+            errors.append("deferred_operation.execution_outcome_invalid_outcome")
+
+        op_digest = receipt.get("operation_digest")
+        if op_digest and not SHA256_REF_RE.fullmatch(op_digest):
+            errors.append(
+                "deferred_operation.execution_outcome_invalid_operation_digest"
+            )
+
+    elif kind == "receipt_gap":
+        gap_reason = receipt.get("gap_reason")
+        if not isinstance(gap_reason, str) or not gap_reason.strip():
+            errors.append("deferred_operation.receipt_gap_missing_gap_reason")
+
+    return errors
+
+
 def _profile_errors(
     receipt: dict[str, Any],
     selected_profile: str,
@@ -705,6 +913,9 @@ def _profile_errors(
 
     if selected_profile == BROADCAST_CONTROL_PROFILE:
         return _broadcast_control_profile_errors(receipt)
+
+    if selected_profile == DEFERRED_OPERATION_PROFILE:
+        return _deferred_operation_profile_errors(receipt)
 
     return ["profile.unsupported_selection"]
 
