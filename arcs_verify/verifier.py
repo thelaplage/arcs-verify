@@ -42,12 +42,14 @@ MCP_PROFILE = "srs.mcp.sdk_enforcement.v0.1"
 CONNECTION_PROFILE = "srs.connection.lifecycle.v0.1"
 BROADCAST_CONTROL_PROFILE = "srs.broadcast_control.v0.1"
 DEFERRED_OPERATION_PROFILE = "srs.deferred_operation.v0.1"
+EDITORIAL_PUBLICATION_INGEST_PROFILE = "srs.editorial.publication_ingest.v0.1"
 
 PROFILE_IDENTITIES = {
     MCP_PROFILE: ("srs.mcp.sdk_enforcement", "v0.1"),
     CONNECTION_PROFILE: ("srs.connection.lifecycle", "v0.1"),
     BROADCAST_CONTROL_PROFILE: ("srs.broadcast_control", "v0.1"),
     DEFERRED_OPERATION_PROFILE: ("srs.deferred_operation", "v0.1"),
+    EDITORIAL_PUBLICATION_INGEST_PROFILE: ("srs.editorial.publication_ingest", "v0.1"),
 }
 
 RECEIPT_VERSION = "srs.core.v5.1"
@@ -901,6 +903,134 @@ def _deferred_operation_profile_errors(receipt: dict[str, Any]) -> list[str]:
     return errors
 
 
+EDITORIAL_INGEST_REQUIRED = frozenset([
+    "publication_artifact_id",
+    "corpus_scope",
+    "root_id",
+    "relative_path",
+    "occurrence_posture",
+    "corpus_manifest_ref",
+    "parser_identity",
+    "declaration_manifest_ref",
+])
+
+EDITORIAL_INGEST_OCCURRENCE_POSTURES = frozenset([
+    "unique_artifact",
+    "duplicate_location",
+])
+
+EDITORIAL_INGEST_REQUIRED_COVERED = frozenset([
+    "publication_artifact_digest",
+    "declared_reference_manifest_digest",
+])
+
+EDITORIAL_INGEST_REQUIRED_EXCLUDED = frozenset([
+    "raw_publication_bytes",
+    "raw_frontmatter_yaml",
+    "raw_body_text",
+])
+
+EDITORIAL_INGEST_REQUIRED_LIMITATION_CODES = frozenset([
+    "ARTICLE_TRUTH_NOT_EVALUATED",
+    "EVIDENCE_COMPLETENESS_NOT_EVALUATED",
+])
+
+EDITORIAL_INGEST_BASE_LIMIT = (
+    "The receipt declares that an editorial publication artifact was ingested "
+    "and parsed by the stated parser. It does not establish article truth, "
+    "evidence completeness, or source verification. Declared references are "
+    "not independently captured."
+)
+
+EDITORIAL_INGEST_KIND_LIMIT = (
+    "The receipt does not establish that any declared source was captured, "
+    "verified, or independently confirmed."
+)
+
+
+def _editorial_publication_ingest_profile_errors(
+    receipt: dict[str, Any],
+) -> list[str]:
+    errors: list[str] = []
+
+    if receipt.get("profile_id") != "srs.editorial.publication_ingest":
+        errors.append("editorial_ingest.invalid_profile_id")
+
+    if receipt.get("profile_version") != "v0.1":
+        errors.append("editorial_ingest.invalid_profile_version")
+
+    if receipt.get("receipt_type") != "provenance":
+        errors.append("editorial_ingest.invalid_receipt_type")
+
+    if receipt.get("boundary_type") != "editorial_corpus_boundary":
+        errors.append("editorial_ingest.invalid_boundary_type")
+
+    if receipt.get("receipt_kind") != "ingest":
+        errors.append("editorial_ingest.invalid_receipt_kind")
+
+    for field in EDITORIAL_INGEST_REQUIRED:
+        if field not in receipt:
+            errors.append(f"editorial_ingest.missing_required:{field}")
+
+    pub_art_id = receipt.get("publication_artifact_id")
+    subject_ref = receipt.get("subject_ref")
+    if (
+        pub_art_id is not None
+        and subject_ref is not None
+        and pub_art_id != subject_ref
+    ):
+        errors.append("editorial_ingest.subject_binding_mismatch")
+
+    if (
+        pub_art_id is not None
+        and not isinstance(pub_art_id, str)
+        or (
+            isinstance(pub_art_id, str)
+            and not pub_art_id.startswith("sha256:")
+        )
+    ):
+        errors.append("editorial_ingest.invalid_publication_artifact_id")
+
+    posture = receipt.get("occurrence_posture")
+    if posture is not None and posture not in EDITORIAL_INGEST_OCCURRENCE_POSTURES:
+        errors.append("editorial_ingest.invalid_occurrence_posture")
+
+    covered = set(receipt.get("artifact_classes_covered") or [])
+    if not EDITORIAL_INGEST_REQUIRED_COVERED.issubset(covered):
+        errors.append("editorial_ingest.missing_required_covered_classes")
+
+    excluded = set(receipt.get("artifact_classes_excluded") or [])
+    if not EDITORIAL_INGEST_REQUIRED_EXCLUDED.issubset(excluded):
+        errors.append("editorial_ingest.missing_required_excluded_classes")
+
+    limitations = receipt.get("machine_limitations")
+    if isinstance(limitations, list):
+        present_codes = {
+            item.get("code")
+            for item in limitations
+            if isinstance(item, dict)
+        }
+        missing = EDITORIAL_INGEST_REQUIRED_LIMITATION_CODES - present_codes
+        for code in sorted(missing):
+            errors.append(
+                f"editorial_ingest.missing_required_limitation_code:{code}"
+            )
+    else:
+        for code in sorted(EDITORIAL_INGEST_REQUIRED_LIMITATION_CODES):
+            errors.append(
+                f"editorial_ingest.missing_required_limitation_code:{code}"
+            )
+
+    limits = receipt.get("attestation_limits")
+    limit_values = set(limits) if isinstance(limits, list) else set()
+    if EDITORIAL_INGEST_BASE_LIMIT not in limit_values:
+        errors.append("editorial_ingest.missing_base_attestation_limit")
+    if EDITORIAL_INGEST_KIND_LIMIT not in limit_values:
+        errors.append("editorial_ingest.missing_ingest_attestation_limit")
+
+    return errors
+
+
 def _profile_errors(
     receipt: dict[str, Any],
     selected_profile: str,
@@ -916,6 +1046,9 @@ def _profile_errors(
 
     if selected_profile == DEFERRED_OPERATION_PROFILE:
         return _deferred_operation_profile_errors(receipt)
+
+    if selected_profile == EDITORIAL_PUBLICATION_INGEST_PROFILE:
+        return _editorial_publication_ingest_profile_errors(receipt)
 
     return ["profile.unsupported_selection"]
 
