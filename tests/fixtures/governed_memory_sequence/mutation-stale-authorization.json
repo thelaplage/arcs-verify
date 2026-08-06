@@ -1,0 +1,33 @@
+{
+  "schema": "arcs_verify.governed_memory_sequence_bundle.v0_1",
+  "_mutation": "authorization carries not_after (stale_authorization_declared should be true informational)",
+  "memory_read_request": {
+    "request_id": "req:governed-memory:test:0001",
+    "subject_ref": "matter:test-matter:0001",
+    "scope_ref": "scope:governed-read:internal:v0_1",
+    "artifact_classes_excluded": ["raw_prompt", "raw_output"],
+    "requested_at": "2026-08-01T00:00:00Z"
+  },
+  "authorization_decision": {
+    "decision_id": "dec:governed-memory:test:0001",
+    "request_ref": "req:governed-memory:test:0001",
+    "subject_ref": "matter:test-matter:0001",
+    "scope_ref": "scope:governed-read:internal:v0_1",
+    "disposition": "authorized",
+    "packet_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "not_after": "2026-08-01T01:00:00Z",
+    "decided_at": "2026-08-01T00:00:01Z"
+  },
+  "context_packet": {
+    "packet_id": "pkt:governed-memory:test:0001",
+    "packet_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "decision_ref": "dec:governed-memory:test:0001",
+    "subject_ref": "matter:test-matter:0001",
+    "scope_ref": "scope:governed-read:internal:v0_1",
+    "source_refs": [],
+    "evidence_manifest": {"claim_ids": [], "anchor_refs": [], "source_refs": []},
+    "admitted_claim_ids": [],
+    "created_at": "2026-08-01T00:00:02Z"
+  },
+  "exclusion_declarations": ["raw_prompt", "raw_output"]
+}

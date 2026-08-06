@@ -61,6 +61,10 @@ def main(argv: list[str] | None = None) -> int:
         from .deferred_sequence import main as deferred_sequence_main
 
         return deferred_sequence_main(args[1:])
+    if args and args[0] == "governed-memory-sequence":
+        from .governed_memory_sequence import main as governed_memory_sequence_main
+
+        return governed_memory_sequence_main(args[1:])
     return _verify_srs(args)
 
 
