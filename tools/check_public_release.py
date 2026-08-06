@@ -116,12 +116,27 @@ def is_receipt_fixture(rel: str) -> bool:
     return path.suffix.lower() == ".json" and any(part in RECEIPT_DIR_NAMES for part in path.parts)
 
 
+_ACKNOWLEDGED_EMPTY_SENTINEL = "# BRAND_GATE: acknowledged-empty"
+
+
 def load_brand_denylist(script_dir: Path) -> list[str]:
+    """Return brand tokens from brand_denylist.txt, or a sentinel list when
+    explicitly waived.
+
+    Returns:
+        A list of brand token strings (non-empty means active denylist).
+        Returns the singleton ``["__acknowledged_empty__"]`` when the file
+        carries the explicit waiver comment so the caller can distinguish a
+        waived-empty from an unanticipated empty.
+    """
     path = script_dir / "brand_denylist.txt"
     if not path.exists():
         return []
+    raw_text = path.read_text(encoding="utf-8")
+    if _ACKNOWLEDGED_EMPTY_SENTINEL in raw_text:
+        return ["__acknowledged_empty__"]
     values: list[str] = []
-    for raw in path.read_text(encoding="utf-8").splitlines():
+    for raw in raw_text.splitlines():
         value = raw.strip()
         if value and not value.startswith("#"):
             values.append(value)
@@ -193,12 +208,24 @@ def check(root: Path, *, script_dir: Path | None = None) -> list[Finding]:
 
     denylist = load_brand_denylist(script_dir or Path(__file__).resolve().parent)
     naming_path = "docs/NAMING.md"
-    for brand in denylist:
-        for rel, text in text_by_rel.items():
-            if rel in {naming_path, "brand_denylist.txt"}:
-                continue
-            if brand.lower() in text.lower():
-                findings.append(Finding("PR012", rel, f"candidate brand outside {naming_path}: {brand}"))
+    if not denylist:
+        # Fail closed: an empty denylist means brand governance is not enforced.
+        # Populate brand_denylist.txt (or add '# BRAND_GATE: acknowledged-empty')
+        # before this gate will pass.
+        findings.append(Finding(
+            "PR013",
+            "tools/brand_denylist.txt",
+            "brand denylist is empty; brand governance is not enforced — "
+            "populate brand_denylist.txt or add '# BRAND_GATE: acknowledged-empty' "
+            "to explicitly waive this check",
+        ))
+    elif denylist != ["__acknowledged_empty__"]:
+        for brand in denylist:
+            for rel, text in text_by_rel.items():
+                if rel in {naming_path, "brand_denylist.txt"}:
+                    continue
+                if brand.lower() in text.lower():
+                    findings.append(Finding("PR012", rel, f"candidate brand outside {naming_path}: {brand}"))
 
     return sorted(findings, key=lambda item: (item.rule_id, item.path, item.message))
 
