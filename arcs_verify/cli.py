@@ -57,6 +57,10 @@ def main(argv: list[str] | None = None) -> int:
         from .receipt_set import main as receipt_set_main
 
         return receipt_set_main(args[1:])
+    if args and args[0] == "deferred-sequence":
+        from .deferred_sequence import main as deferred_sequence_main
+
+        return deferred_sequence_main(args[1:])
     return _verify_srs(args)
 
 

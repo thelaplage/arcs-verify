@@ -1,0 +1,12 @@
+{
+  "issuers": [
+    {
+      "key_id": "issuer.test/deferred-op/2026-01",
+      "issuer_id": "issuer.test/deferred-op/2026-01",
+      "public_key": "83UqOD7dmR8WvVuPfp0CJwlFNL5GjO00WeeezR2tnw4",
+      "trusted": true,
+      "not_before": "2025-01-01T00:00:00Z",
+      "not_after": "2030-12-31T23:59:59Z"
+    }
+  ]
+}
