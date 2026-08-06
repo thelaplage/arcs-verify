@@ -1,1 +1,8 @@
 # One candidate brand token per line. Empty until the naming gate records a deny list.
+#
+# The public-release gate (tools/check_public_release.py) is fail-closed on an
+# empty denylist: an empty file emits PR013 and the gate fails. The line below
+# is the explicit waiver that keeps the gate green while the denylist is
+# genuinely empty, pending the naming gate populating real brand tokens.
+# Remove this line once real tokens are added.
+# BRAND_GATE: acknowledged-empty

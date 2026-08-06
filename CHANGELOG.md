@@ -6,6 +6,102 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The versioning policy is described in [docs/VERSIONING.md](docs/VERSIONING.md).
 
+## [Unreleased]
+
+### Added
+- `--list-profiles` flag on the signed-SRS subcommand, printing the four named
+  profiles the verifier evaluates, and argument help text plus a worked
+  example in `--help`.
+- `docs/RECEIPT_ANATOMY.md`: field-by-field annotation of the committed sample
+  receipt.
+- `docs/FAILURE_CODES.md`: registry of the complete failure-code space by
+  result, subcommand, and profile family.
+- `docs/PYTHON_API.md`: the supported programmatic entry point
+  (`arcs_verify.verifier.verify_receipt`) with a stability note.
+- `docs/PRODUCING_RECEIPTS.md`: emitter-side orientation that preserves the
+  producer/verifier layer boundary.
+- `docs/REPORT_SCHEMAS.md` with committed descriptive JSON Schemas for both
+  CLI report shapes under `docs/schemas/`.
+- `docs/examples/verify-receipts.yml`: copy-ready GitHub Actions workflow that
+  verifies a directory of receipts against a pinned verifier ref.
+- `srs.editorial.publication_ingest.v0.1` profile support in the signed-SRS
+  verifier, with its `editorial_ingest.*` failure codes (twelve static codes
+  and two dynamic families) documented in `docs/FAILURE_CODES.md`, and listed
+  by `--list-profiles` and the README profile table.
+- Failure-code registry coverage extended to `arcs_verify/governed_memory_sequence.py`
+  (the `governed-memory-sequence` subcommand): its twenty-six codes are
+  documented in `docs/FAILURE_CODES.md`, its `--json` surface is named among the
+  not-yet-schema-documented reports, and a module-discovery guard now fails if
+  any emitting module under `arcs_verify/` is absent from the registry sweep.
+- `tools/check_public_release.py` brand gate is **fail-closed** on an empty
+  denylist: an empty `brand_denylist.txt` emits PR013 and the gate fails.
+  An explicit `# BRAND_GATE: acknowledged-empty` waiver keeps the gate green
+  while disclosing (WARNING and `brand_check_performed: false` under `--json`)
+  that brand exposure is not covered. `--require-denylist` rejects even the
+  waiver, requiring real brand tokens. This supersedes the earlier
+  pass-by-default-with-warning behavior.
+- Source-integrity errors on the default subcommand now honor the documented
+  exit-code contract: missing, unreadable, non-UTF-8, malformed, and
+  non-object receipt, keyring, and schema inputs (including a malformed
+  `--schema` override) report `source_integrity_error: <kind>` without a
+  traceback and exit 2 (structured JSON under `--json`), with adversarial
+  tests in `tests/test_cli_source_errors.py`. The README's exit-code table is
+  explicitly scoped to the default subcommand pending source-error
+  unification across subcommands.
+- `tests/test_failure_code_registry.py` extracts codes structurally from the
+  emitting call sites (helper calls, list appends, list-literal returns,
+  bare string and f-string returns, `code=` keyword arguments, and
+  `ValueError` constant arguments) with no recognition allowlist and one
+  structural filter (codes never contain spaces), across all five emitting
+  modules including the public-proof lane, and fails when a code or dynamic
+  family is absent from `docs/FAILURE_CODES.md`; a phantom guard fails when
+  the receipt-set or deferred-sequence tables document codes those modules do
+  not emit, and a direct membership assertion covers every
+  `SIGNATURE_FAILURE_CODES` entry. The test was proven by temporarily
+  injecting an undocumented code at each of the six emission shapes and
+  confirming a failure for every one. The
+  registry adds the receipt-set integrity codes, the full deferred-sequence
+  code set, the 26 public-proof lane codes,
+  `preimage_canonicalization_failed`, `signature_encoding_invalid`, and
+  `public_key_encoding_invalid`, removes the phantom `manifest_integrity`,
+  `receipt_gap`, and `receipt_gap_disclosed` entries (report fields and
+  conclusions, not codes), corrects every dynamic completion set to the
+  bytes (including `receipt_version` under `profile.invalid_<key>`, the full
+  predecessor/condition/defer reference fields in the five deferred-operation
+  missing-field families, the three governance fields, and the three revoke
+  free-form keys), and states the source-error kinds as one Cartesian rule
+  over three roles and six conditions, eighteen kinds in all.
+- `tests/test_report_schemas.py` generates both documented reports and
+  validates them against the committed schemas; `REPORT_SCHEMAS.md` is scoped
+  to the two documented shapes and names the not-yet-documented JSON
+  surfaces.
+
+### Changed
+- The failure-code registry now covers the complete emitted space: the
+  broadcast-control and deferred-operation static codes previously absent,
+  every dynamic family with its prefix, completion rule, and current
+  completion set, the `deferred-sequence` subcommand's codes, the full
+  amnesiac-chain finding vocabulary, and corrected attribution
+  (`receipt_hash_mismatch` and the manifest-refs mismatches are chain
+  findings, not receipt-set codes).
+- The CI example installs the verifier from an exact immutable commit via
+  init/fetch/detach (branch names are not pins) and refuses to pass when the
+  receipt directory matches zero files.
+- README tamper language is canonical-content accurate and exact: replacing
+  `disposition` with an invalid value yields the two-code result, replacing
+  it with a profile-valid value yields `signature_invalid` alone (stated as
+  the lesson it is), and reformatting the file changes nothing because the
+  signature covers RFC 8785 canonical JSON content.
+- README restructured problem-first: quickstart and tamper loop up front, the
+  layer map moved to the end, `chain_status` semantics stated positively, all
+  four named profiles documented, and a "One name, two domains" table
+  disambiguating `signature_valid` (signed-SRS Boolean) from
+  `signature_verified` (chain reserved conclusion, always `not_evaluated`).
+- `VERIFICATION_BOUNDARIES.md` gains the same naming-domain section.
+- The three tracked-file closure tests skip with an explanatory message when
+  run outside a git checkout (for example from a source export) instead of
+  failing on the environment.
+
 ## [0.1.1] - Unreleased
 
 The release date is intentionally unset. A date is assigned only by the P4 /

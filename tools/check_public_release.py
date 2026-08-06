@@ -143,7 +143,12 @@ def load_brand_denylist(script_dir: Path) -> list[str]:
     return values
 
 
-def check(root: Path, *, script_dir: Path | None = None) -> list[Finding]:
+def check(
+    root: Path,
+    *,
+    script_dir: Path | None = None,
+    require_real_denylist: bool = False,
+) -> list[Finding]:
     findings: list[Finding] = []
     files = tracked_files(root)
     text_by_rel: dict[str, str] = {}
@@ -208,6 +213,7 @@ def check(root: Path, *, script_dir: Path | None = None) -> list[Finding]:
 
     denylist = load_brand_denylist(script_dir or Path(__file__).resolve().parent)
     naming_path = "docs/NAMING.md"
+    waived = denylist == ["__acknowledged_empty__"]
     if not denylist:
         # Fail closed: an empty denylist means brand governance is not enforced.
         # Populate brand_denylist.txt (or add '# BRAND_GATE: acknowledged-empty')
@@ -219,7 +225,16 @@ def check(root: Path, *, script_dir: Path | None = None) -> list[Finding]:
             "populate brand_denylist.txt or add '# BRAND_GATE: acknowledged-empty' "
             "to explicitly waive this check",
         ))
-    elif denylist != ["__acknowledged_empty__"]:
+    elif waived and require_real_denylist:
+        # The caller insists on real brand tokens; the acknowledged-empty
+        # waiver is not accepted under --require-denylist.
+        findings.append(Finding(
+            "PR013",
+            "tools/brand_denylist.txt",
+            "brand denylist is waived (acknowledged-empty) but --require-denylist "
+            "was set; populate brand_denylist.txt with real brand tokens",
+        ))
+    elif not waived:
         for brand in denylist:
             for rel, text in text_by_rel.items():
                 if rel in {naming_path, "brand_denylist.txt"}:
@@ -233,6 +248,14 @@ def check(root: Path, *, script_dir: Path | None = None) -> list[Finding]:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", dest="as_json")
+    parser.add_argument(
+        "--require-denylist",
+        action="store_true",
+        dest="require_denylist",
+        help="require real brand tokens: reject even the acknowledged-empty "
+             "waiver (PR013). The gate is already fail-closed on a genuinely "
+             "empty denylist regardless of this flag.",
+    )
     parser.add_argument("repo_root", type=Path)
     return parser
 
@@ -247,12 +270,23 @@ def main(argv: list[str] | None = None) -> int:
     if not root.is_dir():
         print(f"usage error: repository root is not a directory: {root}", file=sys.stderr)
         return 2
-    findings = check(root)
+    findings = check(root, require_real_denylist=args.require_denylist)
+    denylist = load_brand_denylist(Path(__file__).resolve().parent)
+    waived = denylist == ["__acknowledged_empty__"]
+    # The brand scan (PR012) only actually runs when real tokens are present;
+    # a genuinely empty denylist now fails closed (PR013), and the
+    # acknowledged-empty waiver passes without covering brand exposure.
+    brand_check_performed = bool(denylist) and not waived
     if args.as_json:
-        print(json.dumps({"repo_root": str(root), "finding_count": len(findings), "findings": [asdict(item) for item in findings]}, indent=2, sort_keys=True))
+        print(json.dumps({"brand_check_performed": brand_check_performed, "repo_root": str(root), "finding_count": len(findings), "findings": [asdict(item) for item in findings]}, indent=2, sort_keys=True))
     else:
         for item in findings:
             print(f"{item.rule_id} {item.path}: {item.message}")
+        if waived and not findings:
+            print(
+                "WARNING: brand denylist is explicitly waived (acknowledged-empty); "
+                "this PASS does not cover brand exposure"
+            )
         print(f"{'PASS' if not findings else 'FAIL'}: {len(findings)} finding(s)")
     return 1 if findings else 0
 

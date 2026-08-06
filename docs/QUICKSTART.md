@@ -105,3 +105,17 @@ echo "exit code: $?"
 A clean result means the index hashes match, every enumerated receipt verifies,
 and every outcome links to its corresponding admission receipt. It does not
 prove durable-memory admission or the truth of the underlying event.
+
+## Where to go next
+
+- [RECEIPT_ANATOMY.md](RECEIPT_ANATOMY.md) annotates the receipt you just
+  verified, field by field.
+- [FAILURE_CODES.md](FAILURE_CODES.md) enumerates every code the verifier can
+  emit; try tampering with a copy of the receipt and matching what fires.
+- [PYTHON_API.md](PYTHON_API.md) shows the same verification embedded in
+  Python instead of the CLI.
+- [examples/verify-receipts.yml](examples/verify-receipts.yml) is a
+  copy-ready CI workflow that verifies a directory of receipts.
+- [PRODUCING_RECEIPTS.md](PRODUCING_RECEIPTS.md) explains where the emitter
+  side lives and the shortest honest path to emitting conformant receipts
+  from your own runtime.

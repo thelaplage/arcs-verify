@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcs.example/schemas/arcs-verify/signed-srs-report-v0.1.schema.json",
+  "title": "ARCS Verify signed-SRS CLI report",
+  "description": "Descriptive schema for the --json output of the default signed-SRS subcommand. Non-normative: the verifier code is the source of truth. Fields are append-only in intent; consumers must tolerate additional properties.",
+  "type": "object",
+  "required": [
+    "schema_digest",
+    "envelope",
+    "profile",
+    "raw_content_exclusion",
+    "signature_valid",
+    "issuer_key_resolved",
+    "issuer_key_trusted",
+    "attestation_limits_present",
+    "chain_status",
+    "failure_codes",
+    "details",
+    "passed"
+  ],
+  "properties": {
+    "schema_digest": {"type": "boolean"},
+    "envelope": {"type": "boolean"},
+    "profile": {"type": "boolean"},
+    "raw_content_exclusion": {"type": "boolean"},
+    "signature_valid": {"type": "boolean"},
+    "issuer_key_resolved": {"type": "boolean"},
+    "issuer_key_trusted": {"type": "boolean"},
+    "attestation_limits_present": {"type": "boolean"},
+    "chain_status": {
+      "type": "string",
+      "description": "Reported separately from the eight Boolean results. For a standalone signed receipt the required value is not_applicable."
+    },
+    "failure_codes": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Stable codes enumerated in docs/FAILURE_CODES.md. Match exact strings."
+    },
+    "details": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Human-readable validator messages. Not stable strings; do not match on them."
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "True only when all eight Boolean results are true and chain_status equals not_applicable."
+    }
+  },
+  "additionalProperties": true
+}
