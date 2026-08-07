@@ -26,6 +26,9 @@ SUPPORTED_PROFILES: dict[str, str] = {
     "srs.editorial.publication_ingest.v0.1": (
         "Editorial corpus publication-ingest receipts (provenance of a parsed publication artifact)."
     ),
+    "srs.editorial.source_capture.v0.1": (
+        "Editorial source-capture receipts (digest of the bytes a referenced URL or record returned at capture time)."
+    ),
 }
 
 _EXAMPLE = (
