@@ -43,6 +43,7 @@ CONNECTION_PROFILE = "srs.connection.lifecycle.v0.1"
 BROADCAST_CONTROL_PROFILE = "srs.broadcast_control.v0.1"
 DEFERRED_OPERATION_PROFILE = "srs.deferred_operation.v0.1"
 EDITORIAL_PUBLICATION_INGEST_PROFILE = "srs.editorial.publication_ingest.v0.1"
+EDITORIAL_SOURCE_CAPTURE_PROFILE = "srs.editorial.source_capture.v0.1"
 
 PROFILE_IDENTITIES = {
     MCP_PROFILE: ("srs.mcp.sdk_enforcement", "v0.1"),
@@ -50,6 +51,7 @@ PROFILE_IDENTITIES = {
     BROADCAST_CONTROL_PROFILE: ("srs.broadcast_control", "v0.1"),
     DEFERRED_OPERATION_PROFILE: ("srs.deferred_operation", "v0.1"),
     EDITORIAL_PUBLICATION_INGEST_PROFILE: ("srs.editorial.publication_ingest", "v0.1"),
+    EDITORIAL_SOURCE_CAPTURE_PROFILE: ("srs.editorial.source_capture", "v0.1"),
 }
 
 RECEIPT_VERSION = "srs.core.v5.1"
@@ -1031,6 +1033,104 @@ def _editorial_publication_ingest_profile_errors(
     return errors
 
 
+SOURCE_CAPTURE_REQUIRED_COVERED = frozenset([
+    "captured_response_digest",
+    "capture_transaction_metadata",
+])
+
+SOURCE_CAPTURE_REQUIRED_EXCLUDED = frozenset([
+    "raw_network_response_body",
+    "raw_source_bytes",
+    "article_truth",
+])
+
+SOURCE_CAPTURE_REQUIRED_LIMITATION_CODES = frozenset([
+    "ARTICLE_TRUTH_NOT_EVALUATED",
+    "CLAIM_SUPPORT_NOT_EVALUATED",
+    "SOURCE_IDENTITY_NOT_EVALUATED",
+])
+
+
+def _editorial_source_capture_profile_errors(
+    receipt: dict[str, Any],
+) -> list[str]:
+    """Profile checks for editorial source-capture receipts.
+
+    A capture receipt attests to the digest of the bytes a referenced EXTERNAL
+    URL returned at a network capture at capture time. It binds a declared
+    reference to a captured-body digest, and — like ingest — never asserts
+    article truth, claim support, or source identity.
+
+    This profile is external/network capture only. An internal governed-record
+    reference is a distinct semantic class (declaration resolution / pin
+    verification) governed by the proposed srs.editorial.reference_resolution
+    profile; it MUST NOT receive a source_capture receipt. The external-URL
+    requirement below is what keeps the two classes from being conflated at the
+    verifier (see the internal_source_capture_masquerade defect).
+    """
+    errors: list[str] = []
+
+    if receipt.get("profile_id") != "srs.editorial.source_capture":
+        errors.append("source_capture.invalid_profile_id")
+    if receipt.get("profile_version") != "v0.1":
+        errors.append("source_capture.invalid_profile_version")
+    if receipt.get("receipt_type") != "provenance":
+        errors.append("source_capture.invalid_receipt_type")
+    if receipt.get("boundary_type") != "editorial_source_capture_boundary":
+        errors.append("source_capture.invalid_boundary_type")
+    if receipt.get("receipt_kind") != "source_capture":
+        errors.append("source_capture.invalid_receipt_kind")
+
+    capture = receipt.get("capture")
+    if not isinstance(capture, dict):
+        errors.append("source_capture.missing_capture_block")
+        capture = {}
+
+    digest = capture.get("captured_body_sha256")
+    if not isinstance(digest, str) or not digest.startswith("sha256:"):
+        errors.append("source_capture.invalid_captured_body_digest")
+
+    # External/network capture only: the captured URL must be an http(s) URL.
+    # An internal governed-record reference (e.g. counterpedia://record/<id>) is
+    # a distinct semantic class and MUST NOT ride this profile. Requiring an
+    # external URL here is the verifier-side guard against the
+    # internal_source_capture_masquerade defect.
+    requested_url = capture.get("requested_url")
+    if not isinstance(requested_url, str) or not (
+        requested_url.startswith("http://") or requested_url.startswith("https://")
+    ):
+        errors.append("source_capture.capture_url_not_external")
+
+    # subject_ref must bind the receipt to the declared reference it captured.
+    reference = receipt.get("reference")
+    if not isinstance(reference, dict) or not reference.get("ref_id"):
+        errors.append("source_capture.missing_reference_binding")
+    elif receipt.get("subject_ref") != reference.get("ref_id"):
+        errors.append("source_capture.subject_binding_mismatch")
+
+    covered = set(receipt.get("artifact_classes_covered") or [])
+    if not SOURCE_CAPTURE_REQUIRED_COVERED.issubset(covered):
+        errors.append("source_capture.missing_required_covered_classes")
+
+    excluded = set(receipt.get("artifact_classes_excluded") or [])
+    if not SOURCE_CAPTURE_REQUIRED_EXCLUDED.issubset(excluded):
+        errors.append("source_capture.missing_required_excluded_classes")
+
+    limitations = receipt.get("machine_limitations")
+    present_codes = (
+        {item.get("code") for item in limitations if isinstance(item, dict)}
+        if isinstance(limitations, list)
+        else set()
+    )
+    for code in sorted(SOURCE_CAPTURE_REQUIRED_LIMITATION_CODES - present_codes):
+        errors.append(f"source_capture.missing_required_limitation_code:{code}")
+
+    if receipt.get("retention_class_applied") != "hash_only":
+        errors.append("source_capture.invalid_retention_class")
+
+    return errors
+
+
 def _profile_errors(
     receipt: dict[str, Any],
     selected_profile: str,
@@ -1049,6 +1149,9 @@ def _profile_errors(
 
     if selected_profile == EDITORIAL_PUBLICATION_INGEST_PROFILE:
         return _editorial_publication_ingest_profile_errors(receipt)
+
+    if selected_profile == EDITORIAL_SOURCE_CAPTURE_PROFILE:
+        return _editorial_source_capture_profile_errors(receipt)
 
     return ["profile.unsupported_selection"]
 

@@ -156,6 +156,25 @@ fields.
 | `editorial_ingest.missing_required:<field>` | Dynamic. A required top-level field is absent; the code carries the field name. Completions: `corpus_manifest_ref`, `corpus_scope`, `declaration_manifest_ref`, `occurrence_posture`, `parser_identity`, `publication_artifact_id`, `relative_path`, `root_id`. |
 | `editorial_ingest.missing_required_limitation_code:<code>` | Dynamic. A required `machine_limitations` entry is absent; the code carries the missing limitation code. Completions: `ARTICLE_TRUTH_NOT_EVALUATED`, `EVIDENCE_COMPLETENESS_NOT_EVALUATED`. |
 
+### Profile: `srs.editorial.source_capture.v0.1`
+
+| Code | Meaning |
+|---|---|
+| `source_capture.invalid_profile_id` | `profile_id` is not `srs.editorial.source_capture`. |
+| `source_capture.invalid_profile_version` | `profile_version` is not `v0.1`. |
+| `source_capture.invalid_receipt_type` | `receipt_type` is not `provenance`. |
+| `source_capture.invalid_boundary_type` | `boundary_type` is not `editorial_source_capture_boundary`. |
+| `source_capture.invalid_receipt_kind` | `receipt_kind` is not `source_capture`. |
+| `source_capture.missing_capture_block` | The `capture` object is absent or not an object. |
+| `source_capture.invalid_captured_body_digest` | `capture.captured_body_sha256` is not a `sha256:`-prefixed string. |
+| `source_capture.capture_url_not_external` | `capture.requested_url` is not an `http://` or `https://` URL. This profile is external/network capture only; an internal governed-record reference is a distinct class and must not ride it. |
+| `source_capture.missing_reference_binding` | The `reference` object is absent or carries no `ref_id`. |
+| `source_capture.subject_binding_mismatch` | `subject_ref` is present but not equal to `reference.ref_id`. |
+| `source_capture.missing_required_covered_classes` | `artifact_classes_covered` omits a required class (`captured_response_digest`, `capture_transaction_metadata`). |
+| `source_capture.missing_required_excluded_classes` | `artifact_classes_excluded` omits a required exclusion (`raw_network_response_body`, `raw_source_bytes`, `article_truth`). |
+| `source_capture.invalid_retention_class` | `retention_class_applied` is not `hash_only`. |
+| `source_capture.missing_required_limitation_code:<code>` | Dynamic. A required `machine_limitations` entry is absent; the code carries the missing limitation code. Completions: `ARTICLE_TRUTH_NOT_EVALUATED`, `CLAIM_SUPPORT_NOT_EVALUATED`, `SOURCE_IDENTITY_NOT_EVALUATED`. |
+
 ### Source-integrity errors (exit 2, not failure codes)
 
 Unreadable or malformed inputs are reported before verification begins, as
