@@ -2,9 +2,10 @@
 
 Verifies that the editorial source-capture profile checker correctly identifies
 conformant capture receipts and fires precise error codes on mutations. A
-capture receipt attests to the digest of the bytes a referenced URL (or an
-internal governed-record reference) returned at capture time; it never asserts
-article truth, claim support, or source identity.
+capture receipt attests to the digest of the bytes a referenced EXTERNAL URL
+returned at a network capture; it never asserts article truth, claim support,
+or source identity. The profile is external-only: an internal governed-record
+reference is a distinct class and must be rejected, not admitted.
 
 No private keys, no bootstrap code imports — serialized receipt dicts only.
 """
@@ -114,6 +115,29 @@ def test_missing_required_limitation_code_fires() -> None:
     ]
     errors = _editorial_source_capture_profile_errors(r)
     assert "source_capture.missing_required_limitation_code:SOURCE_IDENTITY_NOT_EVALUATED" in errors
+
+
+def test_internal_reference_shaped_receipt_is_rejected() -> None:
+    """A receipt whose captured URL is an internal governed-record reference
+    (not an external http(s) URL) must be rejected: source_capture is external
+    capture only and must not become the route for internal reference
+    resolution (the internal_source_capture_masquerade defect)."""
+    r = _valid_receipt()
+    r["capture"] = {
+        **r["capture"],
+        "requested_url": "counterpedia://record/CP-SIG-24",
+        "final_url": "counterpedia://record/CP-SIG-24",
+    }
+    r["reference"] = {**r["reference"], "source_type": "governed_record_cross_reference"}
+    errors = _editorial_source_capture_profile_errors(r)
+    assert "source_capture.capture_url_not_external" in errors
+
+
+def test_missing_requested_url_fires() -> None:
+    r = _valid_receipt()
+    r["capture"] = {k: v for k, v in r["capture"].items() if k != "requested_url"}
+    errors = _editorial_source_capture_profile_errors(r)
+    assert "source_capture.capture_url_not_external" in errors
 
 
 def test_non_hash_only_retention_fires() -> None:

@@ -167,6 +167,7 @@ fields.
 | `source_capture.invalid_receipt_kind` | `receipt_kind` is not `source_capture`. |
 | `source_capture.missing_capture_block` | The `capture` object is absent or not an object. |
 | `source_capture.invalid_captured_body_digest` | `capture.captured_body_sha256` is not a `sha256:`-prefixed string. |
+| `source_capture.capture_url_not_external` | `capture.requested_url` is not an `http://` or `https://` URL. This profile is external/network capture only; an internal governed-record reference is a distinct class and must not ride it. |
 | `source_capture.missing_reference_binding` | The `reference` object is absent or carries no `ref_id`. |
 | `source_capture.subject_binding_mismatch` | `subject_ref` is present but not equal to `reference.ref_id`. |
 | `source_capture.missing_required_covered_classes` | `artifact_classes_covered` omits a required class (`captured_response_digest`, `capture_transaction_metadata`). |

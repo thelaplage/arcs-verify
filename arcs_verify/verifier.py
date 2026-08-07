@@ -1056,10 +1056,17 @@ def _editorial_source_capture_profile_errors(
 ) -> list[str]:
     """Profile checks for editorial source-capture receipts.
 
-    A capture receipt attests to the digest of the bytes a referenced URL (or
-    an internal governed-record reference) returned at capture time. It binds
-    a declared reference to a captured-body digest, and — like ingest — never
-    asserts article truth, claim support, or source identity.
+    A capture receipt attests to the digest of the bytes a referenced EXTERNAL
+    URL returned at a network capture at capture time. It binds a declared
+    reference to a captured-body digest, and — like ingest — never asserts
+    article truth, claim support, or source identity.
+
+    This profile is external/network capture only. An internal governed-record
+    reference is a distinct semantic class (declaration resolution / pin
+    verification) governed by the proposed srs.editorial.reference_resolution
+    profile; it MUST NOT receive a source_capture receipt. The external-URL
+    requirement below is what keeps the two classes from being conflated at the
+    verifier (see the internal_source_capture_masquerade defect).
     """
     errors: list[str] = []
 
@@ -1082,6 +1089,17 @@ def _editorial_source_capture_profile_errors(
     digest = capture.get("captured_body_sha256")
     if not isinstance(digest, str) or not digest.startswith("sha256:"):
         errors.append("source_capture.invalid_captured_body_digest")
+
+    # External/network capture only: the captured URL must be an http(s) URL.
+    # An internal governed-record reference (e.g. counterpedia://record/<id>) is
+    # a distinct semantic class and MUST NOT ride this profile. Requiring an
+    # external URL here is the verifier-side guard against the
+    # internal_source_capture_masquerade defect.
+    requested_url = capture.get("requested_url")
+    if not isinstance(requested_url, str) or not (
+        requested_url.startswith("http://") or requested_url.startswith("https://")
+    ):
+        errors.append("source_capture.capture_url_not_external")
 
     # subject_ref must bind the receipt to the declared reference it captured.
     reference = receipt.get("reference")
