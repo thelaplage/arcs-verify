@@ -29,6 +29,9 @@ SUPPORTED_PROFILES: dict[str, str] = {
     "srs.editorial.source_capture.v0.1": (
         "Editorial source-capture receipts (digest of the bytes a referenced URL or record returned at capture time)."
     ),
+    "srs.editorial.source_capture.v0.1.1": (
+        "Editorial source-capture receipts, provisional v0.1.1 dialect (top-level outcome / declared_url / captured_bytes_ref with enforced cross-field null rules)."
+    ),
 }
 
 _EXAMPLE = (

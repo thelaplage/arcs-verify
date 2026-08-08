@@ -44,6 +44,11 @@ BROADCAST_CONTROL_PROFILE = "srs.broadcast_control.v0.1"
 DEFERRED_OPERATION_PROFILE = "srs.deferred_operation.v0.1"
 EDITORIAL_PUBLICATION_INGEST_PROFILE = "srs.editorial.publication_ingest.v0.1"
 EDITORIAL_SOURCE_CAPTURE_PROFILE = "srs.editorial.source_capture.v0.1"
+# Provisional successor. v0.1.1 is a distinct receipt model (top-level
+# outcome / declared_url / captured_bytes_ref, editorial_corpus_boundary,
+# capture_attempt kind) and coexists with the byte-frozen v0.1 verifier under
+# its own (profile_id, profile_version) identity.
+EDITORIAL_SOURCE_CAPTURE_PROFILE_V011 = "srs.editorial.source_capture.v0.1.1"
 
 PROFILE_IDENTITIES = {
     MCP_PROFILE: ("srs.mcp.sdk_enforcement", "v0.1"),
@@ -52,6 +57,7 @@ PROFILE_IDENTITIES = {
     DEFERRED_OPERATION_PROFILE: ("srs.deferred_operation", "v0.1"),
     EDITORIAL_PUBLICATION_INGEST_PROFILE: ("srs.editorial.publication_ingest", "v0.1"),
     EDITORIAL_SOURCE_CAPTURE_PROFILE: ("srs.editorial.source_capture", "v0.1"),
+    EDITORIAL_SOURCE_CAPTURE_PROFILE_V011: ("srs.editorial.source_capture", "v0.1.1"),
 }
 
 RECEIPT_VERSION = "srs.core.v5.1"
@@ -1131,6 +1137,109 @@ def _editorial_source_capture_profile_errors(
     return errors
 
 
+SOURCE_CAPTURE_V011_OUTCOME_VALUES = frozenset([
+    "success",
+    "blocked",
+    "dns_error",
+    "http_error",
+    "connection_error",
+    "redirect_error",
+    "timeout",
+    "no_url_declared",
+])
+
+SOURCE_CAPTURE_V011_REQUIRED_COVERED = frozenset([
+    "declared_reference_identity",
+    "capture_attempt_record",
+])
+
+SOURCE_CAPTURE_V011_REQUIRED_EXCLUDED = frozenset([
+    "raw_captured_bytes",
+])
+
+SOURCE_CAPTURE_V011_REQUIRED_LIMITATION_CODES = frozenset([
+    "CONTENT_NOT_VERIFIED",
+])
+
+
+def _editorial_source_capture_v011_profile_errors(
+    receipt: dict[str, Any],
+) -> list[str]:
+    """Profile errors for srs.editorial.source_capture.v0.1.1 (provisional).
+
+    Distinct receipt model from v0.1: the capture disposition is a top-level
+    ``outcome`` enum, and ``declared_url`` / ``captured_bytes_ref`` are
+    top-level fields bound to that outcome by two structurally enforced
+    cross-field rules. The frozen v0.1 ``capture``-block verifier is not
+    touched or widened.
+    """
+    errors: list[str] = []
+
+    if receipt.get("profile_id") != "srs.editorial.source_capture":
+        errors.append("source_capture.invalid_profile_id")
+    if receipt.get("profile_version") != "v0.1.1":
+        errors.append("source_capture.invalid_profile_version")
+    if receipt.get("receipt_type") != "provenance":
+        errors.append("source_capture.invalid_receipt_type")
+    if receipt.get("boundary_type") != "editorial_corpus_boundary":
+        errors.append("source_capture.invalid_boundary_type")
+    if receipt.get("receipt_kind") != "capture_attempt":
+        errors.append("source_capture.invalid_receipt_kind")
+
+    outcome = receipt.get("outcome")
+    outcome_known = outcome in SOURCE_CAPTURE_V011_OUTCOME_VALUES
+    if not outcome_known:
+        errors.append("source_capture.invalid_outcome")
+
+    # captured_bytes_ref: a sha256:<hex> digest exactly when outcome is
+    # 'success', JSON null for every other outcome (including
+    # no_url_declared). Both directions enforced. The cross-field rule is
+    # only evaluated for a known outcome so an invalid outcome yields one code.
+    cbr = receipt.get("captured_bytes_ref")
+    if outcome == "success":
+        if not (isinstance(cbr, str) and cbr.startswith("sha256:")):
+            errors.append("source_capture.missing_captured_bytes_on_success")
+    elif outcome_known and cbr is not None:
+        errors.append("source_capture.captured_bytes_on_nonsuccess")
+
+    # declared_url: JSON null exactly when outcome is 'no_url_declared', a
+    # non-empty string for every other outcome. Both directions enforced.
+    declared_url = receipt.get("declared_url")
+    if outcome == "no_url_declared":
+        if declared_url is not None:
+            errors.append("source_capture.declared_url_on_no_url_declared")
+    elif outcome_known and not (isinstance(declared_url, str) and declared_url):
+        errors.append("source_capture.missing_declared_url")
+
+    # subject_ref binds the receipt to the declared reference it targeted.
+    reference_artifact_id = receipt.get("reference_artifact_id")
+    if not (isinstance(reference_artifact_id, str) and reference_artifact_id):
+        errors.append("source_capture.missing_reference_binding")
+    elif receipt.get("subject_ref") != reference_artifact_id:
+        errors.append("source_capture.subject_binding_mismatch")
+
+    covered = set(receipt.get("artifact_classes_covered") or [])
+    if not SOURCE_CAPTURE_V011_REQUIRED_COVERED.issubset(covered):
+        errors.append("source_capture.missing_required_covered_classes")
+
+    excluded = set(receipt.get("artifact_classes_excluded") or [])
+    if not SOURCE_CAPTURE_V011_REQUIRED_EXCLUDED.issubset(excluded):
+        errors.append("source_capture.missing_required_excluded_classes")
+
+    limitations = receipt.get("machine_limitations")
+    present_codes = (
+        {item.get("code") for item in limitations if isinstance(item, dict)}
+        if isinstance(limitations, list)
+        else set()
+    )
+    for code in sorted(
+        SOURCE_CAPTURE_V011_REQUIRED_LIMITATION_CODES - present_codes
+    ):
+        errors.append(f"source_capture.missing_required_limitation_code:{code}")
+
+    return errors
+
+
 def _profile_errors(
     receipt: dict[str, Any],
     selected_profile: str,
@@ -1152,6 +1261,9 @@ def _profile_errors(
 
     if selected_profile == EDITORIAL_SOURCE_CAPTURE_PROFILE:
         return _editorial_source_capture_profile_errors(receipt)
+
+    if selected_profile == EDITORIAL_SOURCE_CAPTURE_PROFILE_V011:
+        return _editorial_source_capture_v011_profile_errors(receipt)
 
     return ["profile.unsupported_selection"]
 
