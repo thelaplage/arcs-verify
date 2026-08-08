@@ -1,0 +1,91 @@
+{
+  "profile_id": "srs.activity.governed_read",
+  "profile_version": "v0.1",
+  "profile_slug": "srs.activity.governed_read.v0.1",
+  "release_stage": "provisional",
+  "document_path": "docs/profiles/SRS_ACTIVITY_GOVERNED_READ_PROFILE_v0_1.md",
+  "document_sha256": "d1e3676aa919b00a3cf738242529571f6a1aac6961a9789bb57072075aefd785",
+  "field_schema_path": "schemas/activity-profiles/v0.1/srs.activity.governed_read.v0.1.schema.json",
+  "compatible_envelope_identities": [
+    {
+      "published_version": "0.2.1",
+      "identity": "srs-envelope@0.2.1+sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+    }
+  ],
+  "default_envelope_version": "0.2.1",
+  "requires_signing": false,
+  "fixed_values": {
+    "receipt_version": "srs.core.v5.1",
+    "profile_id": "srs.activity.governed_read",
+    "profile_version": "v0.1",
+    "receipt_type": "provenance",
+    "boundary_type": "governed_read_boundary",
+    "identity_posture": "declared"
+  },
+  "required_fields": [
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "subject_ref",
+    "issuer_id",
+    "runtime_instance_id",
+    "boundary_id",
+    "issued_at",
+    "visibility",
+    "acting_principal_ref",
+    "identity_posture",
+    "read_request_ref",
+    "basis_version_ref",
+    "basis_snapshot_digest",
+    "read_disposition",
+    "produced_receipt_refs",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "extensions"
+  ],
+  "receipt_kinds": [
+    "governed_read"
+  ],
+  "artifact_classes_covered_required": [
+    "governed_read_record",
+    "acting_principal_declaration",
+    "read_basis_identity"
+  ],
+  "artifact_classes_excluded_required": [
+    "read_result_bytes",
+    "principal_identity_verification"
+  ],
+  "required_attestation_limits": {
+    "base": "This receipt records that a governed read occurred against a declared basis under stated custody. It does not establish that the acting principal's identity was verified, that the basis content is accurate or true, that any admitted result is correct, or that any downstream reliance is warranted. A refused read is recorded as activity, not adjudicated."
+  },
+  "required_machine_limitation_codes": [
+    "CONTENT_NOT_VERIFIED"
+  ],
+  "limitation_codes_registry_version": "0.1",
+  "separate_findings": [
+    "envelope_shape",
+    "profile_conformance",
+    "signature_shape",
+    "key_resolved",
+    "key_trusted"
+  ],
+  "notes": [
+    "PROVISIONAL: This profile is not stable and has not been ratified. It remains provisional until at least two distinct products demonstrate reuse without modification.",
+    "This profile implements the field-level spec of the semantic boundary fixed by the DAGR Activity Profile Family v0.1 (ACT0), canonical in garp-doctrine. It specializes srs.signed_receipt.v0.1 and defines no new envelope.",
+    "requires_signing is false for v0.1 structural purposes. Production signing posture is deferred to the emitter implementation.",
+    "read_disposition closed set: admitted, refused. read_disposition=admitted requires admitted_result_ref (sha256) and forbids refusal_class; read_disposition=refused requires refusal_class and forbids admitted_result_ref.",
+    "refusal_class closed set: POLICY_REFUSED, PRINCIPAL_NOT_PERMITTED, SCOPE_EXCEEDED, BASIS_UNAVAILABLE, DEFERRED_FOR_REVIEW.",
+    "visibility closed set (C8): LOCAL, PRIVATE_ORG, SHARED, PUBLIC_CANDIDATE, PUBLIC. Mandatory per ACT0 s3; a private node defaults to PRIVATE_ORG.",
+    "sha256 reference fields (read_request_ref, basis_snapshot_digest, admitted_result_ref, and each produced_receipt_refs element) MUST be 'sha256:' + 64 lowercase hex. Fill-or-verify (C1) format enforcement only; content-recompute is an emitter/verifier runtime concern.",
+    "subject_ref MUST equal basis_version_ref (subject binding to the basis read).",
+    "identity_posture is fixed to 'declared'; the acting principal is declared, not verified (I0 v0.1 identity posture).",
+    "C6 no-aggregate: no aggregate/trust/reputation/standing field may be present. Enforced structurally by rejecting a denylist of aggregate-shaped keys.",
+    "field_schema_path names the JSON Schema field spec; the structural profile validator is driven by this manifest, and the JSON Schema is the shared field contract that the dagr-mcp emit path and arcs-verify registration consume."
+  ]
+}

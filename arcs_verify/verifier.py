@@ -49,6 +49,7 @@ EDITORIAL_SOURCE_CAPTURE_PROFILE = "srs.editorial.source_capture.v0.1"
 # capture_attempt kind) and coexists with the byte-frozen v0.1 verifier under
 # its own (profile_id, profile_version) identity.
 EDITORIAL_SOURCE_CAPTURE_PROFILE_V011 = "srs.editorial.source_capture.v0.1.1"
+ACTIVITY_GOVERNED_READ_PROFILE = "srs.activity.governed_read.v0.1"
 
 PROFILE_IDENTITIES = {
     MCP_PROFILE: ("srs.mcp.sdk_enforcement", "v0.1"),
@@ -58,6 +59,7 @@ PROFILE_IDENTITIES = {
     EDITORIAL_PUBLICATION_INGEST_PROFILE: ("srs.editorial.publication_ingest", "v0.1"),
     EDITORIAL_SOURCE_CAPTURE_PROFILE: ("srs.editorial.source_capture", "v0.1"),
     EDITORIAL_SOURCE_CAPTURE_PROFILE_V011: ("srs.editorial.source_capture", "v0.1.1"),
+    ACTIVITY_GOVERNED_READ_PROFILE: ("srs.activity.governed_read", "v0.1"),
 }
 
 RECEIPT_VERSION = "srs.core.v5.1"
@@ -1240,6 +1242,170 @@ def _editorial_source_capture_v011_profile_errors(
     return errors
 
 
+# --- srs.activity.governed_read.v0.1 -----------------------------------------
+#
+# Field-level profile for one governed read against a pinned basis. The
+# authoritative field contract is the arcs-srs field schema, sourced here the
+# same way the SRS envelope schema is: a byte-identical runtime copy under
+# arcs_verify/data/ (shipped as package data), with a provenance copy under
+# vendor/arcs-srs/ and the sha256 pinned below. The verifier loads that schema,
+# re-derives structural conformance from it against serialized receipt bytes,
+# and maps schema violations onto this profile's named failure codes. It trusts
+# no issuer claim: the disposition of a receipt is recomputed from the schema
+# and the closed-set rules, never read from an emitter assertion.
+#
+# The schema encodes almost every closed-set rule structurally (fixed values,
+# the C8 visibility enum, the sha256 digest format, the C6 no-aggregate
+# denylist, required fields, and the admitted/refused disposition coherence).
+# The one rule the schema states only as a $comment — subject_ref MUST equal
+# basis_version_ref — is re-derived here as an explicit check so the binding is
+# actually enforced rather than merely documented.
+_ACTIVITY_GOVERNED_READ_SCHEMA_PATH = (
+    Path(__file__).resolve().parent
+    / "data"
+    / "srs.activity.governed_read.v0.1.schema.json"
+)
+
+# sha256 of the arcs-srs field schema bytes (arcs-srs PR #34 head 47c95f8).
+# The runtime copy is verified against this pin on load, so a drifted or
+# substituted schema is a hard error rather than a silent re-interpretation.
+ACTIVITY_GOVERNED_READ_SCHEMA_SHA256 = (
+    "7b89ebe13cd87b3ac456077fa80f40914e6129a3d78a9e6dd87d6963fda29f19"
+)
+
+# Mandatory C8 closed-set visibility posture (ACT0 s3).
+GOVERNED_READ_C8_VISIBILITY = frozenset(
+    {"LOCAL", "PRIVATE_ORG", "SHARED", "PUBLIC_CANDIDATE", "PUBLIC"}
+)
+
+# Typed refusal classes (recorded, not adjudicated).
+GOVERNED_READ_REFUSAL_CLASSES = frozenset(
+    {
+        "POLICY_REFUSED",
+        "PRINCIPAL_NOT_PERMITTED",
+        "SCOPE_EXCEEDED",
+        "BASIS_UNAVAILABLE",
+        "DEFERRED_FOR_REVIEW",
+    }
+)
+
+_GOVERNED_READ_SCHEMA_CACHE: dict[str, Any] | None = None
+
+
+def _load_governed_read_schema() -> dict[str, Any]:
+    """Load and pin the arcs-srs governed_read field schema.
+
+    Raises ValueError if the vendored runtime copy does not match the pinned
+    digest, so the verifier never validates against a schema it cannot vouch
+    for. Cached after first successful load.
+    """
+
+    global _GOVERNED_READ_SCHEMA_CACHE
+
+    if _GOVERNED_READ_SCHEMA_CACHE is None:
+        schema_bytes = _ACTIVITY_GOVERNED_READ_SCHEMA_PATH.read_bytes()
+        digest = hashlib.sha256(schema_bytes).hexdigest()
+
+        if digest != ACTIVITY_GOVERNED_READ_SCHEMA_SHA256:
+            raise ValueError(
+                "governed_read field schema digest mismatch: "
+                f"{digest} != {ACTIVITY_GOVERNED_READ_SCHEMA_SHA256}"
+            )
+
+        _GOVERNED_READ_SCHEMA_CACHE = json.loads(schema_bytes)
+
+    return _GOVERNED_READ_SCHEMA_CACHE
+
+
+def _map_governed_read_schema_error(error: Any) -> str:
+    """Map one jsonschema validation error to a named profile failure code.
+
+    Keyed on the failing keyword and its position in the schema so that the two
+    root-level ``not`` schemas (C6 no-aggregate vs. the disposition-coherence
+    ``then.not``) resolve to distinct codes rather than collide.
+    """
+
+    keyword = error.validator
+    instance_path = list(error.path)
+    schema_path = list(error.schema_path)
+    field = instance_path[-1] if instance_path else None
+
+    if keyword == "required":
+        return "MISSING_PROFILE_FIELD"
+
+    if keyword == "enum":
+        if field == "visibility":
+            return "INVALID_VISIBILITY"
+        if field == "refusal_class":
+            return "governed_read.invalid_refusal_class"
+        if field == "read_disposition":
+            return "governed_read.invalid_read_disposition"
+        return "governed_read.invalid_enum_value"
+
+    if keyword == "pattern":
+        # Every ``pattern`` in the field schema is the sha256_ref format.
+        return "INVALID_DIGEST_FORMAT"
+
+    if keyword == "const":
+        return "governed_read.invalid_fixed_value"
+
+    if keyword == "not":
+        # The single root-level ``not`` is the C6 no-aggregate denylist; a
+        # ``not`` nested under allOf/then is the disposition-coherence guard.
+        if schema_path == ["not"]:
+            return "AGGREGATE_FIELD_PRESENT"
+        return "governed_read.disposition_field_conflict"
+
+    if keyword == "contains":
+        return "governed_read.missing_required_artifact_class"
+
+    return "governed_read.field_schema_invalid"
+
+
+def _activity_governed_read_profile_errors(
+    receipt: dict[str, Any],
+) -> list[str]:
+    """Profile checks for srs.activity.governed_read.v0.1 receipts.
+
+    Records one governed read against a pinned basis: a declared acting
+    principal, a mandatory C8 visibility posture, an identity-bound basis
+    version, and an admitted-or-refused disposition. Content is never carried;
+    every digest is a ``sha256:`` reference and no aggregate/trust/reputation/
+    standing field may appear (C6 no-aggregate).
+
+    Conformance is re-derived from the pinned arcs-srs field schema plus the
+    subject-binding rule the schema states only as a comment. No emitter claim
+    is trusted.
+    """
+
+    errors: list[str] = []
+
+    schema = _load_governed_read_schema()
+    validator = Draft202012Validator(schema)
+
+    for error in sorted(
+        validator.iter_errors(receipt),
+        key=lambda err: list(err.path),
+    ):
+        errors.append(_map_governed_read_schema_error(error))
+
+    # subject_ref MUST equal basis_version_ref (subject binding). The field
+    # schema requires both to be present but expresses their equality only as a
+    # $comment, so it is enforced here explicitly. Checked only when both are
+    # present strings; absence is already a MISSING_PROFILE_FIELD above.
+    subject_ref = receipt.get("subject_ref")
+    basis_version_ref = receipt.get("basis_version_ref")
+
+    if (
+        isinstance(subject_ref, str)
+        and isinstance(basis_version_ref, str)
+        and subject_ref != basis_version_ref
+    ):
+        errors.append("governed_read.subject_binding_mismatch")
+
+    return list(dict.fromkeys(errors))
+
+
 def _profile_errors(
     receipt: dict[str, Any],
     selected_profile: str,
@@ -1264,6 +1430,9 @@ def _profile_errors(
 
     if selected_profile == EDITORIAL_SOURCE_CAPTURE_PROFILE_V011:
         return _editorial_source_capture_v011_profile_errors(receipt)
+
+    if selected_profile == ACTIVITY_GOVERNED_READ_PROFILE:
+        return _activity_governed_read_profile_errors(receipt)
 
     return ["profile.unsupported_selection"]
 

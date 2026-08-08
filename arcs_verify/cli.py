@@ -32,6 +32,9 @@ SUPPORTED_PROFILES: dict[str, str] = {
     "srs.editorial.source_capture.v0.1.1": (
         "Editorial source-capture receipts, provisional v0.1.1 dialect (top-level outcome / declared_url / captured_bytes_ref with enforced cross-field null rules)."
     ),
+    "srs.activity.governed_read.v0.1": (
+        "Activity governed-read receipts (one governed read against a pinned basis; admitted result or typed refusal, mandatory C8 visibility)."
+    ),
 }
 
 _EXAMPLE = (

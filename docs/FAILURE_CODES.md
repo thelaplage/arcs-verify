@@ -190,6 +190,28 @@ Provisional successor with a distinct receipt model: the capture disposition is 
 
 The v0.1.1 required covered classes are `declared_reference_identity`, `capture_attempt_record`; the required exclusion is `raw_captured_bytes`; the required limitation completion is `CONTENT_NOT_VERIFIED`.
 
+### Profile: `srs.activity.governed_read.v0.1`
+
+Conformance is re-derived from the arcs-srs field schema (byte-pinned runtime
+copy under `arcs_verify/data/`, provenance under `vendor/arcs-srs/`) plus the
+subject-binding rule. Schema violations are mapped onto these named codes; the
+four uppercase codes are the profile's frozen closed-set findings.
+
+| Code | Meaning |
+|---|---|
+| `MISSING_PROFILE_FIELD` | A field the profile requires is absent (a top-level required field, or a disposition-required field such as `admitted_result_ref`/`refusal_class`). |
+| `INVALID_VISIBILITY` | `visibility` is not in the mandatory C8 closed set (`LOCAL`, `PRIVATE_ORG`, `SHARED`, `PUBLIC_CANDIDATE`, `PUBLIC`). |
+| `INVALID_DIGEST_FORMAT` | A `sha256:` reference field (`read_request_ref`, `basis_snapshot_digest`, `admitted_result_ref`, or a `produced_receipt_refs` element) is not `sha256:` followed by exactly 64 lowercase hex characters. |
+| `AGGREGATE_FIELD_PRESENT` | A C6-forbidden aggregate/trust/reputation/standing field is present (e.g. `trust_score`, `reputation`, `activity_score`). |
+| `governed_read.invalid_read_disposition` | `read_disposition` is not `admitted` or `refused`. |
+| `governed_read.invalid_refusal_class` | `refusal_class` is present but not in the closed set (`POLICY_REFUSED`, `PRINCIPAL_NOT_PERMITTED`, `SCOPE_EXCEEDED`, `BASIS_UNAVAILABLE`, `DEFERRED_FOR_REVIEW`). |
+| `governed_read.invalid_enum_value` | An enum-constrained field carries a value outside its closed set (fallback for enum fields other than visibility/refusal_class/read_disposition). |
+| `governed_read.invalid_fixed_value` | A fixed-value field (`receipt_version`, `profile_id`, `profile_version`, `receipt_type`, `receipt_kind`, `boundary_type`, `identity_posture`) carries the wrong constant. |
+| `governed_read.disposition_field_conflict` | The disposition-coherence rule is violated: an `admitted` receipt carries `refusal_class`, or a `refused` receipt carries `admitted_result_ref`. |
+| `governed_read.missing_required_artifact_class` | `artifact_classes_covered` or `artifact_classes_excluded` omits a class the profile requires. |
+| `governed_read.subject_binding_mismatch` | `subject_ref` is present but not equal to `basis_version_ref` (subject binding to the read basis). |
+| `governed_read.field_schema_invalid` | The receipt fails the pinned field schema for a reason not covered by a more specific code above. |
+
 ### Source-integrity errors (exit 2, not failure codes)
 
 Unreadable or malformed inputs are reported before verification begins, as
