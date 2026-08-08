@@ -332,6 +332,30 @@ memory-read sequence bundle. All codes are static; there are no dynamic families
 | `exclusion_declarations_incomplete` | Required raw-content exclusion declarations are absent or incomplete. |
 | `raw_content_posture_violation` | A raw-content field appears where only hash references are permitted. |
 
+## `ingest-run-sequence` subcommand
+
+Emitted by `arcs_verify/ingest_run_sequence.py` when recomputing a
+dagr.ingest_run.v0.1 ingest run sequence. All codes are static; there are
+no dynamic families.
+
+| Code | Meaning |
+|---|---|
+| `INGEST_RUN_SCHEMA_MISMATCH` | `run_doc["schema"]` is not `"dagr.ingest_run.v0.1"`, or the file is unreadable or malformed. |
+| `INGEST_RUN_BOUNDARY_VIOLATION` | A required `run_doc["boundary"]` declaration (`no_arcs_srs`, `no_receipts_issued`, `no_network`) is absent or not `True`. |
+| `RECEIPT_SET_MANIFEST_SCHEMA_MISMATCH` | `manifest["schema"]` is not `"dagr-ingest.srs-receipt-set.v0.1"`, the file is unreadable or malformed, or the required `receipts` array is absent. |
+| `RUN_ID_MISMATCH` | `manifest["run_id"]` does not match `run_doc["run_id"]`. |
+| `PROFILE_MANIFEST_PIN_MISMATCH` | The independently recomputed sha256 of the supplied profile manifest file does not match `manifest["profile_manifest_sha256"]`. |
+| `RECEIPT_FILE_MISSING` | A receipt file referenced by an emitted manifest entry does not exist on disk. |
+| `RECEIPT_PARSE_ERROR` | A receipt file could not be read or is not valid JSON. |
+| `PROTOCOL_BINDING_MISMATCH` | A receipt's `protocol_binding` is not `"dagr-ingest/v0.1"`. |
+| `SUBJECT_REF_MANIFEST_MISMATCH` | A receipt's `subject_ref` does not match the `subject` in the manifest entry. |
+| `SUBJECT_BINDING_MISMATCH` | A receipt's `subject_ref` is not equal to `publication_artifact_id`. |
+| `CORPUS_MANIFEST_REF_MISMATCH` | A receipt's `corpus_manifest_ref` is not `"sha256:" + run_doc["run_id"]`. |
+| `RAW_CONTENT_PRESENT` | A receipt contains a forbidden raw-content field (`raw_publication_bytes`, `raw_frontmatter_yaml`, or `raw_body_text`). |
+| `MISSING_REQUIRED_EXCLUSION` | A receipt's `artifact_classes_excluded` does not contain all three required exclusions (`raw_publication_bytes`, `raw_frontmatter_yaml`, `raw_body_text`). |
+| `UNIQUE_ARTIFACT_NOT_COVERED` | A `unique_artifacts` entry in the run doc with a non-null `parser_id` and `is_duplicate_content == False` does not appear as emitted in the manifest. |
+| `DUPLICATE_POSTURE_VIOLATION` | A `unique_artifacts` entry with `is_duplicate_content == True` appears as `"emitted"` in the manifest. |
+
 ## Stability
 
 Codes are append-only in intent: existing codes keep their meaning, and new

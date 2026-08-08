@@ -42,10 +42,11 @@ _EXAMPLE = (
     "    --profile srs.mcp.sdk_enforcement.v0.1\n"
     "\n"
     "subcommands (each takes --help):\n"
-    "  arcs-verify receipt-set WORKFLOW      verify every receipt in a DAGR workflow index\n"
-    "  arcs-verify amnesiac-chain BUNDLE     recompute an independently serialized artifact chain\n"
-    "  arcs-verify deferred-sequence ...     verify a deferred-operation receipt sequence\n"
-    "  arcs-verify governed-memory-sequence  verify a governed memory read sequence bundle\n"
+    "  arcs-verify receipt-set WORKFLOW        verify every receipt in a DAGR workflow index\n"
+    "  arcs-verify amnesiac-chain BUNDLE       recompute an independently serialized artifact chain\n"
+    "  arcs-verify deferred-sequence ...       verify a deferred-operation receipt sequence\n"
+    "  arcs-verify governed-memory-sequence    verify a governed memory read sequence bundle\n"
+    "  arcs-verify ingest-run-sequence ...     verify a dagr.ingest_run.v0.1 receipt sequence\n"
     "\n"
     "exit codes: 0 all results passed; 1 verification failed; 2 usage or\n"
     "source-integrity error (not a verification verdict)."
@@ -230,6 +231,10 @@ def main(argv: list[str] | None = None) -> int:
         from .governed_memory_sequence import main as governed_memory_sequence_main
 
         return governed_memory_sequence_main(args[1:])
+    if args and args[0] == "ingest-run-sequence":
+        from .ingest_run_sequence import main as ingest_run_sequence_main
+
+        return ingest_run_sequence_main(args[1:])
     return _verify_srs(args)
 
 
