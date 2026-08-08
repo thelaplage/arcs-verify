@@ -22,6 +22,7 @@ import rfc8785
 from jsonschema import Draft202012Validator
 
 from .verifier import (
+    ACTIVITY_GOVERNED_READ_PROFILE,
     FROZEN_SCHEMA_SHA256,
     MCP_PROFILE,
     PROFILE_IDENTITIES,
@@ -42,6 +43,20 @@ VERIFIER_ENTRYPOINT = "arcs_verify.cli:main"
 # outcome receipts under srs.mcp.sdk_enforcement.v0.1. Other profiles (for
 # example srs.connection.lifecycle.v0.1) are out of scope for this contract.
 SUPPORTED_RECEIPT_KINDS = ("admission", "outcome")
+
+# Profiles this report contract will assemble a report for, each mapped to the
+# receipt kinds valid under it. This replaces a blunt ``== MCP_PROFILE`` gate
+# that conflated a genuinely-unknown profile with a registered-but-non-MCP one.
+# The relaxation is exact: a profile absent from this map still hard-raises
+# (unknown-profile guard unchanged), and the MCP entry is byte-for-byte the
+# prior behaviour (only admission/outcome accepted), so MCP verification is not
+# weakened. srs.activity.governed_read.v0.1 is a registered verifiable profile
+# whose only receipt kind is ``governed_read``; admitting it here lets the
+# report builder accept it instead of refusing it as out of scope.
+REPORT_SUPPORTED_RECEIPT_KINDS: dict[str, tuple[str, ...]] = {
+    MCP_PROFILE: SUPPORTED_RECEIPT_KINDS,
+    ACTIVITY_GOVERNED_READ_PROFILE: ("governed_read",),
+}
 
 VERDICT_FIELDS = (
     "schema_digest",
@@ -134,20 +149,22 @@ def build_verification_report(
     reporting a value for an unsupported combination.
     """
 
-    if selected_profile != MCP_PROFILE:
+    if selected_profile not in REPORT_SUPPORTED_RECEIPT_KINDS:
         raise ValueError(
             "DAGR verification report contract v0.1 supports only "
-            f"{MCP_PROFILE!r}, not {selected_profile!r}"
+            f"{sorted(REPORT_SUPPORTED_RECEIPT_KINDS)!r}, not "
+            f"{selected_profile!r}"
         )
 
+    supported_kinds = REPORT_SUPPORTED_RECEIPT_KINDS[selected_profile]
     identity = PROFILE_IDENTITIES[selected_profile]
     receipt_kind = receipt.get("receipt_kind")
 
-    if receipt_kind not in SUPPORTED_RECEIPT_KINDS:
+    if receipt_kind not in supported_kinds:
         raise ValueError(
             "DAGR verification report contract v0.1 supports only "
-            f"receipt_kind in {SUPPORTED_RECEIPT_KINDS!r}, not "
-            f"{receipt_kind!r}"
+            f"receipt_kind in {supported_kinds!r} for {selected_profile!r}, "
+            f"not {receipt_kind!r}"
         )
 
     return {

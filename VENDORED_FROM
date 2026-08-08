@@ -21,5 +21,14 @@ subject_ref_origin_source:
   reviewed_head: 31948af33599d9151f16c0ce70de4d0f4e7cb2a9
   vendored_paths: vendor/arcs-srs/schemas/srs-envelope/v0.2.1/, vendor/arcs-srs/vectors/subject-ref-origin-v0.2.1/
   runtime_copy: arcs_verify/data/srs-envelope-v0.2.1.schema.json (byte-identical to the vendored schema)
+activity_governed_read_source:
+  source_repository: arcs-srs
+  source_pr: 34 (feat/srs-activity-governed-read-schema-v0-1)
+  reviewed_head: 47c95f8
+  status: PROVISIONAL; arcs-srs #34 is unmerged. Rebase these bytes onto the merged commit when #34 lands.
+  field_schema: schemas/activity-profiles/v0.1/srs.activity.governed_read.v0.1.schema.json 7b89ebe13cd87b3ac456077fa80f40914e6129a3d78a9e6dd87d6963fda29f19
+  vendored_paths: vendor/arcs-srs/schemas/activity-profiles/v0.1/, vendor/arcs-srs/vectors/activity-governed-read-v0.1/
+  runtime_copy: arcs_verify/data/srs.activity.governed_read.v0.1.schema.json (byte-identical to the vendored field schema; pinned in verifier.py as ACTIVITY_GOVERNED_READ_SCHEMA_SHA256)
+  golden_vectors: conformance/profiles/srs.activity.governed_read.v0.1/fixtures/{valid,invalid}/ (2 valid, 4 invalid) copied verbatim for the verifier conformance tests
 note: frozen markdown documents are byte-identically archived in frozen-standard-docs.zip so the public release checker can distinguish normative prohibited examples from public marketing copy.
 note: published_version in the vendored envelope manifests is pre-release artifact metadata naming a manifested pre-release envelope artifact version. It is not evidence that a public SRS release occurred.
