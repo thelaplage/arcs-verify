@@ -1,0 +1,6 @@
+{
+  "profile_slug": "srs.editorial.publication_ingest.v0.1",
+  "profile_version": "v0.1",
+  "status": "provisional",
+  "note": "Self-contained test fixture for arcs-verify ingest-run-sequence tests. Not a production manifest."
+}

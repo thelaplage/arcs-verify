@@ -25,6 +25,7 @@ MODULES = [
     "arcs_verify/receipt_set.py",
     "arcs_verify/deferred_sequence.py",
     "arcs_verify/governed_memory_sequence.py",
+    "arcs_verify/ingest_run_sequence.py",
     "arcs_verify/amnesiac/verifier.py",
     "arcs_verify/amnesiac/public_proof.py",
 ]

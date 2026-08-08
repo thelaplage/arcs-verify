@@ -1,0 +1,24 @@
+{
+  "schema": "dagr-ingest.srs-receipt-set.v0.1",
+  "run_id": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+  "profile_slug": "srs.editorial.publication_ingest.v0.1",
+  "profile_manifest_sha256": "5392edcf930a44263c1dc40deb1308d4e4124ec1b3354483c622e49d1e171288",
+  "envelope_version": "0.2.1",
+  "receipts": [
+    {
+      "receipt_file": "pub-ingest-001.json",
+      "subject": "sha256:d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3",
+      "status": "emitted"
+    },
+    {
+      "receipt_file": null,
+      "subject": "sha256:e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4",
+      "status": "skipped_no_parser"
+    },
+    {
+      "receipt_file": null,
+      "subject": "sha256:f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5",
+      "status": "skipped_duplicate"
+    }
+  ]
+}
