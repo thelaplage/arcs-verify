@@ -175,6 +175,21 @@ fields.
 | `source_capture.invalid_retention_class` | `retention_class_applied` is not `hash_only`. |
 | `source_capture.missing_required_limitation_code:<code>` | Dynamic. A required `machine_limitations` entry is absent; the code carries the missing limitation code. Completions: `ARTICLE_TRUTH_NOT_EVALUATED`, `CLAIM_SUPPORT_NOT_EVALUATED`, `SOURCE_IDENTITY_NOT_EVALUATED`. |
 
+### Profile: `srs.editorial.source_capture.v0.1.1`
+
+Provisional successor with a distinct receipt model: the capture disposition is a top-level `outcome` enum and `declared_url` / `captured_bytes_ref` are top-level fields bound to that outcome by enforced cross-field rules. It coexists with the byte-frozen v0.1 verifier under its own identity and reuses the shared code names (`invalid_profile_id`, `invalid_receipt_type`, `invalid_boundary_type`, `invalid_receipt_kind`, `missing_reference_binding`, `subject_binding_mismatch`, `missing_required_covered_classes`, `missing_required_excluded_classes`, `missing_required_limitation_code:<code>`) with v0.1.1-specific meanings, plus the following.
+
+| Code | Meaning |
+|---|---|
+| `source_capture.invalid_profile_version` | `profile_version` is not `v0.1.1`. |
+| `source_capture.invalid_outcome` | `outcome` is not one of `success`, `blocked`, `dns_error`, `http_error`, `connection_error`, `redirect_error`, `timeout`, `no_url_declared`. |
+| `source_capture.missing_captured_bytes_on_success` | `outcome` is `success` but `captured_bytes_ref` is not a `sha256:`-prefixed digest. |
+| `source_capture.captured_bytes_on_nonsuccess` | `outcome` is a known non-`success` value (including `no_url_declared`) but `captured_bytes_ref` is not JSON `null`. |
+| `source_capture.declared_url_on_no_url_declared` | `outcome` is `no_url_declared` but `declared_url` is not JSON `null`. |
+| `source_capture.missing_declared_url` | `outcome` is a known value other than `no_url_declared` but `declared_url` is not a non-empty string. |
+
+The v0.1.1 required covered classes are `declared_reference_identity`, `capture_attempt_record`; the required exclusion is `raw_captured_bytes`; the required limitation completion is `CONTENT_NOT_VERIFIED`.
+
 ### Source-integrity errors (exit 2, not failure codes)
 
 Unreadable or malformed inputs are reported before verification begins, as
