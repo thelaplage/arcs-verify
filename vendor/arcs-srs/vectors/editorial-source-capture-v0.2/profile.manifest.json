@@ -1,0 +1,98 @@
+{
+  "profile_id": "srs.editorial.source_capture",
+  "profile_version": "v0.2",
+  "profile_slug": "srs.editorial.source_capture.v0.2",
+  "release_stage": "provisional",
+  "document_path": "docs/profiles/SRS_EDITORIAL_SOURCE_CAPTURE_PROFILE_v0_2.md",
+  "document_sha256": "d621fa989350c010221ed91bd78017458ed73fc419f7d0c9fbecd5471167bc86",
+  "compatible_envelope_identities": [
+    {
+      "published_version": "0.2.1",
+      "identity": "srs-envelope@0.2.1+sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+    }
+  ],
+  "default_envelope_version": "0.2.1",
+  "requires_signing": false,
+  "fixed_values": {
+    "receipt_version": "srs.core.v5.1",
+    "profile_id": "srs.editorial.source_capture",
+    "profile_version": "v0.2",
+    "receipt_type": "provenance",
+    "boundary_type": "editorial_corpus_boundary"
+  },
+  "required_fields": [
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "subject_ref",
+    "issuer_id",
+    "runtime_instance_id",
+    "boundary_id",
+    "issued_at",
+    "source_reference_id",
+    "declaring_artifact_ref",
+    "source_inventory_key",
+    "declared_url",
+    "capturer_identity",
+    "outcome",
+    "captured_bytes_ref",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "extensions"
+  ],
+  "receipt_kinds": [
+    "capture_attempt"
+  ],
+  "outcome_values": [
+    "success",
+    "blocked",
+    "dns_error",
+    "http_error",
+    "connection_error",
+    "redirect_error",
+    "timeout",
+    "no_url_declared"
+  ],
+  "artifact_classes_covered_required": [
+    "declared_reference_identity",
+    "capture_attempt_record"
+  ],
+  "artifact_classes_excluded_required": [
+    "raw_captured_bytes"
+  ],
+  "required_attestation_limits": {
+    "base": "The receipt declares a source capture attempt for a governed declared source reference. It does not establish that the captured bytes are authentic, that the source is the one the declaration intended, or that the content supports any claim the declaration is used to support."
+  },
+  "required_machine_limitation_codes": [
+    "CONTENT_NOT_VERIFIED"
+  ],
+  "limitation_codes_registry_version": "0.1",
+  "separate_findings": [
+    "envelope_shape",
+    "profile_conformance",
+    "signature_shape",
+    "key_resolved",
+    "key_trusted"
+  ],
+  "notes": [
+    "PROVISIONAL: This profile is not stable and has not been ratified. It supersedes v0.1 for declaration-scoped capture and remains provisional until at least two distinct corpus pipelines demonstrate reuse without modification.",
+    "SUPERSESSION: v0.2 supersedes srs.editorial.source_capture.v0.1 for declaration-scoped capture but does not deprecate, amend, or rewrite v0.1, which remains frozen and authoritative for its existing publication-declared-reference receipts. v0.2 is a distinct profile identity for a broader subject domain.",
+    "IDENTITY (R1a): source_reference_id is declaration identity, derived only from declaring_artifact_ref (sha256 of the governed declaration) and source_inventory_key (the row key within it). declared_url and capturer_identity are explicitly excluded from source_reference_id so that identical-reference captures by different pipelines converge to one reference identity.",
+    "requires_signing is false for v0.2 structural purposes. Production signing posture is deferred to the emitter implementation.",
+    "redirect_chain_ref and dns_resolution_ref are SHOULD-level fields; the structural validator does not enforce their presence and they MUST NOT affect outcome computation.",
+    "Captured bytes do not establish source identity. The verifier recomputes receipt structure only.",
+    "outcome_values are enforced when receipt_kind is capture_attempt. The outcome field must be one of the declared values.",
+    "ENFORCED: captured_bytes_ref must be a sha256:<hex> digest when outcome is success and must be null for every other outcome. Both directions are validated structurally.",
+    "ENFORCED: declared_url must be null exactly when outcome is no_url_declared, and a non-empty string for every other outcome. Both directions are validated structurally.",
+    "ENFORCED: subject_ref must equal source_reference_id.",
+    "SHOULD: receipts where outcome is not success SHOULD additionally declare SOURCE_NOT_CAPTURED; the structural validator does not enforce this SHOULD-level code.",
+    "NON-ENFORCED: append-only retention (prior attempt receipts must not be overwritten) is an emitter/runtime constraint that cannot be verified from receipt bytes alone.",
+    "NON-ENFORCED: agreement of declared_url with the locator recorded for source_inventory_key in the declaring artifact cannot be verified from receipt bytes alone."
+  ]
+}

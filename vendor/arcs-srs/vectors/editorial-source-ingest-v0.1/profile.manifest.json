@@ -1,0 +1,90 @@
+{
+  "profile_id": "srs.editorial.source_ingest",
+  "profile_version": "v0.1",
+  "profile_slug": "srs.editorial.source_ingest.v0.1",
+  "release_stage": "provisional",
+  "document_path": "docs/profiles/SRS_EDITORIAL_SOURCE_INGEST_PROFILE_v0_1.md",
+  "document_sha256": "0454e96ea67c5f415c57ea9b7ca624165366ea0b80914bdb6be77448bdf56b98",
+  "compatible_envelope_identities": [
+    {
+      "published_version": "0.2.1",
+      "identity": "srs-envelope@0.2.1+sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+    }
+  ],
+  "default_envelope_version": "0.2.1",
+  "requires_signing": false,
+  "fixed_values": {
+    "receipt_version": "srs.core.v5.1",
+    "profile_id": "srs.editorial.source_ingest",
+    "profile_version": "v0.1",
+    "receipt_type": "provenance",
+    "boundary_type": "editorial_corpus_boundary"
+  },
+  "required_fields": [
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "subject_ref",
+    "issuer_id",
+    "runtime_instance_id",
+    "boundary_id",
+    "issued_at",
+    "source_artifact_id",
+    "capture_observation_ref",
+    "parser_identity",
+    "pdo_module_identity",
+    "derivation",
+    "pdo_ref",
+    "extraction_ref",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "extensions"
+  ],
+  "receipt_kinds": [
+    "source_ingest"
+  ],
+  "artifact_classes_covered_required": [
+    "source_artifact_digest",
+    "parser_identity",
+    "derivation_chain"
+  ],
+  "artifact_classes_excluded_required": [
+    "raw_source_content",
+    "raw_extracted_text"
+  ],
+  "required_attestation_limits": {
+    "base": "The receipt declares a deterministic ingest/derivation of exact captured source bytes under the named parser. It does not establish that the source content is authentic, that the source is the one a declaration intended, that the source supports any claim, or that any article or publication is true. It evaluates neither evidence completeness nor claim support, and confers no admission or standing."
+  },
+  "required_machine_limitation_codes": [
+    "SOURCE_TRUTH_NOT_EVALUATED",
+    "EVIDENCE_COMPLETENESS_NOT_EVALUATED",
+    "CLAIM_SUPPORT_NOT_EVALUATED",
+    "CONTENT_NOT_VERIFIED"
+  ],
+  "limitation_codes_registry_version": "0.1",
+  "separate_findings": [
+    "envelope_shape",
+    "profile_conformance",
+    "signature_shape",
+    "key_resolved",
+    "key_trusted"
+  ],
+  "notes": [
+    "PROVISIONAL: This profile is not stable and has not been ratified. It remains provisional until at least two distinct corpus pipelines demonstrate reuse without modification. The identifier srs.editorial.source_ingest.v0.1 is reserved during the provisional period.",
+    "SCOPE: covers one stage only, source_ingest. It does not cover capture (srs.editorial.source_capture.v0.2), publication ingest, citation-pack assembly, or verification. A source_ingest receipt references a capture observation via capture_observation_ref and never re-attests capture.",
+    "IDENTITY: subject_ref must equal source_artifact_id, the sha256 of the exact captured source bytes. A staging filename must not be promoted to source identity.",
+    "pdo_module_identity is a circulated historical identity carried verbatim from the PDO bytes ({module_id, module_version}). It must not be repaired, renamed, or reconciled to the executing distribution.",
+    "ingest_implementation is OPTIONAL and substantiated-or-omitted: when present it identifies the executing distribution ({distribution, version, revision}) and must be independently substantiated by run evidence to profile grade; if it cannot be substantiated it must be omitted rather than manufactured. It is never derived from pdo_module_identity. The structural validator does not enforce substantiation; it is not in required_fields.",
+    "requires_signing is false for v0.1 structural purposes. Production signing posture is deferred to the emitter implementation.",
+    "ENFORCED: derivation.input_hash must equal source_artifact_id, and extraction_ref must equal derivation.output_hash. derivation.parser_id must equal parser_identity. Both directions are validated structurally.",
+    "NON-ENFORCED: that source_artifact_id equals the referenced capture's captured_bytes_ref cannot be verified from these receipt bytes alone; the capture receipt is a separate observation.",
+    "NON-ENFORCED: append-only retention (source_ingest receipts must not be overwritten) is an emitter/runtime constraint that cannot be verified from receipt bytes alone.",
+    "The verifier recomputes receipt structure and the declared digests' internal consistency; it does not re-run the parser and does not establish source truth."
+  ]
+}

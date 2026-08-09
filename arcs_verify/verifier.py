@@ -49,6 +49,15 @@ EDITORIAL_SOURCE_CAPTURE_PROFILE = "srs.editorial.source_capture.v0.1"
 # capture_attempt kind) and coexists with the byte-frozen v0.1 verifier under
 # its own (profile_id, profile_version) identity.
 EDITORIAL_SOURCE_CAPTURE_PROFILE_V011 = "srs.editorial.source_capture.v0.1.1"
+# Provisional declaration-scoped successor (arcs-srs 1f8768d). v0.2 is a
+# DISTINCT profile identity for a broader subject domain; it supersedes v0.1 for
+# declaration-scoped capture but does not amend, deprecate, or coerce v0.1/v0.1.1.
+# A v0.2 receipt is verified as v0.2 or fails — there is no silent fallback.
+EDITORIAL_SOURCE_CAPTURE_PROFILE_V02 = "srs.editorial.source_capture.v0.2"
+# Provisional source-ingest stage (arcs-srs 1f8768d). Deterministic ingest/
+# derivation of exact captured source bytes under a pinned parser; references a
+# capture observation and never re-attests it.
+EDITORIAL_SOURCE_INGEST_PROFILE = "srs.editorial.source_ingest.v0.1"
 ACTIVITY_GOVERNED_READ_PROFILE = "srs.activity.governed_read.v0.1"
 
 PROFILE_IDENTITIES = {
@@ -59,6 +68,8 @@ PROFILE_IDENTITIES = {
     EDITORIAL_PUBLICATION_INGEST_PROFILE: ("srs.editorial.publication_ingest", "v0.1"),
     EDITORIAL_SOURCE_CAPTURE_PROFILE: ("srs.editorial.source_capture", "v0.1"),
     EDITORIAL_SOURCE_CAPTURE_PROFILE_V011: ("srs.editorial.source_capture", "v0.1.1"),
+    EDITORIAL_SOURCE_CAPTURE_PROFILE_V02: ("srs.editorial.source_capture", "v0.2"),
+    EDITORIAL_SOURCE_INGEST_PROFILE: ("srs.editorial.source_ingest", "v0.1"),
     ACTIVITY_GOVERNED_READ_PROFILE: ("srs.activity.governed_read", "v0.1"),
 }
 
@@ -1242,6 +1253,437 @@ def _editorial_source_capture_v011_profile_errors(
     return errors
 
 
+# --- srs.editorial.source_capture.v0.2 ---------------------------------------
+#
+# Provisional declaration-scoped capture successor (arcs-srs 1f8768d). The
+# expectation values below are transcribed from the vendored, byte-pinned
+# profile manifest at vendor/arcs-srs/vectors/editorial-source-capture-v0.2/
+# profile.manifest.json (document_sha256
+# d621fa989350c010221ed91bd78017458ed73fc419f7d0c9fbecd5471167bc86); the pin
+# test asserts these constants against those bytes so the verifier never drifts
+# into a fresh local dialect. This is a DISTINCT profile identity from v0.1 /
+# v0.1.1 — the frozen predecessors above are not touched or widened, and a v0.2
+# receipt is never coerced down to them.
+
+SOURCE_CAPTURE_V02_FIXED_VALUES = {
+    "receipt_version": "srs.core.v5.1",
+    "profile_id": "srs.editorial.source_capture",
+    "receipt_type": "provenance",
+    "boundary_type": "editorial_corpus_boundary",
+}
+
+SOURCE_CAPTURE_V02_REQUIRED_FIELDS = (
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "subject_ref",
+    "issuer_id",
+    "runtime_instance_id",
+    "boundary_id",
+    "issued_at",
+    "source_reference_id",
+    "declaring_artifact_ref",
+    "source_inventory_key",
+    "declared_url",
+    "capturer_identity",
+    "outcome",
+    "captured_bytes_ref",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "extensions",
+)
+
+SOURCE_CAPTURE_V02_OUTCOME_VALUES = frozenset([
+    "success",
+    "blocked",
+    "dns_error",
+    "http_error",
+    "connection_error",
+    "redirect_error",
+    "timeout",
+    "no_url_declared",
+])
+
+SOURCE_CAPTURE_V02_REQUIRED_COVERED = frozenset([
+    "declared_reference_identity",
+    "capture_attempt_record",
+])
+
+SOURCE_CAPTURE_V02_REQUIRED_EXCLUDED = frozenset([
+    "raw_captured_bytes",
+])
+
+SOURCE_CAPTURE_V02_REQUIRED_LIMITATION_CODES = frozenset([
+    "CONTENT_NOT_VERIFIED",
+])
+
+SOURCE_CAPTURE_V02_BASE_ATTESTATION_LIMIT = (
+    "The receipt declares a source capture attempt for a governed declared "
+    "source reference. It does not establish that the captured bytes are "
+    "authentic, that the source is the one the declaration intended, or that "
+    "the content supports any claim the declaration is used to support."
+)
+
+
+def _editorial_source_capture_v02_profile_errors(
+    receipt: dict[str, Any],
+) -> list[str]:
+    """Profile errors for srs.editorial.source_capture.v0.2 (provisional).
+
+    A capture_attempt receipt over a DECLARED SOURCE REFERENCE in a governed
+    declaration. The subject is declaration identity, never a locator:
+    ``source_reference_id`` derives only from ``declaring_artifact_ref`` and
+    ``source_inventory_key`` (profile s4), and ``declared_url`` / capturer
+    identity are explicitly excluded from it so identical-reference captures by
+    different pipelines converge on one reference identity. The verifier
+    recomputes receipt structure only: captured bytes do not establish source
+    identity, and nothing here asserts article truth, claim support, or source
+    identity.
+
+    This is the v0.2 identity; ``profile_version`` is not coerced to v0.1/v0.1.1.
+    """
+    errors: list[str] = []
+
+    # Fixed values (manifest fixed_values). profile_version is version identity,
+    # not a fixed_value, and gets its own named finding so a mislabelled version
+    # never silently falls back to another source_capture profile.
+    for field, expected in SOURCE_CAPTURE_V02_FIXED_VALUES.items():
+        if receipt.get(field) != expected:
+            errors.append("FIXED_VALUE_MISMATCH")
+    if receipt.get("profile_version") != "v0.2":
+        errors.append("PROFILE_VERSION_MISMATCH")
+    if receipt.get("receipt_kind") != "capture_attempt":
+        errors.append("INVALID_RECEIPT_KIND")
+
+    for field in SOURCE_CAPTURE_V02_REQUIRED_FIELDS:
+        if field not in receipt:
+            errors.append("MISSING_PROFILE_FIELD")
+
+    # Subject binding: subject_ref MUST equal source_reference_id (s2).
+    source_reference_id = receipt.get("source_reference_id")
+    if (
+        isinstance(source_reference_id, str)
+        and receipt.get("subject_ref") != source_reference_id
+    ):
+        errors.append("SUBJECT_BINDING_MISMATCH")
+
+    # Declaration identity (s4): source_reference_id is derived ONLY from
+    # declaring_artifact_ref (sha256 of the governed declaration) and
+    # source_inventory_key. Structurally recomputable from bytes: the declaring
+    # artifact hex and the inventory key MUST both appear in the reference id,
+    # and the locator / capturer identity MUST NOT — folding either in is a
+    # declaration-identity tamper that fails closed.
+    declaring_artifact_ref = receipt.get("declaring_artifact_ref")
+    source_inventory_key = receipt.get("source_inventory_key")
+    if isinstance(declaring_artifact_ref, str):
+        if not SHA256_REF_RE.fullmatch(declaring_artifact_ref):
+            errors.append("INVALID_DECLARING_ARTIFACT_REF")
+        if isinstance(source_reference_id, str):
+            declaring_hex = declaring_artifact_ref.split("sha256:", 1)[-1]
+            if (
+                declaring_hex not in source_reference_id
+                or not isinstance(source_inventory_key, str)
+                or source_inventory_key not in source_reference_id
+            ):
+                errors.append("SOURCE_REFERENCE_ID_NOT_DECLARATION_DERIVED")
+    if isinstance(source_reference_id, str):
+        declared_url = receipt.get("declared_url")
+        if isinstance(declared_url, str) and declared_url and (
+            declared_url in source_reference_id
+        ):
+            errors.append("SOURCE_REFERENCE_ID_INCORPORATES_LOCATOR")
+        capturer_identity = receipt.get("capturer_identity")
+        if isinstance(capturer_identity, str) and capturer_identity and (
+            capturer_identity in source_reference_id
+        ):
+            errors.append("SOURCE_REFERENCE_ID_INCORPORATES_CAPTURER")
+
+    # Capture semantics.
+    outcome = receipt.get("outcome")
+    outcome_known = outcome in SOURCE_CAPTURE_V02_OUTCOME_VALUES
+    if not outcome_known:
+        errors.append("INVALID_OUTCOME")
+
+    # captured_bytes_ref: a sha256:<hex> digest exactly when outcome is success,
+    # JSON null for every other outcome. Both directions enforced (manifest s8).
+    cbr = receipt.get("captured_bytes_ref")
+    if outcome == "success":
+        if not (isinstance(cbr, str) and SHA256_REF_RE.fullmatch(cbr)):
+            errors.append("CAPTURED_BYTES_REF_OUTCOME_MISMATCH")
+    elif outcome_known and cbr is not None:
+        errors.append("CAPTURED_BYTES_REF_OUTCOME_MISMATCH")
+
+    # declared_url: JSON null exactly when outcome is no_url_declared, a
+    # non-empty string otherwise. Both directions enforced (manifest s5).
+    declared_url = receipt.get("declared_url")
+    if outcome == "no_url_declared":
+        if declared_url is not None:
+            errors.append("DECLARED_URL_OUTCOME_MISMATCH")
+    elif outcome_known and not (
+        isinstance(declared_url, str) and declared_url
+    ):
+        errors.append("DECLARED_URL_OUTCOME_MISMATCH")
+
+    covered = set(receipt.get("artifact_classes_covered") or [])
+    if not SOURCE_CAPTURE_V02_REQUIRED_COVERED.issubset(covered):
+        errors.append("MISSING_REQUIRED_ARTIFACT_CLASS")
+    excluded = set(receipt.get("artifact_classes_excluded") or [])
+    if not SOURCE_CAPTURE_V02_REQUIRED_EXCLUDED.issubset(excluded):
+        errors.append("MISSING_REQUIRED_ARTIFACT_CLASS")
+
+    limitations = receipt.get("machine_limitations")
+    present_codes = (
+        {item.get("code") for item in limitations if isinstance(item, dict)}
+        if isinstance(limitations, list)
+        else set()
+    )
+    for code in sorted(
+        SOURCE_CAPTURE_V02_REQUIRED_LIMITATION_CODES - present_codes
+    ):
+        errors.append(f"MISSING_LIMITATION_CODE:{code}")
+
+    limits = receipt.get("attestation_limits")
+    limit_values = set(limits) if isinstance(limits, list) else set()
+    if SOURCE_CAPTURE_V02_BASE_ATTESTATION_LIMIT not in limit_values:
+        errors.append("MISSING_ATTESTATION_LIMIT")
+
+    return list(dict.fromkeys(errors))
+
+
+# --- srs.editorial.source_ingest.v0.1 ----------------------------------------
+#
+# Provisional source-ingest stage (arcs-srs 1f8768d). Expectation values are
+# transcribed from the vendored, byte-pinned profile manifest at
+# vendor/arcs-srs/vectors/editorial-source-ingest-v0.1/profile.manifest.json
+# (document_sha256
+# 0454e96ea67c5f415c57ea9b7ca624165366ea0b80914bdb6be77448bdf56b98); the pin
+# test asserts these constants against those bytes. The receipt attests a
+# deterministic derivation of exact captured source bytes under a pinned parser;
+# it references a capture observation (never re-attesting capture), asserts no
+# source truth / claim support / admission, and carries no raw content.
+
+SOURCE_INGEST_V01_FIXED_VALUES = {
+    "receipt_version": "srs.core.v5.1",
+    "profile_id": "srs.editorial.source_ingest",
+    "receipt_type": "provenance",
+    "boundary_type": "editorial_corpus_boundary",
+}
+
+SOURCE_INGEST_V01_REQUIRED_FIELDS = (
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "subject_ref",
+    "issuer_id",
+    "runtime_instance_id",
+    "boundary_id",
+    "issued_at",
+    "source_artifact_id",
+    "capture_observation_ref",
+    "parser_identity",
+    "pdo_module_identity",
+    "derivation",
+    "pdo_ref",
+    "extraction_ref",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "extensions",
+)
+
+SOURCE_INGEST_V01_REQUIRED_COVERED = frozenset([
+    "source_artifact_digest",
+    "parser_identity",
+    "derivation_chain",
+])
+
+SOURCE_INGEST_V01_REQUIRED_EXCLUDED = frozenset([
+    "raw_source_content",
+    "raw_extracted_text",
+])
+
+SOURCE_INGEST_V01_REQUIRED_LIMITATION_CODES = frozenset([
+    "SOURCE_TRUTH_NOT_EVALUATED",
+    "EVIDENCE_COMPLETENESS_NOT_EVALUATED",
+    "CLAIM_SUPPORT_NOT_EVALUATED",
+    "CONTENT_NOT_VERIFIED",
+])
+
+SOURCE_INGEST_V01_BASE_ATTESTATION_LIMIT = (
+    "The receipt declares a deterministic ingest/derivation of exact captured "
+    "source bytes under the named parser. It does not establish that the "
+    "source content is authentic, that the source is the one a declaration "
+    "intended, that the source supports any claim, or that any article or "
+    "publication is true. It evaluates neither evidence completeness nor claim "
+    "support, and confers no admission or standing."
+)
+
+# Capture-only fields: their presence at top level would re-attest capture,
+# which s4 forbids — an ingest receipt references a capture observation and
+# never restates its outcome or locator.
+SOURCE_INGEST_V01_CAPTURE_ONLY_FIELDS = (
+    "outcome",
+    "declared_url",
+    "captured_bytes_ref",
+    "capturer_identity",
+    "source_reference_id",
+)
+
+
+def _editorial_source_ingest_v01_profile_errors(
+    receipt: dict[str, Any],
+) -> list[str]:
+    """Profile errors for srs.editorial.source_ingest.v0.1 (provisional).
+
+    Binds a deterministic derivation to the exact captured source bytes:
+    ``subject_ref == source_artifact_id``, ``derivation.input_hash ==
+    source_artifact_id``, ``extraction_ref == derivation.output_hash``, and
+    ``derivation.parser_id == parser_identity`` (manifest s3/s7). The historical
+    ``pdo_module_identity`` is carried verbatim from the PDO bytes and is NOT
+    reconciled to the executing distribution; the optional
+    ``ingest_implementation`` is validated only for shape when present and MAY be
+    omitted. The receipt references a capture observation and never re-attests
+    it. The verifier recomputes structure and the declared digests' internal
+    consistency only; it does not re-run the parser or establish source truth.
+    """
+    errors: list[str] = []
+
+    for field, expected in SOURCE_INGEST_V01_FIXED_VALUES.items():
+        if receipt.get(field) != expected:
+            errors.append("FIXED_VALUE_MISMATCH")
+    if receipt.get("profile_version") != "v0.1":
+        errors.append("PROFILE_VERSION_MISMATCH")
+    if receipt.get("receipt_kind") != "source_ingest":
+        errors.append("INVALID_RECEIPT_KIND")
+
+    for field in SOURCE_INGEST_V01_REQUIRED_FIELDS:
+        if field not in receipt:
+            errors.append("MISSING_PROFILE_FIELD")
+
+    # Subject identity: subject_ref MUST equal source_artifact_id, the sha256 of
+    # the exact captured source bytes (s3). A staging filename is never identity.
+    source_artifact_id = receipt.get("source_artifact_id")
+    if isinstance(source_artifact_id, str):
+        if not SHA256_REF_RE.fullmatch(source_artifact_id):
+            errors.append("INVALID_SOURCE_ARTIFACT_ID")
+        if receipt.get("subject_ref") != source_artifact_id:
+            errors.append("SUBJECT_BINDING_MISMATCH")
+
+    # Parser identity binding (s5/s7): parser_identity is the stamped parser and
+    # derivation.parser_id MUST equal it.
+    parser_identity = receipt.get("parser_identity")
+    if not (isinstance(parser_identity, str) and parser_identity):
+        errors.append("PARSER_IDENTITY_INVALID")
+
+    # Derivation: bind the deterministic derivation by digest (s7).
+    derivation = receipt.get("derivation")
+    if not isinstance(derivation, dict):
+        errors.append("DERIVATION_INVALID")
+        derivation = {}
+
+    input_hash = derivation.get("input_hash")
+    if (
+        isinstance(source_artifact_id, str)
+        and input_hash != source_artifact_id
+    ):
+        errors.append("DERIVATION_INPUT_MISMATCH")
+
+    derivation_parser_id = derivation.get("parser_id")
+    if (
+        isinstance(parser_identity, str)
+        and derivation_parser_id != parser_identity
+    ):
+        errors.append("PARSER_IDENTITY_MISMATCH")
+
+    output_hash = derivation.get("output_hash")
+    extraction_ref = receipt.get("extraction_ref")
+    if extraction_ref != output_hash:
+        errors.append("EXTRACTION_REF_MISMATCH")
+
+    # pdo_ref MUST be the sha256:<hex> of the exact emitted PDO artifact (s7).
+    pdo_ref = receipt.get("pdo_ref")
+    if pdo_ref is not None and not (
+        isinstance(pdo_ref, str) and SHA256_REF_RE.fullmatch(pdo_ref)
+    ):
+        errors.append("PDO_REF_DIGEST_INVALID")
+
+    # Historical module identity (s5): {module_id, module_version} carried
+    # verbatim from the PDO bytes. Validated for shape only; NEVER reconciled to
+    # the executing distribution.
+    pdo_module_identity = receipt.get("pdo_module_identity")
+    if pdo_module_identity is not None and not (
+        isinstance(pdo_module_identity, dict)
+        and isinstance(pdo_module_identity.get("module_id"), str)
+        and pdo_module_identity.get("module_id")
+        and isinstance(pdo_module_identity.get("module_version"), str)
+        and pdo_module_identity.get("module_version")
+    ):
+        errors.append("PDO_MODULE_IDENTITY_INVALID")
+
+    # Optional ingest_implementation (s6): substantiated-or-omitted. When
+    # present it MUST be {distribution, version, revision}; it is never derived
+    # from pdo_module_identity and a valid receipt MAY omit it entirely.
+    if "ingest_implementation" in receipt:
+        impl = receipt.get("ingest_implementation")
+        if not (
+            isinstance(impl, dict)
+            and all(
+                isinstance(impl.get(k), str) and impl.get(k)
+                for k in ("distribution", "version", "revision")
+            )
+        ):
+            errors.append("INGEST_IMPLEMENTATION_INVALID")
+
+    # Capture linkage (s4): reference the capture observation, never re-attest
+    # it. capture_observation_ref MUST be a non-empty reference, and capture-only
+    # fields (outcome / locator / captured bytes / capturer) MUST NOT be restated.
+    capture_observation_ref = receipt.get("capture_observation_ref")
+    if not (
+        isinstance(capture_observation_ref, str) and capture_observation_ref
+    ):
+        errors.append("CAPTURE_OBSERVATION_REF_INVALID")
+    if any(
+        field in receipt for field in SOURCE_INGEST_V01_CAPTURE_ONLY_FIELDS
+    ):
+        errors.append("CAPTURE_OBSERVATION_RESTATED")
+
+    covered = set(receipt.get("artifact_classes_covered") or [])
+    if not SOURCE_INGEST_V01_REQUIRED_COVERED.issubset(covered):
+        errors.append("MISSING_REQUIRED_ARTIFACT_CLASS")
+    excluded = set(receipt.get("artifact_classes_excluded") or [])
+    if not SOURCE_INGEST_V01_REQUIRED_EXCLUDED.issubset(excluded):
+        errors.append("MISSING_REQUIRED_ARTIFACT_CLASS")
+
+    limitations = receipt.get("machine_limitations")
+    present_codes = (
+        {item.get("code") for item in limitations if isinstance(item, dict)}
+        if isinstance(limitations, list)
+        else set()
+    )
+    for code in sorted(
+        SOURCE_INGEST_V01_REQUIRED_LIMITATION_CODES - present_codes
+    ):
+        errors.append(f"MISSING_LIMITATION_CODE:{code}")
+
+    limits = receipt.get("attestation_limits")
+    limit_values = set(limits) if isinstance(limits, list) else set()
+    if SOURCE_INGEST_V01_BASE_ATTESTATION_LIMIT not in limit_values:
+        errors.append("MISSING_ATTESTATION_LIMIT")
+
+    return list(dict.fromkeys(errors))
+
+
 # --- srs.activity.governed_read.v0.1 -----------------------------------------
 #
 # Field-level profile for one governed read against a pinned basis. The
@@ -1430,6 +1872,12 @@ def _profile_errors(
 
     if selected_profile == EDITORIAL_SOURCE_CAPTURE_PROFILE_V011:
         return _editorial_source_capture_v011_profile_errors(receipt)
+
+    if selected_profile == EDITORIAL_SOURCE_CAPTURE_PROFILE_V02:
+        return _editorial_source_capture_v02_profile_errors(receipt)
+
+    if selected_profile == EDITORIAL_SOURCE_INGEST_PROFILE:
+        return _editorial_source_ingest_v01_profile_errors(receipt)
 
     if selected_profile == ACTIVITY_GOVERNED_READ_PROFILE:
         return _activity_governed_read_profile_errors(receipt)

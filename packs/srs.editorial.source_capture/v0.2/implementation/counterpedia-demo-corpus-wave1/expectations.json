@@ -1,0 +1,201 @@
+{
+  "profile": "srs.editorial.source_capture.v0.2",
+  "keyring": "issuer-keys.json",
+  "receipts": [
+    {
+      "path": "capture-success-canonical.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": true,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "capture-http-error-canonical.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": true,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "capture-no-url-declared-canonical.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": true,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "capture-subject-binding-mismatch.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "SUBJECT_BINDING_MISMATCH",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "capture-missing-declaring-artifact-ref.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "MISSING_PROFILE_FIELD",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "capture-wrong-boundary-type.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "FIXED_VALUE_MISMATCH",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "capture-bytes-on-http-error.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "CAPTURED_BYTES_REF_OUTCOME_MISMATCH",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "capture-reference-id-folds-url.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "SOURCE_REFERENCE_ID_INCORPORATES_LOCATOR",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "capture-reference-id-wrong-declaring-artifact.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "SOURCE_REFERENCE_ID_NOT_DECLARATION_DERIVED",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "capture-declared-url-outcome-mismatch.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "DECLARED_URL_OUTCOME_MISMATCH",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "capture-version-coercion-blocked.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "PROFILE_VERSION_MISMATCH",
+        "signature_object_invalid"
+      ]
+    }
+  ]
+}
