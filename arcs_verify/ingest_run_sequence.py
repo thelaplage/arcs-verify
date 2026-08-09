@@ -1,43 +1,51 @@
 """Independent sequence-level verifier for dagr.ingest_run.v0.1 sequences.
 
-This module recomputes structural, linkage, digest-continuity, and coverage
-findings for a DAGR ingest run sequence from serialized artifacts:
+This module recomputes structural, linkage, binding, and coverage/posture
+findings for a DAGR editorial ingest sequence from serialized artifacts:
   - a dagr.ingest_run.v0.1 neutral run document,
-  - a D4-produced SRS receipt-set manifest (dagr-ingest.srs-receipt-set.v0.1),
-  - the individual SRS receipt files enumerated in the manifest, and
-  - the SRS profile manifest file (for pin verification).
+  - a producer-owned SRS receipt-set manifest
+    (dagr-ingest.srs-receipt-set-manifest.v0.1), and
+  - the individual SRS publication_ingest receipt files it enumerates,
+  - the SRS profile manifest file (for pin + production-authority verification).
+
+The artifact shapes consumed here are the *real* producer contracts emitted by
+merged dagr-ingest, not a verifier-invented test shape:
+
+  run_doc (dagr.ingest_run.v0.1)
+    - ``file_occurrences[]`` carry rel_path, content_hash, source_type,
+      is_duplicate_content, parser_id, root_id, artifact_refs, ...
+    - ``unique_artifacts[]`` do NOT carry parser_id, is_duplicate_content, or a
+      ``subject`` field; coverage is computed over ``file_occurrences``.
+
+  manifest (dagr-ingest.srs-receipt-set-manifest.v0.1)
+    - ``emitted_receipts[]`` = {receipt_id, subject_ref, rel_path, output_path,
+      incomplete}
+    - ``skipped_duplicate[]``, ``skipped_no_parser[]``,
+      ``profile_not_applicable[]`` = lists of rel_paths
+    - ``incomplete_receipt_ids[]``, ``counts``, ``run_id``, ``profile_slug``,
+      ``profile_manifest_sha256``, ``envelope_version``.
 
 Authority boundaries
 --------------------
 - This verifier operates on *serialized bytes only* (deserialized from JSON).
-  It does not import dagr_ingest, garp_ingest, or any D4/D3 producer code.
+  It does not import dagr_ingest, garp_ingest, or any producer code.
 - Findings are independently recomputed from the supplied artifacts.
   They are not emitter assertions.
+- Receipt files are resolved by ``receipt_id`` under the supplied receipts
+  directory. The manifest's ``output_path`` (an absolute machine path recorded
+  by the producer) is never trusted as a filesystem authority.
+- The profile-manifest pin is checked two ways: the recomputed sha256 of the
+  supplied profile-manifest bytes must equal the manifest's declared
+  ``profile_manifest_sha256`` (pin integrity), and that declared digest must
+  equal the pinned arcs-srs *production* publication_ingest profile-manifest
+  digest (production authority). The arcs-verify test-only profile manifest is
+  explicitly not a production authority.
 - Sequence integrity does not prove the underlying ingest event occurred.
 - Sequence integrity does not prove source truth or content completeness.
 - Sequence integrity does not prove policy correctness.
 - Profile-manifest pin match does not prove the receipts satisfy the profile;
   profile conformance is a separate concern not evaluated by this verifier.
 - NOT_EVALUATED is not PASS. not_applicable is not PASS.
-
-Independent findings produced
------------------------------
-- run_doc_schema: run_doc["schema"] == "dagr.ingest_run.v0.1"
-- boundary_declarations: run_doc["boundary"]["no_arcs_srs"],
-  no_receipts_issued, and no_network are all True
-- receipt_set_manifest_schema: manifest["schema"] == "dagr-ingest.srs-receipt-set.v0.1"
-- run_id_linkage: manifest["run_id"] == run_doc["run_id"]
-- profile_manifest_pin: independently recomputed sha256 of the profile
-  manifest file matches manifest["profile_manifest_sha256"]
-- per_receipt_checks: for each "emitted" entry:
-    receipt_file_present, receipt_parse, protocol_binding,
-    subject_ref_manifest, subject_binding, corpus_manifest_ref,
-    raw_content_absent, artifact_classes_excluded
-- unique_artifact_coverage: every run_doc["unique_artifacts"] entry with
-  parser_id non-null and is_duplicate_content == False appears in the
-  manifest as emitted
-- duplicate_posture: entries with is_duplicate_content == True do not appear
-  as emitted
 """
 
 from __future__ import annotations
@@ -54,8 +62,18 @@ SEQUENCE_SCHEMA = "arcs_verify.ingest_run_sequence_report.v0_1"
 SEQUENCE_PROFILE = "arcs_verify.ingest_run_sequence.v0_1"
 
 RUN_DOC_SCHEMA = "dagr.ingest_run.v0.1"
-RECEIPT_SET_MANIFEST_SCHEMA = "dagr-ingest.srs-receipt-set.v0.1"
+RECEIPT_SET_MANIFEST_SCHEMA = "dagr-ingest.srs-receipt-set-manifest.v0.1"
 EXPECTED_PROTOCOL_BINDING = "dagr-ingest/v0.1"
+
+# The authoritative production digest of the arcs-srs
+# srs.editorial.publication_ingest.v0.1 profile manifest bytes
+# (conformance/profiles/srs.editorial.publication_ingest.v0.1/profile.manifest.json).
+# Pinned here as the production authority the receipt-set manifest must declare.
+# This is a byte digest, not an import — the verifier still imports no producer
+# or standards code.
+EXPECTED_PROFILE_MANIFEST_SHA256 = (
+    "ec3871e4a1ca0541a0dc81487b0675aa096c15fd5ce5b8da4e93af2a6c49d5e2"
+)
 
 # Required boundary declarations in run_doc["boundary"]
 REQUIRED_BOUNDARY_DECLARATIONS: tuple[str, ...] = (
@@ -65,7 +83,8 @@ REQUIRED_BOUNDARY_DECLARATIONS: tuple[str, ...] = (
 )
 
 # Raw content field names that must not appear in any emitted SRS receipt.
-# Reproduced here independently from D4 so the verifier imports no producer code.
+# Reproduced here independently from the binding so the verifier imports no
+# producer code.
 FORBIDDEN_RAW_RECEIPT_FIELDS: frozenset[str] = frozenset({
     "raw_publication_bytes",
     "raw_frontmatter_yaml",
@@ -79,6 +98,18 @@ REQUIRED_EXCLUSIONS: frozenset[str] = frozenset({
     "raw_frontmatter_yaml",
     "raw_body_text",
 })
+
+# Manifest skip-category keys, each a list of rel_paths in the real producer
+# contract. emitted_receipts is a list of objects and is handled separately.
+SKIP_CATEGORY_KEYS: tuple[str, ...] = (
+    "skipped_duplicate",
+    "skipped_no_parser",
+    "profile_not_applicable",
+)
+
+# Category label for an occurrence resolved as emitted (a coverage label, not a
+# failure code).
+EMITTED_CATEGORY = "emitted"
 
 SEQUENCE_LIMITATIONS: list[str] = [
     (
@@ -106,6 +137,11 @@ SEQUENCE_LIMITATIONS: list[str] = [
         "that the run was actually isolated from those systems."
     ),
     (
+        "The manifest's output_path values are producer-recorded absolute paths; "
+        "the verifier resolves receipt files by receipt_id under the supplied "
+        "receipts directory and does not trust output_path as authority."
+    ),
+    (
         "NOT_EVALUATED is not PASS. not_applicable is not PASS."
     ),
 ]
@@ -125,11 +161,11 @@ class SequenceFinding:
 
 @dataclass(slots=True)
 class IngestRunSequenceReport:
-    """Independent findings for a dagr.ingest_run.v0.1 sequence.
+    """Independent findings for a dagr.ingest_run.v0.1 editorial sequence.
 
-    No single master status replaces findings. ``passed`` requires all
-    structural findings to be TRUE. Findings that are NOT_EVALUATED do not
-    gate passed, but FALSE does.
+    No single master status replaces findings. ``passed`` requires the
+    structural core findings to be TRUE and no other finding to be FALSE.
+    Findings that are NOT_EVALUATED do not gate passed, but FALSE does.
     """
 
     # Run document findings
@@ -140,20 +176,24 @@ class IngestRunSequenceReport:
     receipt_set_manifest_schema: Conclusion = Conclusion.NOT_EVALUATED
     run_id_linkage: Conclusion = Conclusion.NOT_EVALUATED
     profile_manifest_pin: Conclusion = Conclusion.NOT_EVALUATED
+    profile_manifest_authority: Conclusion = Conclusion.NOT_EVALUATED
 
-    # Per-receipt findings (aggregated)
+    # Per-receipt findings (aggregated over emitted_receipts)
     receipt_file_present: Conclusion = Conclusion.NOT_EVALUATED
     receipt_parse: Conclusion = Conclusion.NOT_EVALUATED
     protocol_binding: Conclusion = Conclusion.NOT_EVALUATED
+    receipt_id_binding: Conclusion = Conclusion.NOT_EVALUATED
     subject_ref_manifest: Conclusion = Conclusion.NOT_EVALUATED
     subject_binding: Conclusion = Conclusion.NOT_EVALUATED
+    rel_path_binding: Conclusion = Conclusion.NOT_EVALUATED
     corpus_manifest_ref: Conclusion = Conclusion.NOT_EVALUATED
     raw_content_absent: Conclusion = Conclusion.NOT_EVALUATED
     artifact_classes_excluded: Conclusion = Conclusion.NOT_EVALUATED
 
-    # Coverage findings
-    unique_artifact_coverage: Conclusion = Conclusion.NOT_EVALUATED
+    # Coverage / posture findings (over run_doc.file_occurrences)
+    occurrence_accounting: Conclusion = Conclusion.NOT_EVALUATED
     duplicate_posture: Conclusion = Conclusion.NOT_EVALUATED
+    null_parser_posture: Conclusion = Conclusion.NOT_EVALUATED
 
     findings: list[SequenceFinding] = field(default_factory=list)
 
@@ -168,16 +208,20 @@ class IngestRunSequenceReport:
             and self.receipt_set_manifest_schema is Conclusion.TRUE
             and self.run_id_linkage is Conclusion.TRUE
             and self.profile_manifest_pin is Conclusion.TRUE
+            and self.profile_manifest_authority is Conclusion.TRUE
             and _gates(self.receipt_file_present)
             and _gates(self.receipt_parse)
             and _gates(self.protocol_binding)
+            and _gates(self.receipt_id_binding)
             and _gates(self.subject_ref_manifest)
             and _gates(self.subject_binding)
+            and _gates(self.rel_path_binding)
             and _gates(self.corpus_manifest_ref)
             and _gates(self.raw_content_absent)
             and _gates(self.artifact_classes_excluded)
-            and _gates(self.unique_artifact_coverage)
+            and _gates(self.occurrence_accounting)
             and _gates(self.duplicate_posture)
+            and _gates(self.null_parser_posture)
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -196,18 +240,24 @@ class IngestRunSequenceReport:
                 ),
                 "run_id_linkage": self.run_id_linkage.value,
                 "profile_manifest_pin": self.profile_manifest_pin.value,
+                "profile_manifest_authority": (
+                    self.profile_manifest_authority.value
+                ),
                 "receipt_file_present": self.receipt_file_present.value,
                 "receipt_parse": self.receipt_parse.value,
                 "protocol_binding": self.protocol_binding.value,
+                "receipt_id_binding": self.receipt_id_binding.value,
                 "subject_ref_manifest": self.subject_ref_manifest.value,
                 "subject_binding": self.subject_binding.value,
+                "rel_path_binding": self.rel_path_binding.value,
                 "corpus_manifest_ref": self.corpus_manifest_ref.value,
                 "raw_content_absent": self.raw_content_absent.value,
                 "artifact_classes_excluded": (
                     self.artifact_classes_excluded.value
                 ),
-                "unique_artifact_coverage": self.unique_artifact_coverage.value,
+                "occurrence_accounting": self.occurrence_accounting.value,
                 "duplicate_posture": self.duplicate_posture.value,
+                "null_parser_posture": self.null_parser_posture.value,
             },
             "passed": self.passed,
             "limitations": SEQUENCE_LIMITATIONS,
@@ -229,18 +279,19 @@ def verify_ingest_run_sequence(
     profile_manifest_path: Path,
 ) -> IngestRunSequenceReport:
     """Independently verify the linkage between a dagr.ingest_run.v0.1 run
-    document, a D4-produced SRS receipt-set manifest, and the individual
-    SRS receipts.
+    document, a producer-owned SRS receipt-set manifest, and the individual
+    SRS receipts it enumerates.
 
     Parameters
     ----------
     run_doc_path:
         Path to the dagr.ingest_run.v0.1 run document JSON file.
     receipt_set_manifest_path:
-        Path to the dagr-ingest.srs-receipt-set.v0.1 manifest JSON file.
+        Path to the dagr-ingest.srs-receipt-set-manifest.v0.1 manifest JSON file.
     receipts_dir:
-        Directory containing the individual receipt JSON files referenced
-        by the manifest's receipts array.
+        Directory containing the individual receipt JSON files. Receipts are
+        resolved as ``<receipt_id>.json`` under this directory; the manifest's
+        output_path is not trusted as a filesystem authority.
     profile_manifest_path:
         Path to the SRS profile manifest file whose sha256 is pinned in
         the receipt-set manifest.
@@ -360,9 +411,10 @@ def verify_ingest_run_sequence(
         return report
 
     # -----------------------------------------------------------------------
-    # Check 3: Receipt-set manifest schema
+    # Check 3: Receipt-set manifest schema discriminator
     # -----------------------------------------------------------------------
     manifest_schema = manifest.get("schema")
+    manifest_schema_ok = True
     if manifest_schema != RECEIPT_SET_MANIFEST_SCHEMA:
         _fail(
             report,
@@ -372,9 +424,22 @@ def verify_ingest_run_sequence(
                 f"expected {RECEIPT_SET_MANIFEST_SCHEMA!r}"
             ),
         )
-        report.receipt_set_manifest_schema = Conclusion.FALSE
-    else:
-        report.receipt_set_manifest_schema = Conclusion.TRUE
+        manifest_schema_ok = False
+
+    # emitted_receipts must be present as a list of objects.
+    emitted_receipts = manifest.get("emitted_receipts")
+    if not isinstance(emitted_receipts, list):
+        _fail(
+            report,
+            "RECEIPT_SET_MANIFEST_SCHEMA_MISMATCH",
+            "manifest[\"emitted_receipts\"] is absent or not an array",
+        )
+        manifest_schema_ok = False
+        emitted_receipts = []
+
+    report.receipt_set_manifest_schema = (
+        Conclusion.TRUE if manifest_schema_ok else Conclusion.FALSE
+    )
 
     # -----------------------------------------------------------------------
     # Check 4: Run ID linkage
@@ -395,8 +460,10 @@ def verify_ingest_run_sequence(
         report.run_id_linkage = Conclusion.TRUE
 
     # -----------------------------------------------------------------------
-    # Check 5: Profile manifest pin (independently recompute sha256)
+    # Check 5: Profile manifest pin (independently recompute sha256) and
+    #          production-authority (declared digest == pinned production digest)
     # -----------------------------------------------------------------------
+    declared_sha256 = manifest.get("profile_manifest_sha256", "")
     try:
         profile_manifest_bytes = profile_manifest_path.read_bytes()
     except OSError as exc:
@@ -408,7 +475,6 @@ def verify_ingest_run_sequence(
         report.profile_manifest_pin = Conclusion.FALSE
     else:
         actual_sha256 = hashlib.sha256(profile_manifest_bytes).hexdigest()
-        declared_sha256 = manifest.get("profile_manifest_sha256", "")
         if actual_sha256 != declared_sha256:
             _fail(
                 report,
@@ -422,35 +488,40 @@ def verify_ingest_run_sequence(
         else:
             report.profile_manifest_pin = Conclusion.TRUE
 
-    # -----------------------------------------------------------------------
-    # Check 6: Per-receipt checks for "emitted" entries
-    # -----------------------------------------------------------------------
-    receipts_list = manifest.get("receipts")
-    if not isinstance(receipts_list, list):
-        # No receipts array — per-receipt findings are NOT_EVALUATED
-        # (structure cannot be verified if array is absent)
+    # Production authority: the digest the manifest declares must be the pinned
+    # arcs-srs production publication_ingest profile-manifest digest. This is a
+    # separate finding from pin integrity: a self-consistent manifest+profile
+    # pair that pins a non-production (e.g. test-only) manifest still fails here.
+    if declared_sha256 == EXPECTED_PROFILE_MANIFEST_SHA256:
+        report.profile_manifest_authority = Conclusion.TRUE
+    else:
         _fail(
             report,
-            "RECEIPT_SET_MANIFEST_SCHEMA_MISMATCH",
-            "manifest[\"receipts\"] is absent or not an array",
+            "PROFILE_MANIFEST_AUTHORITY_MISMATCH",
+            (
+                f"manifest declares profile_manifest_sha256 {declared_sha256!r}; "
+                f"expected the arcs-srs production publication_ingest digest "
+                f"{EXPECTED_PROFILE_MANIFEST_SHA256!r}"
+            ),
         )
-        # These remain NOT_EVALUATED — we don't know if there should be receipts
-        # Mark manifest schema as false since the required field is missing
-        if report.receipt_set_manifest_schema is Conclusion.TRUE:
-            report.receipt_set_manifest_schema = Conclusion.FALSE
-        receipts_list = []
+        report.profile_manifest_authority = Conclusion.FALSE
 
-    emitted_entries = [
-        e for e in receipts_list
-        if isinstance(e, dict) and e.get("status") == "emitted"
-    ]
+    # -----------------------------------------------------------------------
+    # Check 6: Per-receipt checks over emitted_receipts entries
+    # -----------------------------------------------------------------------
+    expected_corpus_manifest_ref = (
+        "sha256:" + run_id if isinstance(run_id, str) else None
+    )
 
-    # Per-receipt aggregated conclusion trackers
+    emitted_entries = [e for e in emitted_receipts if isinstance(e, dict)]
+
     file_present_ok = True
     parse_ok = True
     protocol_binding_ok = True
+    receipt_id_ok = True
     subject_ref_manifest_ok = True
     subject_binding_ok = True
+    rel_path_ok = True
     corpus_manifest_ref_ok = True
     raw_content_ok = True
     exclusions_ok = True
@@ -458,26 +529,30 @@ def verify_ingest_run_sequence(
     has_emitted = bool(emitted_entries)
 
     for entry in emitted_entries:
-        receipt_file = entry.get("receipt_file")
-        entry_subject = entry.get("subject")
+        entry_receipt_id = entry.get("receipt_id")
+        entry_subject_ref = entry.get("subject_ref")
+        entry_rel_path = entry.get("rel_path")
 
-        # 6a: Receipt file exists
-        if not isinstance(receipt_file, str) or not receipt_file:
+        # 6a: Resolve the receipt file by receipt_id (never by output_path).
+        if not isinstance(entry_receipt_id, str) or not entry_receipt_id:
             file_present_ok = False
             _fail(
                 report,
                 "RECEIPT_FILE_MISSING",
-                f"emitted entry has no receipt_file: {entry!r}",
+                f"emitted entry has no usable receipt_id: {entry!r}",
             )
             continue
 
-        receipt_path = receipts_dir / receipt_file
+        receipt_path = receipts_dir / f"{entry_receipt_id}.json"
         if not receipt_path.is_file():
             file_present_ok = False
             _fail(
                 report,
                 "RECEIPT_FILE_MISSING",
-                f"receipt file not found: {receipt_path}",
+                (
+                    f"receipt file not found for receipt_id "
+                    f"{entry_receipt_id!r}: {receipt_path}"
+                ),
             )
             continue
 
@@ -489,7 +564,7 @@ def verify_ingest_run_sequence(
             _fail(
                 report,
                 "RECEIPT_PARSE_ERROR",
-                f"receipt {receipt_file!r} unreadable: {exc}",
+                f"receipt {entry_receipt_id!r} unreadable: {exc}",
             )
             continue
 
@@ -500,7 +575,7 @@ def verify_ingest_run_sequence(
             _fail(
                 report,
                 "RECEIPT_PARSE_ERROR",
-                f"receipt {receipt_file!r} malformed JSON: {exc}",
+                f"receipt {entry_receipt_id!r} malformed JSON: {exc}",
             )
             continue
 
@@ -509,7 +584,7 @@ def verify_ingest_run_sequence(
             _fail(
                 report,
                 "RECEIPT_PARSE_ERROR",
-                f"receipt {receipt_file!r} is not a JSON object",
+                f"receipt {entry_receipt_id!r} is not a JSON object",
             )
             continue
 
@@ -521,25 +596,40 @@ def verify_ingest_run_sequence(
                 report,
                 "PROTOCOL_BINDING_MISMATCH",
                 (
-                    f"receipt {receipt_file!r} protocol_binding == {pb!r}; "
+                    f"receipt {entry_receipt_id!r} protocol_binding == {pb!r}; "
                     f"expected {EXPECTED_PROTOCOL_BINDING!r}"
                 ),
             )
 
-        # 6d: receipt["subject_ref"] == entry["subject"]
+        # 6d: receipt["receipt_id"] == entry["receipt_id"]
+        receipt_receipt_id = receipt.get("receipt_id")
+        if receipt_receipt_id != entry_receipt_id:
+            receipt_id_ok = False
+            _fail(
+                report,
+                "RECEIPT_ID_MISMATCH",
+                (
+                    f"resolved receipt at {receipt_path.name} declares "
+                    f"receipt_id {receipt_receipt_id!r}; manifest entry "
+                    f"receipt_id == {entry_receipt_id!r}"
+                ),
+            )
+
+        # 6e: receipt["subject_ref"] == entry["subject_ref"]
         receipt_subject_ref = receipt.get("subject_ref")
-        if receipt_subject_ref != entry_subject:
+        if receipt_subject_ref != entry_subject_ref:
             subject_ref_manifest_ok = False
             _fail(
                 report,
                 "SUBJECT_REF_MANIFEST_MISMATCH",
                 (
-                    f"receipt {receipt_file!r} subject_ref == {receipt_subject_ref!r}; "
-                    f"manifest entry subject == {entry_subject!r}"
+                    f"receipt {entry_receipt_id!r} subject_ref == "
+                    f"{receipt_subject_ref!r}; manifest entry subject_ref == "
+                    f"{entry_subject_ref!r}"
                 ),
             )
 
-        # 6e: receipt["subject_ref"] == receipt["publication_artifact_id"]
+        # 6f: receipt["subject_ref"] == receipt["publication_artifact_id"]
         pub_artifact_id = receipt.get("publication_artifact_id")
         if receipt_subject_ref != pub_artifact_id:
             subject_binding_ok = False
@@ -547,16 +637,27 @@ def verify_ingest_run_sequence(
                 report,
                 "SUBJECT_BINDING_MISMATCH",
                 (
-                    f"receipt {receipt_file!r}: "
+                    f"receipt {entry_receipt_id!r}: "
                     f"subject_ref == {receipt_subject_ref!r} "
                     f"but publication_artifact_id == {pub_artifact_id!r}"
                 ),
             )
 
-        # 6f: receipt["corpus_manifest_ref"] == "sha256:" + run_doc["run_id"]
-        expected_corpus_manifest_ref = (
-            f"sha256:{run_id}" if isinstance(run_id, str) else None
-        )
+        # 6g: receipt["relative_path"] == entry["rel_path"]
+        receipt_rel_path = receipt.get("relative_path")
+        if receipt_rel_path != entry_rel_path:
+            rel_path_ok = False
+            _fail(
+                report,
+                "REL_PATH_MISMATCH",
+                (
+                    f"receipt {entry_receipt_id!r} relative_path == "
+                    f"{receipt_rel_path!r}; manifest entry rel_path == "
+                    f"{entry_rel_path!r}"
+                ),
+            )
+
+        # 6h: receipt["corpus_manifest_ref"] == "sha256:" + run_doc["run_id"]
         actual_corpus_manifest_ref = receipt.get("corpus_manifest_ref")
         if actual_corpus_manifest_ref != expected_corpus_manifest_ref:
             corpus_manifest_ref_ok = False
@@ -564,13 +665,13 @@ def verify_ingest_run_sequence(
                 report,
                 "CORPUS_MANIFEST_REF_MISMATCH",
                 (
-                    f"receipt {receipt_file!r}: "
+                    f"receipt {entry_receipt_id!r}: "
                     f"corpus_manifest_ref == {actual_corpus_manifest_ref!r}; "
                     f"expected {expected_corpus_manifest_ref!r}"
                 ),
             )
 
-        # 6g: No raw content fields present
+        # 6i: No raw content fields present
         for raw_field in FORBIDDEN_RAW_RECEIPT_FIELDS:
             if raw_field in receipt:
                 raw_content_ok = False
@@ -578,12 +679,12 @@ def verify_ingest_run_sequence(
                     report,
                     "RAW_CONTENT_PRESENT",
                     (
-                        f"receipt {receipt_file!r} contains forbidden "
+                        f"receipt {entry_receipt_id!r} contains forbidden "
                         f"raw-content field: {raw_field!r}"
                     ),
                 )
 
-        # 6h: artifact_classes_excluded contains all three required exclusions
+        # 6j: artifact_classes_excluded contains all required exclusions
         excluded = receipt.get("artifact_classes_excluded")
         if not isinstance(excluded, list):
             exclusions_ok = False
@@ -591,7 +692,7 @@ def verify_ingest_run_sequence(
                 report,
                 "MISSING_REQUIRED_EXCLUSION",
                 (
-                    f"receipt {receipt_file!r}: "
+                    f"receipt {entry_receipt_id!r}: "
                     "artifact_classes_excluded is absent or not a list"
                 ),
             )
@@ -604,13 +705,13 @@ def verify_ingest_run_sequence(
                         report,
                         "MISSING_REQUIRED_EXCLUSION",
                         (
-                            f"receipt {receipt_file!r}: "
+                            f"receipt {entry_receipt_id!r}: "
                             f"artifact_classes_excluded missing {req_excl!r}"
                         ),
                     )
 
-    # Assign per-receipt aggregated conclusions.
-    # If there are no emitted entries, leave as NOT_EVALUATED.
+    # Assign per-receipt aggregated conclusions. With no emitted entries these
+    # stay NOT_EVALUATED (there is nothing to recompute).
     if has_emitted:
         report.receipt_file_present = (
             Conclusion.TRUE if file_present_ok else Conclusion.FALSE
@@ -621,11 +722,17 @@ def verify_ingest_run_sequence(
         report.protocol_binding = (
             Conclusion.TRUE if protocol_binding_ok else Conclusion.FALSE
         )
+        report.receipt_id_binding = (
+            Conclusion.TRUE if receipt_id_ok else Conclusion.FALSE
+        )
         report.subject_ref_manifest = (
             Conclusion.TRUE if subject_ref_manifest_ok else Conclusion.FALSE
         )
         report.subject_binding = (
             Conclusion.TRUE if subject_binding_ok else Conclusion.FALSE
+        )
+        report.rel_path_binding = (
+            Conclusion.TRUE if rel_path_ok else Conclusion.FALSE
         )
         report.corpus_manifest_ref = (
             Conclusion.TRUE if corpus_manifest_ref_ok else Conclusion.FALSE
@@ -638,93 +745,134 @@ def verify_ingest_run_sequence(
         )
 
     # -----------------------------------------------------------------------
-    # Check 7: Unique-artifact coverage
+    # Coverage / posture over run_doc.file_occurrences and the manifest's
+    # emitted/skip categories. Each occurrence, keyed by rel_path (the key the
+    # producer itself uses across emitted_receipts and the skip lists), must be
+    # accounted for in exactly one category, consistently with its own fields.
     # -----------------------------------------------------------------------
-    unique_artifacts = run_doc.get("unique_artifacts")
-    if unique_artifacts is None:
-        # NOT_EVALUATED when unique_artifacts list is absent
-        report.unique_artifact_coverage = Conclusion.NOT_EVALUATED
-    elif not isinstance(unique_artifacts, list):
-        _fail(
-            report,
-            "UNIQUE_ARTIFACT_NOT_COVERED",
-            "run_doc[\"unique_artifacts\"] is not a list",
-        )
-        report.unique_artifact_coverage = Conclusion.FALSE
+    file_occurrences = run_doc.get("file_occurrences")
+
+    # Validate skip-category shapes independently of coverage so a malformed
+    # posture is a distinct, non-vacuous finding.
+    skip_sets: dict[str, set[str]] = {}
+    skip_categories_ok = True
+    for key in SKIP_CATEGORY_KEYS:
+        value = manifest.get(key)
+        if value is None:
+            skip_categories_ok = False
+            _fail(
+                report,
+                "SKIP_CATEGORY_MALFORMED",
+                f"manifest[\"{key}\"] is absent",
+            )
+            skip_sets[key] = set()
+        elif not isinstance(value, list) or not all(
+            isinstance(v, str) for v in value
+        ):
+            skip_categories_ok = False
+            _fail(
+                report,
+                "SKIP_CATEGORY_MALFORMED",
+                f"manifest[\"{key}\"] is not a list of strings",
+            )
+            skip_sets[key] = {v for v in (value or []) if isinstance(v, str)}
+        else:
+            skip_sets[key] = set(value)
+
+    emitted_rel_paths: set[str] = {
+        e.get("rel_path")
+        for e in emitted_entries
+        if isinstance(e.get("rel_path"), str)
+    }
+
+    if not isinstance(file_occurrences, list) or not file_occurrences:
+        # Cannot recompute coverage without occurrences.
+        report.occurrence_accounting = Conclusion.NOT_EVALUATED
+        report.duplicate_posture = Conclusion.NOT_EVALUATED
+        report.null_parser_posture = Conclusion.NOT_EVALUATED
     else:
-        # Build set of subjects that appear as emitted in manifest
-        emitted_subjects: set[str] = {
-            e.get("subject", "")
-            for e in receipts_list
-            if isinstance(e, dict) and e.get("status") == "emitted"
-        }
+        accounting_ok = True
+        duplicate_ok = True
+        null_parser_ok = True
 
-        coverage_ok = True
-        for artifact in unique_artifacts:
-            if not isinstance(artifact, dict):
+        for occ in file_occurrences:
+            if not isinstance(occ, dict):
                 continue
-            parser_id = artifact.get("parser_id")
-            is_dup = artifact.get("is_duplicate_content", False)
-            if parser_id is not None and not is_dup:
-                # This artifact should appear as emitted
-                artifact_subject = artifact.get("subject")
-                if not isinstance(artifact_subject, str) or not artifact_subject:
-                    # Cannot determine subject — skip (not a coverage violation)
-                    continue
-                if artifact_subject not in emitted_subjects:
-                    coverage_ok = False
-                    _fail(
-                        report,
-                        "UNIQUE_ARTIFACT_NOT_COVERED",
-                        (
-                            f"unique_artifact subject={artifact_subject!r} "
-                            "has parser_id and is not a duplicate, "
-                            "but does not appear as emitted in the manifest"
-                        ),
-                    )
+            rel = occ.get("rel_path")
+            if not isinstance(rel, str) or not rel:
+                accounting_ok = False
+                _fail(
+                    report,
+                    "OCCURRENCE_NOT_ACCOUNTED",
+                    f"file occurrence lacks a usable rel_path: {occ!r}",
+                )
+                continue
 
-        report.unique_artifact_coverage = (
-            Conclusion.TRUE if coverage_ok else Conclusion.FALSE
+            is_dup = occ.get("is_duplicate_content", False) is True
+            parser_id = occ.get("parser_id")
+
+            categories = []
+            if rel in emitted_rel_paths:
+                categories.append(EMITTED_CATEGORY)
+            for key in SKIP_CATEGORY_KEYS:
+                if rel in skip_sets[key]:
+                    categories.append(key)
+
+            if len(categories) == 0:
+                accounting_ok = False
+                _fail(
+                    report,
+                    "OCCURRENCE_NOT_ACCOUNTED",
+                    (
+                        f"file occurrence rel_path={rel!r} appears in no "
+                        "manifest category (emitted / skipped_duplicate / "
+                        "skipped_no_parser / profile_not_applicable)"
+                    ),
+                )
+            elif len(categories) > 1:
+                accounting_ok = False
+                _fail(
+                    report,
+                    "SKIP_CATEGORY_MALFORMED",
+                    (
+                        f"file occurrence rel_path={rel!r} appears in multiple "
+                        f"manifest categories: {categories}"
+                    ),
+                )
+
+            if is_dup and EMITTED_CATEGORY in categories:
+                duplicate_ok = False
+                _fail(
+                    report,
+                    "DUPLICATE_POSTURE_VIOLATION",
+                    (
+                        f"file occurrence rel_path={rel!r} has "
+                        "is_duplicate_content=True but appears as emitted "
+                        "in the manifest"
+                    ),
+                )
+
+            if parser_id is None and EMITTED_CATEGORY in categories:
+                null_parser_ok = False
+                _fail(
+                    report,
+                    "NULL_PARSER_POSTURE_VIOLATION",
+                    (
+                        f"file occurrence rel_path={rel!r} has a null parser_id "
+                        "but appears as emitted in the manifest"
+                    ),
+                )
+
+        report.occurrence_accounting = (
+            Conclusion.TRUE
+            if (accounting_ok and skip_categories_ok)
+            else Conclusion.FALSE
         )
-
-    # -----------------------------------------------------------------------
-    # Check 8: Duplicate posture
-    # -----------------------------------------------------------------------
-    if not isinstance(unique_artifacts, list):
-        # Cannot check posture without unique_artifacts list
-        if unique_artifacts is None:
-            report.duplicate_posture = Conclusion.NOT_EVALUATED
-        # else already set to FALSE above, leave as FALSE
-    else:
-        # Build set of subjects that appear as emitted
-        emitted_subjects_dup: set[str] = {
-            e.get("subject", "")
-            for e in receipts_list
-            if isinstance(e, dict) and e.get("status") == "emitted"
-        }
-
-        dup_ok = True
-        for artifact in unique_artifacts:
-            if not isinstance(artifact, dict):
-                continue
-            is_dup = artifact.get("is_duplicate_content", False)
-            if is_dup:
-                artifact_subject = artifact.get("subject")
-                if isinstance(artifact_subject, str) and artifact_subject:
-                    if artifact_subject in emitted_subjects_dup:
-                        dup_ok = False
-                        _fail(
-                            report,
-                            "DUPLICATE_POSTURE_VIOLATION",
-                            (
-                                f"unique_artifact subject={artifact_subject!r} "
-                                "has is_duplicate_content=True but appears "
-                                "as emitted in the manifest"
-                            ),
-                        )
-
         report.duplicate_posture = (
-            Conclusion.TRUE if dup_ok else Conclusion.FALSE
+            Conclusion.TRUE if duplicate_ok else Conclusion.FALSE
+        )
+        report.null_parser_posture = (
+            Conclusion.TRUE if null_parser_ok else Conclusion.FALSE
         )
 
     return report
@@ -737,16 +885,20 @@ def _propagate_false_early(report: IngestRunSequenceReport) -> None:
         "receipt_set_manifest_schema",
         "run_id_linkage",
         "profile_manifest_pin",
+        "profile_manifest_authority",
         "receipt_file_present",
         "receipt_parse",
         "protocol_binding",
+        "receipt_id_binding",
         "subject_ref_manifest",
         "subject_binding",
+        "rel_path_binding",
         "corpus_manifest_ref",
         "raw_content_absent",
         "artifact_classes_excluded",
-        "unique_artifact_coverage",
+        "occurrence_accounting",
         "duplicate_posture",
+        "null_parser_posture",
     ):
         if getattr(report, attr) is Conclusion.NOT_EVALUATED:
             setattr(report, attr, Conclusion.FALSE)
@@ -757,16 +909,20 @@ def _propagate_false_on_missing_manifest(report: IngestRunSequenceReport) -> Non
     for attr in (
         "run_id_linkage",
         "profile_manifest_pin",
+        "profile_manifest_authority",
         "receipt_file_present",
         "receipt_parse",
         "protocol_binding",
+        "receipt_id_binding",
         "subject_ref_manifest",
         "subject_binding",
+        "rel_path_binding",
         "corpus_manifest_ref",
         "raw_content_absent",
         "artifact_classes_excluded",
-        "unique_artifact_coverage",
+        "occurrence_accounting",
         "duplicate_posture",
+        "null_parser_posture",
     ):
         if getattr(report, attr) is Conclusion.NOT_EVALUATED:
             setattr(report, attr, Conclusion.FALSE)
@@ -784,8 +940,9 @@ def build_parser() -> "argparse.ArgumentParser":
         prog="arcs-verify ingest-run-sequence",
         description=(
             "Independently verify the linkage between a dagr.ingest_run.v0.1 "
-            "run document, a D4-produced SRS receipt-set manifest, and the "
-            "individual SRS receipts. Imports no dagr_ingest producer code."
+            "run document, a producer-owned SRS receipt-set manifest "
+            "(dagr-ingest.srs-receipt-set-manifest.v0.1), and the individual "
+            "SRS receipts. Imports no dagr_ingest producer code."
         ),
     )
     parser.add_argument(
@@ -801,7 +958,7 @@ def build_parser() -> "argparse.ArgumentParser":
         type=Path,
         metavar="MANIFEST_JSON",
         help=(
-            "Path to the dagr-ingest.srs-receipt-set.v0.1 "
+            "Path to the dagr-ingest.srs-receipt-set-manifest.v0.1 "
             "receipt-set manifest JSON file."
         ),
     )
@@ -810,7 +967,10 @@ def build_parser() -> "argparse.ArgumentParser":
         required=True,
         type=Path,
         metavar="RECEIPTS_DIR",
-        help="Directory containing the individual receipt JSON files.",
+        help=(
+            "Directory containing the individual receipt JSON files, each "
+            "named <receipt_id>.json."
+        ),
     )
     parser.add_argument(
         "--profile-manifest",

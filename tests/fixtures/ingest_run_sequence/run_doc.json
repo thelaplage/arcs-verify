@@ -1,29 +1,168 @@
 {
-  "schema": "dagr.ingest_run.v0.1",
-  "run_id": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+  "_operational": {
+    "caller_supplied_run_id": false,
+    "derived_content_run_id": "sha256:1eba4c3418439045e669aef9e7d9fa75ae7ee7bb4332c86a48fdeb987c54ed4f",
+    "run_completed_at": "2026-08-09T05:54:45Z",
+    "run_started_at": "2026-08-09T05:54:45Z"
+  },
   "boundary": {
+    "emitted_by": "dagr-ingest",
     "no_arcs_srs": true,
+    "no_network": true,
     "no_receipts_issued": true,
-    "no_network": true
+    "not_evaluated_fields": [
+      "admission",
+      "custody",
+      "render",
+      "trusted",
+      "verified",
+      "conformance",
+      "current_edition",
+      "operator_acceptance"
+    ],
+    "schema_kind": "neutral_evidence"
+  },
+  "capture_posture": {
+    "capture_attempts": [],
+    "capture_enabled": false
+  },
+  "exclusions": [],
+  "file_occurrences": [
+    {
+      "artifact_refs": {
+        "declared_reference_refs": [],
+        "derivation_event_refs": [],
+        "extraction_ref": null,
+        "parse_finding_refs": [],
+        "pdo_ref": null
+      },
+      "canonical_rel_path": "arbitrary.json",
+      "canonical_root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094",
+      "content_hash": "sha256:b5c99023a5d000174d1b9d0cd906cf68c17b4d2e8dada0628df550cce6dbdcc1",
+      "extraction_posture": {
+        "bound_record": null,
+        "extraction_method": null,
+        "output_hash": null,
+        "output_size_chars": null,
+        "parser_bounds_status": "not_evaluated",
+        "status": "not_attempted"
+      },
+      "is_duplicate_content": false,
+      "parser_id": null,
+      "rel_path": "arbitrary.json",
+      "root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094",
+      "size_bytes": 32,
+      "source_type": "unknown"
+    },
+    {
+      "artifact_refs": {
+        "declared_reference_refs": [],
+        "derivation_event_refs": [],
+        "extraction_ref": null,
+        "parse_finding_refs": [],
+        "pdo_ref": null
+      },
+      "canonical_rel_path": "article-copy.json",
+      "canonical_root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094",
+      "content_hash": "sha256:134ecb40cb8b73f4f26f63c0956103bd7236cd8c5da40127ff6e0c27b77ac9bf",
+      "extraction_posture": {
+        "bound_record": null,
+        "extraction_method": null,
+        "output_hash": null,
+        "output_size_chars": null,
+        "parser_bounds_status": "not_evaluated",
+        "status": "not_attempted"
+      },
+      "is_duplicate_content": false,
+      "parser_id": "dagr-ingest.counterpedia_content",
+      "rel_path": "article-copy.json",
+      "root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094",
+      "size_bytes": 714,
+      "source_type": "counterpedia_content"
+    },
+    {
+      "artifact_refs": {
+        "declared_reference_refs": [],
+        "derivation_event_refs": [],
+        "extraction_ref": null,
+        "parse_finding_refs": [],
+        "pdo_ref": null
+      },
+      "canonical_rel_path": "article-copy.json",
+      "canonical_root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094",
+      "content_hash": "sha256:134ecb40cb8b73f4f26f63c0956103bd7236cd8c5da40127ff6e0c27b77ac9bf",
+      "extraction_posture": {
+        "bound_record": null,
+        "extraction_method": null,
+        "output_hash": null,
+        "output_size_chars": null,
+        "parser_bounds_status": "not_evaluated",
+        "status": "not_attempted"
+      },
+      "is_duplicate_content": true,
+      "parser_id": "dagr-ingest.counterpedia_content",
+      "rel_path": "article.json",
+      "root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094",
+      "size_bytes": 714,
+      "source_type": "counterpedia_content"
+    }
+  ],
+  "limitations": [
+    {
+      "kind": "url_ingest",
+      "posture": "not_evaluated",
+      "reason": "url_ingest_disabled__no_ssrf_guard"
+    },
+    {
+      "kind": "network",
+      "posture": "not_evaluated",
+      "reason": "no_network_by_default"
+    },
+    {
+      "kind": "raw_content",
+      "posture": "excluded",
+      "reason": "raw_file_content_never_included__content_addressed_refs_only"
+    }
+  ],
+  "output_inventory": {
+    "bundle_manifest_ref": null,
+    "files": []
+  },
+  "run_id": "sha256:1eba4c3418439045e669aef9e7d9fa75ae7ee7bb4332c86a48fdeb987c54ed4f",
+  "schema": "dagr.ingest_run.v0.1",
+  "scope": {
+    "exclusion_posture": "default_exclusions_applied__raw_content_never_included",
+    "roots": [
+      {
+        "excluded_count": 0,
+        "file_count": 3,
+        "root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094"
+      }
+    ],
+    "total_files_excluded": 0,
+    "total_files_seen": 3
   },
   "unique_artifacts": [
     {
-      "subject": "sha256:d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3",
-      "parser_id": "dagr-editorial-corpus-parser/0.1.0",
-      "is_duplicate_content": false,
-      "relative_path": "publications/2024/article-example.md"
+      "canonical_rel_path": "arbitrary.json",
+      "canonical_root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094",
+      "content_hash": "sha256:b5c99023a5d000174d1b9d0cd906cf68c17b4d2e8dada0628df550cce6dbdcc1",
+      "duplicate_locations": [],
+      "size_bytes": 32,
+      "source_type": "unknown"
     },
     {
-      "subject": "sha256:e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4",
-      "parser_id": null,
-      "is_duplicate_content": false,
-      "relative_path": "publications/2024/no-parser.md"
-    },
-    {
-      "subject": "sha256:f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5",
-      "parser_id": "dagr-editorial-corpus-parser/0.1.0",
-      "is_duplicate_content": true,
-      "relative_path": "publications/2024/duplicate.md"
+      "canonical_rel_path": "article-copy.json",
+      "canonical_root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094",
+      "content_hash": "sha256:134ecb40cb8b73f4f26f63c0956103bd7236cd8c5da40127ff6e0c27b77ac9bf",
+      "duplicate_locations": [
+        {
+          "rel_path": "article.json",
+          "root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094"
+        }
+      ],
+      "size_bytes": 714,
+      "source_type": "counterpedia_content"
     }
   ]
 }

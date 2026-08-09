@@ -1,0 +1,55 @@
+{
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.editorial.publication_ingest",
+  "profile_version": "v0.1",
+  "receipt_id": "dagr-ingest-pub-ingest-134ecb40cb8b73f4",
+  "receipt_type": "provenance",
+  "receipt_kind": "ingest",
+  "boundary_type": "editorial_corpus_boundary",
+  "protocol_binding": "dagr-ingest/v0.1",
+  "subject_ref": "sha256:134ecb40cb8b73f4f26f63c0956103bd7236cd8c5da40127ff6e0c27b77ac9bf",
+  "issuer_id": "issuer.dagr-ingest/editorial-corpus/2026-08",
+  "runtime_instance_id": "runtime-j3-seq-0001",
+  "boundary_id": "boundary-j3-seq-0001",
+  "issued_at": "2026-08-09T05:54:45Z",
+  "publication_artifact_id": "sha256:134ecb40cb8b73f4f26f63c0956103bd7236cd8c5da40127ff6e0c27b77ac9bf",
+  "declared_record_id": null,
+  "corpus_scope": {
+    "scope_id": "dagr-ingest.run.sha256:1eba4c341",
+    "roots": [
+      {
+        "root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094"
+      }
+    ],
+    "file_occurrence_count": 3,
+    "unique_artifact_count": 2
+  },
+  "root_id": "sha256:9a744e77444da3d3f7ac65c58fa961f8ec68923611c0c12ed467448c795bb094",
+  "relative_path": "article-copy.json",
+  "occurrence_posture": "unique_artifact",
+  "corpus_manifest_ref": "sha256:sha256:1eba4c3418439045e669aef9e7d9fa75ae7ee7bb4332c86a48fdeb987c54ed4f",
+  "parser_identity": "dagr-ingest.counterpedia_content",
+  "declaration_manifest_ref": null,
+  "artifact_classes_covered": [
+    "publication_artifact_digest",
+    "declared_reference_manifest_digest"
+  ],
+  "artifact_classes_excluded": [
+    "raw_publication_bytes",
+    "raw_frontmatter_yaml",
+    "raw_body_text"
+  ],
+  "attestation_limits": [
+    "The receipt declares that an editorial publication artifact was ingested and parsed by the stated parser. It does not establish article truth, evidence completeness, or source verification. Declared references are not independently captured.",
+    "The receipt does not establish that any declared source was captured, verified, or independently confirmed."
+  ],
+  "machine_limitations": [
+    {
+      "code": "ARTICLE_TRUTH_NOT_EVALUATED"
+    },
+    {
+      "code": "EVIDENCE_COMPLETENESS_NOT_EVALUATED"
+    }
+  ],
+  "extensions": {}
+}
