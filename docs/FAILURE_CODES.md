@@ -190,6 +190,46 @@ Provisional successor with a distinct receipt model: the capture disposition is 
 
 The v0.1.1 required covered classes are `declared_reference_identity`, `capture_attempt_record`; the required exclusion is `raw_captured_bytes`; the required limitation completion is `CONTENT_NOT_VERIFIED`.
 
+### Profile: `srs.editorial.source_capture.v0.2`
+
+Provisional declaration-scoped successor (arcs-srs `1f8768d`). A **distinct profile identity** for a broader subject domain: it supersedes v0.1 for declaration-scoped capture but does not amend, deprecate, or coerce v0.1 / v0.1.1. A v0.2 receipt is verified as v0.2 or fails — there is no silent fallback. The verifier's expectation constants are transcribed from the byte-pinned manifest at `vendor/arcs-srs/vectors/editorial-source-capture-v0.2/profile.manifest.json` and cross-checked by `tests/test_editorial_source_capture_v02_ingest_pins.py`.
+
+| Code | Meaning |
+|---|---|
+| `FIXED_VALUE_MISMATCH` | A manifest `fixed_values` field (`receipt_version`, `profile_id`, `receipt_type`, `boundary_type`) carries the wrong constant. |
+| `PROFILE_VERSION_MISMATCH` | `profile_version` is not `v0.2`. Emitted (never a fallback to v0.1/v0.1.1) when a receipt selected under v0.2 declares another version. |
+| `INVALID_RECEIPT_KIND` | `receipt_kind` is not `capture_attempt`. |
+| `MISSING_PROFILE_FIELD` | A field the profile's `required_fields` requires is absent. |
+| `SUBJECT_BINDING_MISMATCH` | `subject_ref` is present but not equal to `source_reference_id` (declaration identity, profile s2). |
+| `INVALID_DECLARING_ARTIFACT_REF` | `declaring_artifact_ref` is present but not `sha256:` followed by 64 lowercase hex characters. |
+| `SOURCE_REFERENCE_ID_NOT_DECLARATION_DERIVED` | `source_reference_id` does not incorporate both the `declaring_artifact_ref` hex and the `source_inventory_key` — its only two identity inputs (profile s4). Catches a wrong declaring artifact or inventory key folded into the reference identity. |
+| `SOURCE_REFERENCE_ID_INCORPORATES_LOCATOR` | `source_reference_id` incorporates `declared_url`; URLs are locators, not identity (profile s4/s5). |
+| `SOURCE_REFERENCE_ID_INCORPORATES_CAPTURER` | `source_reference_id` incorporates `capturer_identity`; the capturer belongs to the observation, not the declaration (profile s4/s6). |
+| `INVALID_OUTCOME` | `outcome` is not one of the eight manifest `outcome_values`. |
+| `CAPTURED_BYTES_REF_OUTCOME_MISMATCH` | `captured_bytes_ref` is not a `sha256:` digest when `outcome` is `success`, or is not JSON `null` for every other outcome (both directions, profile s8). |
+| `DECLARED_URL_OUTCOME_MISMATCH` | `declared_url` is not JSON `null` exactly when `outcome` is `no_url_declared`, or is not a non-empty string otherwise (both directions, profile s5). |
+| `MISSING_REQUIRED_ARTIFACT_CLASS` | `artifact_classes_covered` (`declared_reference_identity`, `capture_attempt_record`) or `artifact_classes_excluded` (`raw_captured_bytes`) omits a required class. |
+| `MISSING_ATTESTATION_LIMIT` | `attestation_limits` does not carry the profile's verbatim base limitation statement. |
+| `MISSING_LIMITATION_CODE:<code>` | Dynamic. A required `machine_limitations` entry is absent; the code carries the missing limitation code. Completion: `CONTENT_NOT_VERIFIED`. |
+
+### Profile: `srs.editorial.source_ingest.v0.1`
+
+Provisional source-ingest stage (arcs-srs `1f8768d`). Attests a deterministic derivation of exact captured source bytes under a pinned parser; it **references** a capture observation (`capture_observation_ref`) and never re-attests it. The verifier recomputes structure and the declared digests' internal consistency only — it does not re-run the parser and establishes no source truth, claim support, or admission. Expectation constants are transcribed from the byte-pinned manifest at `vendor/arcs-srs/vectors/editorial-source-ingest-v0.1/profile.manifest.json` and cross-checked by `tests/test_editorial_source_capture_v02_ingest_pins.py`. Reuses the shared uppercase codes `FIXED_VALUE_MISMATCH`, `PROFILE_VERSION_MISMATCH` (not `v0.1`), `INVALID_RECEIPT_KIND` (not `source_ingest`), `MISSING_PROFILE_FIELD`, `SUBJECT_BINDING_MISMATCH` (`subject_ref` != `source_artifact_id`, s3), `MISSING_REQUIRED_ARTIFACT_CLASS`, `MISSING_ATTESTATION_LIMIT`, and `MISSING_LIMITATION_CODE:<code>` (completions `SOURCE_TRUTH_NOT_EVALUATED`, `EVIDENCE_COMPLETENESS_NOT_EVALUATED`, `CLAIM_SUPPORT_NOT_EVALUATED`, `CONTENT_NOT_VERIFIED`), plus the following.
+
+| Code | Meaning |
+|---|---|
+| `INVALID_SOURCE_ARTIFACT_ID` | `source_artifact_id` is present but not `sha256:` followed by 64 lowercase hex characters. |
+| `PARSER_IDENTITY_INVALID` | `parser_identity` is absent or not a non-empty string. |
+| `DERIVATION_INVALID` | `derivation` is absent or not an object. |
+| `DERIVATION_INPUT_MISMATCH` | `derivation.input_hash` does not equal `source_artifact_id` (profile s7). |
+| `PARSER_IDENTITY_MISMATCH` | `derivation.parser_id` does not equal `parser_identity` (profile s5/s7). |
+| `EXTRACTION_REF_MISMATCH` | `extraction_ref` does not equal `derivation.output_hash` (profile s7). |
+| `PDO_REF_DIGEST_INVALID` | `pdo_ref` is present but not a `sha256:`-followed-by-64-hex digest. |
+| `PDO_MODULE_IDENTITY_INVALID` | `pdo_module_identity` is present but not an object carrying non-empty `module_id` and `module_version` strings. Historical identity is validated for shape only and never reconciled to the executing distribution (profile s5). |
+| `INGEST_IMPLEMENTATION_INVALID` | The optional `ingest_implementation` is present but not an object carrying non-empty `distribution`, `version`, and `revision` strings. It is never derived from `pdo_module_identity` and MAY be omitted entirely (profile s6). |
+| `CAPTURE_OBSERVATION_REF_INVALID` | `capture_observation_ref` is absent or not a non-empty reference string (profile s4). |
+| `CAPTURE_OBSERVATION_RESTATED` | A capture-only field (`outcome`, `declared_url`, `captured_bytes_ref`, `capturer_identity`, `source_reference_id`) appears at top level, re-attesting capture, which s4 forbids. |
+
 ### Profile: `srs.activity.governed_read.v0.1`
 
 Conformance is re-derived from the arcs-srs field schema (byte-pinned runtime

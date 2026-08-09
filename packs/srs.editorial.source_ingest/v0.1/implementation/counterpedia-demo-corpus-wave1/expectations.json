@@ -1,0 +1,202 @@
+{
+  "profile": "srs.editorial.source_ingest.v0.1",
+  "keyring": "issuer-keys.json",
+  "receipts": [
+    {
+      "path": "source-ingest-canonical.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": true,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "source-ingest-with-implementation-canonical.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": true,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "source-ingest-subject-mismatch.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "SUBJECT_BINDING_MISMATCH",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "source-ingest-wrong-receipt-kind.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "INVALID_RECEIPT_KIND",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "source-ingest-wrong-profile-version.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "PROFILE_VERSION_MISMATCH",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "source-ingest-missing-pdo-ref.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "MISSING_PROFILE_FIELD",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "source-ingest-derivation-input-mismatch.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "DERIVATION_INPUT_MISMATCH",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "source-ingest-extraction-ref-mismatch.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "EXTRACTION_REF_MISMATCH",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "source-ingest-parser-identity-tampered.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "PARSER_IDENTITY_MISMATCH",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "source-ingest-pdo-ref-digest-tampered.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "PDO_REF_DIGEST_INVALID",
+        "signature_object_invalid"
+      ]
+    },
+    {
+      "path": "source-ingest-implementation-malformed.json",
+      "verdicts": {
+        "schema_digest": true,
+        "envelope": true,
+        "profile": false,
+        "raw_content_exclusion": true,
+        "attestation_limits_present": true,
+        "signature_valid": false,
+        "issuer_key_resolved": false,
+        "issuer_key_trusted": false,
+        "chain_status": "not_applicable"
+      },
+      "expected_failure_codes": [
+        "INGEST_IMPLEMENTATION_INVALID",
+        "signature_object_invalid"
+      ]
+    }
+  ]
+}
