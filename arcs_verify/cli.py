@@ -35,6 +35,9 @@ SUPPORTED_PROFILES: dict[str, str] = {
     "srs.activity.governed_read.v0.1": (
         "Activity governed-read receipts (one governed read against a pinned basis; admitted result or typed refusal, mandatory C8 visibility)."
     ),
+    "srs.editorial.citation_pack.v0.1": (
+        "Editorial citation-pack assembly receipts, PROVISIONAL (arcs-srs, not ratified). Single-receipt structural verification of one pack_assembly provenance receipt: digest-reference form, subject binding, required classes/limits. A PASS attests structural conformance to the provisional contract only — not admission, trust, or correctness."
+    ),
 }
 
 _EXAMPLE = (

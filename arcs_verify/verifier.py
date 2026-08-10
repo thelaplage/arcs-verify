@@ -59,6 +59,30 @@ EDITORIAL_SOURCE_CAPTURE_PROFILE_V02 = "srs.editorial.source_capture.v0.2"
 # capture observation and never re-attests it.
 EDITORIAL_SOURCE_INGEST_PROFILE = "srs.editorial.source_ingest.v0.1"
 ACTIVITY_GOVERNED_READ_PROFILE = "srs.activity.governed_read.v0.1"
+# Provisional citation-pack assembly profile (arcs-srs 4d90b9c, profile document
+# a78df524..., release_stage PROVISIONAL / not ratified). A single pack_assembly
+# provenance receipt for one editorial publication artifact. This is a
+# SINGLE-RECEIPT STRUCTURAL verifier: it validates fixed identity, digest-
+# reference FORM, subject binding, required covered/excluded classes, required
+# machine-limitation codes, and the base attestation limit. It does NOT
+# recompute the referenced objects (publication_artifact_id, pack_integrity_ref,
+# declaration_manifest_ref) from bytes — the receipt is metadata-only and
+# supplies no referenced bytes or byte-count contract — and it does not attempt
+# the profile's NON-ENFORCED cross-receipt consistency rules.
+EDITORIAL_CITATION_PACK_PROFILE = "srs.editorial.citation_pack.v0.1"
+
+# Provisional profiles emit an advisory into report.details: a structural PASS
+# attests conformance to a provisional (unratified) contract only, never to a
+# stable/ratified profile, and never admission/trust/truth.
+PROVISIONAL_PROFILE_DETAILS = {
+    EDITORIAL_CITATION_PACK_PROFILE: (
+        "provisional_profile: srs.editorial.citation_pack.v0.1 is PROVISIONAL "
+        "(arcs-srs, not ratified). A structural PASS attests conformance to the "
+        "provisional verification contract only — not admission, trust, truth, "
+        "evidence completeness, source authenticity, correct citation mappings, "
+        "or conformance to any stable/ratified profile."
+    ),
+}
 
 PROFILE_IDENTITIES = {
     MCP_PROFILE: ("srs.mcp.sdk_enforcement", "v0.1"),
@@ -71,6 +95,7 @@ PROFILE_IDENTITIES = {
     EDITORIAL_SOURCE_CAPTURE_PROFILE_V02: ("srs.editorial.source_capture", "v0.2"),
     EDITORIAL_SOURCE_INGEST_PROFILE: ("srs.editorial.source_ingest", "v0.1"),
     ACTIVITY_GOVERNED_READ_PROFILE: ("srs.activity.governed_read", "v0.1"),
+    EDITORIAL_CITATION_PACK_PROFILE: ("srs.editorial.citation_pack", "v0.1"),
 }
 
 RECEIPT_VERSION = "srs.core.v5.1"
@@ -1848,6 +1873,157 @@ def _activity_governed_read_profile_errors(
     return list(dict.fromkeys(errors))
 
 
+CITATION_PACK_REQUIRED_COVERED = frozenset([
+    "publication_artifact_identity",
+    "declaration_manifest_digest",
+    "pack_integrity_digest",
+])
+
+CITATION_PACK_REQUIRED_EXCLUDED = frozenset([
+    "raw_publication_bytes",
+    "raw_captured_bytes",
+])
+
+CITATION_PACK_REQUIRED_LIMITATION_CODES = frozenset([
+    "ARTICLE_TRUTH_NOT_EVALUATED",
+    "EVIDENCE_COMPLETENESS_NOT_EVALUATED",
+    "CITATION_MAPPING_MACHINE_PROPOSED",
+])
+
+CITATION_PACK_BASE_ATTESTATION_LIMIT = (
+    "The receipt declares that a citation pack was assembled for the named "
+    "editorial publication artifact. It does not establish article truth, "
+    "evidence completeness, source authenticity, or that any citation mapping "
+    "is correct. Machine-proposed mappings require operator admission before "
+    "use."
+)
+
+
+def _editorial_citation_pack_profile_errors(
+    receipt: dict[str, Any],
+) -> list[str]:
+    """Profile checks for provisional srs.editorial.citation_pack.v0.1 receipts.
+
+    A citation pack is a single ``pack_assembly`` provenance receipt for one
+    editorial publication artifact. This is a SINGLE-RECEIPT STRUCTURAL verifier:
+    it validates the fixed identity fields, the FORM of the digest references the
+    receipt carries, the subject binding, the required covered/excluded artifact
+    classes, the required machine-limitation codes, and the base attestation
+    limit.
+
+    It deliberately does NOT recompute publication_artifact_id, pack_integrity_ref,
+    or declaration_manifest_ref from referenced bytes: the receipt is
+    metadata-only (raw bytes are an excluded class) and supplies no referenced
+    object bytes or byte-count contract to recompute against. Cross-receipt
+    consistency (declaration_manifest_ref against an ingest receipt), the
+    repository-snapshot mixing rule, and the protocol_binding "MUST NOT embed
+    file system paths or deployment credentials" rule are NON-ENFORCED (no
+    lexical rule / deterministic detector); only non-empty/non-whitespace
+    protocol_binding is checked. The profile is PROVISIONAL: a PASS attests
+    structural conformance to the provisional contract only (see
+    PROVISIONAL_PROFILE_DETAILS).
+
+    Fail-closed: the checker never raises on a malformed field type — malformed
+    container/member values yield deterministic failure codes, not exceptions.
+    """
+    errors: list[str] = []
+
+    if receipt.get("profile_id") != "srs.editorial.citation_pack":
+        errors.append("citation_pack.invalid_profile_id")
+    if receipt.get("profile_version") != "v0.1":
+        errors.append("citation_pack.invalid_profile_version")
+    if receipt.get("receipt_type") != "provenance":
+        errors.append("citation_pack.invalid_receipt_type")
+    if receipt.get("receipt_kind") != "pack_assembly":
+        errors.append("citation_pack.invalid_receipt_kind")
+    if receipt.get("boundary_type") != "editorial_corpus_boundary":
+        errors.append("citation_pack.invalid_boundary_type")
+
+    # protocol_binding MUST identify the assembly pipeline and MUST NOT be empty
+    # (profile §2). Only the non-empty/non-whitespace rule is deterministically
+    # enforceable here; the profile's "MUST NOT embed file system paths or
+    # deployment credentials" rule has no lexical definition in arcs-srs and no
+    # repo-wide deterministic detector exists, so that portion is NON-ENFORCED
+    # (see the profile section in docs/FAILURE_CODES.md).
+    protocol_binding = receipt.get("protocol_binding")
+    if not (isinstance(protocol_binding, str) and protocol_binding.strip()):
+        errors.append("citation_pack.invalid_protocol_binding")
+
+    # Digest-reference FORM only (sha256:<64 hex>). No referenced bytes are
+    # supplied, so the referenced objects themselves are never recomputed here.
+    pub_id = receipt.get("publication_artifact_id")
+    if not (isinstance(pub_id, str) and SHA256_REF_RE.fullmatch(pub_id)):
+        errors.append("citation_pack.invalid_publication_artifact_id_digest")
+    pack_integrity_ref = receipt.get("pack_integrity_ref")
+    if not (
+        isinstance(pack_integrity_ref, str)
+        and SHA256_REF_RE.fullmatch(pack_integrity_ref)
+    ):
+        errors.append("citation_pack.invalid_pack_integrity_digest")
+    declaration_manifest_ref = receipt.get("declaration_manifest_ref")
+    if not (
+        isinstance(declaration_manifest_ref, str)
+        and SHA256_REF_RE.fullmatch(declaration_manifest_ref)
+    ):
+        errors.append("citation_pack.invalid_declaration_manifest_digest")
+
+    # capture_manifest_ref is optional (SHOULD-level presence; NOT required). If
+    # present and non-null it MUST be a sha256:<64 hex> digest (profile §5).
+    capture_manifest_ref = receipt.get("capture_manifest_ref")
+    if capture_manifest_ref is not None and not (
+        isinstance(capture_manifest_ref, str)
+        and SHA256_REF_RE.fullmatch(capture_manifest_ref)
+    ):
+        errors.append("citation_pack.invalid_capture_manifest_digest")
+
+    # subject_ref MUST equal publication_artifact_id (profile §2 binding).
+    if receipt.get("subject_ref") != pub_id:
+        errors.append("citation_pack.subject_binding_mismatch")
+
+    # Fail-closed: verify_receipt runs profile checks even after envelope
+    # validation fails, so a malformed member (e.g. a dict inside a list) must
+    # produce a deterministic failure code, never a TypeError. Only str members
+    # are considered; malformed values collapse to the empty set and fail the
+    # required-membership checks below.
+    covered_value = receipt.get("artifact_classes_covered")
+    covered = (
+        {c for c in covered_value if isinstance(c, str)}
+        if isinstance(covered_value, list)
+        else set()
+    )
+    if not CITATION_PACK_REQUIRED_COVERED.issubset(covered):
+        errors.append("citation_pack.missing_required_covered_classes")
+
+    excluded_value = receipt.get("artifact_classes_excluded")
+    excluded = (
+        {c for c in excluded_value if isinstance(c, str)}
+        if isinstance(excluded_value, list)
+        else set()
+    )
+    if not CITATION_PACK_REQUIRED_EXCLUDED.issubset(excluded):
+        errors.append("citation_pack.missing_required_excluded_classes")
+
+    limitations = receipt.get("machine_limitations")
+    present_codes = (
+        {item.get("code") for item in limitations if isinstance(item, dict)}
+        if isinstance(limitations, list)
+        else set()
+    )
+    for code in sorted(CITATION_PACK_REQUIRED_LIMITATION_CODES - present_codes):
+        errors.append(f"citation_pack.missing_required_limitation_code:{code}")
+
+    limits = receipt.get("attestation_limits")
+    limit_values = (
+        {x for x in limits if isinstance(x, str)}
+        if isinstance(limits, list)
+        else set()
+    )
+    if CITATION_PACK_BASE_ATTESTATION_LIMIT not in limit_values:
+        errors.append("citation_pack.missing_base_attestation_limit")
+
+    return errors
+
+
 def _profile_errors(
     receipt: dict[str, Any],
     selected_profile: str,
@@ -1881,6 +2057,9 @@ def _profile_errors(
 
     if selected_profile == ACTIVITY_GOVERNED_READ_PROFILE:
         return _activity_governed_read_profile_errors(receipt)
+
+    if selected_profile == EDITORIAL_CITATION_PACK_PROFILE:
+        return _editorial_citation_pack_profile_errors(receipt)
 
     return ["profile.unsupported_selection"]
 
@@ -1919,6 +2098,10 @@ def verify_receipt(
     profile_errors = _profile_errors(receipt, selected)
     report.profile = not profile_errors
     report.failure_codes.extend(profile_errors)
+
+    provisional_detail = PROVISIONAL_PROFILE_DETAILS.get(selected)
+    if provisional_detail is not None:
+        report.details.append(provisional_detail)
 
     raw_errors: list[str] = []
 

@@ -252,6 +252,28 @@ four uppercase codes are the profile's frozen closed-set findings.
 | `governed_read.subject_binding_mismatch` | `subject_ref` is present but not equal to `basis_version_ref` (subject binding to the read basis). |
 | `governed_read.field_schema_invalid` | The receipt fails the pinned field schema for a reason not covered by a more specific code above. |
 
+### Profile: `srs.editorial.citation_pack.v0.1`
+
+**PROVISIONAL** (arcs-srs `4d90b9c`, profile document `a78df524…`; `release_stage: provisional`, not ratified). A single `pack_assembly` provenance receipt for one editorial publication artifact. This is **single-receipt structural** verification only: it validates fixed identity, the FORM of the digest references, subject binding, required covered/excluded classes, required machine-limitation codes, and the base attestation limit. It does **not** recompute `publication_artifact_id` / `pack_integrity_ref` / `declaration_manifest_ref` from referenced bytes (the receipt is metadata-only and supplies no bytes or byte-count contract). **NON-ENFORCED** (no lexical rule / deterministic detector exists): the profile's cross-receipt consistency rule, its repository-snapshot-mixing rule, and the `protocol_binding` "MUST NOT embed file system paths or deployment credentials" rule — only non-empty/non-whitespace `protocol_binding` is checked. The checker is **fail-closed**: malformed field types yield deterministic failure codes, never exceptions. A structural PASS attests conformance to the provisional contract only — not admission, trust, truth, or correct citation mappings; the verifier records this in `details` as `provisional_profile: …`.
+
+| Code | Meaning |
+|---|---|
+| `citation_pack.invalid_profile_id` | `profile_id` is not `srs.editorial.citation_pack`. |
+| `citation_pack.invalid_profile_version` | `profile_version` is not `v0.1`. |
+| `citation_pack.invalid_receipt_type` | `receipt_type` is not `provenance`. |
+| `citation_pack.invalid_receipt_kind` | `receipt_kind` is not `pack_assembly`. |
+| `citation_pack.invalid_boundary_type` | `boundary_type` is not `editorial_corpus_boundary`. |
+| `citation_pack.invalid_protocol_binding` | `protocol_binding` is absent, not a string, or empty/whitespace. Only the non-empty rule is enforced; see the NON-ENFORCED note below for the path/credential prohibition. |
+| `citation_pack.invalid_publication_artifact_id_digest` | `publication_artifact_id` is not a `sha256:<64 hex>` digest reference. |
+| `citation_pack.invalid_pack_integrity_digest` | `pack_integrity_ref` is not a `sha256:<64 hex>` digest reference. |
+| `citation_pack.invalid_declaration_manifest_digest` | `declaration_manifest_ref` is not a `sha256:<64 hex>` digest reference. |
+| `citation_pack.invalid_capture_manifest_digest` | `capture_manifest_ref` is present and non-null but is not a `sha256:<64 hex>` digest reference. Presence itself is not required (SHOULD-level). |
+| `citation_pack.subject_binding_mismatch` | `subject_ref` is not equal to `publication_artifact_id` (profile §2 binding). |
+| `citation_pack.missing_required_covered_classes` | `artifact_classes_covered` omits a required class (`publication_artifact_identity`, `declaration_manifest_digest`, `pack_integrity_digest`). |
+| `citation_pack.missing_required_excluded_classes` | `artifact_classes_excluded` omits a required exclusion (`raw_publication_bytes`, `raw_captured_bytes`). |
+| `citation_pack.missing_required_limitation_code:<code>` | Dynamic. A required `machine_limitations` entry is absent; the code carries the missing limitation code. Completions: `ARTICLE_TRUTH_NOT_EVALUATED`, `EVIDENCE_COMPLETENESS_NOT_EVALUATED`, `CITATION_MAPPING_MACHINE_PROPOSED`. |
+| `citation_pack.missing_base_attestation_limit` | `attestation_limits` does not carry the profile's required base limitation string. |
+
 ### Source-integrity errors (exit 2, not failure codes)
 
 Unreadable or malformed inputs are reported before verification begins, as

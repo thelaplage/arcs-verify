@@ -30,5 +30,21 @@ activity_governed_read_source:
   vendored_paths: vendor/arcs-srs/schemas/activity-profiles/v0.1/, vendor/arcs-srs/vectors/activity-governed-read-v0.1/
   runtime_copy: arcs_verify/data/srs.activity.governed_read.v0.1.schema.json (byte-identical to the vendored field schema; pinned in verifier.py as ACTIVITY_GOVERNED_READ_SCHEMA_SHA256)
   golden_vectors: conformance/profiles/srs.activity.governed_read.v0.1/fixtures/{valid,invalid}/ (2 valid, 4 invalid) copied verbatim for the verifier conformance tests
+editorial_citation_pack_source:
+  source_repository: arcs-srs
+  source_commit: 4d90b9c31440fda7e8345666998dcce999c0f67d
+  status: PROVISIONAL; release_stage "provisional", not ratified. Verification support does not ratify or stabilize the profile. Re-pin these bytes if arcs-srs advances the profile or its document_sha256.
+  profile: srs.editorial.citation_pack.v0.1
+  profile_document: docs/profiles/SRS_EDITORIAL_CITATION_PACK_PROFILE_v0_1.md a78df524c2141d756c824f17b6626d4dd3a7172ed7895a4ddd32d95cbdccf841
+  envelope_identity: srs-envelope@0.2.1+sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1 (schema already vendored under vendor/arcs-srs/schemas/srs-envelope/v0.2.1/)
+  vendored_paths: vendor/arcs-srs/vectors/editorial-citation-pack-v0.1/
+  frozen_artifacts:
+    vendor/arcs-srs/vectors/editorial-citation-pack-v0.1/profile.manifest.json 35a52796f324083cf061cfaaa186dfdc10685ce9c8ef588ccbf39f8d35f894fe
+    vendor/arcs-srs/vectors/editorial-citation-pack-v0.1/fixtures/valid/citation-pack-with-captures.json e1e059ab2822df0e698d31cb2169dc85bfd310e43ace444f7622b695f3bc8ea5
+    vendor/arcs-srs/vectors/editorial-citation-pack-v0.1/fixtures/valid/citation-pack-declared-only.json e7230ed476ebd55960399aab4d6e73e5b0c6c6939d8d53ba6b3926343c97238f
+    vendor/arcs-srs/vectors/editorial-citation-pack-v0.1/fixtures/invalid/citation-pack-missing-limitation-code.json 492c7c568c5cc51f7e2e6d664a40c5605ca3a3081e4e0f3eb366dc732a50b412
+  runtime_copy: none; no field schema for this profile. The checker transcribes the manifest fixed values / required classes / limitation codes into arcs_verify/verifier.py. The envelope 0.2.1 schema is already shipped at arcs_verify/data/srs-envelope-v0.2.1.schema.json.
+  golden_vectors: tests/test_editorial_citation_pack_profile.py loads these fixtures (2 valid pass, 1 invalid fires citation_pack.missing_required_limitation_code:CITATION_MAPPING_MACHINE_PROPOSED).
+  note: the six Counterpedia downloadable demo-pack ZIPs are a DIFFERENT artifact family (file-collection archives, not SRS pack_assembly receipts) and are NOT used as citation_pack positive vectors.
 note: frozen markdown documents are byte-identically archived in frozen-standard-docs.zip so the public release checker can distinguish normative prohibited examples from public marketing copy.
 note: published_version in the vendored envelope manifests is pre-release artifact metadata naming a manifested pre-release envelope artifact version. It is not evidence that a public SRS release occurred.
