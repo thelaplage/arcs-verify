@@ -458,3 +458,31 @@ prefix for dynamic families. The presence of a code in this registry does not
 imply every profile can emit it; each code is scoped to the subcommand and
 profile family under which it is listed. `tests/test_failure_code_registry.py`
 enforces that every emitted code and family appears here.
+
+## Analytics snapshot verification (analytics-snapshot subcommand)
+
+Independent recount of DAGR Analytics C1 snapshots (`arcs_verify/analytics_snapshot.py`).
+Upstream C1 (#2) and RET1 (#5) contracts are PROVISIONAL / unmerged. `NOT_EVALUATED`
+is not PASS; retention conformance is reported as an axis independent of metric integrity.
+
+- `analytics_snapshot.observation_profile_invalid` — a supplied observation does not validate the vendored C1_transport_read profile (wrong platform/privacy_class/action-transport pair/event_id grammar/context domain/extra fields); recount is not performed on invalid inputs.
+- `analytics_snapshot.derivation_version_mismatch` — snapshot/definition derivation_version is not the pinned C1 expected derivation version (0.1.0).
+- `analytics_snapshot.snapshot_shape_invalid` — snapshot is missing required body/identity fields.
+- `analytics_snapshot.unsupported_metric_profile` — metric_id/metric_version is not a supported C1 v0.1 metric.
+- `analytics_snapshot.metric_identity_mismatch` — supplied definition's metric_id/version disagrees with the snapshot.
+- `analytics_snapshot.metric_definition_digest_mismatch` — recomputed metric definition digest != snapshot.metric_definition_digest.
+- `analytics_snapshot.metric_definition_pin_mismatch` — definition digest is not the pinned C1 candidate definition for that metric/version (a self-consistent invented definition is not C1 conformance).
+- `analytics_snapshot.partition_shape_invalid` — supplied partition lacks observations/window fields.
+- `analytics_snapshot.duplicate_event_id` — a duplicate event_id makes the partition invalid; no value is recounted.
+- `analytics_snapshot.window_mismatch` — partition window_start/window_end do not bind to the snapshot's.
+- `analytics_snapshot.input_partition_digest_mismatch` — recomputed input_partition_digest != snapshot's.
+- `analytics_snapshot.value_mismatch` — independently recounted value != snapshot.value.
+- `analytics_snapshot.snapshot_digest_mismatch` — recomputed snapshot_digest != snapshot's.
+- `analytics_snapshot.privacy_class_mismatch` — snapshot privacy_class is not ANONYMOUS_AGGREGATE.
+- `analytics_snapshot.canonicalization_failed` — a value lies outside the C1 v0.1 canonical domain (non-integer number, non-ASCII key).
+- `analytics_snapshot.retention_nonconforming` — supplied source is past its retention deadline (still recountable, but overdue).
+- `analytics_snapshot.retention_schedule_invalid` — the supplied retention schedule is not a valid RET1 schedule shape.
+- `analytics_snapshot.retention_schedule_pin_mismatch` — the supplied retention schedule is not the pinned RET1 candidate schedule.
+- `analytics_snapshot.source_status_contradiction` — a declared source status is internally inconsistent (e.g. absent-expired before the retention deadline).
+
+Missing/unreadable/malformed CLI input remains a source-integrity/usage posture (exit 2), not a verification verdict.

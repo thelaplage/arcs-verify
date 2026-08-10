@@ -48,3 +48,37 @@ editorial_citation_pack_source:
   note: the six Counterpedia downloadable demo-pack ZIPs are a DIFFERENT artifact family (file-collection archives, not SRS pack_assembly receipts) and are NOT used as citation_pack positive vectors.
 note: frozen markdown documents are byte-identically archived in frozen-standard-docs.zip so the public release checker can distinguish normative prohibited examples from public marketing copy.
 note: published_version in the vendored envelope manifests is pre-release artifact metadata naming a manifested pre-release envelope artifact version. It is not evidence that a public SRS release occurred.
+
+dagr_analytics_c1_snapshot_source:
+  source_repository: dagr-analytics
+  source_pr: 2 (feat/c1-transport-counters-v0-1)
+  status: LANDED as candidate; C1 merged to dagr-analytics main
+  merge_commit: b8444c13baedf570117ce0867da24c034ff0142b
+  reviewed_head: c6bf77fad7723bbcdb8e7c4db13120f6d8602db8
+  definition_digest_pins (dagr.canonical-json.v0.1 over the C1 domain; == rfc8785 here):
+    http_request_count       sha256:53a1b6d219b931c5de3b6a20b039daa8ae1e291b74b3ec2ddfdc614da405227a
+    page_render_count        sha256:168e50cc048fd4d6df02ac63c86fa02146f0a140a4f405084d66cc3dea96a48d
+    page_view_count          sha256:152f236f1026f9bf494078418bed262e1c1dfdc1083c60ba595e26488130ce34
+    api_object_read_count    sha256:95c7a9a07a4adc686c9053193e5e415acaaf90c1e185e9bcd5bf471cafc83ec1
+    mcp_resource_read_count  sha256:4c953612fd71bf877c7e6246514a3a3595a5538f9d5206612c717a6814bdfd75
+  frozen_artifacts:
+    vendor/dagr-analytics/c1/contracts/C1_transport_read.v0_1.schema.json 1aeddf010c2529804e2183db9cf09812949e0349638009250fdd3e8f70185e1a
+    vendor/dagr-analytics/c1/contracts/dagr.analytics.observation.v0_1.schema.json 686d5708b5d4d981089cb2422ce68e05bef12ccff0337fcec8041f835733036b
+    vendor/dagr-analytics/c1/contracts/metric_snapshot.v0_1.schema.json 45457d66a9f95616fdf4a852aca66afcf1c42c91fa2c784a8423162289a39295
+    vendor/dagr-analytics/c1/fixtures/expected_snapshots.json 7284299d181aa8d96ad8e4cfc18bfeff258e7519dafad3ab9e5e27f7d0bc3734
+    vendor/dagr-analytics/c1/fixtures/observations.json df3c497e73aaf291b5b8d44911946f06a73ab2d67878f2749ea42d62fe8d1b93
+    vendor/dagr-analytics/c1/metrics/api_object_read_count.v0.1.json e09e2863dbcbb9cf4bbdceeab35ce9c306e9b82ef02940cc62d766822b4aa8e5
+    vendor/dagr-analytics/c1/metrics/http_request_count.v0.1.json 0707c25b35e7694534de45da13696c8b9040031c3ac8d01a6ec808ef7c1c616d
+    vendor/dagr-analytics/c1/metrics/mcp_resource_read_count.v0.1.json 80c4e1629c5a92b483a09f45a4bb551b74fcb6706a6d7058b23d8b4425981533
+    vendor/dagr-analytics/c1/metrics/page_render_count.v0.1.json 5bcdfe6ff90d72ebf2607fb1f6b7762ef7627660a623e42cdacaee7d6e9d2bad
+    vendor/dagr-analytics/c1/metrics/page_view_count.v0.1.json 0e92b8c029d566689645491cb9302fc11fbd7040c7b43e600c65be8d792634c4
+dagr_analytics_ret1_schedule_source:
+  source_repository: dagr-analytics
+  source_pr: 5 (feat/ret1-retention-schedule-v0-1)
+  status: LANDED as candidate; RET1 merged to dagr-analytics main
+  merge_commit: dcc74df0bc018095f0819c57a344a7289c55a0be
+  reviewed_head: 048607838c36091df3c7d3a0bb2f3840433da54e
+  retention_schedule_pin: sha256:5cad76410af1cd74b94ae8e478d0cb7611a09cd26da6854f2103a97596cd15dc
+  frozen_artifacts:
+    vendor/dagr-analytics/ret1/retention_default.v0.1.json 5f4989997e49b6ebbd95377db5afa5fd16ac6ac63d78e18d8ccd10b6c2f9057c
+    vendor/dagr-analytics/ret1/retention_schedule.v0_1.schema.json 96a0715e0b8bcad1e4885ceb31b23f596c8f358eea65934721221630093de4a2

@@ -1,0 +1,23 @@
+{
+  "metric_id": "page_render_count",
+  "version": "0.1",
+  "title": "Page render count",
+  "description": "Number of page render/load events in the window. Counts every render, including reloads.",
+  "numerator": "count of observations with action=page_render and transport=web",
+  "denominator": null,
+  "eligible_population": "observations where action=page_render AND transport=web",
+  "exclusions": [
+    "http requests that produced no render",
+    "crawler reads",
+    "non-web transports"
+  ],
+  "window": "daily bounded partition (candidate)",
+  "dedupe_rule": "none; every render counts once",
+  "privacy_class": "ANONYMOUS_AGGREGATE",
+  "input_event_versions": [
+    "dagr.analytics.observation/v0.1"
+  ],
+  "derivation_version": "0.1.0",
+  "owner": "dagr-analytics",
+  "supersedes": null
+}

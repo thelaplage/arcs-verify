@@ -1,0 +1,51 @@
+{
+  "schedule": "dagr_analytics_default_retention",
+  "version": "0.1",
+  "clock": "UTC",
+  "grace": "zero semantic grace: overdue means NONCONFORMING until deleted (a bounded operator grace period, if any, is defined per deployment, never as silent tolerance)",
+  "recomputability_states": [
+    "FULL_RECOMPUTATION_AVAILABLE",
+    "PROVENANCE_BOUND_SOURCE_EXPIRED",
+    "SOURCE_WITHDRAWN",
+    "SOURCE_UNAVAILABLE_UNEXPLAINED",
+    "NOT_APPLICABLE"
+  ],
+  "retention_conformance_states": [
+    "CONFORMING",
+    "NONCONFORMING",
+    "NOT_EVALUATED",
+    "NOT_APPLICABLE"
+  ],
+  "classes": {
+    "PUBLIC_AGGREGATE": {
+      "raw_source_retention": "none_required",
+      "derived_retention": "public projection/history may persist indefinitely",
+      "revocation": "if the payload itself creates a privacy/security problem, withdraw the unsafe payload immediately and retain only a non-sensitive revocation/tombstone record explaining that a public artifact was withdrawn"
+    },
+    "ANONYMOUS_AGGREGATE": {
+      "raw_source_retention": {
+        "max_days_after_window_end": 30
+      },
+      "derived_retention": "aggregate snapshots + metric-definition/digest provenance may persist after source deletion",
+      "on_source_deletion": "recomputability_state MUST change to PROVENANCE_BOUND_SOURCE_EXPIRED; retaining input_partition_digest is not source retention and does not restore FULL_RECOMPUTATION_AVAILABLE"
+    },
+    "SESSION_ONLY": {
+      "raw_source_retention": {
+        "max_hours_after_session_close": 24
+      },
+      "derived_retention": "SESSION_ONLY derived material max 7 days; no durable retention by silently reclassifying as anonymous",
+      "reclassification": "any transformation into another privacy class requires an independently authorized rule"
+    },
+    "PRIVATE_USER": {
+      "raw_source_retention": "no_shared_store_default",
+      "derived_retention": "none in a shared analytics store",
+      "collection": "prohibited until the relevant platform defines an explicit PRIVATE_LOCAL retention schedule with inspection/export/deletion behavior; no global numeric TTL is invented merely to complete this table"
+    },
+    "SENSITIVE_PRIVATE": {
+      "raw_source_retention": "no_shared_store_default",
+      "derived_retention": "none in a shared analytics store",
+      "collection": "prohibited until an explicit platform-specific private-local schedule exists",
+      "inheritance": "may never inherit a less restrictive retention period automatically"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagr.dev/schemas/metric_snapshot/v0.1.json",
+  "title": "DAGR Analytics Metric Snapshot v0.1",
+  "description": "A derived, replaceable metric value over one bounded window, with inspectable provenance (Constitution A12; Orientation \u00a722\u201323).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "metric_id",
+    "metric_version",
+    "derivation_version",
+    "window_start",
+    "window_end",
+    "value",
+    "privacy_class",
+    "input_partition_digest",
+    "metric_definition_digest",
+    "snapshot_digest"
+  ],
+  "properties": {
+    "metric_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "metric_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "derivation_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "window_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "window_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "value": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "input_partition_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Binds the snapshot to the canonicalized content of the bounded input partition (see algorithm)."
+    },
+    "metric_definition_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Binds the snapshot to the canonicalized parsed metric-definition object (see algorithm). Makes a changed definition under the same version visible."
+    },
+    "privacy_class": {
+      "type": "string",
+      "enum": [
+        "PUBLIC_AGGREGATE",
+        "ANONYMOUS_AGGREGATE",
+        "SESSION_ONLY",
+        "PRIVATE_USER",
+        "SENSITIVE_PRIVATE"
+      ]
+    },
+    "snapshot_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "See digest algorithm below."
+    }
+  },
+  "$comment": "CANONICALIZATION PROFILE (v0.1): canonical JSON is dagr.canonical-json.v0.1, governed by the DAGR Network Compatibility Contract v0.1 (I0) \u00a75 (garp-doctrine #128, merge da0efc17e9f70811a0955edc71cad172196977cb); counterpedia lib/activity/canonicalJson.ts is a reference implementation, not the defining authority \u2014 UTF-8, Unicode code-point key ordering, RFC 8785 / ECMAScript deterministic number serialization, no insignificant whitespace, finite-number enforcement. C1 does NOT mint a second analytics canonicalizer. C1's digest domain is narrowed (ASCII event_id + ASCII context keys + integer-only scalar context values) so this profile is provably byte-exact cross-language over C1's inputs (the profile's code-point key sort is exact only on the ASCII domain; integer-only numbers remove ECMAScript-vs-Python float divergence). Given that domain, sorted-keys/compact-separators/UTF-8 serialization is byte-equivalent to the profile. Digest algorithms (v0.1, candidate). Canonical JSON everywhere = keys sorted lexicographically, UTF-8, separators (',',':'), no whitespace, no trailing newline; digest = 'sha256:' + hex(sha256(canonical)). (1) metric_definition_digest = digest over the parsed metric definition object (contracts/metrics/metric_definition.v0_1.schema.json instance), canonicalized. (2) input_partition_digest = digest over {observations, window_end, window_start} where observations is the full partition's observation objects sorted by event_id ascending, each object canonicalized. event_id MUST be unique within the bounded partition; a duplicate event_id makes the partition INVALID, derivation MUST fail closed, and no metric snapshot may be emitted. The digest is a property of the partition and is identical across all metrics in the same window. (3) snapshot_digest = digest over body {derivation_version, input_partition_digest, metric_definition_digest, metric_id, metric_version, value, window_end, window_start}. snapshot_digest therefore changes if the input partition OR the canonicalized definition object OR the count changes \u2014 two partitions with the same count no longer collide, and a changed definition under the same version is no longer invisible. privacy_class and snapshot_digest itself are excluded from the body. Any implementation MUST reproduce these exactly."
+}

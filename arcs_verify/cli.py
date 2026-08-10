@@ -241,6 +241,10 @@ def main(argv: list[str] | None = None) -> int:
         from .ingest_run_sequence import main as ingest_run_sequence_main
 
         return ingest_run_sequence_main(args[1:])
+    if args and args[0] == "analytics-snapshot":
+        from .analytics_snapshot import main as analytics_snapshot_main
+
+        return analytics_snapshot_main(args[1:])
     return _verify_srs(args)
 
 
