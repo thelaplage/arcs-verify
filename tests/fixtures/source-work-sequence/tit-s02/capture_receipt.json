@@ -1,0 +1,17 @@
+{
+  "capture_id": "cap_tit_s02_00000000-0000-4000-8000-000000000001",
+  "source_id": "src_ntsb_mir2536_tit_s02_0001",
+  "source_locator": "https://data.ntsb.gov/Docket/Document/docBLOB?FileExtension=pdf&FileName=MIR2536-Rel.pdf&ID=19420353",
+  "captured_at": "2026-08-09T00:02:00Z",
+  "http_metadata": {
+    "status_code": 200,
+    "content_type": "application/pdf",
+    "content_length": null,
+    "last_modified": null,
+    "etag": null,
+    "final_url": "https://data.ntsb.gov/Docket/Document/docBLOB?FileExtension=pdf&FileName=MIR2536-Rel.pdf&ID=19420353"
+  },
+  "exact_bytes_sha256": "sha256:ffdbd3dfde2d776b07783ebeacef5183fa3b7c5e13ca7cd06f90c70bb937f84b",
+  "byte_count": 1048576,
+  "schema_version": "acquisition.capture.v0.1"
+}

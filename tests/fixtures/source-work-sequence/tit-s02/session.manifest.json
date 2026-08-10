@@ -1,0 +1,35 @@
+{
+  "schema_version": "acquisition.source_session.manifest.v0.1",
+  "session_kind": "one_shot_source_processing",
+  "input_kind": "url",
+  "observation_hint_present": false,
+  "source_id": "src_ntsb_mir2536_tit_s02_0001",
+  "source_locator": "https://data.ntsb.gov/Docket/Document/docBLOB?FileExtension=pdf&FileName=MIR2536-Rel.pdf&ID=19420353",
+  "captured_object_address": "sha256:ffdbd3dfde2d776b07783ebeacef5183fa3b7c5e13ca7cd06f90c70bb937f84b",
+  "extraction_profile": "pdf_page_text.v0.1",
+  "artifacts": [
+    {
+      "path": "captured/ffdbd3dfde2d776b07783ebeacef5183fa3b7c5e13ca7cd06f90c70bb937f84b.bin",
+      "sha256": "sha256:ffdbd3dfde2d776b07783ebeacef5183fa3b7c5e13ca7cd06f90c70bb937f84b",
+      "role": "captured_bytes",
+      "schema_version": null
+    }
+  ],
+  "grounding_summary": {
+    "proposal_fields": 0,
+    "extractive_grounded_fields": 0,
+    "abstractive_fields": 0,
+    "dropped_ungrounded": 0
+  },
+  "source_capture_binding_status": "bound",
+  "declaring_artifact_ref": "sha256:a272eb55b983b97fe10320b49051e62e042ced0d3f9d06aa7ffba61136cdcfc3",
+  "source_inventory_key": "TIT-S02",
+  "declaration_binding": {
+    "schema_version": "acquisition.source_declaration_binding.v0.1",
+    "declaring_artifact_ref": "sha256:a272eb55b983b97fe10320b49051e62e042ced0d3f9d06aa7ffba61136cdcfc3",
+    "source_inventory_key": "TIT-S02",
+    "declared_locator": "https://data.ntsb.gov/Docket/Document/docBLOB?FileExtension=pdf&FileName=MIR2536-Rel.pdf&ID=19420353",
+    "derived_source_reference_id": "urn:counterpedia.source-reference:sha256:a272eb55b983b97fe10320b49051e62e042ced0d3f9d06aa7ffba61136cdcfc3:TIT-S02"
+  },
+  "unbound_declaration": null
+}
