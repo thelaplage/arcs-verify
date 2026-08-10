@@ -73,6 +73,55 @@ FIXTURE_DIGESTS = {
         "7885ab54e4242edd0549f5a5c4c267c0a9ec8f11a6c3936f7841ecf2514e1b89",
 }
 
+# --------------------------------------------------------------------------- #
+# one-source-grounded (OSG-01) — the END-TO-END single-source witness.
+#
+# Unlike TIT-S02 (whose captured object is an out-of-evidence PDF and which bound
+# no proposal), this fixture is ONE governed source whose exact bytes ARE vendored
+# and which threads capture -> grounded proposal -> declaration binding ->
+# source_capture.v0.2. So on the SAME source both capture_linkage=PASS (raw bytes
+# recompute) and proposal_grounding=PASS (same-lineage proposal whose grounding
+# recomputes). It was produced ONCE by the real producers and vendored byte-for-
+# byte (see one-source-grounded/PROVENANCE.md for the generation recipe + pins):
+#
+#   * governed declaration + binding + session.manifest + capture_receipt +
+#     grounded_content_proposal + captured_source.html (the raw captured bytes)
+#       counterpedia-acquisition @ d4b1127d, scripts/gen_osg01_sourceseq_fixture.py
+#       (generator sha256:e457df2bf92c81d1794618ce66fca585bb82c16e7adcfb6e717d543cc8589245)
+#   * source_capture.v0.2 receipt
+#       dagr-ingest @ dbe880dc, adapters/acquisition_source_capture.py
+#       (emit_source_capture_from_session over the untouched export)
+# --------------------------------------------------------------------------- #
+ONE_SOURCE = FIXTURES / "one-source-grounded"
+OSG_DECLARATION_FILE = "declaration.OSG_01_MANIFEST.json"
+OSG_SOURCE_FILE = "captured_source.html"
+
+OSG_DECLARING_REF = "sha256:bfc8d023c092468d359c6a515599fb3b6c3c94504e1bcb535ce44bd167d272d6"
+OSG_INVENTORY_KEY = "OSG-01"
+OSG_CAPTURED_REF = "sha256:5b7fa4b9559750e1b5dd0aa9fd396d3291569054f6cbb0a441b9aebf1785eb33"
+OSG_EXPECTED_R1A = (
+    "urn:counterpedia.source-reference:"
+    "sha256:bfc8d023c092468d359c6a515599fb3b6c3c94504e1bcb535ce44bd167d272d6:OSG-01"
+)
+
+# Exact byte digests of every vendored OSG-01 artifact (silent-regeneration guard).
+ONE_SOURCE_FIXTURE_DIGESTS = {
+    ONE_SOURCE / "declaration.OSG_01_MANIFEST.json":
+        "bfc8d023c092468d359c6a515599fb3b6c3c94504e1bcb535ce44bd167d272d6",
+    ONE_SOURCE / "source_declaration_binding.json":
+        "48570a29b59f8151d6bfabbe149e3a9cae31fe5b3012c1a22223fc71f2035d20",
+    ONE_SOURCE / "session.manifest.json":
+        "39d85aefd36d1ff4e099f5828cb5c190c8dfbc21a2368ec5886b1b54a378a8ae",
+    ONE_SOURCE / "capture_receipt.json":
+        "7855ec9d7eaa32885031f2a7fb45dea276a1346251390790faf391a827bd548f",
+    ONE_SOURCE / "grounded_content_proposal.json":
+        "81e33407e2d736b18f68b429ddffb8455a85ddd761ddf2141f656e851bc69a6e",
+    ONE_SOURCE / "source_capture.v0_2.receipt.json":
+        "1296ea1bbd6e1608ea919c6b20b5f72020ae5bf15d32490729f9f027c5ce435f",
+    ONE_SOURCE / "captured_source.html":
+        "5b7fa4b9559750e1b5dd0aa9fd396d3291569054f6cbb0a441b9aebf1785eb33",
+}
+
 AXES = (
     "artifact_integrity",
     "capture_linkage",
@@ -176,6 +225,109 @@ def test_axes_reported_separately() -> None:
     report = sws.verify(_evidence())
     for axis in AXES:
         assert axis in report
+
+
+# --------------------------------------------------------------------------- #
+# one-source-grounded (OSG-01) — one source proven END-TO-END
+# --------------------------------------------------------------------------- #
+def _osg_evidence() -> sws.SourceWorkEvidence:
+    # The raw captured HTML is BOTH the proposal source and the captured-object
+    # bytes — a single source threads every leg.
+    return sws.load_sequence(
+        ONE_SOURCE,
+        declaration_file=OSG_DECLARATION_FILE,
+        grounded_proposal_file="grounded_content_proposal.json",
+        proposal_source_file=OSG_SOURCE_FILE,
+        captured_source_file=OSG_SOURCE_FILE,
+    )
+
+
+def test_one_source_fixture_digests_pinned() -> None:
+    for path, expected in ONE_SOURCE_FIXTURE_DIGESTS.items():
+        assert path.is_file(), f"missing vendored fixture: {path}"
+        assert _sha(path.read_bytes()) == expected, f"fixture bytes changed: {path}"
+
+
+def test_one_source_declaration_and_r1a_recompute() -> None:
+    raw = (ONE_SOURCE / OSG_DECLARATION_FILE).read_bytes()
+    assert "sha256:" + _sha(raw) == OSG_DECLARING_REF
+    assert (
+        sws.derive_source_reference_id(OSG_DECLARING_REF, OSG_INVENTORY_KEY)
+        == OSG_EXPECTED_R1A
+    )
+    # The raw captured bytes recompute to the captured-object ref every artifact
+    # cites, and the source_capture receipt binds THIS declaration's identity.
+    html = (ONE_SOURCE / OSG_SOURCE_FILE).read_bytes()
+    assert "sha256:" + _sha(html) == OSG_CAPTURED_REF
+    sc = json.loads((ONE_SOURCE / "source_capture.v0_2.receipt.json").read_text())
+    assert sc["source_reference_id"] == OSG_EXPECTED_R1A
+    assert sc["subject_ref"] == OSG_EXPECTED_R1A
+    assert sc["captured_bytes_ref"] == OSG_CAPTURED_REF
+
+
+def test_one_source_end_to_end_all_producer_axes_pass() -> None:
+    """The corpus-of-one, proven end-to-end on a SINGLE source: every
+    producer-half axis recomputes to PASS at once, while the genuinely-absent
+    axes stay NOT_EVALUATED (never silently upgraded)."""
+    report = sws.verify(_osg_evidence())
+
+    # Top-level positive matrix.
+    assert report["artifact_integrity"] == "PASS"
+    assert report["capture_linkage"] == "PASS"
+    assert report["declaration_binding_linkage"] == "PASS"
+    assert report["proposal_grounding"] == "PASS"
+
+    # Honest NOT_EVALUATED discipline preserved (nothing to evaluate is present).
+    assert report["ingest_linkage"] == "NOT_EVALUATED"
+    assert report["citation_pack_linkage"] == "NOT_EVALUATED"
+    assert report["external_source_truth"] == "NOT_EVALUATED"
+
+    assert report["failure_codes"] == []
+
+    # Granular conclusions underneath the axes: the two upgrades vs. TIT-S02 are
+    # (a) the raw captured bytes now recompute, and (b) the same-lineage grounded
+    # proposal's grounding recomputes.
+    c = report["conclusions"]
+    assert c["raw_captured_bytes_recompute"] == "PASS"      # was NOT_EVALUATED for TIT-S02
+    assert c["captured_object_digest_agreement"] == "PASS"
+    assert c["captured_role_is_raw_source"] == "PASS"
+    assert c["r1a_reference_recomputes"] == "PASS"
+    assert c["session_is_bound"] == "PASS"
+    assert c["proposal_lineage_same_source"] == "PASS"
+    assert c["proposal_grounding_recomputes"] == "PASS"     # was NOT_EVALUATED for TIT-S02
+    # The absence axes are verified-absent, not assumed.
+    assert report["recomputed"]["source_ingest_absent"] is True
+    assert report["recomputed"]["citation_pack_present"] is False
+    # The composed ACQGROUND0 sub-report itself passed all three of its axes.
+    pg = report["recomputed"]["proposal_grounding_report"]
+    assert pg["artifact_integrity"] == "PASS"
+    assert pg["grounding_integrity"] == "PASS"
+    assert pg["proposal_posture"] == "PASS"
+
+
+def test_one_source_no_aggregate_verdict() -> None:
+    report = sws.verify(_osg_evidence())
+    for banned in ("passed", "verdict", "trust", "trust_score", "ok", "valid", "verified"):
+        assert banned not in report, f"report carries an aggregate field: {banned!r}"
+
+
+def test_one_source_cli_all_axes_pass_exit_zero(capsys) -> None:
+    rc = sws.main(
+        [
+            str(ONE_SOURCE),
+            "--declaration-file", OSG_DECLARATION_FILE,
+            "--grounded-proposal-file", "grounded_content_proposal.json",
+            "--proposal-source-file", OSG_SOURCE_FILE,
+            "--captured-source-file", OSG_SOURCE_FILE,
+            "--json",
+        ]
+    )
+    out = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert out["capture_linkage"] == "PASS"
+    assert out["proposal_grounding"] == "PASS"
+    assert out["declaration_binding_linkage"] == "PASS"
+    assert out["ingest_linkage"] == "NOT_EVALUATED"
 
 
 # --------------------------------------------------------------------------- #

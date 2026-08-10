@@ -1,0 +1,17 @@
+{
+  "capture_id": "cap_1432ef51-89b1-4598-b538-ed452f436299",
+  "source_id": "src_2c5c551c309df2abaee0b906055efc65",
+  "source_locator": "http://127.0.0.1:8973",
+  "captured_at": "2026-08-10T15:26:09.414318Z",
+  "http_metadata": {
+    "status_code": 200,
+    "content_type": "text/html; charset=utf-8",
+    "content_length": 261,
+    "last_modified": null,
+    "etag": null,
+    "final_url": "http://127.0.0.1:8973"
+  },
+  "exact_bytes_sha256": "sha256:5b7fa4b9559750e1b5dd0aa9fd396d3291569054f6cbb0a441b9aebf1785eb33",
+  "byte_count": 261,
+  "schema_version": "acquisition.capture.v0.1"
+}

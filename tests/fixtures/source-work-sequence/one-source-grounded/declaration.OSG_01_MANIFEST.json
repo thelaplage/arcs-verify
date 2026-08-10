@@ -1,0 +1,10 @@
+{
+  "entries": [
+    {
+      "capture_key": "OSG-01",
+      "requested_locator": "http://127.0.0.1:8973"
+    }
+  ],
+  "name": "osg-01-synthetic-decl",
+  "schema_version": "arcs-verify.sourceseq.synthetic-declaration.v0.1"
+}
