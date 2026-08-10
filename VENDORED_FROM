@@ -82,3 +82,20 @@ dagr_analytics_ret1_schedule_source:
   frozen_artifacts:
     vendor/dagr-analytics/ret1/retention_default.v0.1.json 5f4989997e49b6ebbd95377db5afa5fd16ac6ac63d78e18d8ccd10b6c2f9057c
     vendor/dagr-analytics/ret1/retention_schedule.v0_1.schema.json 96a0715e0b8bcad1e4885ceb31b23f596c8f358eea65934721221630093de4a2
+counterpedia_acquisition_grounded_proposal_source:
+  source_repository: counterpedia-acquisition
+  source_pr: 14 (real OpenAI backend + verified proposal grounding v0.1), pinned at tip d4b1127d after #15 (ACQ-SESSION0) and #16
+  source_commit: d4b1127d84816cc8279fc2ea0b16358006b37745
+  status: pre-1.0. Verification support does not ratify or stabilize the acquisition contract.
+  grounded_envelope_schema_id: acquisition.grounded_content_proposal.v0.1
+  extraction_profile_id: acquisition.html-visible-text.v0.1
+  frozen_artifacts:
+    vendor/counterpedia-acquisition/schemas/grounded_content_proposal.schema.json ec1d99e4af43761ee7d7c2bf6a6978315c8fdf69dd05e055ee98d4af605d0894
+  extraction_profile_spec_provenance:
+    src/acquisition/model_grounding.py 74808a5cf56d73ebb61ff5fa9b856b301dde2cdb17fada5a759ec599859517d8
+    note: the html-visible-text.v0.1 projection in arcs_verify/acquisition_grounding.py is an INDEPENDENT stdlib-only transcription of the deterministic algorithm this spec source specifies (decode utf-8 replace -> html.parser visible text ignoring script/style -> per-node whitespace collapse -> newline join -> code-point offsets). The spec source is pinned for provenance only; it is never imported or executed by the verifier.
+  golden_vectors:
+    tests/fixtures/acquisition-grounding/grounded-valid.json 1fd69e99e7942343adedee33a657fae900de4ffef490afdd80d45e1e2387e65f
+    tests/fixtures/acquisition-grounding/grounded-valid.source.html 095abe900ba69216ea54a323f697294785f10dd8b5f66279c9e55c381dbf7d3d
+    note: grounded-valid.json is LITERAL producer output — emitted once by counterpedia-acquisition at d4b1127d (ground_and_compose over the adversarial-injection source bytes) and frozen byte-for-byte; grounded-valid.source.html is the exact captured source bytes it derives from. tests/test_acquisition_grounding.py pins both sha256 so a silent regeneration fails.
+  runtime_copy: none; the schema is loaded at verification time from the vendored path above and its bytes are re-pinned in verifier code as GROUNDED_ENVELOPE_SCHEMA_SHA256.

@@ -27,6 +27,7 @@ MODULES = [
     "arcs_verify/governed_memory_sequence.py",
     "arcs_verify/ingest_run_sequence.py",
     "arcs_verify/analytics_snapshot.py",
+    "arcs_verify/acquisition_grounding.py",
     "arcs_verify/amnesiac/verifier.py",
     "arcs_verify/amnesiac/public_proof.py",
 ]
