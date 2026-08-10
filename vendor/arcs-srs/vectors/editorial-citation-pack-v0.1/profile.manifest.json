@@ -1,0 +1,82 @@
+{
+  "profile_id": "srs.editorial.citation_pack",
+  "profile_version": "v0.1",
+  "profile_slug": "srs.editorial.citation_pack.v0.1",
+  "release_stage": "provisional",
+  "document_path": "docs/profiles/SRS_EDITORIAL_CITATION_PACK_PROFILE_v0_1.md",
+  "document_sha256": "a78df524c2141d756c824f17b6626d4dd3a7172ed7895a4ddd32d95cbdccf841",
+  "compatible_envelope_identities": [
+    {
+      "published_version": "0.2.1",
+      "identity": "srs-envelope@0.2.1+sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+    }
+  ],
+  "default_envelope_version": "0.2.1",
+  "requires_signing": false,
+  "fixed_values": {
+    "receipt_version": "srs.core.v5.1",
+    "profile_id": "srs.editorial.citation_pack",
+    "profile_version": "v0.1",
+    "receipt_type": "provenance",
+    "boundary_type": "editorial_corpus_boundary"
+  },
+  "required_fields": [
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "subject_ref",
+    "issuer_id",
+    "runtime_instance_id",
+    "boundary_id",
+    "issued_at",
+    "publication_artifact_id",
+    "pack_integrity_ref",
+    "declaration_manifest_ref",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "extensions"
+  ],
+  "receipt_kinds": [
+    "pack_assembly"
+  ],
+  "artifact_classes_covered_required": [
+    "publication_artifact_identity",
+    "declaration_manifest_digest",
+    "pack_integrity_digest"
+  ],
+  "artifact_classes_excluded_required": [
+    "raw_publication_bytes",
+    "raw_captured_bytes"
+  ],
+  "required_attestation_limits": {
+    "base": "The receipt declares that a citation pack was assembled for the named editorial publication artifact. It does not establish article truth, evidence completeness, source authenticity, or that any citation mapping is correct. Machine-proposed mappings require operator admission before use."
+  },
+  "required_machine_limitation_codes": [
+    "ARTICLE_TRUTH_NOT_EVALUATED",
+    "EVIDENCE_COMPLETENESS_NOT_EVALUATED",
+    "CITATION_MAPPING_MACHINE_PROPOSED"
+  ],
+  "limitation_codes_registry_version": "0.1",
+  "separate_findings": [
+    "envelope_shape",
+    "profile_conformance",
+    "signature_shape",
+    "key_resolved",
+    "key_trusted"
+  ],
+  "notes": [
+    "PROVISIONAL: This profile is not stable and has not been ratified. It remains provisional until at least two distinct corpus pipelines demonstrate reuse without modification.",
+    "requires_signing is false for v0.1 structural purposes. Production signing posture is deferred to the emitter implementation.",
+    "capture_manifest_ref is a SHOULD-level field; the structural validator does not enforce its presence.",
+    "Declared-only packs (where no source was captured) are fully valid under this profile.",
+    "All citation mappings are machine_proposed at the time of pack assembly; operator admission is outside the scope of this profile.",
+    "NON-ENFORCED: declaration_manifest_ref must match the corresponding ingest receipt; cross-receipt consistency cannot be verified from single-receipt structural validation.",
+    "NON-ENFORCED: Repository-snapshot provenance receipts must not be mixed with citation pack receipts; this is an emitter constraint not verifiable from receipt bytes alone."
+  ]
+}

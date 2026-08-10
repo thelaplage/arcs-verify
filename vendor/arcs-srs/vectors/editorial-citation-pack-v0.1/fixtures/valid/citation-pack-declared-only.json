@@ -1,0 +1,36 @@
+{
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.editorial.citation_pack",
+  "profile_version": "v0.1",
+  "receipt_id": "editorial-pack-valid-declared-only-0001",
+  "receipt_type": "provenance",
+  "receipt_kind": "pack_assembly",
+  "boundary_type": "editorial_corpus_boundary",
+  "protocol_binding": "editorial-corpus-bootstrap",
+  "subject_ref": "sha256:187ca3b9462b63176806ad43f0a3ed6a56f7092c861a52258fd2d47c3846902a",
+  "issuer_id": "issuer.test/editorial-corpus/2026-01",
+  "runtime_instance_id": "runtime-editorial-test-0001",
+  "boundary_id": "boundary-editorial-corpus-0001",
+  "issued_at": "2026-08-06T00:04:00Z",
+  "publication_artifact_id": "sha256:187ca3b9462b63176806ad43f0a3ed6a56f7092c861a52258fd2d47c3846902a",
+  "pack_integrity_ref": "sha256:f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1",
+  "declaration_manifest_ref": "sha256:a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+  "artifact_classes_covered": [
+    "publication_artifact_identity",
+    "declaration_manifest_digest",
+    "pack_integrity_digest"
+  ],
+  "artifact_classes_excluded": [
+    "raw_publication_bytes",
+    "raw_captured_bytes"
+  ],
+  "attestation_limits": [
+    "The receipt declares that a citation pack was assembled for the named editorial publication artifact. It does not establish article truth, evidence completeness, source authenticity, or that any citation mapping is correct. Machine-proposed mappings require operator admission before use."
+  ],
+  "machine_limitations": [
+    {"code": "ARTICLE_TRUTH_NOT_EVALUATED"},
+    {"code": "EVIDENCE_COMPLETENESS_NOT_EVALUATED"},
+    {"code": "CITATION_MAPPING_MACHINE_PROPOSED"}
+  ],
+  "extensions": {}
+}
