@@ -1,0 +1,23 @@
+{
+  "metric_id": "page_view_count",
+  "version": "0.1",
+  "title": "Page view count",
+  "description": "User-visible views, derived from page_render by deduping repeated renders of the same object within a declared session. Never uses inferred identity.",
+  "numerator": "distinct (session_ref, object_ref) among page_render/web with non-null session_ref, PLUS count of page_render/web with null session_ref",
+  "denominator": null,
+  "eligible_population": "observations where action=page_render AND transport=web",
+  "exclusions": [
+    "crawler reads",
+    "non-web transports"
+  ],
+  "window": "daily bounded partition (candidate)",
+  "dedupe_rule": "dedupe key = (session_ref, object_ref) when session_ref is non-null; renders with null session_ref are NOT deduped (each counts once). Fingerprinting to dedupe is prohibited (A3).",
+  "privacy_class": "ANONYMOUS_AGGREGATE",
+  "input_event_versions": [
+    "dagr.analytics.observation/v0.1"
+  ],
+  "derivation_version": "0.1.0",
+  "owner": "dagr-analytics",
+  "status": "CANDIDATE",
+  "supersedes": null
+}

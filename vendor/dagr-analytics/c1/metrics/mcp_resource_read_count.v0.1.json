@@ -1,0 +1,24 @@
+{
+  "metric_id": "mcp_resource_read_count",
+  "version": "0.1",
+  "title": "MCP resource read count",
+  "description": "Number of MCP resource reads in the window. Transport counter only; agent-lens derivations over this event are M1, which does not redefine this metric.",
+  "numerator": "count of observations with action=mcp_resource_read and transport=mcp",
+  "denominator": null,
+  "eligible_population": "observations where action=mcp_resource_read AND transport=mcp",
+  "exclusions": [
+    "web requests",
+    "api reads",
+    "crawler reads"
+  ],
+  "window": "daily bounded partition (candidate)",
+  "dedupe_rule": "none; every eligible read counts once",
+  "privacy_class": "ANONYMOUS_AGGREGATE",
+  "input_event_versions": [
+    "dagr.analytics.observation/v0.1"
+  ],
+  "derivation_version": "0.1.0",
+  "owner": "dagr-analytics",
+  "status": "CANDIDATE",
+  "supersedes": null
+}

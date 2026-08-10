@@ -1,0 +1,24 @@
+{
+  "metric_id": "api_object_read_count",
+  "version": "0.1",
+  "title": "API object read count",
+  "description": "Number of API object reads in the window.",
+  "numerator": "count of observations with action=api_object_read and transport=api",
+  "denominator": null,
+  "eligible_population": "observations where action=api_object_read AND transport=api",
+  "exclusions": [
+    "web requests",
+    "mcp reads",
+    "crawler reads"
+  ],
+  "window": "daily bounded partition (candidate)",
+  "dedupe_rule": "none; every eligible read counts once",
+  "privacy_class": "ANONYMOUS_AGGREGATE",
+  "input_event_versions": [
+    "dagr.analytics.observation/v0.1"
+  ],
+  "derivation_version": "0.1.0",
+  "owner": "dagr-analytics",
+  "status": "CANDIDATE",
+  "supersedes": null
+}

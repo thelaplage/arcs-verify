@@ -1,0 +1,25 @@
+{
+  "metric_id": "http_request_count",
+  "version": "0.1",
+  "title": "Web page HTTP request count",
+  "description": "Number of web page HTTP requests observed at the edge in the window. A raw transport counter; the most permissive of the three page-hit metrics.",
+  "numerator": "count of observations with action=http_request and transport=web",
+  "denominator": null,
+  "eligible_population": "observations where action=http_request AND transport=web",
+  "exclusions": [
+    "api reads (counted by api_object_read_count)",
+    "mcp reads (counted by mcp_resource_read_count)",
+    "crawler reads",
+    "non-web transports"
+  ],
+  "window": "daily bounded partition (candidate)",
+  "dedupe_rule": "none; every eligible request counts once",
+  "privacy_class": "ANONYMOUS_AGGREGATE",
+  "input_event_versions": [
+    "dagr.analytics.observation/v0.1"
+  ],
+  "derivation_version": "0.1.0",
+  "owner": "dagr-analytics",
+  "status": "CANDIDATE",
+  "supersedes": null
+}

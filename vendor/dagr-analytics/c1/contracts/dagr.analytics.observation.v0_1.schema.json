@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagr.dev/schemas/dagr.analytics.observation/v0.1.json",
+  "title": "DAGR Analytics Observation Envelope v0.1",
+  "description": "Product-neutral analytics observation. CANDIDATE — do not ratify until proving lanes establish field needs (Orientation §7). Unsigned and privacy-classed: an observation is never a governed-activity record (Constitution A16).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "event_id",
+    "observed_at",
+    "platform",
+    "surface",
+    "action",
+    "transport",
+    "privacy_class"
+  ],
+  "properties": {
+    "schema": {
+      "const": "dagr.analytics.observation/v0.1"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._:-]+$",
+      "description": "Stable unique id for this observation within its partition. ASCII-safe grammar: observations are sorted by event_id before hashing, and ASCII keeps that ordering identical across languages (the dagr.canonical-json.v0.1 code-point sort is exact only over the ASCII domain)."
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 timestamp of observation."
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["counterpedia", "amnesiac", "forum", "mcp", "workbench"]
+    },
+    "surface": {
+      "type": "string",
+      "description": "Surface within the platform (e.g. wiki, api, mcp)."
+    },
+    "action": {
+      "type": "string",
+      "description": "What occurred. C1 constrains this to the transport_read family."
+    },
+    "object_ref": {
+      "type": ["string", "null"],
+      "description": "Opaque ref to the object acted on. Not a person."
+    },
+    "transport": {
+      "type": "string",
+      "enum": ["web", "api", "mcp", "crawler", "unknown"],
+      "description": "Observed transport/declaration — never inferred by fingerprinting (A3)."
+    },
+    "session_ref": {
+      "type": ["string", "null"],
+      "description": "Declared first-party session. Null when anonymous. Never fingerprinted."
+    },
+    "actor_ref": {
+      "type": ["string", "null"],
+      "description": "Declared actor ref where one exists. Null by default. Never an inferred identity."
+    },
+    "privacy_class": {
+      "type": "string",
+      "enum": [
+        "PUBLIC_AGGREGATE",
+        "ANONYMOUS_AGGREGATE",
+        "SESSION_ONLY",
+        "PRIVATE_USER",
+        "SENSITIVE_PRIVATE"
+      ]
+    },
+    "consent_scope": {
+      "type": ["string", "null"]
+    },
+    "context": {
+      "type": "object",
+      "description": "Bounded, non-identifying context. C1 v0.1 digest domain: ASCII property names and SCALAR values only (string | integer | boolean | null). Numbers are INTEGERS in +/-(2^53-1) — floats are rejected, which collapses the cross-language number problem (ECMAScript vs Python -0.0/1e-7/2.0) to trivial equality. Recursively nested objects/arrays are rejected. Floats may be admitted later only by a definition-versioned widening.",
+      "propertyNames": { "pattern": "^[\\x21-\\x7E]+$" },
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "string" },
+          { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 },
+          { "type": "boolean" },
+          { "type": "null" }
+        ]
+      }
+    }
+  }
+}

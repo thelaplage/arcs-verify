@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagr.dev/schemas/C1_transport_read/v0.1.json",
+  "title": "C1 transport_read observation profile v0.1",
+  "description": "Machine-enforceable profile for admissible C1 observations. An observation is valid C1 input ONLY if it validates the generic envelope AND is one of the permitted (action, transport) pairs AND is ANONYMOUS_AGGREGATE. Implementations (Python, TypeScript, …) fail closed on this profile rather than reinterpreting a Markdown table. page_view is derived, not an input event, so it is deliberately absent.",
+  "allOf": [
+    {
+      "$ref": "https://dagr.dev/schemas/dagr.analytics.observation/v0.1.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "privacy_class": {
+          "const": "ANONYMOUS_AGGREGATE"
+        },
+        "platform": {
+          "const": "counterpedia"
+        }
+      },
+      "required": [
+        "platform",
+        "action",
+        "transport",
+        "privacy_class"
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "http_request"
+            },
+            "transport": {
+              "const": "web"
+            }
+          },
+          "required": [
+            "action",
+            "transport"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "page_render"
+            },
+            "transport": {
+              "const": "web"
+            }
+          },
+          "required": [
+            "action",
+            "transport"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "api_object_read"
+            },
+            "transport": {
+              "const": "api"
+            }
+          },
+          "required": [
+            "action",
+            "transport"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "mcp_resource_read"
+            },
+            "transport": {
+              "const": "mcp"
+            }
+          },
+          "required": [
+            "action",
+            "transport"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "crawler_read"
+            },
+            "transport": {
+              "const": "crawler"
+            }
+          },
+          "required": [
+            "action",
+            "transport"
+          ]
+        }
+      ]
+    }
+  ]
+}
