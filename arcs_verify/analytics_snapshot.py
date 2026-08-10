@@ -6,8 +6,11 @@ canonicalizes independently via arcs-verify's own RFC8785 machinery, which over
 C1's narrowed v0.1 domain (ASCII keys, integer-only scalar context) is byte-
 equivalent to dagr.canonical-json.v0.1 (proven by the equivalence vectors).
 
-Upstream C1 (#2) and RET1 (#5) contracts are PROVISIONAL / unmerged: this lane
-may consume their exact bytes but must not be readied/merged until they land.
+Upstream C1 (#2, merge b8444c13) and RET1 (#5, merge dcc74df0) have LANDED as
+CANDIDATE contracts on dagr-analytics main; their exact landed bytes are vendored
+and pinned (see VENDORED_FROM). They are NOT ratified, so the report keeps
+upstream_contract_posture=PROVISIONAL and this verifier remains draft pending its
+own readiness assessment.
 
 Contract is enforced in verify() (the core), so CLI and library cannot drift.
 Two facts are kept separate: what the verifier independently recomputed from
@@ -34,13 +37,13 @@ VERIFICATION_PROFILE = "arcs_verify.dagr_analytics.c1_snapshot.v0_1"
 EXPECTED_DERIVATION_VERSION = "0.1.0"
 
 DEF_PINS = {
-    "http_request_count": "sha256:0dbf4c9019201ae0139cb5668606722cc0a6c6fcb8d9c824228ce19daf9e9f0f",
-    "page_render_count": "sha256:ff12b79611a37062efd2e4b40445b306111837ba5133ff147a329bd635a8862e",
-    "page_view_count": "sha256:a83de57baa3acdd820aecfafb55ea1fae54389bc2aaa13818cee22d2db112595",
-    "api_object_read_count": "sha256:e8b41b16f46f755c0c51985a29ee23c80b30729aba0a506600fddb44bdba8161",
-    "mcp_resource_read_count": "sha256:07b7a142396beba2907ce002885a7036ec2630758755e8d78e56456b9522343f",
+    "http_request_count": "sha256:53a1b6d219b931c5de3b6a20b039daa8ae1e291b74b3ec2ddfdc614da405227a",
+    "page_render_count": "sha256:168e50cc048fd4d6df02ac63c86fa02146f0a140a4f405084d66cc3dea96a48d",
+    "page_view_count": "sha256:152f236f1026f9bf494078418bed262e1c1dfdc1083c60ba595e26488130ce34",
+    "api_object_read_count": "sha256:95c7a9a07a4adc686c9053193e5e415acaaf90c1e185e9bcd5bf471cafc83ec1",
+    "mcp_resource_read_count": "sha256:4c953612fd71bf877c7e6246514a3a3595a5538f9d5206612c717a6814bdfd75",
 }
-RET_SCHED_PIN = "sha256:d4eb1f13b819aaa371cab6a62259dba0d9e4beff1183c931dffd317bd282ff75"
+RET_SCHED_PIN = "sha256:5cad76410af1cd74b94ae8e478d0cb7611a09cd26da6854f2103a97596cd15dc"
 
 _DIRECT = {
     "http_request_count": ("http_request", "web"),

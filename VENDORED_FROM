@@ -52,31 +52,33 @@ note: published_version in the vendored envelope manifests is pre-release artifa
 dagr_analytics_c1_snapshot_source:
   source_repository: dagr-analytics
   source_pr: 2 (feat/c1-transport-counters-v0-1)
-  reviewed_head: 40a3989b8720ca40cf100018ebefb2ca63c58059
-  status: PROVISIONAL; dagr-analytics #2 is UNMERGED / CANDIDATE / NON-AUTHORITATIVE. Do not ready/merge V1 until #2 lands; then re-pin to the merged bytes/SHA.
+  status: LANDED as candidate; C1 merged to dagr-analytics main
+  merge_commit: b8444c13baedf570117ce0867da24c034ff0142b
+  reviewed_head: c6bf77fad7723bbcdb8e7c4db13120f6d8602db8
   definition_digest_pins (dagr.canonical-json.v0.1 over the C1 domain; == rfc8785 here):
-    http_request_count      sha256:0dbf4c9019201ae0139cb5668606722cc0a6c6fcb8d9c824228ce19daf9e9f0f
-    page_render_count       sha256:ff12b79611a37062efd2e4b40445b306111837ba5133ff147a329bd635a8862e
-    page_view_count         sha256:a83de57baa3acdd820aecfafb55ea1fae54389bc2aaa13818cee22d2db112595
-    api_object_read_count   sha256:e8b41b16f46f755c0c51985a29ee23c80b30729aba0a506600fddb44bdba8161
-    mcp_resource_read_count sha256:07b7a142396beba2907ce002885a7036ec2630758755e8d78e56456b9522343f
+    http_request_count       sha256:53a1b6d219b931c5de3b6a20b039daa8ae1e291b74b3ec2ddfdc614da405227a
+    page_render_count        sha256:168e50cc048fd4d6df02ac63c86fa02146f0a140a4f405084d66cc3dea96a48d
+    page_view_count          sha256:152f236f1026f9bf494078418bed262e1c1dfdc1083c60ba595e26488130ce34
+    api_object_read_count    sha256:95c7a9a07a4adc686c9053193e5e415acaaf90c1e185e9bcd5bf471cafc83ec1
+    mcp_resource_read_count  sha256:4c953612fd71bf877c7e6246514a3a3595a5538f9d5206612c717a6814bdfd75
   frozen_artifacts:
-    vendor/dagr-analytics/c1/contracts/C1_transport_read.v0_1.schema.json b53d76a4a6408f3948068b27f60ae7f0756ec7db1851a67cd68bed283696654e
-    vendor/dagr-analytics/c1/contracts/dagr.analytics.observation.v0_1.schema.json cb50eca0d1eb823c14be5c249da010f1fdad22bcf28779f281b83ee244243ea5
-    vendor/dagr-analytics/c1/contracts/metric_snapshot.v0_1.schema.json c8c5adb5b9146009ee9e3c78126a542ab693b0521d64108955396d48e3a2f20b
-    vendor/dagr-analytics/c1/fixtures/expected_snapshots.json 6f1eb62705a906511965907adef126182d139f645e69490b642d098805886741
+    vendor/dagr-analytics/c1/contracts/C1_transport_read.v0_1.schema.json 1aeddf010c2529804e2183db9cf09812949e0349638009250fdd3e8f70185e1a
+    vendor/dagr-analytics/c1/contracts/dagr.analytics.observation.v0_1.schema.json 686d5708b5d4d981089cb2422ce68e05bef12ccff0337fcec8041f835733036b
+    vendor/dagr-analytics/c1/contracts/metric_snapshot.v0_1.schema.json 45457d66a9f95616fdf4a852aca66afcf1c42c91fa2c784a8423162289a39295
+    vendor/dagr-analytics/c1/fixtures/expected_snapshots.json 7284299d181aa8d96ad8e4cfc18bfeff258e7519dafad3ab9e5e27f7d0bc3734
     vendor/dagr-analytics/c1/fixtures/observations.json df3c497e73aaf291b5b8d44911946f06a73ab2d67878f2749ea42d62fe8d1b93
-    vendor/dagr-analytics/c1/metrics/api_object_read_count.v0.1.json 53044661dd17e244666205bc6c5e1e6b56bb9baaea097e6d7e45edcae64d3180
-    vendor/dagr-analytics/c1/metrics/http_request_count.v0.1.json 80a6f74a3ce04d0bdfbc9d3f57f68d6925a58a327ec277583152287035f41395
-    vendor/dagr-analytics/c1/metrics/mcp_resource_read_count.v0.1.json 7c1bcc2477a19cdbbedf4e90d13abddef862aa5c404d3da8905fcb5837b40586
-    vendor/dagr-analytics/c1/metrics/page_render_count.v0.1.json 6e5097bfc16a747e918238d359d0550115696b211c2c419f272856ee0ade6c87
-    vendor/dagr-analytics/c1/metrics/page_view_count.v0.1.json da5037f486a0af79dc42b28d107a9f8aa1ded29227b5688ebd94685ce57f182e
+    vendor/dagr-analytics/c1/metrics/api_object_read_count.v0.1.json e09e2863dbcbb9cf4bbdceeab35ce9c306e9b82ef02940cc62d766822b4aa8e5
+    vendor/dagr-analytics/c1/metrics/http_request_count.v0.1.json 0707c25b35e7694534de45da13696c8b9040031c3ac8d01a6ec808ef7c1c616d
+    vendor/dagr-analytics/c1/metrics/mcp_resource_read_count.v0.1.json 80c4e1629c5a92b483a09f45a4bb551b74fcb6706a6d7058b23d8b4425981533
+    vendor/dagr-analytics/c1/metrics/page_render_count.v0.1.json 5bcdfe6ff90d72ebf2607fb1f6b7762ef7627660a623e42cdacaee7d6e9d2bad
+    vendor/dagr-analytics/c1/metrics/page_view_count.v0.1.json 0e92b8c029d566689645491cb9302fc11fbd7040c7b43e600c65be8d792634c4
 dagr_analytics_ret1_schedule_source:
   source_repository: dagr-analytics
   source_pr: 5 (feat/ret1-retention-schedule-v0-1)
-  reviewed_head: 9bab50033f66a5d12712a1b3f5d8b31a57a49dfd
-  status: PROVISIONAL; dagr-analytics #5 is UNMERGED / CANDIDATE. Re-pin on merge.
-  retention_schedule_pin: sha256:d4eb1f13b819aaa371cab6a62259dba0d9e4beff1183c931dffd317bd282ff75
+  status: LANDED as candidate; RET1 merged to dagr-analytics main
+  merge_commit: dcc74df0bc018095f0819c57a344a7289c55a0be
+  reviewed_head: 048607838c36091df3c7d3a0bb2f3840433da54e
+  retention_schedule_pin: sha256:5cad76410af1cd74b94ae8e478d0cb7611a09cd26da6854f2103a97596cd15dc
   frozen_artifacts:
-    vendor/dagr-analytics/ret1/retention_default.v0.1.json d6fd1fd723134154f5793fc7c1ac5927e0cec0ffb4d9d608db49b6aaee7b8643
-    vendor/dagr-analytics/ret1/retention_schedule.v0_1.schema.json a54d9466441dee164aa24f786b530e4a78b9bb1d51274bda0f963c8521f7581b
+    vendor/dagr-analytics/ret1/retention_default.v0.1.json 5f4989997e49b6ebbd95377db5afa5fd16ac6ac63d78e18d8ccd10b6c2f9057c
+    vendor/dagr-analytics/ret1/retention_schedule.v0_1.schema.json 96a0715e0b8bcad1e4885ceb31b23f596c8f358eea65934721221630093de4a2

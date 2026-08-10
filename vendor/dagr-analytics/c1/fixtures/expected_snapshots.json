@@ -2,7 +2,7 @@
   "input": "fixtures/synthetic/C1/observations.json",
   "derivation_version": "0.1.0",
   "input_partition_digest": "sha256:4d7ae0de5540d78958f064b479969f7ea18c398a338794f407174b6f4e4e22ef",
-  "note": "Values hand-verifiable from the synthetic log; digests per contracts/snapshots/metric_snapshot.v0_1.schema.json (input- and definition-bound).",
+  "note": "Values hand-verifiable; digests per contracts/snapshots/metric_snapshot.v0_1.schema.json (input+definition bound; status removed from definition preimage).",
   "snapshots": [
     {
       "metric_id": "http_request_count",
@@ -13,8 +13,8 @@
       "value": 4,
       "privacy_class": "ANONYMOUS_AGGREGATE",
       "input_partition_digest": "sha256:4d7ae0de5540d78958f064b479969f7ea18c398a338794f407174b6f4e4e22ef",
-      "metric_definition_digest": "sha256:0dbf4c9019201ae0139cb5668606722cc0a6c6fcb8d9c824228ce19daf9e9f0f",
-      "snapshot_digest": "sha256:0785bd446cac1e38cb8393be901c991a6b30d050c46d1c42ab089726d1a826df"
+      "metric_definition_digest": "sha256:53a1b6d219b931c5de3b6a20b039daa8ae1e291b74b3ec2ddfdc614da405227a",
+      "snapshot_digest": "sha256:9c409591b7c21f14fc18f899dd1fee639e9286c18edaa65e8e2b9159cd055483"
     },
     {
       "metric_id": "page_render_count",
@@ -25,8 +25,8 @@
       "value": 4,
       "privacy_class": "ANONYMOUS_AGGREGATE",
       "input_partition_digest": "sha256:4d7ae0de5540d78958f064b479969f7ea18c398a338794f407174b6f4e4e22ef",
-      "metric_definition_digest": "sha256:ff12b79611a37062efd2e4b40445b306111837ba5133ff147a329bd635a8862e",
-      "snapshot_digest": "sha256:23d3a08419196a65dace28f5008e4b7e6823a8def34d7b34a2cfdb471369a24e"
+      "metric_definition_digest": "sha256:168e50cc048fd4d6df02ac63c86fa02146f0a140a4f405084d66cc3dea96a48d",
+      "snapshot_digest": "sha256:01c82f291bcb2f5148f0900a650eb32f87cb6cf089e52b304f19b8d84b30fba0"
     },
     {
       "metric_id": "page_view_count",
@@ -37,8 +37,8 @@
       "value": 3,
       "privacy_class": "ANONYMOUS_AGGREGATE",
       "input_partition_digest": "sha256:4d7ae0de5540d78958f064b479969f7ea18c398a338794f407174b6f4e4e22ef",
-      "metric_definition_digest": "sha256:a83de57baa3acdd820aecfafb55ea1fae54389bc2aaa13818cee22d2db112595",
-      "snapshot_digest": "sha256:c69939dcf71298fc9c8257dd7c76ed6f9ba1cfda3638add2a8fd9a21008ffd1a"
+      "metric_definition_digest": "sha256:152f236f1026f9bf494078418bed262e1c1dfdc1083c60ba595e26488130ce34",
+      "snapshot_digest": "sha256:32c73684c1471c4198458ce7a734ebd07a80ec5fa82fe8977a0899a4b2e88c75"
     },
     {
       "metric_id": "api_object_read_count",
@@ -49,8 +49,8 @@
       "value": 2,
       "privacy_class": "ANONYMOUS_AGGREGATE",
       "input_partition_digest": "sha256:4d7ae0de5540d78958f064b479969f7ea18c398a338794f407174b6f4e4e22ef",
-      "metric_definition_digest": "sha256:e8b41b16f46f755c0c51985a29ee23c80b30729aba0a506600fddb44bdba8161",
-      "snapshot_digest": "sha256:31959764a15435a7ee949e290e72e8688d3577c0beb3763aede979137495f32d"
+      "metric_definition_digest": "sha256:95c7a9a07a4adc686c9053193e5e415acaaf90c1e185e9bcd5bf471cafc83ec1",
+      "snapshot_digest": "sha256:38c064ab2df74c799c9c7eb856521fcf77553cd9892bee4bbd941a1c1ed6eea7"
     },
     {
       "metric_id": "mcp_resource_read_count",
@@ -61,8 +61,8 @@
       "value": 3,
       "privacy_class": "ANONYMOUS_AGGREGATE",
       "input_partition_digest": "sha256:4d7ae0de5540d78958f064b479969f7ea18c398a338794f407174b6f4e4e22ef",
-      "metric_definition_digest": "sha256:07b7a142396beba2907ce002885a7036ec2630758755e8d78e56456b9522343f",
-      "snapshot_digest": "sha256:ff1ff92697d8305c3747ed9ba6787afb32ac0c89ee1a2e763a0089546ff8ef4d"
+      "metric_definition_digest": "sha256:4c953612fd71bf877c7e6246514a3a3595a5538f9d5206612c717a6814bdfd75",
+      "snapshot_digest": "sha256:369ca2bde13669b718bcbd03bf36a25c437c4a09f9d51e337f6ea30e53cd91b8"
     }
   ]
 }

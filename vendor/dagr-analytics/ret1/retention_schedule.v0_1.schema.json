@@ -5,35 +5,88 @@
   "description": "Bounded retention + deletion behavior per privacy class, with explicit loss-of-recomputability semantics. Unknown classes fail closed; more restrictive classes never inherit a weaker TTL.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schedule", "version", "status", "clock", "grace", "recomputability_states", "retention_conformance_states", "classes"],
+  "required": [
+    "schedule",
+    "version",
+    "clock",
+    "grace",
+    "recomputability_states",
+    "retention_conformance_states",
+    "classes"
+  ],
   "properties": {
-    "schedule": { "type": "string", "minLength": 1 },
-    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
-    "status": { "const": "CANDIDATE" },
-    "clock": { "const": "UTC" },
-    "grace": { "type": "string", "minLength": 1 },
+    "schedule": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "clock": {
+      "const": "UTC"
+    },
+    "grace": {
+      "type": "string",
+      "minLength": 1
+    },
     "recomputability_states": {
       "type": "array",
-      "items": { "enum": ["FULL_RECOMPUTATION_AVAILABLE", "PROVENANCE_BOUND_SOURCE_EXPIRED", "SOURCE_WITHDRAWN", "SOURCE_UNAVAILABLE_UNEXPLAINED", "NOT_APPLICABLE"] },
+      "items": {
+        "enum": [
+          "FULL_RECOMPUTATION_AVAILABLE",
+          "PROVENANCE_BOUND_SOURCE_EXPIRED",
+          "SOURCE_WITHDRAWN",
+          "SOURCE_UNAVAILABLE_UNEXPLAINED",
+          "NOT_APPLICABLE"
+        ]
+      },
       "minItems": 5,
-      "description": "Recomputability is 'can I recount these supplied bytes?' — a separate axis from retention conformance."
+      "description": "Recomputability is 'can I recount these supplied bytes?' \u2014 a separate axis from retention conformance.",
+      "uniqueItems": true,
+      "maxItems": 5
     },
     "retention_conformance_states": {
       "type": "array",
-      "items": { "enum": ["CONFORMING", "NONCONFORMING", "NOT_EVALUATED", "NOT_APPLICABLE"] },
+      "items": {
+        "enum": [
+          "CONFORMING",
+          "NONCONFORMING",
+          "NOT_EVALUATED",
+          "NOT_APPLICABLE"
+        ]
+      },
       "minItems": 4,
-      "description": "Retention conformance is 'should these bytes still be retained?' — independent of recomputability. A present-but-past-deadline source is FULL_RECOMPUTATION_AVAILABLE yet NONCONFORMING."
+      "description": "Retention conformance is 'should these bytes still be retained?' \u2014 independent of recomputability. A present-but-past-deadline source is FULL_RECOMPUTATION_AVAILABLE yet NONCONFORMING.",
+      "uniqueItems": true,
+      "maxItems": 4
     },
     "classes": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["PUBLIC_AGGREGATE", "ANONYMOUS_AGGREGATE", "SESSION_ONLY", "PRIVATE_USER", "SENSITIVE_PRIVATE"],
+      "required": [
+        "PUBLIC_AGGREGATE",
+        "ANONYMOUS_AGGREGATE",
+        "SESSION_ONLY",
+        "PRIVATE_USER",
+        "SENSITIVE_PRIVATE"
+      ],
       "properties": {
-        "PUBLIC_AGGREGATE": { "$ref": "#/$defs/classPolicy" },
-        "ANONYMOUS_AGGREGATE": { "$ref": "#/$defs/classPolicy" },
-        "SESSION_ONLY": { "$ref": "#/$defs/classPolicy" },
-        "PRIVATE_USER": { "$ref": "#/$defs/classPolicy" },
-        "SENSITIVE_PRIVATE": { "$ref": "#/$defs/classPolicy" }
+        "PUBLIC_AGGREGATE": {
+          "$ref": "#/$defs/classPolicy"
+        },
+        "ANONYMOUS_AGGREGATE": {
+          "$ref": "#/$defs/classPolicy"
+        },
+        "SESSION_ONLY": {
+          "$ref": "#/$defs/classPolicy"
+        },
+        "PRIVATE_USER": {
+          "$ref": "#/$defs/classPolicy"
+        },
+        "SENSITIVE_PRIVATE": {
+          "$ref": "#/$defs/classPolicy"
+        }
       }
     }
   },
@@ -41,28 +94,68 @@
     "classPolicy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["raw_source_retention", "derived_retention"],
+      "required": [
+        "raw_source_retention",
+        "derived_retention"
+      ],
       "properties": {
         "raw_source_retention": {
           "description": "Either a bounded duration, 'none_required', or 'no_shared_store_default' (collection prohibited until a platform rule).",
           "oneOf": [
-            { "type": "string", "enum": ["none_required", "no_shared_store_default"] },
             {
-              "type": "object", "additionalProperties": false,
+              "type": "string",
+              "enum": [
+                "none_required",
+                "no_shared_store_default"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "max_days_after_window_end"
+              ],
               "properties": {
-                "max_days_after_window_end": { "type": "integer", "minimum": 1 },
-                "max_hours_after_session_close": { "type": "integer", "minimum": 1 }
-              },
-              "minProperties": 1
+                "max_days_after_window_end": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "max_hours_after_session_close"
+              ],
+              "properties": {
+                "max_hours_after_session_close": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
             }
           ]
         },
-        "derived_retention": { "type": "string", "minLength": 1 },
-        "on_source_deletion": { "type": "string" },
-        "revocation": { "type": "string" },
-        "reclassification": { "type": "string" },
-        "collection": { "type": "string" },
-        "inheritance": { "type": "string" }
+        "derived_retention": {
+          "type": "string",
+          "minLength": 1
+        },
+        "on_source_deletion": {
+          "type": "string"
+        },
+        "revocation": {
+          "type": "string"
+        },
+        "reclassification": {
+          "type": "string"
+        },
+        "collection": {
+          "type": "string"
+        },
+        "inheritance": {
+          "type": "string"
+        }
       }
     }
   }
