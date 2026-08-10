@@ -486,3 +486,51 @@ is not PASS; retention conformance is reported as an axis independent of metric 
 - `analytics_snapshot.source_status_contradiction` — a declared source status is internally inconsistent (e.g. absent-expired before the retention deadline).
 
 Missing/unreadable/malformed CLI input remains a source-integrity/usage posture (exit 2), not a verification verdict.
+
+## Acquisition grounded-proposal verification (acquisition-grounding subcommand)
+
+Independent verification of counterpedia-acquisition grounded content proposals
+(`arcs_verify/acquisition_grounding.py`) against the exact captured source bytes.
+Pinned to counterpedia-acquisition commit `d4b1127d84816cc8279fc2ea0b16358006b37745`
+(grounded-proposal schema `acquisition.grounded_content_proposal.v0.1`, extraction
+profile `acquisition.html-visible-text.v0.1`). The verifier recomputes from bytes
+only and imports zero producer code. Three axes are reported SEPARATELY —
+`artifact_integrity`, `grounding_integrity`, `proposal_posture` — with no master
+trust score. A PASS attests binding of the proposal to its evidence, NOT that the
+source is true or that the proposal is admitted. `NOT_EVALUATED` is not PASS.
+
+Codes are grouped by the axis they trip.
+
+### artifact_integrity
+
+| Code | Meaning |
+|---|---|
+| `acquisition_grounding.artifact_digest_malformed` | `artifact_digest` is not a `sha256:<64 lowercase hex>` reference. |
+| `acquisition_grounding.artifact_digest_mismatch` | The independently recomputed sha256 of the supplied source bytes does not equal the envelope's `artifact_digest`. |
+
+### grounding_integrity
+
+| Code | Meaning |
+|---|---|
+| `acquisition_grounding.schema_digest_mismatch` | The vendored grounded-proposal schema bytes do not hash to the pinned sha256 (verifier-integrity, fail-closed). |
+| `acquisition_grounding.schema_version_mismatch` | `schema_version` is not `acquisition.grounded_content_proposal.v0.1`. |
+| `acquisition_grounding.envelope_schema_invalid` | The envelope does not validate against the pinned grounded-proposal JSON schema. |
+| `acquisition_grounding.extraction_profile_unknown` | The envelope's `extraction_profile` is not the pinned `acquisition.html-visible-text.v0.1`. |
+| `acquisition_grounding.field_grounding_binding_invalid` | `field_grounding` does not bind one-to-one to `content_proposal.fields` (count mismatch, or `field_index` values are not exactly `0..n-1`). |
+| `acquisition_grounding.grounding_kind_invalid` | A `field_grounding` entry's `grounding_kind` is outside the closed set (`extractive`, `abstractive`). |
+| `acquisition_grounding.extractive_anchor_missing` | An extractive field grounding carries no `verified_anchor` object. |
+| `acquisition_grounding.anchor_extraction_profile_unknown` | A `verified_anchor` names an `extraction_profile` other than the pinned profile. |
+| `acquisition_grounding.anchor_artifact_digest_mismatch` | A `verified_anchor.artifact_digest` does not equal the envelope's captured-source `artifact_digest` (a model-supplied anchor may not re-point identity). |
+| `acquisition_grounding.anchor_span_out_of_range` | An extractive anchor's `start`/`end` are not integers, are negative, are inverted, or fall outside the recomputed projection length. |
+| `acquisition_grounding.anchor_span_text_mismatch` | The independently recomputed projection slice `[start:end]`, normalized, does not exactly equal the proposed field text, normalized. No fuzzy / semantic / substring rescue; text that is real elsewhere is not rescued. |
+| `acquisition_grounding.abstractive_carries_anchor` | An abstractive (synthesis) field grounding carries a `verified_anchor`; synthesis is never treated as exact-span grounded. |
+| `acquisition_grounding.dropped_disposition_malformed` | A `dropped_ungrounded` entry is malformed: bad `field_name`, `grounding_kind` outside the closed set, `reason` outside the closed drop-reason vocabulary, malformed `claimed_span`, or non-`sha256:` `proposed_value_sha256`; or `dropped_ungrounded` is present but not a list. |
+
+### proposal_posture
+
+| Code | Meaning |
+|---|---|
+| `acquisition_grounding.lifecycle_not_proposal` | The record is not proposal-only: `content_proposal.lifecycle_state` is not `proposal`, or an `is_proposal` flag (envelope or proposal) is not `true`. |
+| `acquisition_grounding.authority_field_present` | A forbidden authority field (`admitted`, `refused`, `standing`, `canonical_id`, `trace_id`, `srs_verified`, `counterpedia_id`) is present anywhere in the envelope. Instruction-like text inside the captured source bytes has no authority effect and never trips this. |
+
+Missing/unreadable/malformed CLI input (envelope or source) remains a source-integrity/usage posture (exit 2), not a verification verdict.

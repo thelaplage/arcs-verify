@@ -1,0 +1,386 @@
+{
+  "$defs": {
+    "ClaimedGroundingSpan": {
+      "additionalProperties": false,
+      "description": "A model-supplied span into the extraction projection. NOT evidence.",
+      "properties": {
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "minimum": 0,
+          "title": "End",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "ClaimedGroundingSpan",
+      "type": "object"
+    },
+    "ContentFieldProposal": {
+      "additionalProperties": false,
+      "description": "A single field-level composition proposal traceable to its CandidateClaim.\n\nThis is NOT a canonical Counterpedia field record; it is an acquisition-\nsubstrate proposal awaiting ingestion-layer admission.",
+      "properties": {
+        "field_name": {
+          "title": "Field Name",
+          "type": "string"
+        },
+        "proposed_value": {
+          "title": "Proposed Value"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "provenance": {
+          "$ref": "#/$defs/ProvenanceChain"
+        },
+        "source_span": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceSpan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "qualification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Qualification"
+        },
+        "is_proposal": {
+          "default": true,
+          "title": "Is Proposal",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "acquisition.content_proposal.v0.1",
+          "default": "acquisition.content_proposal.v0.1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field_name",
+        "proposed_value",
+        "confidence",
+        "provenance"
+      ],
+      "title": "ContentFieldProposal",
+      "type": "object"
+    },
+    "ContentProposal": {
+      "additionalProperties": false,
+      "description": "Counterpedia composition proposal produced by the acquisition substrate.\n\n``lifecycle_state`` is locked to ``\"proposal\"`` by a Literal constraint;\nthe Counterpedia ingestion layer owns all lifecycle transitions.\n\n``proposed_at`` is always UTC.\n\nExplicitly absent: canonical_id, trace_id, standing, srs_verified,\nadmitted, refused, counterpedia_id.  Downstream derives these.",
+      "properties": {
+        "proposal_id": {
+          "title": "Proposal Id",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_locator": {
+          "title": "Source Locator",
+          "type": "string"
+        },
+        "proposed_at": {
+          "format": "date-time",
+          "title": "Proposed At",
+          "type": "string"
+        },
+        "fields": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ContentFieldProposal"
+          },
+          "title": "Fields",
+          "type": "array"
+        },
+        "is_proposal": {
+          "default": true,
+          "title": "Is Proposal",
+          "type": "boolean"
+        },
+        "lifecycle_state": {
+          "const": "proposal",
+          "default": "proposal",
+          "title": "Lifecycle State",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "acquisition.content_proposal.v0.1",
+          "default": "acquisition.content_proposal.v0.1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "source_locator"
+      ],
+      "title": "ContentProposal",
+      "type": "object"
+    },
+    "DroppedUngrounded": {
+      "additionalProperties": false,
+      "description": "A typed disposition for a proposal field dropped by grounding. Never silent.",
+      "properties": {
+        "field_name": {
+          "title": "Field Name",
+          "type": "string"
+        },
+        "grounding_kind": {
+          "$ref": "#/$defs/GroundingKind"
+        },
+        "reason": {
+          "$ref": "#/$defs/GroundingDropReason"
+        },
+        "claimed_span": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClaimedGroundingSpan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "proposed_value_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proposed Value Sha256"
+        }
+      },
+      "required": [
+        "field_name",
+        "grounding_kind",
+        "reason"
+      ],
+      "title": "DroppedUngrounded",
+      "type": "object"
+    },
+    "FieldGrounding": {
+      "additionalProperties": false,
+      "description": "Grounding record for one SURVIVING proposal field, bound by index.",
+      "properties": {
+        "field_index": {
+          "minimum": 0,
+          "title": "Field Index",
+          "type": "integer"
+        },
+        "grounding_kind": {
+          "$ref": "#/$defs/GroundingKind"
+        },
+        "verified_anchor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VerifiedGroundingAnchor"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "field_index",
+        "grounding_kind"
+      ],
+      "title": "FieldGrounding",
+      "type": "object"
+    },
+    "GroundingDropReason": {
+      "description": "Closed v0.1 vocabulary of reasons an extractive proposal is dropped.",
+      "enum": [
+        "missing_span",
+        "span_out_of_range",
+        "span_text_mismatch",
+        "invalid_span",
+        "artifact_digest_mismatch",
+        "extraction_profile_mismatch"
+      ],
+      "title": "GroundingDropReason",
+      "type": "string"
+    },
+    "GroundingKind": {
+      "description": "Whether a proposed field is located-in-bytes or model synthesis.",
+      "enum": [
+        "extractive",
+        "abstractive"
+      ],
+      "title": "GroundingKind",
+      "type": "string"
+    },
+    "ProvenanceChain": {
+      "additionalProperties": false,
+      "description": "Full provenance linkage from a candidate back to its capture.",
+      "properties": {
+        "capture_id": {
+          "title": "Capture Id",
+          "type": "string"
+        },
+        "envelope_id": {
+          "title": "Envelope Id",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "capture_id",
+        "envelope_id",
+        "source_id",
+        "captured_at",
+        "observed_at"
+      ],
+      "title": "ProvenanceChain",
+      "type": "object"
+    },
+    "SourceSpan": {
+      "additionalProperties": false,
+      "description": "Byte or character span locating a claim within the source document.\n\n``start`` and ``end`` are zero-based, with start <= end.  The unit\n(bytes vs characters) is determined by the observer that produces the span;\nconsumers must not assume a unit without checking the observer context.",
+      "properties": {
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "minimum": 0,
+          "title": "End",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "SourceSpan",
+      "type": "object"
+    },
+    "VerifiedGroundingAnchor": {
+      "additionalProperties": false,
+      "description": "Created ONLY by the deterministic verifier, never copied from the model.\n\nIdentity tuple = (artifact_digest, extraction_profile, start, end). It is\nverification evidence for a candidate locator \u2014 not an anchor id, not an\nadmitted anchor, not SRC1/ADJ1 authority.",
+      "properties": {
+        "artifact_digest": {
+          "title": "Artifact Digest",
+          "type": "string"
+        },
+        "extraction_profile": {
+          "const": "acquisition.html-visible-text.v0.1",
+          "title": "Extraction Profile",
+          "type": "string"
+        },
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "minimum": 0,
+          "title": "End",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_digest",
+        "extraction_profile",
+        "start",
+        "end"
+      ],
+      "title": "VerifiedGroundingAnchor",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Proposal-only wrapper: an unchanged ``ContentProposal`` + grounding record.\n\nAdds NO admission / standing / canonical-id / SRS authority. Every surviving\nfield of the wrapped proposal has exactly one typed grounding entry, and the\ndropped set records every rejected extractive proposal.",
+  "properties": {
+    "content_proposal": {
+      "$ref": "#/$defs/ContentProposal"
+    },
+    "artifact_digest": {
+      "title": "Artifact Digest",
+      "type": "string"
+    },
+    "extraction_profile": {
+      "const": "acquisition.html-visible-text.v0.1",
+      "default": "acquisition.html-visible-text.v0.1",
+      "title": "Extraction Profile",
+      "type": "string"
+    },
+    "field_grounding": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/FieldGrounding"
+      },
+      "title": "Field Grounding",
+      "type": "array"
+    },
+    "dropped_ungrounded": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/DroppedUngrounded"
+      },
+      "title": "Dropped Ungrounded",
+      "type": "array"
+    },
+    "is_proposal": {
+      "const": true,
+      "default": true,
+      "title": "Is Proposal",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "acquisition.grounded_content_proposal.v0.1",
+      "default": "acquisition.grounded_content_proposal.v0.1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "content_proposal",
+    "artifact_digest"
+  ],
+  "title": "GroundedContentProposalEnvelope",
+  "type": "object"
+}

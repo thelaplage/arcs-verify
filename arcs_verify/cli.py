@@ -53,6 +53,7 @@ _EXAMPLE = (
     "  arcs-verify deferred-sequence ...       verify a deferred-operation receipt sequence\n"
     "  arcs-verify governed-memory-sequence    verify a governed memory read sequence bundle\n"
     "  arcs-verify ingest-run-sequence ...     verify a dagr.ingest_run.v0.1 receipt sequence\n"
+    "  arcs-verify acquisition-grounding ...   verify a grounded content proposal against captured source bytes\n"
     "\n"
     "exit codes: 0 all results passed; 1 verification failed; 2 usage or\n"
     "source-integrity error (not a verification verdict)."
@@ -245,6 +246,10 @@ def main(argv: list[str] | None = None) -> int:
         from .analytics_snapshot import main as analytics_snapshot_main
 
         return analytics_snapshot_main(args[1:])
+    if args and args[0] == "acquisition-grounding":
+        from .acquisition_grounding import main as acquisition_grounding_main
+
+        return acquisition_grounding_main(args[1:])
     return _verify_srs(args)
 
 

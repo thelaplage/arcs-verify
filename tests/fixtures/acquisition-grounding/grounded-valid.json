@@ -1,0 +1,81 @@
+{
+  "artifact_digest": "sha256:095abe900ba69216ea54a323f697294785f10dd8b5f66279c9e55c381dbf7d3d",
+  "content_proposal": {
+    "fields": [
+      {
+        "confidence": 0.9,
+        "field_name": "claim",
+        "is_proposal": true,
+        "proposed_value": "Company reported revenue of $10 million.",
+        "provenance": {
+          "capture_id": "cap_8acd68b6-2b30-4dab-afb0-1167fe92bec2",
+          "captured_at": "2026-08-10T07:13:12.116611Z",
+          "envelope_id": "obs_d5cfcf3a-fbdd-4db1-ae2c-dc1f221a620b",
+          "observed_at": "2026-08-10T07:13:12.116933Z",
+          "source_id": "src_20d9080a077d6a9ec8c2379849853893"
+        },
+        "qualification": null,
+        "schema_version": "acquisition.content_proposal.v0.1",
+        "source_span": {
+          "end": 40,
+          "start": 0
+        }
+      },
+      {
+        "confidence": 0.9,
+        "field_name": "claim",
+        "is_proposal": true,
+        "proposed_value": "The page contains instruction-like text.",
+        "provenance": {
+          "capture_id": "cap_8acd68b6-2b30-4dab-afb0-1167fe92bec2",
+          "captured_at": "2026-08-10T07:13:12.116611Z",
+          "envelope_id": "obs_d5cfcf3a-fbdd-4db1-ae2c-dc1f221a620b",
+          "observed_at": "2026-08-10T07:13:12.116933Z",
+          "source_id": "src_20d9080a077d6a9ec8c2379849853893"
+        },
+        "qualification": null,
+        "schema_version": "acquisition.content_proposal.v0.1",
+        "source_span": null
+      }
+    ],
+    "is_proposal": true,
+    "lifecycle_state": "proposal",
+    "proposal_id": "cprop_7e782fe8-c2fc-43fd-b6e7-140f7eccc625",
+    "proposed_at": "2026-08-10T07:13:12.117084Z",
+    "schema_version": "acquisition.content_proposal.v0.1",
+    "source_id": "src_20d9080a077d6a9ec8c2379849853893",
+    "source_locator": "https://example.com/injection"
+  },
+  "dropped_ungrounded": [
+    {
+      "claimed_span": {
+        "end": 40,
+        "start": 0
+      },
+      "field_name": "claim",
+      "grounding_kind": "extractive",
+      "proposed_value_sha256": "sha256:e6331c46efb72977a32e24fff50877e1c7c79b525963a54db64a8deaef5a66cf",
+      "reason": "span_text_mismatch"
+    }
+  ],
+  "extraction_profile": "acquisition.html-visible-text.v0.1",
+  "field_grounding": [
+    {
+      "field_index": 0,
+      "grounding_kind": "extractive",
+      "verified_anchor": {
+        "artifact_digest": "sha256:095abe900ba69216ea54a323f697294785f10dd8b5f66279c9e55c381dbf7d3d",
+        "end": 40,
+        "extraction_profile": "acquisition.html-visible-text.v0.1",
+        "start": 0
+      }
+    },
+    {
+      "field_index": 1,
+      "grounding_kind": "abstractive",
+      "verified_anchor": null
+    }
+  ],
+  "is_proposal": true,
+  "schema_version": "acquisition.grounded_content_proposal.v0.1"
+}
