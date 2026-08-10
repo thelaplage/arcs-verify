@@ -1,0 +1,70 @@
+{
+  "content_proposal": {
+    "proposal_id": "cprop_8d0dd31e-3087-41be-b506-558194c9fe9d",
+    "source_id": "src_2c5c551c309df2abaee0b906055efc65",
+    "source_locator": "http://127.0.0.1:8973",
+    "proposed_at": "2026-08-10T15:26:09.414634Z",
+    "fields": [
+      {
+        "field_name": "headline",
+        "proposed_value": "OSG-01 End-to-End Source",
+        "confidence": 0.9,
+        "provenance": {
+          "capture_id": "cap_1432ef51-89b1-4598-b538-ed452f436299",
+          "envelope_id": "obs_a0557e76-9616-49b1-9acb-8dec54cbe016",
+          "source_id": "src_2c5c551c309df2abaee0b906055efc65",
+          "captured_at": "2026-08-10T15:26:09.414318Z",
+          "observed_at": "2026-08-10T15:26:09.414523Z"
+        },
+        "source_span": {
+          "start": 0,
+          "end": 24
+        },
+        "qualification": null,
+        "is_proposal": true,
+        "schema_version": "acquisition.content_proposal.v0.1"
+      },
+      {
+        "field_name": "summary",
+        "proposed_value": "model-synthesized summary (not in bytes)",
+        "confidence": 0.5,
+        "provenance": {
+          "capture_id": "cap_1432ef51-89b1-4598-b538-ed452f436299",
+          "envelope_id": "obs_a0557e76-9616-49b1-9acb-8dec54cbe016",
+          "source_id": "src_2c5c551c309df2abaee0b906055efc65",
+          "captured_at": "2026-08-10T15:26:09.414318Z",
+          "observed_at": "2026-08-10T15:26:09.414523Z"
+        },
+        "source_span": null,
+        "qualification": null,
+        "is_proposal": true,
+        "schema_version": "acquisition.content_proposal.v0.1"
+      }
+    ],
+    "is_proposal": true,
+    "lifecycle_state": "proposal",
+    "schema_version": "acquisition.content_proposal.v0.1"
+  },
+  "artifact_digest": "sha256:5b7fa4b9559750e1b5dd0aa9fd396d3291569054f6cbb0a441b9aebf1785eb33",
+  "extraction_profile": "acquisition.html-visible-text.v0.1",
+  "field_grounding": [
+    {
+      "field_index": 0,
+      "grounding_kind": "extractive",
+      "verified_anchor": {
+        "artifact_digest": "sha256:5b7fa4b9559750e1b5dd0aa9fd396d3291569054f6cbb0a441b9aebf1785eb33",
+        "extraction_profile": "acquisition.html-visible-text.v0.1",
+        "start": 0,
+        "end": 24
+      }
+    },
+    {
+      "field_index": 1,
+      "grounding_kind": "abstractive",
+      "verified_anchor": null
+    }
+  ],
+  "dropped_ungrounded": [],
+  "is_proposal": true,
+  "schema_version": "acquisition.grounded_content_proposal.v0.1"
+}

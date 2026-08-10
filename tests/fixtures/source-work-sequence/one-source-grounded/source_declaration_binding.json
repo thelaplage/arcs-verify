@@ -1,0 +1,7 @@
+{
+  "schema_version": "acquisition.source_declaration_binding.v0.1",
+  "declaring_artifact_ref": "sha256:bfc8d023c092468d359c6a515599fb3b6c3c94504e1bcb535ce44bd167d272d6",
+  "source_inventory_key": "OSG-01",
+  "declared_locator": "http://127.0.0.1:8973",
+  "derived_source_reference_id": "urn:counterpedia.source-reference:sha256:bfc8d023c092468d359c6a515599fb3b6c3c94504e1bcb535ce44bd167d272d6:OSG-01"
+}
