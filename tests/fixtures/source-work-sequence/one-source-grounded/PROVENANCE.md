@@ -47,7 +47,8 @@ historical execution is reproducible.
 
 **Lane A — `counterpedia-acquisition @ d4b1127d`.** The committed generator
 `scripts/gen_osg01_sourceseq_fixture.py`
-(`sha256:e457df2bf92c81d1794618ce66fca585bb82c16e7adcfb6e717d543cc8589245`) runs the
+(`sha256:2639643a1a8ad2f5374e156e7ed255238a0270272ce07f27c0dd6d53a7c69ced`; landed
+in `counterpedia-acquisition` via PR #19, squash-merge `412c6bbb`) runs the
 real ACQ-SESSION0 pipeline over a small self-hosted HTML source and exports the
 literal session wire bytes:
 
