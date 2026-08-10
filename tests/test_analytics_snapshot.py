@@ -204,10 +204,37 @@ def test_retention_schedule_pin():
     assert A.digest(SCHED) == A.RET_SCHED_PIN
 
 
-def test_report_carries_canonicalization_profile_and_provisional():
+def test_report_carries_canonicalization_profile_and_landed_candidate_posture():
     r = _run(_snap("http_request_count"), _defn("http_request_count"), PARTITION, "supplied", "2026-08-15T00:00:00Z")
     assert r["canonicalization_profile"] == "dagr.canonical-json.v0.1"
-    assert r["upstream_contract_posture"] == "PROVISIONAL"
+    assert r["upstream_contract_posture"] == "LANDED_CANDIDATE"
+    assert any("does not evaluate external ratification" in lim.lower() or "ratification" in lim.lower()
+               for lim in r["limitations"])
+
+
+# --- V1B: format enforcement + metric/retention axis separation ------------
+
+def test_malformed_observation_observed_at_rejected():
+    p = copy.deepcopy(PARTITION); p["observations"][0]["observed_at"] = "not-a-timestamp"
+    r = A.verify(*_http(), p, SCHED, "supplied", "2026-08-15T00:00:00Z")  # must not raise
+    assert r["conclusions"]["observation_profile"] == "FAIL"
+    assert "analytics_snapshot.observation_profile_invalid" in r["failure_codes"]
+    assert r["conclusions"]["value_recomputation"] == "NOT_EVALUATED"
+
+
+def test_as_of_tz_aware_but_not_rfc3339_is_source_integrity():
+    # space separator instead of 'T' — fromisoformat accepts it, RFC3339 does not
+    with pytest.raises(A.SourceIntegrityError):
+        A.verify(*_http(), PARTITION, SCHED, "supplied", "2026-08-15 00:00:00+00:00")
+
+
+def test_metric_and_retention_axes_are_independent():
+    sched2 = copy.deepcopy(SCHED); sched2["grace"] = "schema-valid but not the pinned schedule"
+    r = A.verify(*_http(), PARTITION, sched2, "supplied", "2026-08-15T00:00:00Z")
+    assert r["metric_integrity"] == "PASS"                       # metric untouched
+    assert r["retention_policy_integrity"] == "FAIL"             # wrong policy object
+    assert r["retention"]["retention_conformance"] == "NOT_EVALUATED"
+    assert "analytics_snapshot.retention_schedule_pin_mismatch" in r["failure_codes"]
 
 
 # --- V1A: schema enforcement, derivation binding, parity, timestamps --------

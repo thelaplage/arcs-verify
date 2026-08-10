@@ -8,9 +8,10 @@ equivalent to dagr.canonical-json.v0.1 (proven by the equivalence vectors).
 
 Upstream C1 (#2, merge b8444c13) and RET1 (#5, merge dcc74df0) have LANDED as
 CANDIDATE contracts on dagr-analytics main; their exact landed bytes are vendored
-and pinned (see VENDORED_FROM). They are NOT ratified, so the report keeps
-upstream_contract_posture=PROVISIONAL and this verifier remains draft pending its
-own readiness assessment.
+and pinned (see VENDORED_FROM). The report states
+upstream_contract_posture=LANDED_CANDIDATE and carries an explicit limitation that
+V1 verifies the pinned bytes only and does NOT evaluate external ratification or
+authority standing.
 
 Contract is enforced in verify() (the core), so CLI and library cannot drift.
 Two facts are kept separate: what the verifier independently recomputed from
@@ -54,6 +55,15 @@ _DIRECT = {
 SUPPORTED = set(_DIRECT) | {"page_view_count"}
 SOURCE_STATUSES = {"supplied", "absent-expired", "absent-withdrawn", "absent-unexplained", "not-supplied"}
 
+# The METRIC-integrity axis. Deliberately excludes `retention_schedule`: a wrong
+# supplied retention policy must not relabel a correctly-recounted metric false.
+_METRIC_CONCL = (
+    "snapshot_shape", "metric_profile_binding", "metric_identity", "derivation_version",
+    "metric_definition_digest", "metric_definition_pin", "window_timestamps",
+    "partition_shape", "observation_profile", "event_id_uniqueness", "window_binding",
+    "input_partition_digest", "value_recomputation", "snapshot_digest", "privacy_class_binding",
+)
+
 
 # --------------------------------------------------------------------------- #
 # vendored schemas — enforced locally, no network resolution
@@ -67,9 +77,36 @@ _PROFILE = _vload("c1/contracts/C1_transport_read.v0_1.schema.json")
 _SNAP_SCHEMA = _vload("c1/contracts/metric_snapshot.v0_1.schema.json")
 _RET_SCHEMA = _vload("ret1/retention_schedule.v0_1.schema.json")
 
+import re as _re
+
+# Strict RFC 3339 (date-time). datetime.fromisoformat is too lenient (accepts
+# date-only, space separator, missing offset), so enforce the grammar explicitly.
+_RFC3339 = _re.compile(
+    r"^\d{4}-\d{2}-\d{2}[Tt]\d{2}:\d{2}:\d{2}(\.\d+)?([Zz]|[+-]\d{2}:\d{2})$")
+
+
+def _strict_rfc3339(value: str) -> _dt.datetime:
+    if not isinstance(value, str) or not _RFC3339.match(value):
+        raise ValueError(f"not strict RFC3339: {value!r}")
+    return _dt.datetime.fromisoformat(value.replace("Z", "+00:00").replace("z", "+00:00"))
+
+
+# Local FormatChecker so JSON-schema `format: date-time` is actually asserted
+# (regardless of optional jsonschema[format] extras).
+_FMT = jsonschema.FormatChecker()
+
+
+@_FMT.checks("date-time", raises=ValueError)
+def _fmt_datetime(value: object) -> bool:
+    if not isinstance(value, str):
+        return True  # non-strings are not date-time instances
+    _strict_rfc3339(value)
+    return True
+
+
 _REGISTRY = Registry().with_resources([(_OBS_SCHEMA["$id"], Resource.from_contents(_OBS_SCHEMA))])
-_V_PROFILE = jsonschema.Draft202012Validator(_PROFILE, registry=_REGISTRY)
-_V_SNAP = jsonschema.Draft202012Validator(_SNAP_SCHEMA)
+_V_PROFILE = jsonschema.Draft202012Validator(_PROFILE, registry=_REGISTRY, format_checker=_FMT)
+_V_SNAP = jsonschema.Draft202012Validator(_SNAP_SCHEMA, format_checker=_FMT)
 _V_RET = jsonschema.Draft202012Validator(_RET_SCHEMA)
 
 
@@ -150,27 +187,19 @@ def recount(metric_id: str, observations: list[dict]) -> int:
 # time
 # --------------------------------------------------------------------------- #
 def _parse_caller_time(s: str) -> _dt.datetime:
-    """--as-of: strict timezone-aware RFC3339; malformed => usage/source-integrity."""
+    """--as-of: strict RFC3339 (tz-aware); anything else => usage/source-integrity."""
     try:
-        d = _dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
-    except Exception as e:
-        raise SourceIntegrityError(f"malformed --as-of {s!r}: {e}")
-    if d.tzinfo is None:
-        raise SourceIntegrityError(f"--as-of must be timezone-aware: {s!r}")
-    return d
+        return _strict_rfc3339(s)
+    except ValueError as e:
+        raise SourceIntegrityError(f"--as-of must be strict RFC3339: {s!r} ({e})")
 
 
 def _parse_artifact_time(s: Any) -> _dt.datetime:
     """window_start/window_end: producer artifact; malformed => verification failure."""
-    if not isinstance(s, str):
-        raise _ArtifactTime(f"artifact timestamp not a string: {s!r}")
     try:
-        d = _dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
-    except Exception as e:
+        return _strict_rfc3339(s)
+    except ValueError as e:
         raise _ArtifactTime(f"malformed artifact timestamp {s!r}: {e}")
-    if d.tzinfo is None:
-        raise _ArtifactTime(f"artifact timestamp must be timezone-aware: {s!r}")
-    return d
 
 
 def _anon_retention_seconds(schedule: dict) -> Optional[int]:
@@ -337,16 +366,20 @@ def verify(snapshot: dict, definition: dict, partition: Optional[dict],
     if retention["retention_conformance"] == "NONCONFORMING":
         findings.append("analytics_snapshot.retention_nonconforming")
 
-    metric_integrity = "PASS" if all(v == "PASS" for v in concl.values()) else \
-        ("FAIL" if any(v == "FAIL" for v in concl.values()) else "PARTIAL")
+    # METRIC axis only (retention_schedule excluded).
+    mvals = [concl[k] for k in _METRIC_CONCL if k in concl]
+    metric_integrity = "FAIL" if "FAIL" in mvals else ("PARTIAL" if "NOT_EVALUATED" in mvals else "PASS")
+    # RETENTION-POLICY axis (schema+pin of the supplied schedule), independent.
+    retention_policy_integrity = "PASS" if concl.get("retention_schedule") == "PASS" else "FAIL"
 
     return {
         "schema": REPORT_SCHEMA,
         "verification_profile": VERIFICATION_PROFILE,
-        "upstream_contract_posture": "PROVISIONAL",
+        "upstream_contract_posture": "LANDED_CANDIDATE",
         "canonicalization_profile": CANON_PROFILE,
         "conclusions": concl,
         "metric_integrity": metric_integrity,
+        "retention_policy_integrity": retention_policy_integrity,
         "recomputed": rec,
         "retention": {"retention_schedule_pin": RET_SCHED_PIN,
                       "schedule_digest": (digest(schedule) if schedule_ok else None), **retention},
@@ -381,7 +414,7 @@ def _evaluate_retention(schedule, window_end, source_status, as_of_dt, as_of_raw
 
 
 def _limitations(source_status, partition):
-    lim = []
+    lim = ["V1 verifies the pinned landed candidate contract bytes; it does not evaluate external ratification or authority standing (ratification is an external state transition that may change without changing the pinned subject bytes)."]
     if partition is None:
         lim.append("input_partition_digest and value_recomputation are NOT_EVALUATED: no partition supplied; limited verification, not a full recount.")
     if source_status != "supplied":
@@ -438,7 +471,7 @@ def main(argv: list[str] | None = None) -> int:
 
 def _emit_fail(code: str, args, detail: str = "") -> int:
     report = {"schema": REPORT_SCHEMA, "verification_profile": VERIFICATION_PROFILE,
-              "upstream_contract_posture": "PROVISIONAL", "failure_codes": [code], "detail": detail,
+              "upstream_contract_posture": "LANDED_CANDIDATE", "failure_codes": [code], "detail": detail,
               "conclusions": {}, "retention": {"retention_conformance": "NOT_EVALUATED"}}
     if getattr(args, "json", False):
         print(json.dumps(report, indent=2, sort_keys=True))
@@ -451,6 +484,7 @@ def _human(r: dict) -> None:
     print(f"canonicalization_profile: {r['canonicalization_profile']}")
     print(f"upstream_contract_posture: {r['upstream_contract_posture']}")
     print(f"metric_integrity: {r['metric_integrity']}")
+    print(f"retention_policy_integrity: {r.get('retention_policy_integrity')}")
     ret = r["retention"]
     print(f"source_status_basis: {ret.get('source_status_basis')}")
     print(f"source_recomputability_state: {ret.get('source_recomputability_state')}")
