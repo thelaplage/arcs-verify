@@ -1,0 +1,17 @@
+{
+  "capture_id": "cap_unbound_00000000-0000-4000-8000-000000000002",
+  "source_id": "src_arbitrary_unbound_0001",
+  "source_locator": "https://example.com/some-arbitrary-page",
+  "captured_at": "2026-08-09T00:05:00Z",
+  "http_metadata": {
+    "status_code": 200,
+    "content_type": "text/html; charset=utf-8",
+    "content_length": 20,
+    "last_modified": null,
+    "etag": null,
+    "final_url": "https://example.com/some-arbitrary-page"
+  },
+  "exact_bytes_sha256": "sha256:de553716918b69f73607dcf084293dded3d7dac2970d168d263c986d4ae26faf",
+  "byte_count": 20,
+  "schema_version": "acquisition.capture.v0.1"
+}

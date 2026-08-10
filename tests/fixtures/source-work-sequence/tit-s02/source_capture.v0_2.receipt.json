@@ -1,0 +1,36 @@
+{
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.editorial.source_capture",
+  "profile_version": "v0.2",
+  "receipt_id": "editorial-source-capture-v02-success-TIT-S02-0001",
+  "receipt_type": "provenance",
+  "receipt_kind": "capture_attempt",
+  "boundary_type": "editorial_corpus_boundary",
+  "protocol_binding": "counterpedia-demo-corpus-capture/wave1",
+  "subject_ref": "urn:counterpedia.source-reference:sha256:a272eb55b983b97fe10320b49051e62e042ced0d3f9d06aa7ffba61136cdcfc3:TIT-S02",
+  "issuer_id": "issuer.counterpedia/demo-corpus/wave1",
+  "runtime_instance_id": "runtime-counterpedia-capture-0001",
+  "boundary_id": "boundary-editorial-corpus-0001",
+  "issued_at": "2026-08-09T00:02:00Z",
+  "source_reference_id": "urn:counterpedia.source-reference:sha256:a272eb55b983b97fe10320b49051e62e042ced0d3f9d06aa7ffba61136cdcfc3:TIT-S02",
+  "declaring_artifact_ref": "sha256:a272eb55b983b97fe10320b49051e62e042ced0d3f9d06aa7ffba61136cdcfc3",
+  "source_inventory_key": "TIT-S02",
+  "declared_url": "https://data.ntsb.gov/Docket/Document/docBLOB?FileExtension=pdf&FileName=MIR2536-Rel.pdf&ID=19420353",
+  "capturer_identity": "counterpedia-capture-pipeline/wave1@v0.1",
+  "outcome": "success",
+  "captured_bytes_ref": "sha256:ffdbd3dfde2d776b07783ebeacef5183fa3b7c5e13ca7cd06f90c70bb937f84b",
+  "artifact_classes_covered": [
+    "declared_reference_identity",
+    "capture_attempt_record"
+  ],
+  "artifact_classes_excluded": [
+    "raw_captured_bytes"
+  ],
+  "attestation_limits": [
+    "The receipt declares a source capture attempt for a governed declared source reference. It does not establish that the captured bytes are authentic, that the source is the one the declaration intended, or that the content supports any claim the declaration is used to support."
+  ],
+  "machine_limitations": [
+    {"code": "CONTENT_NOT_VERIFIED"}
+  ],
+  "extensions": {}
+}

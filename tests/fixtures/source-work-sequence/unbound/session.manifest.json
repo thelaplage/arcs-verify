@@ -1,0 +1,35 @@
+{
+  "schema_version": "acquisition.source_session.manifest.v0.1",
+  "session_kind": "one_shot_source_processing",
+  "input_kind": "url",
+  "observation_hint_present": false,
+  "source_id": "src_arbitrary_unbound_0001",
+  "source_locator": "https://example.com/some-arbitrary-page",
+  "captured_object_address": "sha256:de553716918b69f73607dcf084293dded3d7dac2970d168d263c986d4ae26faf",
+  "extraction_profile": "html_main_text.v0.1",
+  "artifacts": [
+    {
+      "path": "captured/de553716918b69f73607dcf084293dded3d7dac2970d168d263c986d4ae26faf.bin",
+      "sha256": "sha256:de553716918b69f73607dcf084293dded3d7dac2970d168d263c986d4ae26faf",
+      "role": "captured_bytes",
+      "schema_version": null
+    }
+  ],
+  "grounding_summary": {
+    "proposal_fields": 0,
+    "extractive_grounded_fields": 0,
+    "abstractive_fields": 0,
+    "dropped_ungrounded": 0
+  },
+  "source_capture_binding_status": "SRS-source-capture-ineligible",
+  "declaring_artifact_ref": null,
+  "source_inventory_key": null,
+  "declaration_binding": null,
+  "unbound_declaration": {
+    "schema_version": "acquisition.source_declaration_unbound.v0.1",
+    "status": "SRS-source-capture-ineligible",
+    "reason": "no_declaration_provided",
+    "attempted_locator": "https://example.com/some-arbitrary-page",
+    "requested_inventory_key": null
+  }
+}
