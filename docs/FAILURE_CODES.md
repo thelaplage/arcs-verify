@@ -465,6 +465,8 @@ Independent recount of DAGR Analytics C1 snapshots (`arcs_verify/analytics_snaps
 Upstream C1 (#2) and RET1 (#5) contracts are PROVISIONAL / unmerged. `NOT_EVALUATED`
 is not PASS; retention conformance is reported as an axis independent of metric integrity.
 
+- `analytics_snapshot.observation_profile_invalid` — a supplied observation does not validate the vendored C1_transport_read profile (wrong platform/privacy_class/action-transport pair/event_id grammar/context domain/extra fields); recount is not performed on invalid inputs.
+- `analytics_snapshot.derivation_version_mismatch` — snapshot/definition derivation_version is not the pinned C1 expected derivation version (0.1.0).
 - `analytics_snapshot.snapshot_shape_invalid` — snapshot is missing required body/identity fields.
 - `analytics_snapshot.unsupported_metric_profile` — metric_id/metric_version is not a supported C1 v0.1 metric.
 - `analytics_snapshot.metric_identity_mismatch` — supplied definition's metric_id/version disagrees with the snapshot.

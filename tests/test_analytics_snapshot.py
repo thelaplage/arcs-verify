@@ -208,3 +208,136 @@ def test_report_carries_canonicalization_profile_and_provisional():
     r = _run(_snap("http_request_count"), _defn("http_request_count"), PARTITION, "supplied", "2026-08-15T00:00:00Z")
     assert r["canonicalization_profile"] == "dagr.canonical-json.v0.1"
     assert r["upstream_contract_posture"] == "PROVISIONAL"
+
+
+# --- V1A: schema enforcement, derivation binding, parity, timestamps --------
+
+def _http():
+    return copy.deepcopy(_snap("http_request_count")), _defn("http_request_count")
+
+
+def test_absent_withdrawn_posture():
+    s, d = _http()
+    r = A.verify(s, d, None, SCHED, "absent-withdrawn", "2026-08-15T00:00:00Z")
+    assert r["retention"]["source_recomputability_state"] == "SOURCE_WITHDRAWN"
+    assert r["retention"]["retention_conformance"] == "CONFORMING"
+    assert r["retention"]["source_status_basis"] == "DECLARED"
+
+
+def test_wrong_metric_version():
+    s, d = _http(); s["metric_version"] = "0.2"
+    r = A.verify(s, d, PARTITION, SCHED, "supplied", "2026-08-15T00:00:00Z")
+    assert "analytics_snapshot.unsupported_metric_profile" in r["failure_codes"] \
+        or r["conclusions"]["metric_identity"] == "FAIL"
+
+
+def test_wrong_derivation_version_selfconsistent_still_fails():
+    s, d = _http()
+    s["derivation_version"] = "9.9.9"
+    body = {"derivation_version": "9.9.9", "input_partition_digest": s["input_partition_digest"],
+            "metric_definition_digest": s["metric_definition_digest"], "metric_id": s["metric_id"],
+            "metric_version": "0.1", "value": s["value"], "window_end": s["window_end"],
+            "window_start": s["window_start"]}
+    s["snapshot_digest"] = A.digest(body)  # self-consistent snapshot
+    r = A.verify(s, d, PARTITION, SCHED, "supplied", "2026-08-15T00:00:00Z")
+    assert r["conclusions"]["snapshot_digest"] == "PASS"          # internally consistent
+    assert r["conclusions"]["derivation_version"] == "FAIL"       # but pinned binding rejects it
+    assert "analytics_snapshot.derivation_version_mismatch" in r["failure_codes"]
+    assert r["metric_integrity"] == "FAIL"
+
+
+def _bad_partition(mutate):
+    p = copy.deepcopy(PARTITION)
+    mutate(p["observations"][0])
+    return p
+
+
+def test_observation_wrong_platform_rejected():
+    p = _bad_partition(lambda o: o.__setitem__("platform", "evilcorp"))
+    r = A.verify(*_http(), p, SCHED, "supplied", "2026-08-15T00:00:00Z")
+    assert r["conclusions"]["observation_profile"] == "FAIL"
+    assert "analytics_snapshot.observation_profile_invalid" in r["failure_codes"]
+
+
+def test_observation_wrong_privacy_class_rejected():
+    p = _bad_partition(lambda o: o.__setitem__("privacy_class", "PUBLIC_AGGREGATE"))
+    r = A.verify(*_http(), p, SCHED, "supplied", "2026-08-15T00:00:00Z")
+    assert "analytics_snapshot.observation_profile_invalid" in r["failure_codes"]
+
+
+def test_observation_invalid_action_transport_pair_rejected():
+    p = _bad_partition(lambda o: o.update(action="http_request", transport="mcp"))
+    r = A.verify(*_http(), p, SCHED, "supplied", "2026-08-15T00:00:00Z")
+    assert "analytics_snapshot.observation_profile_invalid" in r["failure_codes"]
+
+
+def test_observation_nested_context_rejected():
+    p = _bad_partition(lambda o: o.__setitem__("context", {"a": {"b": 1}}))
+    r = A.verify(*_http(), p, SCHED, "supplied", "2026-08-15T00:00:00Z")
+    assert "analytics_snapshot.observation_profile_invalid" in r["failure_codes"]
+
+
+def test_observation_nonascii_context_key_rejected():
+    p = _bad_partition(lambda o: o.__setitem__("context", {"é": 1}))
+    r = A.verify(*_http(), p, SCHED, "supplied", "2026-08-15T00:00:00Z")
+    assert "analytics_snapshot.observation_profile_invalid" in r["failure_codes"]
+
+
+def test_malformed_observation_object_no_traceback():
+    p = copy.deepcopy(PARTITION); p["observations"][0] = "not-an-object"
+    r = A.verify(*_http(), p, SCHED, "supplied", "2026-08-15T00:00:00Z")  # must not raise
+    assert "analytics_snapshot.observation_profile_invalid" in r["failure_codes"]
+    assert r["conclusions"]["value_recomputation"] == "NOT_EVALUATED"
+
+
+def test_extra_snapshot_field_rejected():
+    s, d = _http(); s["extra_forbidden"] = 1
+    r = A.verify(s, d, PARTITION, SCHED, "supplied", "2026-08-15T00:00:00Z")
+    assert r["conclusions"]["snapshot_shape"] == "FAIL"
+    assert "analytics_snapshot.snapshot_shape_invalid" in r["failure_codes"]
+
+
+def test_library_supplied_without_partition_rejected():
+    with pytest.raises(A.SourceIntegrityError):
+        A.verify(*_http(), None, SCHED, "supplied", "2026-08-15T00:00:00Z")
+
+
+def test_library_partition_with_absent_status_rejected():
+    with pytest.raises(A.SourceIntegrityError):
+        A.verify(*_http(), PARTITION, SCHED, "absent-expired", "2026-10-01T00:00:00Z")
+
+
+def test_arbitrary_valid_schedule_cannot_bypass_pin():
+    sched2 = copy.deepcopy(SCHED); sched2["grace"] = "totally different but schema-valid"
+    r = A.verify(*_http(), PARTITION, sched2, "supplied", "2026-08-15T00:00:00Z")
+    assert "analytics_snapshot.retention_schedule_pin_mismatch" in r["failure_codes"]
+
+
+def test_malformed_as_of_is_source_integrity():
+    with pytest.raises(A.SourceIntegrityError):
+        A.verify(*_http(), PARTITION, SCHED, "supplied", "not-a-timestamp")
+
+
+def test_naive_as_of_rejected():
+    with pytest.raises(A.SourceIntegrityError):
+        A.verify(*_http(), PARTITION, SCHED, "supplied", "2026-08-15T00:00:00")  # no tz
+
+
+def test_malformed_window_is_verification_failure_not_exit2():
+    s, d = _http(); s["window_end"] = "garbage-not-a-date"
+    r = A.verify(s, d, PARTITION, SCHED, "supplied", "2026-08-15T00:00:00Z")  # must NOT raise
+    assert r["conclusions"]["window_timestamps"] == "FAIL"
+    assert "analytics_snapshot.window_mismatch" in r["failure_codes"]
+    assert r["retention"]["retention_conformance"] == "NOT_EVALUATED"
+
+
+def test_cli_usage_supplied_without_partition_exit2():
+    import json as _j, tempfile, os
+    s, d = _http()
+    with tempfile.TemporaryDirectory() as t:
+        sp = os.path.join(t, "s.json"); _j.dump(s, open(sp, "w"))
+        dp = os.path.join(t, "d.json"); _j.dump(d, open(dp, "w"))
+        rp = os.path.join(t, "r.json"); _j.dump(SCHED, open(rp, "w"))
+        code = A.main(["--snapshot", sp, "--metric-definition", dp, "--retention-schedule", rp,
+                       "--source-status", "supplied", "--as-of", "2026-08-15T00:00:00Z"])
+        assert code == 2

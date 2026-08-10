@@ -9,9 +9,9 @@ equivalent to dagr.canonical-json.v0.1 (proven by the equivalence vectors).
 Upstream C1 (#2) and RET1 (#5) contracts are PROVISIONAL / unmerged: this lane
 may consume their exact bytes but must not be readied/merged until they land.
 
-Two facts are kept separate and never conflated:
-  - what the verifier independently recomputed from supplied bytes;
-  - what the caller DECLARED about a source store the verifier cannot observe.
+Contract is enforced in verify() (the core), so CLI and library cannot drift.
+Two facts are kept separate: what the verifier independently recomputed from
+supplied bytes, and what the caller DECLARED about a store it cannot observe.
 """
 from __future__ import annotations
 
@@ -23,16 +23,16 @@ import sys
 from pathlib import Path
 from typing import Any, Optional
 
+import jsonschema
 import rfc8785
+from referencing import Registry, Resource
 
 _VENDOR = Path(__file__).resolve().parent.parent / "vendor" / "dagr-analytics"
 CANON_PROFILE = "dagr.canonical-json.v0.1"
 REPORT_SCHEMA = "arcs_verify.analytics_snapshot_report.v0_1"
 VERIFICATION_PROFILE = "arcs_verify.dagr_analytics.c1_snapshot.v0_1"
+EXPECTED_DERIVATION_VERSION = "0.1.0"
 
-# Provisional pins of the corrected C1 candidate definitions and the RET1 schedule
-# (recomputed from the vendored bytes; see VENDORED_FROM). A self-consistent but
-# unpinned definition/schedule is not C1 conformance.
 DEF_PINS = {
     "http_request_count": "sha256:0dbf4c9019201ae0139cb5668606722cc0a6c6fcb8d9c824228ce19daf9e9f0f",
     "page_render_count": "sha256:ff12b79611a37062efd2e4b40445b306111837ba5133ff147a329bd635a8862e",
@@ -42,8 +42,6 @@ DEF_PINS = {
 }
 RET_SCHED_PIN = "sha256:d4eb1f13b819aaa371cab6a62259dba0d9e4beff1183c931dffd317bd282ff75"
 
-# (action, transport) profile for the four direct-count metrics. page_view_count
-# is derived from page_render and handled specially.
 _DIRECT = {
     "http_request_count": ("http_request", "web"),
     "page_render_count": ("page_render", "web"),
@@ -51,21 +49,56 @@ _DIRECT = {
     "mcp_resource_read_count": ("mcp_resource_read", "mcp"),
 }
 SUPPORTED = set(_DIRECT) | {"page_view_count"}
-
 SOURCE_STATUSES = {"supplied", "absent-expired", "absent-withdrawn", "absent-unexplained", "not-supplied"}
 
 
+# --------------------------------------------------------------------------- #
+# vendored schemas — enforced locally, no network resolution
+# --------------------------------------------------------------------------- #
+def _vload(rel: str) -> dict:
+    return json.loads((_VENDOR / rel).read_text())
+
+
+_OBS_SCHEMA = _vload("c1/contracts/dagr.analytics.observation.v0_1.schema.json")
+_PROFILE = _vload("c1/contracts/C1_transport_read.v0_1.schema.json")
+_SNAP_SCHEMA = _vload("c1/contracts/metric_snapshot.v0_1.schema.json")
+_RET_SCHEMA = _vload("ret1/retention_schedule.v0_1.schema.json")
+
+_REGISTRY = Registry().with_resources([(_OBS_SCHEMA["$id"], Resource.from_contents(_OBS_SCHEMA))])
+_V_PROFILE = jsonschema.Draft202012Validator(_PROFILE, registry=_REGISTRY)
+_V_SNAP = jsonschema.Draft202012Validator(_SNAP_SCHEMA)
+_V_RET = jsonschema.Draft202012Validator(_RET_SCHEMA)
+
+
+def _valid(validator: jsonschema.Draft202012Validator, instance: Any) -> bool:
+    try:
+        validator.validate(instance)
+        return True
+    except jsonschema.ValidationError:
+        return False
+
+
 class SourceIntegrityError(Exception):
-    """Usage / unreadable-input: exit 2 (never a verification verdict)."""
+    """Usage / unreadable-input / invocation-shape contradiction: exit 2."""
+
+
+class _Contradiction(ValueError):
+    """Semantic declared-posture contradiction: exit 1, source_status_contradiction."""
+
+
+class _Canon(ValueError):
+    pass
+
+
+class _ArtifactTime(ValueError):
+    """A producer artifact timestamp is malformed: verification failure, not exit 2."""
 
 
 # --------------------------------------------------------------------------- #
-# independent canonicalization over the C1 domain
+# canonicalization over the C1 domain
 # --------------------------------------------------------------------------- #
 def _guard_domain(value: Any) -> None:
-    if isinstance(value, bool) or value is None:
-        return
-    if isinstance(value, int):
+    if isinstance(value, bool) or value is None or isinstance(value, int):
         return
     if isinstance(value, float):
         if value != value or value in (float("inf"), float("-inf")) or not value.is_integer():
@@ -84,10 +117,6 @@ def _guard_domain(value: Any) -> None:
             _guard_domain(v)
         return
     raise _Canon(f"unserializable value {type(value).__name__}")
-
-
-class _Canon(ValueError):
-    pass
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -110,18 +139,35 @@ def recount(metric_id: str, observations: list[dict]) -> int:
         renders = [o for o in observations if o.get("action") == "page_render" and o.get("transport") == "web"]
         distinct = {(o.get("session_ref"), o.get("object_ref")) for o in renders if o.get("session_ref") is not None}
         nulls = sum(1 for o in renders if o.get("session_ref") is None)
-        return len(distinct) + nulls  # never infers a session/person identity
+        return len(distinct) + nulls
     raise ValueError(metric_id)
 
 
 # --------------------------------------------------------------------------- #
-# retention (declared-posture aware)
+# time
 # --------------------------------------------------------------------------- #
-def _parse_rfc3339(s: str) -> _dt.datetime:
+def _parse_caller_time(s: str) -> _dt.datetime:
+    """--as-of: strict timezone-aware RFC3339; malformed => usage/source-integrity."""
     try:
-        return _dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
+        d = _dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
     except Exception as e:
-        raise SourceIntegrityError(f"bad RFC3339 timestamp {s!r}: {e}")
+        raise SourceIntegrityError(f"malformed --as-of {s!r}: {e}")
+    if d.tzinfo is None:
+        raise SourceIntegrityError(f"--as-of must be timezone-aware: {s!r}")
+    return d
+
+
+def _parse_artifact_time(s: Any) -> _dt.datetime:
+    """window_start/window_end: producer artifact; malformed => verification failure."""
+    if not isinstance(s, str):
+        raise _ArtifactTime(f"artifact timestamp not a string: {s!r}")
+    try:
+        d = _dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
+    except Exception as e:
+        raise _ArtifactTime(f"malformed artifact timestamp {s!r}: {e}")
+    if d.tzinfo is None:
+        raise _ArtifactTime(f"artifact timestamp must be timezone-aware: {s!r}")
+    return d
 
 
 def _anon_retention_seconds(schedule: dict) -> Optional[int]:
@@ -131,44 +177,16 @@ def _anon_retention_seconds(schedule: dict) -> Optional[int]:
     return None
 
 
-def evaluate_retention(schedule: dict, window_end: str, source_status: str, as_of: str) -> dict:
-    """RET1 states are classifications of the DECLARED posture (basis=DECLARED),
-    except 'supplied' where the verifier holds the bytes (basis=SUPPLIED_BYTES)."""
-    deadline_dt = _parse_rfc3339(window_end) + _dt.timedelta(seconds=_anon_retention_seconds(schedule) or 0)
-    as_of_dt = _parse_rfc3339(as_of)
-    past_deadline = as_of_dt > deadline_dt
-    out = {
-        "declared_source_status": source_status,
-        "retention_deadline": deadline_dt.isoformat(),
-        "evaluated_as_of": as_of,
-    }
-    if source_status == "supplied":
-        out.update(source_status_basis="SUPPLIED_BYTES",
-                   source_recomputability_state="FULL_RECOMPUTATION_AVAILABLE",
-                   retention_conformance="NONCONFORMING" if past_deadline else "CONFORMING")
-    elif source_status == "not-supplied":
-        out.update(source_status_basis="DECLARED",
-                   source_recomputability_state="NOT_EVALUATED",
-                   retention_conformance="NOT_EVALUATED")
-    elif source_status == "absent-expired":
-        if not past_deadline:
-            raise _Contradiction("declared absent-expired but as_of is before the retention deadline")
-        out.update(source_status_basis="DECLARED",
-                   source_recomputability_state="PROVENANCE_BOUND_SOURCE_EXPIRED",
-                   retention_conformance="CONFORMING")
-    elif source_status == "absent-withdrawn":
-        out.update(source_status_basis="DECLARED",
-                   source_recomputability_state="SOURCE_WITHDRAWN",
-                   retention_conformance="CONFORMING")
-    elif source_status == "absent-unexplained":
-        out.update(source_status_basis="DECLARED",
-                   source_recomputability_state="SOURCE_UNAVAILABLE_UNEXPLAINED",
-                   retention_conformance="NOT_EVALUATED")
-    return out
-
-
-class _Contradiction(ValueError):
-    pass
+# --------------------------------------------------------------------------- #
+# invocation-shape contract (usage) — enforced in the core, not just the CLI
+# --------------------------------------------------------------------------- #
+def _enforce_invocation_shape(partition: Optional[dict], source_status: str) -> None:
+    if source_status not in SOURCE_STATUSES:
+        raise SourceIntegrityError(f"unknown --source-status {source_status!r}")
+    if source_status == "supplied" and partition is None:
+        raise SourceIntegrityError("source_status=supplied requires partition bytes")
+    if source_status != "supplied" and partition is not None:
+        raise SourceIntegrityError(f"source_status={source_status} must not be given partition bytes")
 
 
 # --------------------------------------------------------------------------- #
@@ -180,83 +198,117 @@ _SNAP_BODY_KEYS = ["derivation_version", "input_partition_digest", "metric_defin
 
 def verify(snapshot: dict, definition: dict, partition: Optional[dict],
            schedule: dict, source_status: str, as_of: str) -> dict:
+    _enforce_invocation_shape(partition, source_status)      # usage: raises SourceIntegrityError
+    as_of_dt = _parse_caller_time(as_of)                     # usage: raises SourceIntegrityError
+
     findings: list[str] = []
     concl: dict[str, str] = {}
     rec: dict[str, Any] = {"metric_definition_digest": None, "input_partition_digest": None,
                            "value": None, "snapshot_digest": None}
 
-    def C(name, ok):
+    def C(name: str, ok: bool) -> bool:
         concl[name] = "PASS" if ok else "FAIL"
         return ok
 
-    mid = snapshot.get("metric_id")
-    mver = snapshot.get("metric_version")
+    def NE(name: str) -> None:
+        concl[name] = "NOT_EVALUATED"
 
-    # snapshot shape
-    shape_ok = all(k in snapshot for k in _SNAP_BODY_KEYS + ["privacy_class", "snapshot_digest"])
-    if not C("snapshot_shape", shape_ok):
+    # --- retention schedule: schema + exact pin (verification findings) ---
+    schedule_ok = True
+    if not _valid(_V_RET, schedule):
+        findings.append("analytics_snapshot.retention_schedule_invalid")
+        C("retention_schedule", False)
+        schedule_ok = False
+    elif digest(schedule) != RET_SCHED_PIN:
+        findings.append("analytics_snapshot.retention_schedule_pin_mismatch")
+        C("retention_schedule", False)
+        schedule_ok = False
+    else:
+        C("retention_schedule", True)
+
+    # --- snapshot shape: full schema validation (additionalProperties=false etc.) ---
+    if not C("snapshot_shape", _valid(_V_SNAP, snapshot)):
         findings.append("analytics_snapshot.snapshot_shape_invalid")
 
-    # metric profile binding
+    mid = snapshot.get("metric_id")
+    mver = snapshot.get("metric_version")
     if not C("metric_profile_binding", mid in SUPPORTED and mver == "0.1"):
         findings.append("analytics_snapshot.unsupported_metric_profile")
 
-    # metric identity agreement (definition vs snapshot). The definition object
-    # names its version field "version"; the snapshot names it "metric_version".
-    idmatch = definition.get("metric_id") == mid and definition.get("version") == mver
-    if not C("metric_identity", idmatch):
+    if not C("metric_identity", definition.get("metric_id") == mid and definition.get("version") == mver):
         findings.append("analytics_snapshot.metric_identity_mismatch")
 
-    # metric_definition_digest: recompute + snapshot-match + pin-match
+    # --- derivation_version binding: snapshot == definition == pinned ---
+    dv_ok = (snapshot.get("derivation_version") == EXPECTED_DERIVATION_VERSION
+             and definition.get("derivation_version") == EXPECTED_DERIVATION_VERSION)
+    if not C("derivation_version", dv_ok):
+        findings.append("analytics_snapshot.derivation_version_mismatch")
+
+    # --- definition digest: recompute + snapshot-match + pin ---
     mdd = digest(definition)
     rec["metric_definition_digest"] = mdd
-    dd_ok = mdd == snapshot.get("metric_definition_digest")
-    if not C("metric_definition_digest", dd_ok):
+    if not C("metric_definition_digest", mdd == snapshot.get("metric_definition_digest")):
         findings.append("analytics_snapshot.metric_definition_digest_mismatch")
-    pin_ok = mid in DEF_PINS and mdd == DEF_PINS[mid]
-    if not pin_ok:
+    if C("metric_definition_pin", mid in DEF_PINS and mdd == DEF_PINS[mid]) is False:
         findings.append("analytics_snapshot.metric_definition_pin_mismatch")
-        concl["metric_definition_pin"] = "FAIL"
-    else:
-        concl["metric_definition_pin"] = "PASS"
 
-    # partition-dependent conclusions
+    # --- artifact window timestamps (verification failure if malformed) ---
+    window_ok = True
+    try:
+        _parse_artifact_time(snapshot.get("window_start"))
+        _parse_artifact_time(snapshot.get("window_end"))
+    except _ArtifactTime:
+        window_ok = False
+        findings.append("analytics_snapshot.window_mismatch")
+        C("window_timestamps", False)
+    else:
+        C("window_timestamps", True)
+
+    # --- partition-dependent conclusions ---
     if partition is not None:
-        obs = partition.get("observations")
-        pshape = isinstance(obs, list) and "window_start" in partition and "window_end" in partition
+        pshape = isinstance(partition, dict) and isinstance(partition.get("observations"), list) \
+            and "window_start" in partition and "window_end" in partition
+        obs = partition.get("observations") if pshape else []
         if not C("partition_shape", pshape):
             findings.append("analytics_snapshot.partition_shape_invalid")
-            obs = obs if isinstance(obs, list) else []
-        ids = [o.get("event_id") for o in obs]
-        uniq = len(ids) == len(set(ids))
+
+        # every observation must validate the C1 profile (fail before recount)
+        obs_profile_ok = pshape and all(isinstance(o, dict) and _valid(_V_PROFILE, o) for o in obs)
+        if not C("observation_profile", obs_profile_ok):
+            findings.append("analytics_snapshot.observation_profile_invalid")
+
+        ids = [o.get("event_id") for o in obs if isinstance(o, dict)]
+        uniq = pshape and len(ids) == len(set(ids)) and len(ids) == len(obs)
         if not C("event_id_uniqueness", uniq):
             findings.append("analytics_snapshot.duplicate_event_id")
-        wbind = partition.get("window_start") == snapshot.get("window_start") and \
-            partition.get("window_end") == snapshot.get("window_end")
+
+        wbind = pshape and partition.get("window_start") == snapshot.get("window_start") \
+            and partition.get("window_end") == snapshot.get("window_end")
         if not C("window_binding", wbind):
             findings.append("analytics_snapshot.window_mismatch")
-        if uniq and pshape:
+
+        if pshape and obs_profile_ok and uniq:
             ipd = digest({"observations": sorted(obs, key=lambda o: o["event_id"]),
                           "window_end": partition["window_end"], "window_start": partition["window_start"]})
             rec["input_partition_digest"] = ipd
             if not C("input_partition_digest", ipd == snapshot.get("input_partition_digest")):
                 findings.append("analytics_snapshot.input_partition_digest_mismatch")
-            val = recount(mid, obs) if mid in SUPPORTED else None
-            rec["value"] = val
-            if not C("value_recomputation", val == snapshot.get("value")):
-                findings.append("analytics_snapshot.value_mismatch")
+            if mid in SUPPORTED:
+                val = recount(mid, obs)
+                rec["value"] = val
+                if not C("value_recomputation", val == snapshot.get("value")):
+                    findings.append("analytics_snapshot.value_mismatch")
+            else:
+                NE("value_recomputation")
         else:
-            concl["input_partition_digest"] = "NOT_EVALUATED"
-            concl["value_recomputation"] = "NOT_EVALUATED"
+            NE("input_partition_digest")
+            NE("value_recomputation")
     else:
-        concl["partition_shape"] = "NOT_EVALUATED"
-        concl["event_id_uniqueness"] = "NOT_EVALUATED"
-        concl["window_binding"] = "NOT_EVALUATED"
-        concl["input_partition_digest"] = "NOT_EVALUATED"
-        concl["value_recomputation"] = "NOT_EVALUATED"
+        for k in ("partition_shape", "observation_profile", "event_id_uniqueness",
+                  "window_binding", "input_partition_digest", "value_recomputation"):
+            NE(k)
 
-    # snapshot_digest recompute (from retained fields; input_partition_digest from
-    # the snapshot itself when partition absent)
+    # --- snapshot_digest recompute ---
     ipd_for_body = rec["input_partition_digest"] or snapshot.get("input_partition_digest")
     body = {k: (ipd_for_body if k == "input_partition_digest" else snapshot.get(k)) for k in _SNAP_BODY_KEYS}
     try:
@@ -268,16 +320,21 @@ def verify(snapshot: dict, definition: dict, partition: Optional[dict],
         C("snapshot_digest", False)
         findings.append("analytics_snapshot.canonicalization_failed")
 
-    # privacy class binding
     if not C("privacy_class_binding", snapshot.get("privacy_class") == "ANONYMOUS_AGGREGATE"):
         findings.append("analytics_snapshot.privacy_class_mismatch")
 
-    # retention (independent axis)
-    retention = evaluate_retention(schedule, snapshot.get("window_end", ""), source_status, as_of)
+    # --- retention (independent axis) ---
+    if schedule_ok and window_ok:
+        retention = _evaluate_retention(schedule, snapshot["window_end"], source_status, as_of_dt, as_of)
+    else:
+        retention = {"declared_source_status": source_status, "source_status_basis":
+                     "SUPPLIED_BYTES" if source_status == "supplied" else "DECLARED",
+                     "source_recomputability_state": "NOT_EVALUATED",
+                     "retention_conformance": "NOT_EVALUATED", "evaluated_as_of": as_of}
     if retention["retention_conformance"] == "NONCONFORMING":
         findings.append("analytics_snapshot.retention_nonconforming")
 
-    metric_integrity = "PASS" if all(v == "PASS" for k, v in concl.items()) else \
+    metric_integrity = "PASS" if all(v == "PASS" for v in concl.values()) else \
         ("FAIL" if any(v == "FAIL" for v in concl.values()) else "PARTIAL")
 
     return {
@@ -288,18 +345,44 @@ def verify(snapshot: dict, definition: dict, partition: Optional[dict],
         "conclusions": concl,
         "metric_integrity": metric_integrity,
         "recomputed": rec,
-        "retention": {"schedule_digest": digest(schedule), "retention_schedule_pin": RET_SCHED_PIN, **retention},
+        "retention": {"retention_schedule_pin": RET_SCHED_PIN,
+                      "schedule_digest": (digest(schedule) if schedule_ok else None), **retention},
         "failure_codes": sorted(set(findings)),
         "limitations": _limitations(source_status, partition),
     }
 
 
-def _limitations(source_status: str, partition: Optional[dict]) -> list[str]:
+def _evaluate_retention(schedule, window_end, source_status, as_of_dt, as_of_raw):
+    deadline_dt = _parse_artifact_time(window_end) + _dt.timedelta(seconds=_anon_retention_seconds(schedule) or 0)
+    past = as_of_dt > deadline_dt
+    out = {"declared_source_status": source_status, "retention_deadline": deadline_dt.isoformat(),
+           "evaluated_as_of": as_of_raw}
+    if source_status == "supplied":
+        out.update(source_status_basis="SUPPLIED_BYTES", source_recomputability_state="FULL_RECOMPUTATION_AVAILABLE",
+                   retention_conformance="NONCONFORMING" if past else "CONFORMING")
+    elif source_status == "not-supplied":
+        out.update(source_status_basis="DECLARED", source_recomputability_state="NOT_EVALUATED",
+                   retention_conformance="NOT_EVALUATED")
+    elif source_status == "absent-expired":
+        if not past:
+            raise _Contradiction("declared absent-expired but as_of is before the retention deadline")
+        out.update(source_status_basis="DECLARED", source_recomputability_state="PROVENANCE_BOUND_SOURCE_EXPIRED",
+                   retention_conformance="CONFORMING")
+    elif source_status == "absent-withdrawn":
+        out.update(source_status_basis="DECLARED", source_recomputability_state="SOURCE_WITHDRAWN",
+                   retention_conformance="CONFORMING")
+    elif source_status == "absent-unexplained":
+        out.update(source_status_basis="DECLARED", source_recomputability_state="SOURCE_UNAVAILABLE_UNEXPLAINED",
+                   retention_conformance="NOT_EVALUATED")
+    return out
+
+
+def _limitations(source_status, partition):
     lim = []
     if partition is None:
-        lim.append("input_partition_digest and value_recomputation are NOT_EVALUATED: no partition was supplied; this is limited verification, not a full recount.")
+        lim.append("input_partition_digest and value_recomputation are NOT_EVALUATED: no partition supplied; limited verification, not a full recount.")
     if source_status != "supplied":
-        lim.append(f"source storage fact was DECLARED by the caller (--source-status {source_status}) and was NOT independently observed by the verifier.")
+        lim.append(f"source storage fact was DECLARED by the caller (--source-status {source_status}) and was NOT independently observed.")
     return lim
 
 
@@ -320,19 +403,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--partition")
     ap.add_argument("--retention-schedule", required=True)
     ap.add_argument("--source-status", required=True, choices=sorted(SOURCE_STATUSES))
-    ap.add_argument("--as-of", required=True, help="explicit RFC3339; no implicit wall clock")
+    ap.add_argument("--as-of", required=True, help="explicit tz-aware RFC3339; no implicit wall clock")
     ap.add_argument("--json", action="store_true")
     try:
         args = ap.parse_args(argv)
     except SystemExit:
-        return 2
-
-    # source-status <-> partition contract (argument-combination = usage, exit 2)
-    if args.source_status == "supplied" and not args.partition:
-        print("usage: --source-status supplied requires --partition", file=sys.stderr)
-        return 2
-    if args.partition and args.source_status != "supplied":
-        print("usage: --partition requires --source-status supplied", file=sys.stderr)
         return 2
 
     try:
@@ -340,19 +415,11 @@ def main(argv: list[str] | None = None) -> int:
         definition = _load(args.metric_definition)
         schedule = _load(args.retention_schedule)
         partition = _load(args.partition) if args.partition else None
-
-        # retention schedule pin (shape + exact pinned digest)
-        if not all(k in schedule for k in ("schedule", "classes", "recomputability_states")):
-            print("retention schedule shape invalid", file=sys.stderr)
-            return _emit_fail("analytics_snapshot.retention_schedule_invalid", args)
-        if digest(schedule) != RET_SCHED_PIN:
-            return _emit_fail("analytics_snapshot.retention_schedule_pin_mismatch", args)
-
         report = verify(snapshot, definition, partition, schedule, args.source_status, args.as_of)
     except _Contradiction as e:
         return _emit_fail("analytics_snapshot.source_status_contradiction", args, str(e))
     except SourceIntegrityError as e:
-        print(f"source-integrity error: {e}", file=sys.stderr)
+        print(f"source-integrity/usage error: {e}", file=sys.stderr)
         return 2
     except _Canon as e:
         return _emit_fail("analytics_snapshot.canonicalization_failed", args, str(e))
@@ -361,7 +428,6 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(report, indent=2, sort_keys=True))
     else:
         _human(report)
-
     failed = any(v == "FAIL" for v in report["conclusions"].values())
     nonconforming = report["retention"]["retention_conformance"] == "NONCONFORMING"
     return 1 if (failed or nonconforming) else 0
@@ -369,8 +435,8 @@ def main(argv: list[str] | None = None) -> int:
 
 def _emit_fail(code: str, args, detail: str = "") -> int:
     report = {"schema": REPORT_SCHEMA, "verification_profile": VERIFICATION_PROFILE,
-              "upstream_contract_posture": "PROVISIONAL", "failure_codes": [code],
-              "detail": detail, "conclusions": {}, "retention": {"retention_conformance": "NOT_EVALUATED"}}
+              "upstream_contract_posture": "PROVISIONAL", "failure_codes": [code], "detail": detail,
+              "conclusions": {}, "retention": {"retention_conformance": "NOT_EVALUATED"}}
     if getattr(args, "json", False):
         print(json.dumps(report, indent=2, sort_keys=True))
     else:
@@ -383,9 +449,9 @@ def _human(r: dict) -> None:
     print(f"upstream_contract_posture: {r['upstream_contract_posture']}")
     print(f"metric_integrity: {r['metric_integrity']}")
     ret = r["retention"]
-    print(f"source_status_basis: {ret['source_status_basis']}")
-    print(f"source_recomputability_state: {ret['source_recomputability_state']}")
-    print(f"retention_conformance: {ret['retention_conformance']}")
+    print(f"source_status_basis: {ret.get('source_status_basis')}")
+    print(f"source_recomputability_state: {ret.get('source_recomputability_state')}")
+    print(f"retention_conformance: {ret.get('retention_conformance')}")
     print("conclusions:")
     for k, v in r["conclusions"].items():
         print(f"  {k}: {v}")
