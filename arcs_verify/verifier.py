@@ -78,6 +78,22 @@ EDITORIAL_CITATION_PACK_PROFILE = "srs.editorial.citation_pack.v0.1"
 # this field is a legacy/unversioned predecessor; never retroactively label it.
 REPORT_CONTRACT_V0_1 = "arcs.verify.srs_receipt_verification_report.v0.1"
 
+# The additive self-identifying fields introduced by the v0.1 report contract.
+# They are emitted together, and only when report_contract is set (i.e. by
+# verify_receipt). A legacy/bare report omits the stamp AND all of these, so the
+# serialized shape is a clean binary boundary with no ambiguous null-stamp state.
+_VR0_ADDITIVE_FIELDS = (
+    "report_contract",
+    "selected_profile",
+    "selected_profile_release_stage",
+    "verified_receipt_id",
+    "verified_receipt_version",
+    "verified_receipt_profile_id",
+    "verified_receipt_profile_version",
+    "verified_receipt_canonical_json_sha256",
+    "envelope_schema_identity",
+)
+
 
 @dataclass(frozen=True)
 class ProfileMetadata:
@@ -337,7 +353,12 @@ class VerificationReport:
     # profile, schema, and profile posture involved in a verification event does
     # NOT establish source truth, issuer trust, producer authority, admission,
     # standing, or publication eligibility.
-    report_contract: str = REPORT_CONTRACT_V0_1
+    #
+    # report_contract defaults to None: the stamp is set only in verify_receipt,
+    # where the identity fields are actually populated, so the version can never
+    # exist without the guarantee it signals. A bare VerificationReport() is the
+    # legacy verdict-only shape.
+    report_contract: str | None = None
     selected_profile: str | None = None
     selected_profile_release_stage: str | None = None
     verified_receipt_id: str | None = None
@@ -365,6 +386,12 @@ class VerificationReport:
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
         data["passed"] = self.passed
+        # Binary feature-detection boundary: a report with no contract stamp
+        # serializes as the legacy verdict-only shape (stamp and all VR0 identity
+        # fields omitted); a stamped report emits the complete enriched set.
+        if self.report_contract is None:
+            for key in _VR0_ADDITIVE_FIELDS:
+                data.pop(key, None)
         return data
 
 

@@ -31,15 +31,30 @@ axis.
 | `verified_receipt_canonical_json_sha256` | `sha256:` of RFC8785 canonical JSON of the receipt. Explicitly **canonical JSON**, not the original serialized bytes (the library verifier receives a parsed object). |
 | `envelope_schema_identity` | `{published_version, sha256}` of the schema used; `published_version` is `null` if the digest maps to no pinned version. |
 
-## Downstream feature-detection
+## Downstream feature-detection (binary boundary)
 
 ```
-report_contract absent   → legacy / unversioned VerificationReport
-report_contract == v0.1  → enriched self-identifying contract
+report_contract absent   → legacy / unversioned VerificationReport (verdict-only shape)
+report_contract == v0.1  → enriched self-identifying contract (complete field set)
 ```
 
-Reports produced before VR0 (e.g. the RECON0-C1 evidence reports) legitimately
-lack the field and must be treated as legacy — never retroactively labeled.
+The serialized shape is a clean binary: a report is stamped **only** when
+`verify_receipt` populates it, and `to_dict()` emits the stamp together with the
+whole VR0 field set, or omits the stamp **and** all VR0 fields. There is no
+ambiguous `"report_contract": null` third state, and the version can never exist
+without the identity it is supposed to guarantee. Reports produced before VR0
+(e.g. the RECON0-C1 evidence reports) legitimately lack the field and must be
+treated as legacy — never retroactively labeled.
+
+## Nullability
+
+`verified_receipt_canonical_json_sha256` is **nullable**. Canonicalization is
+best-effort for verifier robustness: if RFC8785 canonicalization fails it yields
+`null`, and that never becomes a verification verdict axis here. A consumer that
+requires content-bound verification (e.g. a future HOP-6 authoring intake) MUST
+**fail closed** if it receives a v0.1 report whose
+`verified_receipt_canonical_json_sha256` is absent or `null`, rather than
+proceeding as if the receipt were content-addressed.
 
 ## Anti-drift
 

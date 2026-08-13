@@ -140,6 +140,34 @@ def test_registry_projections_cannot_drift() -> None:
             assert slug in PROVISIONAL_PROFILE_DETAILS
 
 
+# VR0.1 — binary feature-detection boundary.
+_LEGACY_KEYS = {
+    "schema_digest", "envelope", "profile", "raw_content_exclusion", "signature_valid",
+    "issuer_key_resolved", "issuer_key_trusted", "attestation_limits_present",
+    "chain_status", "failure_codes", "details", "passed",
+}
+_VR0_KEYS = {
+    "report_contract", "selected_profile", "selected_profile_release_stage",
+    "verified_receipt_id", "verified_receipt_version", "verified_receipt_profile_id",
+    "verified_receipt_profile_version", "verified_receipt_canonical_json_sha256",
+    "envelope_schema_identity",
+}
+
+
+def test_bare_report_serializes_as_legacy_shape() -> None:
+    d = VerificationReport().to_dict()
+    assert "report_contract" not in d, "bare report must not advertise the v0.1 stamp"
+    assert _VR0_KEYS.isdisjoint(d), "bare report must omit every VR0 identity field"
+    assert _LEGACY_KEYS <= set(d), "bare report must still carry the legacy verdict-only shape"
+
+
+def test_verified_report_serializes_as_enriched_shape() -> None:
+    d = _verify("source_capture_receipt.json", EDITORIAL_SOURCE_CAPTURE_PROFILE_V02)
+    assert d["report_contract"] == REPORT_CONTRACT_V0_1
+    assert _VR0_KEYS <= set(d), "a verify_receipt report must carry the complete v0.1 field set"
+    assert _LEGACY_KEYS <= set(d)
+
+
 # 9. No new identity/posture field participates in `passed`.
 def test_identity_metadata_never_flips_passed() -> None:
     base = dict(schema_digest=True, envelope=True, profile=True, raw_content_exclusion=True,
