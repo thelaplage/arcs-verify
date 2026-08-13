@@ -11,10 +11,10 @@
     "urn_srs_receipt_admission_first-run-capture-0001.json": "f364df8d438a75f8d50f09ba36ec53ad44a28608b0c2175f7fac4a13c5adb214",
     "urn_srs_receipt_admission_first-run-capture-0002.json": "3e9f9e0268bb0770c1b3232b9dd4cb69f58600b604efca2fe0e3f4b49e7be5ee",
     "urn_srs_receipt_outcome_first-run-capture-0001.json": "f4828bb2598be2ace699b240b030e9bbb7fb9249fe8075ffff440b612e4e44c6",
-    "verification/admitted-admission-disposition-flip.json": "0c1cdece817a65fa41fee8402f3e316d20d2e19cec5dab104686ae49c45d8869",
-    "verification/urn_srs_receipt_admission_first-run-capture-0001.json": "9d806595844a5a8b7c5038d49c25bd4af9eed1e822f53e7455cd307f1f3a6a4b",
-    "verification/urn_srs_receipt_admission_first-run-capture-0002.json": "eb2e673828fd353bd58846970d8c2ad62fd24b0766ec40689fcce76e52e1abaa",
-    "verification/urn_srs_receipt_outcome_first-run-capture-0001.json": "9aa83406249b34c190ed4d74bb213afd54f899e2fc82f82787161603d6f39605"
+    "verification/admitted-admission-disposition-flip.json": "c4b8e0685f0154fbda1e3b29b81f0d1e38589a386a0479f8246ac7b2e30a8bd9",
+    "verification/urn_srs_receipt_admission_first-run-capture-0001.json": "6c8b16b52bfecd84888ece0698776e4c8d03426f0986a4507f97590dcd0d3969",
+    "verification/urn_srs_receipt_admission_first-run-capture-0002.json": "495276405a26c4f74f4d73f69588e68cbae834cb60de39047d176c487a20dd13",
+    "verification/urn_srs_receipt_outcome_first-run-capture-0001.json": "3898ce0efd7efc60a89729f35daa783dbe42d98f3edbcaf3282d0d29e6a13390"
   },
   "note": "Every committed artifact in this directory except digests.json itself. Captured artifacts reproduce byte-for-byte from the pinned producer commit; derived artifacts reproduce from tools/generate_first_run_proof_pack.py."
 }

@@ -6,14 +6,26 @@
     "chain_status": "not_applicable",
     "details": [],
     "envelope": true,
+    "envelope_schema_identity": {
+      "published_version": "v0.2.0",
+      "sha256": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333"
+    },
     "failure_codes": [],
     "issuer_key_resolved": true,
     "issuer_key_trusted": true,
     "passed": true,
     "profile": true,
     "raw_content_exclusion": true,
+    "report_contract": "arcs.verify.srs_receipt_verification_report.v0.1",
     "schema_digest": true,
-    "signature_valid": true
+    "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+    "selected_profile_release_stage": null,
+    "signature_valid": true,
+    "verified_receipt_canonical_json_sha256": "sha256:a2fc0d13c239658c8eba69ee0471508a09696b274baa0205691f16a19a2ceea6",
+    "verified_receipt_id": "urn:srs:receipt:outcome:first-run-capture-0001",
+    "verified_receipt_profile_id": "srs.mcp.sdk_enforcement",
+    "verified_receipt_profile_version": "v0.1",
+    "verified_receipt_version": "srs.core.v5.1"
   },
   "subject": "urn_srs_receipt_outcome_first-run-capture-0001.json",
   "subject_role": "captured_receipt"
