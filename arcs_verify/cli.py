@@ -5,40 +5,12 @@ import json
 import sys
 from pathlib import Path
 
-from .verifier import verify_receipt
+from .verifier import SUPPORTED_PROFILE_DESCRIPTIONS, verify_receipt
 
-# Named profiles the signed-SRS verifier can evaluate. Keys must match the
-# constants in verifier.py; selecting any other name yields the
-# profile.unsupported_selection failure code rather than a silent fallback.
-SUPPORTED_PROFILES: dict[str, str] = {
-    "srs.mcp.sdk_enforcement.v0.1": (
-        "MCP tool-call admission receipts emitted at an SDK enforcement boundary (default)."
-    ),
-    "srs.connection.lifecycle.v0.1": (
-        "MCP connection lifecycle receipts (connect, scope grant, revoke, disconnect)."
-    ),
-    "srs.broadcast_control.v0.1": (
-        "Broadcast-control receipts for governed one-to-many distribution events."
-    ),
-    "srs.deferred_operation.v0.1": (
-        "Deferred-operation receipts (deferral, review linkage, outcome, disclosed gaps)."
-    ),
-    "srs.editorial.publication_ingest.v0.1": (
-        "Editorial corpus publication-ingest receipts (provenance of a parsed publication artifact)."
-    ),
-    "srs.editorial.source_capture.v0.1": (
-        "Editorial source-capture receipts (digest of the bytes a referenced URL or record returned at capture time)."
-    ),
-    "srs.editorial.source_capture.v0.1.1": (
-        "Editorial source-capture receipts, provisional v0.1.1 dialect (top-level outcome / declared_url / captured_bytes_ref with enforced cross-field null rules)."
-    ),
-    "srs.activity.governed_read.v0.1": (
-        "Activity governed-read receipts (one governed read against a pinned basis; admitted result or typed refusal, mandatory C8 visibility)."
-    ),
-    "srs.editorial.citation_pack.v0.1": (
-        "Editorial citation-pack assembly receipts, PROVISIONAL (arcs-srs, not ratified). Single-receipt structural verification of one pack_assembly provenance receipt: digest-reference form, subject binding, required classes/limits. A PASS attests structural conformance to the provisional contract only — not admission, trust, or correctness."
-    ),
-}
+# Projected from the verifier's canonical PROFILE_REGISTRY. There is no
+# separately maintained supported-profile set that could drift from what the
+# verifier actually routes; --list-profiles is a view over that one registry.
+SUPPORTED_PROFILES: dict[str, str] = dict(SUPPORTED_PROFILE_DESCRIPTIONS)
 
 _EXAMPLE = (
     "example:\n"

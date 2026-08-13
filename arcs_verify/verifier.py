@@ -74,28 +74,94 @@ EDITORIAL_CITATION_PACK_PROFILE = "srs.editorial.citation_pack.v0.1"
 # Provisional profiles emit an advisory into report.details: a structural PASS
 # attests conformance to a provisional (unratified) contract only, never to a
 # stable/ratified profile, and never admission/trust/truth.
-PROVISIONAL_PROFILE_DETAILS = {
-    EDITORIAL_CITATION_PACK_PROFILE: (
-        "provisional_profile: srs.editorial.citation_pack.v0.1 is PROVISIONAL "
-        "(arcs-srs, not ratified). A structural PASS attests conformance to the "
-        "provisional verification contract only — not admission, trust, truth, "
-        "evidence completeness, source authenticity, correct citation mappings, "
-        "or conformance to any stable/ratified profile."
-    ),
+# The first formally versioned VerificationReport contract. A report that lacks
+# this field is a legacy/unversioned predecessor; never retroactively label it.
+REPORT_CONTRACT_V0_1 = "arcs.verify.srs_receipt_verification_report.v0.1"
+
+
+@dataclass(frozen=True)
+class ProfileMetadata:
+    """Canonical per-profile metadata. Single source projected into profile
+    identities, the CLI supported-profile listing, the report release-stage
+    field, and the provisional advisory — so none of those can drift from what
+    the verifier actually routes."""
+
+    profile_id: str
+    profile_version: str
+    # "provisional" | <other explicitly known stage> | None. None means the
+    # stage is NOT established by the verifier's pinned metadata. NEVER infer
+    # "stable" from absence.
+    release_stage: str | None
+    description: str
+    advisory: str | None = None  # provisional advisory surfaced into report.details
+
+
+_PROVISIONAL_ADVISORY = (
+    "provisional_profile: {slug} is PROVISIONAL (arcs-srs, not ratified). A "
+    "structural PASS attests conformance to the provisional verification "
+    "contract only — not admission, trust, truth, source authenticity, or "
+    "conformance to any stable/ratified profile."
+)
+
+# THE canonical profile registry. Every profile the verifier routes appears here
+# exactly once; identities, the CLI listing, release stage, and provisional
+# advisories are all projected from it below. Release stage is populated only
+# where pinned upstream evidence establishes it; otherwise None.
+PROFILE_REGISTRY: dict[str, ProfileMetadata] = {
+    MCP_PROFILE: ProfileMetadata(
+        "srs.mcp.sdk_enforcement", "v0.1", None,
+        "MCP tool-call admission receipts emitted at an SDK enforcement boundary (default)."),
+    CONNECTION_PROFILE: ProfileMetadata(
+        "srs.connection.lifecycle", "v0.1", None,
+        "MCP connection lifecycle receipts (connect, scope grant, revoke, disconnect)."),
+    BROADCAST_CONTROL_PROFILE: ProfileMetadata(
+        "srs.broadcast_control", "v0.1", None,
+        "Broadcast-control receipts for governed one-to-many distribution events."),
+    DEFERRED_OPERATION_PROFILE: ProfileMetadata(
+        "srs.deferred_operation", "v0.1", None,
+        "Deferred-operation receipts (deferral, review linkage, outcome, disclosed gaps)."),
+    EDITORIAL_PUBLICATION_INGEST_PROFILE: ProfileMetadata(
+        "srs.editorial.publication_ingest", "v0.1", None,
+        "Editorial corpus publication-ingest receipts (provenance of a parsed publication artifact)."),
+    EDITORIAL_SOURCE_CAPTURE_PROFILE: ProfileMetadata(
+        "srs.editorial.source_capture", "v0.1", None,
+        "Editorial source-capture receipts (digest of the bytes a referenced URL or record returned at capture time)."),
+    EDITORIAL_SOURCE_CAPTURE_PROFILE_V011: ProfileMetadata(
+        "srs.editorial.source_capture", "v0.1.1", "provisional",
+        "Editorial source-capture receipts, provisional v0.1.1 dialect (top-level outcome / declared_url / captured_bytes_ref with enforced cross-field null rules).",
+        advisory=_PROVISIONAL_ADVISORY.format(slug=EDITORIAL_SOURCE_CAPTURE_PROFILE_V011)),
+    EDITORIAL_SOURCE_CAPTURE_PROFILE_V02: ProfileMetadata(
+        "srs.editorial.source_capture", "v0.2", "provisional",
+        "Editorial source-capture receipts, provisional v0.2 (declaration-scoped capture; digest of exact captured bytes; no silent v0.1/v0.1.1 fallback).",
+        advisory=_PROVISIONAL_ADVISORY.format(slug=EDITORIAL_SOURCE_CAPTURE_PROFILE_V02)),
+    EDITORIAL_SOURCE_INGEST_PROFILE: ProfileMetadata(
+        "srs.editorial.source_ingest", "v0.1", "provisional",
+        "Editorial source-ingest receipts, provisional (deterministic ingest/derivation of exact captured bytes under a pinned parser; references a capture observation, never re-attests it).",
+        advisory=_PROVISIONAL_ADVISORY.format(slug=EDITORIAL_SOURCE_INGEST_PROFILE)),
+    ACTIVITY_GOVERNED_READ_PROFILE: ProfileMetadata(
+        "srs.activity.governed_read", "v0.1", None,
+        "Activity governed-read receipts (one governed read against a pinned basis; admitted result or typed refusal, mandatory C8 visibility)."),
+    EDITORIAL_CITATION_PACK_PROFILE: ProfileMetadata(
+        "srs.editorial.citation_pack", "v0.1", "provisional",
+        "Editorial citation-pack assembly receipts, PROVISIONAL (arcs-srs, not ratified). Single-receipt structural verification of one pack_assembly provenance receipt: digest-reference form, subject binding, required classes/limits. A PASS attests structural conformance to the provisional contract only — not admission, trust, or correctness.",
+        advisory=(
+            "provisional_profile: srs.editorial.citation_pack.v0.1 is PROVISIONAL "
+            "(arcs-srs, not ratified). A structural PASS attests conformance to the "
+            "provisional verification contract only — not admission, trust, truth, "
+            "evidence completeness, source authenticity, correct citation mappings, "
+            "or conformance to any stable/ratified profile."
+        )),
 }
 
+# Projections — derived from the registry so they cannot drift from routing.
 PROFILE_IDENTITIES = {
-    MCP_PROFILE: ("srs.mcp.sdk_enforcement", "v0.1"),
-    CONNECTION_PROFILE: ("srs.connection.lifecycle", "v0.1"),
-    BROADCAST_CONTROL_PROFILE: ("srs.broadcast_control", "v0.1"),
-    DEFERRED_OPERATION_PROFILE: ("srs.deferred_operation", "v0.1"),
-    EDITORIAL_PUBLICATION_INGEST_PROFILE: ("srs.editorial.publication_ingest", "v0.1"),
-    EDITORIAL_SOURCE_CAPTURE_PROFILE: ("srs.editorial.source_capture", "v0.1"),
-    EDITORIAL_SOURCE_CAPTURE_PROFILE_V011: ("srs.editorial.source_capture", "v0.1.1"),
-    EDITORIAL_SOURCE_CAPTURE_PROFILE_V02: ("srs.editorial.source_capture", "v0.2"),
-    EDITORIAL_SOURCE_INGEST_PROFILE: ("srs.editorial.source_ingest", "v0.1"),
-    ACTIVITY_GOVERNED_READ_PROFILE: ("srs.activity.governed_read", "v0.1"),
-    EDITORIAL_CITATION_PACK_PROFILE: ("srs.editorial.citation_pack", "v0.1"),
+    slug: (m.profile_id, m.profile_version) for slug, m in PROFILE_REGISTRY.items()
+}
+PROVISIONAL_PROFILE_DETAILS = {
+    slug: m.advisory for slug, m in PROFILE_REGISTRY.items() if m.advisory is not None
+}
+SUPPORTED_PROFILE_DESCRIPTIONS = {
+    slug: m.description for slug, m in PROFILE_REGISTRY.items()
 }
 
 RECEIPT_VERSION = "srs.core.v5.1"
@@ -264,6 +330,22 @@ class VerificationReport:
     chain_status: str = "not_applicable"
     failure_codes: list[str] = field(default_factory=list)
     details: list[str] = field(default_factory=list)
+
+    # --- Self-identifying contract (VR0, additive) ---------------------------
+    # These identify WHAT was verified; they never participate in `passed`.
+    # Self-identification is not self-authorization: naming the receipt, selected
+    # profile, schema, and profile posture involved in a verification event does
+    # NOT establish source truth, issuer trust, producer authority, admission,
+    # standing, or publication eligibility.
+    report_contract: str = REPORT_CONTRACT_V0_1
+    selected_profile: str | None = None
+    selected_profile_release_stage: str | None = None
+    verified_receipt_id: str | None = None
+    verified_receipt_version: str | None = None
+    verified_receipt_profile_id: str | None = None
+    verified_receipt_profile_version: str | None = None
+    verified_receipt_canonical_json_sha256: str | None = None
+    envelope_schema_identity: dict[str, str | None] | None = None
 
     @property
     def passed(self) -> bool:
@@ -2082,6 +2164,40 @@ def verify_receipt(
 
     if not report.schema_digest:
         report.failure_codes.append("schema.digest_mismatch")
+
+    # --- Self-identifying contract (VR0) -- descriptive, never a verdict axis.
+    report.report_contract = REPORT_CONTRACT_V0_1
+    report.selected_profile = selected
+    _selected_meta = PROFILE_REGISTRY.get(selected)
+    report.selected_profile_release_stage = (
+        _selected_meta.release_stage if _selected_meta is not None else None
+    )
+    _rid = receipt.get("receipt_id")
+    report.verified_receipt_id = _rid if isinstance(_rid, str) else None
+    _rver = receipt.get("receipt_version")
+    report.verified_receipt_version = _rver if isinstance(_rver, str) else None
+    _rpid = receipt.get("profile_id")
+    report.verified_receipt_profile_id = _rpid if isinstance(_rpid, str) else None
+    _rpver = receipt.get("profile_version")
+    report.verified_receipt_profile_version = _rpver if isinstance(_rpver, str) else None
+    try:
+        _canonical = rfc8785.dumps(receipt)
+        report.verified_receipt_canonical_json_sha256 = (
+            "sha256:" + hashlib.sha256(_canonical).hexdigest()
+        )
+    except Exception:
+        # Canonical JSON is best-effort identity metadata; its absence never
+        # changes any verdict axis.
+        report.verified_receipt_canonical_json_sha256 = None
+    _schema_sha = hashlib.sha256(schema_bytes).hexdigest()
+    _published = next(
+        (version for version, digest in ENVELOPE_SCHEMA_PINS.items() if digest == _schema_sha),
+        None,
+    )
+    report.envelope_schema_identity = {
+        "published_version": _published,  # None if the digest maps to no pinned version
+        "sha256": "sha256:" + _schema_sha,
+    }
 
     schema = json.loads(schema_bytes)
     schema_errors = sorted(

@@ -1,0 +1,38 @@
+{
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.editorial.source_capture",
+  "profile_version": "v0.2",
+  "receipt_id": "dagr-ingest-src-capture-v02-6e1ba136d786d7b8-0000",
+  "receipt_type": "provenance",
+  "receipt_kind": "capture_attempt",
+  "boundary_type": "editorial_corpus_boundary",
+  "protocol_binding": "dagr-ingest/v0.1",
+  "subject_ref": "urn:counterpedia.source-reference:sha256:a272eb55b983b97fe10320b49051e62e042ced0d3f9d06aa7ffba61136cdcfc3:MH-S01",
+  "issuer_id": "issuer.counterpedia/demo-corpus/wave1",
+  "runtime_instance_id": "runtime-counterpedia-capture-0001",
+  "boundary_id": "boundary-editorial-corpus-0001",
+  "issued_at": "2026-08-12T23:43:38.778763Z",
+  "source_reference_id": "urn:counterpedia.source-reference:sha256:a272eb55b983b97fe10320b49051e62e042ced0d3f9d06aa7ffba61136cdcfc3:MH-S01",
+  "declaring_artifact_ref": "sha256:a272eb55b983b97fe10320b49051e62e042ced0d3f9d06aa7ffba61136cdcfc3",
+  "source_inventory_key": "MH-S01",
+  "declared_url": "https://www.mot.gov.my/en/MH370%20Investigation%20Report/01-Report/MH370SafetyInvestigationReport.pdf",
+  "capturer_identity": "counterpedia-capture-pipeline/wave1@v0.1",
+  "outcome": "success",
+  "captured_bytes_ref": "sha256:b39fa554b38c8e156fbb0f09567de0baf32bafaf012b0f2b80133745f3ed1f32",
+  "artifact_classes_covered": [
+    "declared_reference_identity",
+    "capture_attempt_record"
+  ],
+  "artifact_classes_excluded": [
+    "raw_captured_bytes"
+  ],
+  "attestation_limits": [
+    "The receipt declares a source capture attempt for a governed declared source reference. It does not establish that the captured bytes are authentic, that the source is the one the declaration intended, or that the content supports any claim the declaration is used to support."
+  ],
+  "machine_limitations": [
+    {
+      "code": "CONTENT_NOT_VERIFIED"
+    }
+  ],
+  "extensions": {}
+}
