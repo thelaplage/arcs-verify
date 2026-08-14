@@ -23,6 +23,21 @@ def canonical_text(text: str) -> str:
     return " ".join(text.split())
 
 
+def source_capture_hash(source_capture: dict[str, Any]) -> str:
+    """Independently recompute a bundle's optional ``source_capture`` preimage hash.
+
+    Uses the same canonical-JSON-then-sha256 scheme as every other hash in
+    this module (sort_keys, compact separators, no ascii escaping) -- the
+    producer's own ``_source_capture_hash`` is byte-identical to
+    ``content_hash(source_capture)``. This does NOT prove the source_capture
+    projection is authentic or that it correctly describes the real world;
+    it only proves the bundle's own ``source_capture_hash`` is genuinely the
+    preimage hash of the ``source_capture`` object handed to the verifier,
+    rather than an unrelated, independently-editable value.
+    """
+    return content_hash(source_capture)
+
+
 def sha256_prefixed(raw: bytes) -> str:
     return "sha256:" + hashlib.sha256(raw).hexdigest()
 

@@ -7,7 +7,13 @@ from enum import Enum
 from typing import Any
 
 from . import canonical
-from .replay import LOCKED_RENDERER_TEMPLATES, replay_render, reproduce_inspection
+from .replay import (
+    INSPECTION_SCHEMA_V0_2,
+    LOCKED_RENDERER_TEMPLATES,
+    SUPPORTED_INSPECTION_MODES,
+    replay_render,
+    reproduce_inspection,
+)
 
 SUPPORTED_SCHEMAS = frozenset({"packet_time_claim_binding.v0_1"})
 SUPPORTED_RECEIPT_SCHEMAS = frozenset({"garp.sovereignty_receipt.v0.1"})
@@ -145,6 +151,30 @@ def verify_bundle(bundle: dict[str, Any]) -> VerificationReport:
         integrity_ok = True
         consistency_ok = True
         bindings_ok = True
+
+        # source_capture is optional (the older contract may only carry an
+        # opaque upstream source_capture_hash with no preimage at all), but
+        # when the bundle DOES include the literal source_capture object --
+        # as the CA9 bundle does -- its hash is mechanically verifiable and
+        # must actually be verified, not merely echoed into
+        # verified_artifacts. This proves the exact source_capture handed to
+        # the verifier is genuinely the preimage of the hash the rest of the
+        # chain (receipt.artifact_hashes, etc.) binds to -- it does NOT prove
+        # source_capture is authentic or correctly describes the real world;
+        # that boundary stays exactly as explicit as before.
+        source_capture = bundle.get("source_capture")
+        if source_capture is not None:
+            recomputed_source_capture_hash = canonical.source_capture_hash(source_capture)
+            if bundle.get("source_capture_hash") != recomputed_source_capture_hash:
+                integrity_ok = False
+                _fail(
+                    report,
+                    "source_capture_hash_mismatch",
+                    (
+                        f"stored={bundle.get('source_capture_hash')} "
+                        f"recomputed={recomputed_source_capture_hash}"
+                    ),
+                )
 
         nodes = list(graph["nodes"])
         edges = list(graph["edges"])
@@ -337,13 +367,32 @@ def verify_bundle(bundle: dict[str, Any]) -> VerificationReport:
         report.producer_artifacts_consistent = Conclusion.TRUE if consistency_ok else Conclusion.FALSE
         report.packet_time_bindings_valid = Conclusion.TRUE if bindings_ok else Conclusion.FALSE
 
-        # mode is a caller-selected input (mirrors verification_profile), not
-        # something independently inferred; None for v0.1-shaped bundles that
-        # never carry mode/graph_comparison_status/schema at all.
-        expected_inspection = reproduce_inspection(
-            graph=graph, packet=packet, walk=walk, rendered=rendered,
-            mode=inspection.get("mode"),
-        )
+        # Explicit schema dispatch -- never inferred from "does this key
+        # happen to be present". Exactly three legal shapes; anything else
+        # fails closed before reproduction is even attempted.
+        inspection_schema = inspection.get("schema")
+        inspection_mode: str | None = None
+        schema_ok = True
+        if inspection_schema is None:
+            # v0.1 shape: no schema/mode/graph_comparison_status at all.
+            pass
+        elif inspection_schema == INSPECTION_SCHEMA_V0_2:
+            inspection_mode = inspection.get("mode")
+            if inspection_mode not in SUPPORTED_INSPECTION_MODES:
+                schema_ok = False
+                _fail(
+                    report,
+                    "unsupported_inspection_mode",
+                    f"inspection.mode {inspection_mode!r} not supported",
+                )
+        else:
+            schema_ok = False
+            _fail(
+                report,
+                "unsupported_inspection_schema",
+                f"inspection.schema {inspection_schema!r} not supported",
+            )
+
         inspection_keys = (
             "packet_id",
             "packet_hash",
@@ -362,19 +411,29 @@ def verify_bundle(bundle: dict[str, Any]) -> VerificationReport:
             "has_blockers",
             "inspection_hash",
         )
-        # v0.2-only keys: only compared when the supplied inspection is
-        # self-declared v0.2 (has a schema key), so v0.1 bundles that never
-        # carry these fields at all continue to compare (None == None).
-        if "schema" in inspection:
+        if inspection_schema is not None:
             inspection_keys = inspection_keys + ("mode", "graph_comparison_status", "schema")
-        inspection_ok = all(inspection.get(key) == expected_inspection.get(key) for key in inspection_keys)
-        if not inspection_ok:
-            _fail(report, "inspection_reproduction_mismatch", "supplied PacketInspection differs from independent reproduction")
-        if inspection.get("inspection_hash") != canonical.packet_inspection_hash(inspection):
+
+        if schema_ok:
+            # mode is a caller-selected input (mirrors verification_profile),
+            # not something independently inferred; None for v0.1-shaped
+            # bundles that never carry mode/graph_comparison_status/schema.
+            expected_inspection = reproduce_inspection(
+                graph=graph, packet=packet, walk=walk, rendered=rendered,
+                mode=inspection_mode,
+            )
+            inspection_ok = all(
+                inspection.get(key) == expected_inspection.get(key) for key in inspection_keys
+            )
+            if not inspection_ok:
+                _fail(report, "inspection_reproduction_mismatch", "supplied PacketInspection differs from independent reproduction")
+            if inspection.get("inspection_hash") != canonical.packet_inspection_hash(inspection):
+                inspection_ok = False
+                integrity_ok = False
+                report.integrity_valid = Conclusion.FALSE
+                _fail(report, "inspection_hash_mismatch", "stored inspection_hash does not recompute")
+        else:
             inspection_ok = False
-            integrity_ok = False
-            report.integrity_valid = Conclusion.FALSE
-            _fail(report, "inspection_hash_mismatch", "stored inspection_hash does not recompute")
         report.inspection_reproduced = Conclusion.TRUE if inspection_ok else Conclusion.FALSE
 
         receipt_ok = True
