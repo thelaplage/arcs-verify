@@ -150,8 +150,21 @@ def reproduce_inspection(
     packet: dict[str, Any],
     walk: dict[str, Any],
     rendered: dict[str, Any],
+    mode: str | None = None,
 ) -> dict[str, Any]:
-    """Reproduce the producer PacketInspectionProjection from serialized data."""
+    """Reproduce the producer PacketInspectionProjection from serialized data.
+
+    ``mode`` mirrors the producer's ``PacketInspectionMode``: an explicit,
+    caller-selected input (what to check), not something to be independently
+    inferred -- analogous to a verification_profile selection. When omitted
+    (v0.1 shape, no ``mode``/``graph_comparison_status``/``schema`` bound
+    into the hash), this reproduces the historical v0.1 projection exactly
+    as before. When supplied (v0.2), ``graph_comparison_status`` is NOT
+    trusted from the producer -- it is independently derived here from the
+    claim_graph_drift/claim_node_hash_mismatch issues already recomputed
+    above from the supplied graph, so a producer cannot claim "clean" while
+    this function's own drift detection found otherwise.
+    """
 
     issues: list[dict[str, Any]] = []
     selected_claim_ids: list[str] = []
@@ -470,6 +483,18 @@ def reproduce_inspection(
         "operation_refs": operation_refs,
         "issues": issues,
     }
+    if mode is not None:
+        drift_codes = {"claim_graph_drift", "claim_node_hash_mismatch"}
+        drifted = any(item["code"] in drift_codes for item in issues)
+        if mode == "compare_to_current_graph":
+            graph_comparison_status = "drift_detected" if drifted else "clean"
+        else:
+            # historical_only (or any other explicit mode): never claims
+            # current graph equality, matching the producer's own rule.
+            graph_comparison_status = "not_evaluated"
+        projection["mode"] = mode
+        projection["graph_comparison_status"] = graph_comparison_status
+        projection["schema"] = "amnesiac.packet_inspection_projection.v0_2"
     projection["has_blockers"] = any(item["severity"] == "blocker" for item in issues)
     projection["inspection_hash"] = canonical.packet_inspection_hash(projection)
     return projection

@@ -337,8 +337,12 @@ def verify_bundle(bundle: dict[str, Any]) -> VerificationReport:
         report.producer_artifacts_consistent = Conclusion.TRUE if consistency_ok else Conclusion.FALSE
         report.packet_time_bindings_valid = Conclusion.TRUE if bindings_ok else Conclusion.FALSE
 
+        # mode is a caller-selected input (mirrors verification_profile), not
+        # something independently inferred; None for v0.1-shaped bundles that
+        # never carry mode/graph_comparison_status/schema at all.
         expected_inspection = reproduce_inspection(
-            graph=graph, packet=packet, walk=walk, rendered=rendered
+            graph=graph, packet=packet, walk=walk, rendered=rendered,
+            mode=inspection.get("mode"),
         )
         inspection_keys = (
             "packet_id",
@@ -358,6 +362,11 @@ def verify_bundle(bundle: dict[str, Any]) -> VerificationReport:
             "has_blockers",
             "inspection_hash",
         )
+        # v0.2-only keys: only compared when the supplied inspection is
+        # self-declared v0.2 (has a schema key), so v0.1 bundles that never
+        # carry these fields at all continue to compare (None == None).
+        if "schema" in inspection:
+            inspection_keys = inspection_keys + ("mode", "graph_comparison_status", "schema")
         inspection_ok = all(inspection.get(key) == expected_inspection.get(key) for key in inspection_keys)
         if not inspection_ok:
             _fail(report, "inspection_reproduction_mismatch", "supplied PacketInspection differs from independent reproduction")
