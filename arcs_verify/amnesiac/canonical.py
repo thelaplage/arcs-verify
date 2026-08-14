@@ -23,6 +23,21 @@ def canonical_text(text: str) -> str:
     return " ".join(text.split())
 
 
+def source_capture_hash(source_capture: dict[str, Any]) -> str:
+    """Independently recompute a bundle's optional ``source_capture`` preimage hash.
+
+    Uses the same canonical-JSON-then-sha256 scheme as every other hash in
+    this module (sort_keys, compact separators, no ascii escaping) -- the
+    producer's own ``_source_capture_hash`` is byte-identical to
+    ``content_hash(source_capture)``. This does NOT prove the source_capture
+    projection is authentic or that it correctly describes the real world;
+    it only proves the bundle's own ``source_capture_hash`` is genuinely the
+    preimage hash of the ``source_capture`` object handed to the verifier,
+    rather than an unrelated, independently-editable value.
+    """
+    return content_hash(source_capture)
+
+
 def sha256_prefixed(raw: bytes) -> str:
     return "sha256:" + hashlib.sha256(raw).hexdigest()
 
@@ -184,13 +199,32 @@ def rendered_packet_hash(rendered: dict[str, Any]) -> str:
 
 
 def packet_inspection_hash(inspection: dict[str, Any]) -> str:
-    return content_hash(
+    """Recompute a PacketInspectionProjection's inspection_hash.
+
+    Two producer shapes exist. ``PacketInspectionProjectionV0_1`` (historical,
+    no ``mode``/``graph_comparison_status``/``schema`` keys) hashes the
+    payload below unchanged, preserving byte-for-byte re-verifiability of
+    already-committed v0.1 bytes. ``PacketInspectionProjection`` (schema
+    ``amnesiac.packet_inspection_projection.v0_2``, self-declared via the
+    inspection's own ``schema`` key) additionally binds ``mode`` and
+    ``graph_comparison_status`` into the hash, exactly as the v0.2 producer
+    does. Branching on the artifact's own declared schema -- not a global
+    default -- keeps v0.1 bytes reproducible while catching v0.2 tampering
+    of the two extra bound fields.
+    """
+    payload: dict[str, Any] = {
+        "kind": "packet_inspection_projection",
+        "packet_id": inspection["packet_id"],
+        "packet_hash": inspection["packet_hash"],
+        "walk_id": inspection["walk_id"],
+        "walk_hash": inspection["walk_hash"],
+    }
+    if "schema" in inspection:
+        payload["mode"] = inspection.get("mode")
+        payload["graph_comparison_status"] = inspection.get("graph_comparison_status")
+        payload["schema"] = inspection["schema"]
+    payload.update(
         {
-            "kind": "packet_inspection_projection",
-            "packet_id": inspection["packet_id"],
-            "packet_hash": inspection["packet_hash"],
-            "walk_id": inspection["walk_id"],
-            "walk_hash": inspection["walk_hash"],
             "render_hash": inspection.get("render_hash"),
             "renderer_template_kind": inspection.get("renderer_template_kind"),
             "admitted_claim_ids": list(inspection["admitted_claim_ids"]),
@@ -203,6 +237,7 @@ def packet_inspection_hash(inspection: dict[str, Any]) -> str:
             "issues": list(inspection["issues"]),
         }
     )
+    return content_hash(payload)
 
 
 def rendered_body_sha256(body: str) -> str:

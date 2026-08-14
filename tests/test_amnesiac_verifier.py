@@ -319,6 +319,245 @@ def test_fully_coherent_rewrite_passes_structural_not_authenticity_verification(
     assert report.signature_verified is Conclusion.NOT_EVALUATED
 
 
+# --- v0.2 PacketInspectionProjection schema (mode/graph_comparison_status/
+# schema bound into inspection_hash). Real, literal producer bytes from the
+# first genuine TH-S09/CA9 proof run -- not a synthetic bundle -- matching
+# this repo's own literal-bytes testing convention. See
+# packs/amnesiac.theranos_ca9_public_proof/v0.1/README (producer bytes +
+# expected verify report) for provenance.
+
+CA9_FIXTURE = (
+    Path(__file__).parent.parent
+    / "packs"
+    / "amnesiac.theranos_ca9_public_proof"
+    / "v0.1"
+    / "producer"
+    / "proof_bundle.json"
+)
+CA9_EXPECTED_REPORT = (
+    Path(__file__).parent.parent
+    / "packs"
+    / "amnesiac.theranos_ca9_public_proof"
+    / "v0.1"
+    / "expected"
+    / "verify-report.json"
+)
+
+
+def _ca9_bundle() -> dict:
+    return json.loads(CA9_FIXTURE.read_text(encoding="utf-8"))
+
+
+def test_ca9_v0_2_inspection_bundle_passes_and_matches_expected_report() -> None:
+    """Real producer bytes, schema amnesiac.packet_inspection_projection.v0_2.
+
+    This is the exact bundle that first exposed the v0.1/v0.2 hash-shape gap
+    (inspection_hash_mismatch even though every content field reproduced
+    correctly) -- pinned here so the gap cannot silently regress.
+    """
+    bundle = _ca9_bundle()
+    assert bundle["inspection"]["schema"] == "amnesiac.packet_inspection_projection.v0_2"
+    report = verify_bundle(bundle).to_dict()
+    expected = json.loads(CA9_EXPECTED_REPORT.read_text(encoding="utf-8"))
+    assert report["passed"] is True
+    assert report["schema"] == expected["schema"]
+    assert report["verification_profile"] == expected["verification_profile"]
+    assert report["conclusions"] == expected["conclusions"]
+    assert report["verified_artifacts"] == expected["verified_artifacts"]
+    assert report["report_hash"] == expected["report_hash"]
+    assert report["conclusions"]["authenticity_verified"] == "not_evaluated"
+    assert report["conclusions"]["signature_verified"] == "not_evaluated"
+
+
+def test_ca9_v0_2_inspection_hash_recomputes_with_bound_fields() -> None:
+    bundle = _ca9_bundle()
+    inspection = bundle["inspection"]
+    assert inspection["inspection_hash"] == canonical.packet_inspection_hash(inspection)
+
+
+def test_ca9_v0_2_tampered_graph_comparison_status_is_rejected() -> None:
+    """A producer cannot silently claim 'clean' by editing only the field --
+    graph_comparison_status is bound into inspection_hash for v0.2, so
+    editing it without recomputing the hash is caught by the hash check; the
+    independent replay in reproduce_inspection separately re-derives the
+    correct status from the graph, so it cannot be laundered even via a
+    self-consistent hash recompute of a false value."""
+    bundle = _ca9_bundle()
+    bundle["inspection"]["graph_comparison_status"] = "drift_detected"
+    bundle["inspection"]["inspection_hash"] = canonical.packet_inspection_hash(
+        bundle["inspection"]
+    )
+    report = verify_bundle(bundle)
+    assert not report.passed
+    assert any(item.code == "inspection_reproduction_mismatch" for item in report.findings)
+
+
+def test_ca9_v0_2_tampered_mode_is_rejected() -> None:
+    bundle = _ca9_bundle()
+    bundle["inspection"]["mode"] = "historical_only"
+    bundle["inspection"]["inspection_hash"] = canonical.packet_inspection_hash(
+        bundle["inspection"]
+    )
+    report = verify_bundle(bundle)
+    assert not report.passed
+    assert any(item.code == "inspection_reproduction_mismatch" for item in report.findings)
+
+
+def test_ca9_v0_2_stale_inspection_hash_after_field_edit_is_rejected() -> None:
+    """Editing a v0.2-bound field WITHOUT recomputing inspection_hash (the
+    naive tamper attempt) is caught by the hash check specifically."""
+    bundle = _ca9_bundle()
+    bundle["inspection"]["graph_comparison_status"] = "drift_detected"
+    report = verify_bundle(bundle)
+    assert not report.passed
+    assert any(item.code == "inspection_hash_mismatch" for item in report.findings)
+
+
+def test_ca9_v0_2_unknown_mode_string_is_rejected_not_treated_as_historical() -> None:
+    """The producer's PacketInspectionMode is a closed two-value vocabulary
+    (historical_only | compare_to_current_graph); it rejects any other value
+    at construction time, so no legitimate bundle can carry one. The verifier
+    must fail closed on an unknown mode, not silently normalize it into
+    historical-like behavior (the original bug this test targets)."""
+    bundle = _ca9_bundle()
+    bundle["inspection"]["mode"] = "some_future_mode_this_verifier_has_never_heard_of"
+    bundle["inspection"]["inspection_hash"] = canonical.packet_inspection_hash(
+        bundle["inspection"]
+    )
+    report = verify_bundle(bundle)
+    assert not report.passed
+    assert any(item.code == "unsupported_inspection_mode" for item in report.findings)
+    assert report.inspection_reproduced is Conclusion.FALSE
+
+
+def test_ca9_v0_2_historical_only_with_real_graph_drift_reproduces_exactly() -> None:
+    """The bug this test targets: mode=historical_only means the producer's
+    inspect_packet() NEVER calls the graph-binding check, even when a graph
+    happens to be supplied and even when that graph has genuinely drifted
+    from packet-time state. A correct independent reproduction must mirror
+    that exactly -- it must NOT insert claim_graph_drift issues the real
+    historical_only producer never computed and never claimed to have
+    checked, or a legitimate historical_only bundle could never reproduce.
+
+    The drifted graph is still caught -- by the UNCONDITIONAL top-level
+    substrate_hash_mismatch check in verify_bundle(), which is completely
+    independent of inspection mode -- so overall passed=False, but
+    inspection_reproduced must be TRUE: the inspection itself, correctly,
+    never claimed to have evaluated the graph at all.
+    """
+    from arcs_verify.amnesiac.replay import reproduce_inspection
+
+    bundle = _ca9_bundle()
+
+    # Drift the graph: corrupt a node's content_hash so the substrate no
+    # longer matches packet-time state.
+    bundle["graph"]["nodes"][0]["content_hash"] = "sha256:" + "0" * 64
+
+    # A REAL producer emitting mode=historical_only for this (now-drifted)
+    # graph would never call the graph-binding check at all -- reproduce the
+    # correct historical_only inspection via the same independent replay
+    # path this test is protecting, standing in for that real producer
+    # output (the real producer's actual historical_only path is not
+    # separately fixtured here; this exercises the verifier's own
+    # documented historical_only contract).
+    historical_inspection = reproduce_inspection(
+        graph=bundle["graph"],
+        packet=bundle["packet"],
+        walk=bundle["walk"],
+        rendered=bundle["rendered"],
+        mode="historical_only",
+    )
+    bundle["inspection"] = historical_inspection
+
+    report = verify_bundle(bundle)
+    assert report.inspection_reproduced is Conclusion.TRUE, report.to_dict()
+    assert not any(item.code == "inspection_reproduction_mismatch" for item in report.findings)
+    assert not any(
+        item["code"] in ("claim_graph_drift", "claim_node_hash_mismatch")
+        for item in historical_inspection["issues"]
+    )
+    # The drift is still caught -- by the unconditional top-level check,
+    # not by the inspection.
+    assert not report.passed
+    assert any(item.code == "substrate_hash_mismatch" for item in report.findings)
+
+
+def test_ca9_v0_2_compare_to_current_graph_with_real_drift_is_reflected_in_inspection() -> None:
+    """The symmetric positive case: mode=compare_to_current_graph DOES claim
+    to have checked the graph, so a real drift must show up as
+    graph_comparison_status=drift_detected in the reproduced inspection
+    itself, not just in the unconditional top-level check."""
+    from arcs_verify.amnesiac.replay import reproduce_inspection
+
+    bundle = _ca9_bundle()
+    bundle["graph"]["nodes"][0]["content_hash"] = "sha256:" + "0" * 64
+
+    compare_inspection = reproduce_inspection(
+        graph=bundle["graph"],
+        packet=bundle["packet"],
+        walk=bundle["walk"],
+        rendered=bundle["rendered"],
+        mode="compare_to_current_graph",
+    )
+    assert compare_inspection["graph_comparison_status"] == "drift_detected"
+    bundle["inspection"] = compare_inspection
+
+    report = verify_bundle(bundle)
+    assert report.inspection_reproduced is Conclusion.TRUE, report.to_dict()
+    assert not report.passed
+    assert any(item.code == "substrate_hash_mismatch" for item in report.findings)
+
+
+def test_source_capture_hash_recomputes_for_ca9_bundle() -> None:
+    bundle = _ca9_bundle()
+    assert bundle["source_capture"] is not None
+    assert bundle["source_capture_hash"] == canonical.source_capture_hash(
+        bundle["source_capture"]
+    )
+
+
+def test_tampered_source_capture_is_rejected_even_with_unchanged_hash() -> None:
+    """The blocker this test targets: editing source_capture content while
+    leaving source_capture_hash (and the receipt's copy of it) unchanged
+    must now be caught -- previously the hash was only echoed into
+    verified_artifacts, never recomputed from the actual source_capture
+    object handed to the verifier."""
+    bundle = _ca9_bundle()
+    bundle["source_capture"]["pdf_sha256"] = "sha256:" + "1" * 64
+    # source_capture_hash and the receipt are deliberately left unchanged --
+    # this is exactly the attack the missing check allowed through.
+    report = verify_bundle(bundle)
+    assert not report.passed
+    assert any(item.code == "source_capture_hash_mismatch" for item in report.findings)
+
+
+def test_bundle_without_source_capture_skips_preimage_check_not_fails() -> None:
+    """The older contract, where only an opaque upstream hash may exist with
+    no preimage object at all, is a legitimate shape and must not be
+    penalized -- the check is conditional on source_capture being present,
+    not mandatory."""
+    bundle = _stage()
+    assert bundle.get("source_capture") is None
+    report = verify_bundle(bundle)
+    assert not any(item.code == "source_capture_hash_mismatch" for item in report.findings)
+
+
+def test_v0_1_inspection_hash_unaffected_by_v0_2_schema_branch() -> None:
+    """A v0.1-shaped inspection (no schema key) must hash identically to
+    before this change -- the v0.2 branch must never leak into v0.1 bytes."""
+    bundle = _stage()
+    inspection = bundle["inspection"]
+    assert "schema" not in inspection
+    assert inspection["inspection_hash"] == canonical.packet_inspection_hash(inspection)
+    expected = reproduce_inspection(
+        graph=bundle["graph"], packet=bundle["packet"], walk=bundle["walk"],
+        rendered=bundle["rendered"],
+    )
+    assert "schema" not in expected
+    assert "mode" not in expected
+    assert "graph_comparison_status" not in expected
+
+
 def test_runtime_package_contains_no_producer_imports() -> None:
     package = Path(__file__).parent.parent / "arcs_verify" / "amnesiac"
     source = "\n".join(path.read_text(encoding="utf-8") for path in package.glob("*.py"))

@@ -1,0 +1,393 @@
+{
+  "graph": {
+    "edges": [],
+    "nodes": [
+      {
+        "admission_state": "admitted",
+        "anchor_refs": [
+          "anchor:theranos:ca9:affirmance",
+          "anchor:theranos:ca9:holmes-investor-counts"
+        ],
+        "claim_id": "claim:c04ccef2a3ad667ba4f78241",
+        "content_hash": "sha256:07d159cc9d32860f2c65f32aaf1874b13cd47d14942341ea98d5793287bbd25f",
+        "created_at": "2026-08-14T00:00:00Z",
+        "lifecycle_state": "active",
+        "normalized_text": "The Ninth Circuit affirmed Elizabeth Holmes's convictions in the December 22, 2025 amended opinion.",
+        "profile_scope": "theranos_ca9_public_proof",
+        "source_refs": [
+          "source:theranos:ca9:22-10312-amended"
+        ],
+        "support_state": "supported",
+        "verification_state": "verified"
+      },
+      {
+        "admission_state": "admitted",
+        "anchor_refs": [
+          "anchor:theranos:ca9:holmes-investor-counts"
+        ],
+        "claim_id": "claim:e104516cec25b0c642a92c75",
+        "content_hash": "sha256:153037cddb9c3e1e081202cf9a77203813e59861cc498f6eff1ce69040cb9436",
+        "created_at": "2026-08-14T00:00:00Z",
+        "lifecycle_state": "active",
+        "normalized_text": "The jury convicted Elizabeth Holmes of four investor-related counts: investor conspiracy Count 1 and wire-fraud Counts 6 through 8.",
+        "profile_scope": "theranos_ca9_public_proof",
+        "source_refs": [
+          "source:theranos:ca9:22-10312-amended"
+        ],
+        "support_state": "supported",
+        "verification_state": "verified"
+      }
+    ]
+  },
+  "inspection": {
+    "admitted_claim_ids": [
+      "claim:e104516cec25b0c642a92c75",
+      "claim:c04ccef2a3ad667ba4f78241"
+    ],
+    "citation_claim_ids": [
+      "claim:e104516cec25b0c642a92c75",
+      "claim:c04ccef2a3ad667ba4f78241"
+    ],
+    "graph_comparison_status": "clean",
+    "has_blockers": false,
+    "inspected_at": "2026-08-14T09:20:53Z",
+    "inspection_hash": "sha256:ead62a37c71f15e4c4540e423aaf3a6d9528cbc61624442220015eddd6d43c1f",
+    "issues": [],
+    "mode": "compare_to_current_graph",
+    "operation_kinds": [
+      "select",
+      "quote",
+      "select",
+      "quote",
+      "refuse"
+    ],
+    "operation_refs": [
+      "op:final:select:01",
+      "op:final:quote:01",
+      "op:final:select:02",
+      "op:final:quote:02",
+      "op:final:refuse:01"
+    ],
+    "packet_hash": "sha256:1095908a32ca44f5f9ab4c9aec92ff1c344b7c9dfbb29a16afc919e05942cee5",
+    "packet_id": "context_packet:theranos-ca9-public-proof.v0_1:final",
+    "quoted_claim_ids": [
+      "claim:e104516cec25b0c642a92c75",
+      "claim:c04ccef2a3ad667ba4f78241"
+    ],
+    "refusal_reasons": [
+      "final refusal: the opinion-body disposition records acquittal on the patient-related conspiracy and identified patient-related wire-fraud counts; it does not support a Holmes patient-fraud conviction"
+    ],
+    "render_hash": "sha256:7079813e55d81a38c6cc948307a91d77847846ff2dc408b34c2fa13ba88da2c7",
+    "renderer_template_kind": "summary_with_sources",
+    "schema": "amnesiac.packet_inspection_projection.v0_2",
+    "selected_claim_ids": [
+      "claim:e104516cec25b0c642a92c75",
+      "claim:c04ccef2a3ad667ba4f78241"
+    ],
+    "walk_hash": "sha256:23ac26bbac2c3d78be65345ce9fe7ab5c01cbf12547de6f231d15b445a661d2d",
+    "walk_id": "packet_walk:theranos-ca9-public-proof.v0_1:final"
+  },
+  "packet": {
+    "admitted_claim_ids": [
+      "claim:e104516cec25b0c642a92c75",
+      "claim:c04ccef2a3ad667ba4f78241"
+    ],
+    "claim_bindings": [
+      {
+        "admission_state": "admitted",
+        "anchor_refs": [
+          "anchor:theranos:ca9:holmes-investor-counts"
+        ],
+        "claim_id": "claim:e104516cec25b0c642a92c75",
+        "content_hash": "sha256:153037cddb9c3e1e081202cf9a77203813e59861cc498f6eff1ce69040cb9436",
+        "lifecycle_state": "active",
+        "normalized_text": "The jury convicted Elizabeth Holmes of four investor-related counts: investor conspiracy Count 1 and wire-fraud Counts 6 through 8.",
+        "profile_scope": "theranos_ca9_public_proof",
+        "source_refs": [
+          "source:theranos:ca9:22-10312-amended"
+        ],
+        "support_state": "supported",
+        "verification_state": "verified"
+      },
+      {
+        "admission_state": "admitted",
+        "anchor_refs": [
+          "anchor:theranos:ca9:affirmance",
+          "anchor:theranos:ca9:holmes-investor-counts"
+        ],
+        "claim_id": "claim:c04ccef2a3ad667ba4f78241",
+        "content_hash": "sha256:07d159cc9d32860f2c65f32aaf1874b13cd47d14942341ea98d5793287bbd25f",
+        "lifecycle_state": "active",
+        "normalized_text": "The Ninth Circuit affirmed Elizabeth Holmes's convictions in the December 22, 2025 amended opinion.",
+        "profile_scope": "theranos_ca9_public_proof",
+        "source_refs": [
+          "source:theranos:ca9:22-10312-amended"
+        ],
+        "support_state": "supported",
+        "verification_state": "verified"
+      }
+    ],
+    "created_at": "2026-08-14T09:20:53Z",
+    "custody_envelope": {
+      "builder_input_ref": {
+        "source_capture_hash": "sha256:246699ae0daadbab3b52b62cf535fd20c54fee00423af84974ea261ca44d870b",
+        "source_ref": "source:theranos:ca9:22-10312-amended",
+        "stage_id": "final"
+      },
+      "builder_name": "theranos_ca9_public_proof_v0_1",
+      "builder_version": "0.1.0",
+      "built_at": "2026-08-14T00:00:00Z"
+    },
+    "evidence_manifest": {
+      "anchor_refs": [
+        "anchor:theranos:ca9:affirmance",
+        "anchor:theranos:ca9:holmes-investor-counts"
+      ],
+      "claim_ids": [
+        "claim:c04ccef2a3ad667ba4f78241",
+        "claim:e104516cec25b0c642a92c75"
+      ],
+      "source_refs": [
+        "source:theranos:ca9:22-10312-amended"
+      ]
+    },
+    "packet_hash": "sha256:1095908a32ca44f5f9ab4c9aec92ff1c344b7c9dfbb29a16afc919e05942cee5",
+    "packet_id": "context_packet:theranos-ca9-public-proof.v0_1:final",
+    "permission_contract": {
+      "may_draft": false,
+      "may_infer": false,
+      "may_quote": true,
+      "may_summarize": true,
+      "must_refuse_if_unsupported": true
+    },
+    "query_plan": {
+      "operations": [
+        "select",
+        "quote",
+        "refuse"
+      ],
+      "parameters": {
+        "integrity_profile": "packet_time_claim_binding.v0_1",
+        "proofcase_id": "theranos-ca9-public-proof.v0_1",
+        "source_capture_hash": "sha256:246699ae0daadbab3b52b62cf535fd20c54fee00423af84974ea261ca44d870b"
+      },
+      "seed_claim_ids": [
+        "claim:e104516cec25b0c642a92c75",
+        "claim:c04ccef2a3ad667ba4f78241"
+      ]
+    },
+    "query_ref": "query:theranos:holmes-verdict-and-affirmance",
+    "query_text_hash": "sha256:712f6b8cc5a08e21995e3d3aa91e369312b460068ca9e27a2f0e35ad8dce528d",
+    "refusal_reasons": [
+      "final refusal: the opinion-body disposition records acquittal on the patient-related conspiracy and identified patient-related wire-fraud counts; it does not support a Holmes patient-fraud conviction"
+    ],
+    "rejected_candidate_refs": [
+      "candidate:theranos:holmes-patient-fraud-conviction"
+    ],
+    "scope": {
+      "actor": "operator:theranos_ca9_public_proof",
+      "actor_role": "public_proof_driver",
+      "corpus_ref": "public_case:us_v_holmes_balwani:ca9_amended_2025_12_22",
+      "matter_ref": null,
+      "profile_id": "theranos_ca9_public_proof"
+    },
+    "substrate_state_hash": "sha256:965f5a65d5ece139ea9e99aca9b087e211e0108557ee3e2f83672da201a9b520",
+    "unknowns": [],
+    "verifier": {
+      "findings": [],
+      "reason": "selected claims have deterministic anchors replayed from the exact capture-addressed PDF; approval is packet construction scope only",
+      "status": "approved",
+      "verifier_name": "theranos_ca9_packet_builder_check",
+      "verifier_version": "0.1.0"
+    }
+  },
+  "proofcase_id": "theranos-ca9-public-proof.v0_1",
+  "receipt": {
+    "admission_decision_refs": [
+      "admission:theranos-ca9-public-proof.v0_1:final:holmes-investor-counts",
+      "admission:theranos-ca9-public-proof.v0_1:final:holmes-ca9-affirmance",
+      "admission:theranos-ca9-public-proof.v0_1:final:holmes-patient-fraud-conviction"
+    ],
+    "artifact_hashes": {
+      "context_packet_hash": "sha256:1095908a32ca44f5f9ab4c9aec92ff1c344b7c9dfbb29a16afc919e05942cee5",
+      "packet_inspection_hash": "sha256:ead62a37c71f15e4c4540e423aaf3a6d9528cbc61624442220015eddd6d43c1f",
+      "packet_walk_hash": "sha256:23ac26bbac2c3d78be65345ce9fe7ab5c01cbf12547de6f231d15b445a661d2d",
+      "rendered_packet_body_sha256": "sha256:e5668468bc4a6b02cc940b97cbb273707d8dd7946f3497250c058d42b3525565",
+      "rendered_packet_hash": "sha256:7079813e55d81a38c6cc948307a91d77847846ff2dc408b34c2fa13ba88da2c7",
+      "source_capture_hash": "sha256:246699ae0daadbab3b52b62cf535fd20c54fee00423af84974ea261ca44d870b"
+    },
+    "context_packet_ref": {
+      "content_hash": "sha256:1095908a32ca44f5f9ab4c9aec92ff1c344b7c9dfbb29a16afc919e05942cee5",
+      "context_packet_id": "context_packet:theranos-ca9-public-proof.v0_1:final"
+    },
+    "issued_at": "2026-08-14T00:00:00Z",
+    "operator_user_context": {
+      "auth_context_ref": "auth_context:public_capture_replay",
+      "operator_ref": "operator:theranos_ca9_public_proof"
+    },
+    "packet_walk_ref": {
+      "operation_log_hash": "sha256:23ac26bbac2c3d78be65345ce9fe7ab5c01cbf12547de6f231d15b445a661d2d",
+      "packet_walk_id": "packet_walk:theranos-ca9-public-proof.v0_1:final"
+    },
+    "receipt_hash": "sha256:6c40bbe09377c48a1118f4fa7cf1b80cf940b929ecd95bd0fccd24fc21d5cce0",
+    "receipt_id": "sovereignty_receipt:theranos-ca9-public-proof.v0_1:final",
+    "receipt_kind": "sovereignty_receipt",
+    "review_decision_refs": [],
+    "schema": "garp.sovereignty_receipt.v0.1",
+    "status_vector": {
+      "blockers_by_code": {},
+      "composition_ready": true,
+      "readiness_state": "ready_with_explicit_refusals",
+      "status_vector_id": "status_vector:theranos-ca9-public-proof.v0_1:final"
+    },
+    "subject_ref": "sha256:7079813e55d81a38c6cc948307a91d77847846ff2dc408b34c2fa13ba88da2c7",
+    "subject_type": "render",
+    "tool_call_disposition_refs": []
+  },
+  "rendered": {
+    "body": "SUMMARY_WITH_SOURCES\n- item 1: The jury convicted Elizabeth Holmes of four investor-related counts: investor conspiracy Count 1 and wire-fraud Counts 6 through 8.\n  source: claim=claim:e104516cec25b0c642a92c75; anchors=anchor:theranos:ca9:holmes-investor-counts; sources=source:theranos:ca9:22-10312-amended\n- item 2: The Ninth Circuit affirmed Elizabeth Holmes's convictions in the December 22, 2025 amended opinion.\n  source: claim=claim:c04ccef2a3ad667ba4f78241; anchors=anchor:theranos:ca9:affirmance, anchor:theranos:ca9:holmes-investor-counts; sources=source:theranos:ca9:22-10312-amended",
+    "citations": [
+      {
+        "anchor_refs": [
+          "anchor:theranos:ca9:holmes-investor-counts"
+        ],
+        "claim_id": "claim:e104516cec25b0c642a92c75",
+        "source_refs": [
+          "source:theranos:ca9:22-10312-amended"
+        ]
+      },
+      {
+        "anchor_refs": [
+          "anchor:theranos:ca9:affirmance",
+          "anchor:theranos:ca9:holmes-investor-counts"
+        ],
+        "claim_id": "claim:c04ccef2a3ad667ba4f78241",
+        "source_refs": [
+          "source:theranos:ca9:22-10312-amended"
+        ]
+      }
+    ],
+    "operation_refs": [
+      "op:final:quote:01",
+      "op:final:quote:02"
+    ],
+    "packet_hash": "sha256:1095908a32ca44f5f9ab4c9aec92ff1c344b7c9dfbb29a16afc919e05942cee5",
+    "packet_id": "context_packet:theranos-ca9-public-proof.v0_1:final",
+    "render_hash": "sha256:7079813e55d81a38c6cc948307a91d77847846ff2dc408b34c2fa13ba88da2c7",
+    "rendered_at": "2026-08-14T09:20:53Z",
+    "template_kind": "summary_with_sources",
+    "walk_hash": "sha256:23ac26bbac2c3d78be65345ce9fe7ab5c01cbf12547de6f231d15b445a661d2d",
+    "walk_id": "packet_walk:theranos-ca9-public-proof.v0_1:final"
+  },
+  "schema": "packet_time_claim_binding.v0_1",
+  "source_capture": {
+    "anchors": [
+      {
+        "anchor_ref": "anchor:theranos:ca9:affirmance",
+        "extraction_profile": "pypdf-6.14.2-whitespace-normalized.v0.1",
+        "normalized_text_window": "USA V. HOLMES 9 After a two -and-a-half-year investigation, a grand jury returned an indictment against Holmes and Balwani. They were tried separately in lengthy jury trials, and each was convicted on numerous fraud charges. Holmes and Balwani now bring several challenges to the district court’s decisions at trial and sentencing. We affirm. Factual Background The Third Superseding Indictment (the “Indictment”) charged Holmes and Balwani (co",
+        "normalized_text_window_sha256": "sha256:8555ab3668e36cf3287c2b84dec16919f32b53b80e18f07c12363b13d652475e",
+        "page_number": 9,
+        "required_fragment": "We affirm.",
+        "source_ref": "source:theranos:ca9:22-10312-amended"
+      },
+      {
+        "anchor_ref": "anchor:theranos:ca9:holmes-investor-counts",
+        "extraction_profile": "pypdf-6.14.2-whitespace-normalized.v0.1",
+        "normalized_text_window": "ly four months. A. Holmes’s Conviction and Sentence During Holmes’s trial, the government dismissed Count 9. The jury acquitted Holmes on the patient -related counts: conspiracy (Count 2) and wire fraud (Counts 10 –12). The jury convicted Holmes of four investor -related counts: the investor-related conspi racy (Count 1), and wire fraud relating to three investor -victims (Counts 6 –8). The jury hung on the wire -fraud counts related to C -1 investors (Counts 3–5). At Holmes’s sentencing, the d",
+        "normalized_text_window_sha256": "sha256:f804a3502838fbca205444261a52cbc51cc702ff8f8feca7603cea1630c7e633",
+        "page_number": 16,
+        "required_fragment": "The jury convicted Holmes of four investor -related counts:",
+        "source_ref": "source:theranos:ca9:22-10312-amended"
+      },
+      {
+        "anchor_ref": "anchor:theranos:ca9:holmes-patient-acquittal",
+        "extraction_profile": "pypdf-6.14.2-whitespace-normalized.v0.1",
+        "normalized_text_window": "relationship. Holmes was tried first in late 2021. Balwani was then tried in early 2022. Each trial lasted nearly four months. A. Holmes’s Conviction and Sentence During Holmes’s trial, the government dismissed Count 9. The jury acquitted Holmes on the patient -related counts: conspiracy (Count 2) and wire fraud (Counts 10 –12). The jury convicted Holmes of four investor -related counts: the investor-related conspi racy (Count 1), and wire fraud relating to three investor -victims (Counts 6 –8). The jury hung on ",
+        "normalized_text_window_sha256": "sha256:53cc26bccc61a19e1d1bf7d603fbe794c009b69f1b924bc6e9ab8c78c36ba5d8",
+        "page_number": 16,
+        "required_fragment": "The jury acquitted Holmes on the patient -related counts: conspiracy (Count 2)",
+        "source_ref": "source:theranos:ca9:22-10312-amended"
+      }
+    ],
+    "byte_count": 360184,
+    "capture_id": "cap_11f570f4-0ecc-4264-bb11-eb2ad69bc102",
+    "capture_posture": {
+      "capture_receipt_bytes_bound": true,
+      "capture_receipt_digest_match": true,
+      "exact_bytes_replayed": true,
+      "note": "This projection binds the exact supplied acquisition-receipt bytes, proves the supplied PDF's byte identity against that receipt, and extracts only from those same in-memory PDF bytes. It does not establish remote publication authenticity or signature validity.",
+      "remote_source_authenticity_attested": false,
+      "signature_validity_attested": false
+    },
+    "capture_receipt_schema": "acquisition.capture.v0.1",
+    "capture_receipt_sha256": "sha256:8d690f82a6bb9c1b94ca602cfeeec6f424b926d20257161fe52ffc4dd5743ff7",
+    "content_type": "application/pdf",
+    "extraction_profile": "pypdf-6.14.2-whitespace-normalized.v0.1",
+    "final_url": "https://cdn.ca9.uscourts.gov/datastore/opinions/2025/12/22/22-10312.pdf",
+    "http_status_code": 200,
+    "last_modified": "Mon, 22 Dec 2025 19:25:05 GMT",
+    "page_count": 55,
+    "pdf_sha256": "sha256:b503e976b57ed9c674c8ba263268c2dbb39afc96247de2d9186a5fe754b93fee",
+    "proofcase_id": "theranos-ca9-public-proof.v0_1",
+    "schema": "theranos_ca9_public_source_capture.v0_1",
+    "source_id": "src_c5b586b7572fe53c4799f6699d57516f",
+    "source_locator": "https://cdn.ca9.uscourts.gov/datastore/opinions/2025/12/22/22-10312.pdf",
+    "source_ref": "source:theranos:ca9:22-10312-amended"
+  },
+  "source_capture_hash": "sha256:246699ae0daadbab3b52b62cf535fd20c54fee00423af84974ea261ca44d870b",
+  "walk": {
+    "created_at": "2026-08-14T09:20:53Z",
+    "operations": [
+      {
+        "claim_id": "claim:e104516cec25b0c642a92c75",
+        "kind": "select",
+        "operation_ref": "op:final:select:01"
+      },
+      {
+        "anchor_refs": [
+          "anchor:theranos:ca9:holmes-investor-counts"
+        ],
+        "claim_content_hash": "sha256:153037cddb9c3e1e081202cf9a77203813e59861cc498f6eff1ce69040cb9436",
+        "claim_id": "claim:e104516cec25b0c642a92c75",
+        "kind": "quote",
+        "operation_ref": "op:final:quote:01",
+        "quote_text": "The jury convicted Elizabeth Holmes of four investor-related counts: investor conspiracy Count 1 and wire-fraud Counts 6 through 8.",
+        "source_refs": [
+          "source:theranos:ca9:22-10312-amended"
+        ]
+      },
+      {
+        "claim_id": "claim:c04ccef2a3ad667ba4f78241",
+        "kind": "select",
+        "operation_ref": "op:final:select:02"
+      },
+      {
+        "anchor_refs": [
+          "anchor:theranos:ca9:affirmance",
+          "anchor:theranos:ca9:holmes-investor-counts"
+        ],
+        "claim_content_hash": "sha256:07d159cc9d32860f2c65f32aaf1874b13cd47d14942341ea98d5793287bbd25f",
+        "claim_id": "claim:c04ccef2a3ad667ba4f78241",
+        "kind": "quote",
+        "operation_ref": "op:final:quote:02",
+        "quote_text": "The Ninth Circuit affirmed Elizabeth Holmes's convictions in the December 22, 2025 amended opinion.",
+        "source_refs": [
+          "source:theranos:ca9:22-10312-amended"
+        ]
+      },
+      {
+        "kind": "refuse",
+        "operation_ref": "op:final:refuse:01",
+        "reason": "final refusal: the opinion-body disposition records acquittal on the patient-related conspiracy and identified patient-related wire-fraud counts; it does not support a Holmes patient-fraud conviction",
+        "unsupported_claim_ids": [
+          "candidate:theranos:holmes-patient-fraud-conviction"
+        ]
+      }
+    ],
+    "packet_hash": "sha256:1095908a32ca44f5f9ab4c9aec92ff1c344b7c9dfbb29a16afc919e05942cee5",
+    "packet_id": "context_packet:theranos-ca9-public-proof.v0_1:final",
+    "walk_hash": "sha256:23ac26bbac2c3d78be65345ce9fe7ab5c01cbf12547de6f231d15b445a661d2d",
+    "walk_id": "packet_walk:theranos-ca9-public-proof.v0_1:final"
+  }
+}

@@ -356,7 +356,9 @@ recompute:
 `template_outside_lock`, `render_hash_mismatch`,
 `render_reference_mismatch`, `render_replay_failed`,
 `render_replay_mismatch`, `inspection_hash_mismatch`,
-`inspection_reproduction_mismatch`, `receipt_hash_mismatch`,
+`inspection_reproduction_mismatch`, `unsupported_inspection_schema`,
+`unsupported_inspection_mode`, `source_capture_hash_mismatch`,
+`receipt_hash_mismatch`,
 `receipt_artifact_hash_mismatch`, `receipt_subject_mismatch`,
 `receipt_packet_ref_mismatch`, `receipt_walk_ref_mismatch`,
 `manifest_source_refs_mismatch`, `manifest_anchor_refs_mismatch`.

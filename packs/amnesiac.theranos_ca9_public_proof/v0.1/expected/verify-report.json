@@ -1,0 +1,28 @@
+{
+  "boundary_note": "Structural integrity only. A fully rewritten, internally coherent artifact set can pass. Historical authenticity requires an external signature, trusted publication record, or previously anchored digest.",
+  "conclusions": {
+    "authenticity_verified": "not_evaluated",
+    "inspection_reproduced": "true",
+    "integrity_valid": "true",
+    "packet_time_bindings_valid": "true",
+    "producer_artifacts_consistent": "true",
+    "receipt_hashes_valid": "true",
+    "signature_verified": "not_evaluated"
+  },
+  "findings": [],
+  "passed": true,
+  "report_hash": "sha256:a4a457dc232f4c3c712a807e4c709b449e8102e3780dae051cfa4f5ad2ecea00",
+  "schema": "arcs_verify.report.v0_1_1",
+  "verification_profile": "full_artifact_chain.v0_1",
+  "verified_artifacts": {
+    "claim_graph_substrate_hash": "sha256:965f5a65d5ece139ea9e99aca9b087e211e0108557ee3e2f83672da201a9b520",
+    "context_packet_hash": "sha256:1095908a32ca44f5f9ab4c9aec92ff1c344b7c9dfbb29a16afc919e05942cee5",
+    "context_packet_id": "context_packet:theranos-ca9-public-proof.v0_1:final",
+    "packet_inspection_hash": "sha256:ead62a37c71f15e4c4540e423aaf3a6d9528cbc61624442220015eddd6d43c1f",
+    "packet_walk_hash": "sha256:23ac26bbac2c3d78be65345ce9fe7ab5c01cbf12547de6f231d15b445a661d2d",
+    "packet_walk_id": "packet_walk:theranos-ca9-public-proof.v0_1:final",
+    "rendered_packet_hash": "sha256:7079813e55d81a38c6cc948307a91d77847846ff2dc408b34c2fa13ba88da2c7",
+    "source_capture_hash": "sha256:246699ae0daadbab3b52b62cf535fd20c54fee00423af84974ea261ca44d870b",
+    "sovereignty_receipt_hash": "sha256:6c40bbe09377c48a1118f4fa7cf1b80cf940b929ecd95bd0fccd24fc21d5cce0"
+  }
+}

@@ -15,6 +15,12 @@ LOCKED_RENDERER_TEMPLATES = frozenset(
     }
 )
 
+# Mirrors the producer's PacketInspectionMode enum exactly (closed
+# vocabulary -- the producer itself rejects any other value at construction
+# time, so no legitimate v0.2 bundle can carry a mode outside this set).
+SUPPORTED_INSPECTION_MODES = frozenset({"historical_only", "compare_to_current_graph"})
+INSPECTION_SCHEMA_V0_2 = "amnesiac.packet_inspection_projection.v0_2"
+
 
 def _quote_operations(walk: dict[str, Any]) -> list[dict[str, Any]]:
     return [item for item in walk["operations"] if item.get("kind") == "quote"]
@@ -150,8 +156,32 @@ def reproduce_inspection(
     packet: dict[str, Any],
     walk: dict[str, Any],
     rendered: dict[str, Any],
+    mode: str | None = None,
 ) -> dict[str, Any]:
-    """Reproduce the producer PacketInspectionProjection from serialized data."""
+    """Reproduce the producer PacketInspectionProjection from serialized data.
+
+    ``mode`` mirrors the producer's ``PacketInspectionMode``: an explicit,
+    caller-selected input (what to check), not something to be independently
+    inferred -- analogous to a verification_profile selection. Callers
+    (``verify_bundle``) are responsible for rejecting an unsupported mode
+    value BEFORE calling this function; passing one here raises ``ValueError``
+    rather than silently falling back to historical-like behavior.
+
+    - ``mode is None`` (v0.1 shape, no ``mode``/``graph_comparison_status``/
+      ``schema`` bound into the hash): reproduces the historical v0.1
+      projection exactly as before -- the graph-drift comparison always runs
+      when a graph is supplied, matching the pre-mode-enum era.
+    - ``mode == "historical_only"``: the graph-drift comparison is skipped
+      ENTIRELY, exactly mirroring the producer's own rule that this mode
+      never calls the graph-binding check even when a graph happens to be
+      supplied. ``graph_comparison_status`` is always ``"not_evaluated"``.
+    - ``mode == "compare_to_current_graph"``: the graph-drift comparison
+      runs, and ``graph_comparison_status`` is NOT trusted from the producer
+      -- it is independently derived here from the claim_graph_drift/
+      claim_node_hash_mismatch issues just computed from the supplied graph,
+      so a producer cannot claim "clean" while this function's own drift
+      detection found otherwise.
+    """
 
     issues: list[dict[str, Any]] = []
     selected_claim_ids: list[str] = []
@@ -202,55 +232,66 @@ def reproduce_inspection(
             )
         )
 
-    nodes = {item["claim_id"]: item for item in graph.get("nodes", [])}
-    substrate_hash = canonical.claim_graph_substrate_hash(
-        graph.get("nodes", []), graph.get("edges", [])
-    )
-    if packet["substrate_state_hash"] != substrate_hash:
-        issues.append(
-            issue(
-                "claim_graph_drift",
-                (
-                    "ClaimGraph state differs from packet-time substrate hash: "
-                    f"stored={packet['substrate_state_hash']} recomputed={substrate_hash}"
-                ),
-                packet["packet_id"],
-            )
+    # Graph-drift comparison. For v0.1 bundles (mode is None), this is
+    # unconditional -- matches the pre-mode-enum era where a supplied graph
+    # was always compared. For v0.2, this must mirror the producer's
+    # inspect_packet() exactly: HISTORICAL_ONLY never calls the graph-binding
+    # check at all, even when a graph happens to be supplied, so a legitimate
+    # historical_only producer output carries NO claim_graph_drift/
+    # claim_node_hash_mismatch issues regardless of the graph's real state.
+    # Running this unconditionally would fabricate issues the real producer
+    # never emitted and never claimed to have checked, breaking reproduction
+    # of every legitimate historical_only bundle.
+    if mode is None or mode == "compare_to_current_graph":
+        nodes = {item["claim_id"]: item for item in graph.get("nodes", [])}
+        substrate_hash = canonical.claim_graph_substrate_hash(
+            graph.get("nodes", []), graph.get("edges", [])
         )
-    for binding in packet["claim_bindings"]:
-        node = nodes.get(binding["claim_id"])
-        if node is None:
+        if packet["substrate_state_hash"] != substrate_hash:
             issues.append(
                 issue(
                     "claim_graph_drift",
                     (
-                        "packet-time claim binding is absent from ClaimGraph: "
-                        f"{binding['claim_id']}"
+                        "ClaimGraph state differs from packet-time substrate hash: "
+                        f"stored={packet['substrate_state_hash']} recomputed={substrate_hash}"
                     ),
-                    binding["claim_id"],
+                    packet["packet_id"],
                 )
             )
-            continue
-        node_hash = canonical.claim_node_content_hash(node)
-        if node["content_hash"] != node_hash:
-            issues.append(
-                issue(
-                    "claim_node_hash_mismatch",
-                    (
-                        f"ClaimNode content_hash mismatch for {binding['claim_id']}: "
-                        f"stored={node['content_hash']} recomputed={node_hash}"
-                    ),
-                    binding["claim_id"],
+        for binding in packet["claim_bindings"]:
+            node = nodes.get(binding["claim_id"])
+            if node is None:
+                issues.append(
+                    issue(
+                        "claim_graph_drift",
+                        (
+                            "packet-time claim binding is absent from ClaimGraph: "
+                            f"{binding['claim_id']}"
+                        ),
+                        binding["claim_id"],
+                    )
                 )
-            )
-        if node_hash != binding["content_hash"]:
-            issues.append(
-                issue(
-                    "claim_graph_drift",
-                    f"ClaimNode differs from packet-time binding: {binding['claim_id']}",
-                    binding["claim_id"],
+                continue
+            node_hash = canonical.claim_node_content_hash(node)
+            if node["content_hash"] != node_hash:
+                issues.append(
+                    issue(
+                        "claim_node_hash_mismatch",
+                        (
+                            f"ClaimNode content_hash mismatch for {binding['claim_id']}: "
+                            f"stored={node['content_hash']} recomputed={node_hash}"
+                        ),
+                        binding["claim_id"],
+                    )
                 )
-            )
+            if node_hash != binding["content_hash"]:
+                issues.append(
+                    issue(
+                        "claim_graph_drift",
+                        f"ClaimNode differs from packet-time binding: {binding['claim_id']}",
+                        binding["claim_id"],
+                    )
+                )
 
     if packet["packet_id"] != walk["packet_id"]:
         issues.append(
@@ -470,6 +511,29 @@ def reproduce_inspection(
         "operation_refs": operation_refs,
         "issues": issues,
     }
+    if mode is not None:
+        if mode not in SUPPORTED_INSPECTION_MODES:
+            # Callers (verify_bundle) are expected to fail closed on an
+            # unsupported mode BEFORE calling this function -- the producer's
+            # own PacketInspectionMode enum rejects unknown values, so no
+            # legitimate bundle can carry one. This is defense in depth, not
+            # the primary gate: never silently fall through to
+            # historical-like behavior for a value the producer itself could
+            # never have emitted.
+            raise ValueError(f"unsupported inspection mode: {mode!r}")
+        if mode == "compare_to_current_graph":
+            drift_codes = {"claim_graph_drift", "claim_node_hash_mismatch"}
+            drifted = any(item["code"] in drift_codes for item in issues)
+            graph_comparison_status = "drift_detected" if drifted else "clean"
+        else:
+            # historical_only: never claims current graph equality, matching
+            # the producer's own rule -- the graph-drift block above was
+            # skipped entirely for this mode, so no drift issues exist to
+            # even consider here.
+            graph_comparison_status = "not_evaluated"
+        projection["mode"] = mode
+        projection["graph_comparison_status"] = graph_comparison_status
+        projection["schema"] = INSPECTION_SCHEMA_V0_2
     projection["has_blockers"] = any(item["severity"] == "blocker" for item in issues)
     projection["inspection_hash"] = canonical.packet_inspection_hash(projection)
     return projection
