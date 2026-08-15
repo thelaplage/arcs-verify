@@ -1,0 +1,176 @@
+{
+  "asset": "cloud.jpg",
+  "asset_digest": "sha256:e6ad9f51be5bb83f137322a3f260b5881738e3528aee208727e75b6daaba6092",
+  "asset_not_vendored": false,
+  "asset_source": null,
+  "asset_source_pin": null,
+  "case": "cloud-sealed-replay",
+  "evaluation_status": "evaluated",
+  "evaluation_status_detail": null,
+  "external_manifest": "cloud_remote_manifest.c2pa",
+  "external_manifest_digest": "sha256:8ba1e123178b80d7bfbdf37042c9cebff16992b130f6bc2de130ad85f582bf1e",
+  "manifest_acquisition_mode": "remote_reference",
+  "native_report": {
+    "active_manifest": "adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391",
+    "manifests": {
+      "adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391": {
+        "assertions": [],
+        "claim_generator": "cai-helper-test cai-helper/0.4.8 c2pa-rs/0.13.0",
+        "claim_version": 1,
+        "format": "image/jpeg",
+        "ingredients": [
+          {
+            "document_id": "adobe:docid:photoshop:e1c344db-c371-ef45-a4fe-9b5ba6346544",
+            "format": "image/jpeg",
+            "instance_id": "xmp.iid:9867c3b4-465e-42e4-8064-76c0c0fe3d16",
+            "label": "c2pa.ingredient",
+            "relationship": "componentOf",
+            "thumbnail": {
+              "format": "image/jpeg",
+              "identifier": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.thumbnail.ingredient.jpeg"
+            },
+            "title": "earth_apollo17.jpg"
+          },
+          {
+            "document_id": "xmp:iid:ac881055-93ff-478d-90ac-36aeed51d5dc",
+            "format": "image/png",
+            "instance_id": "xmp:iid:ac881055-93ff-478d-90ac-36aeed51d5dc",
+            "label": "c2pa.ingredient__1",
+            "relationship": "componentOf",
+            "thumbnail": {
+              "format": "image/png",
+              "identifier": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.thumbnail.ingredient.png"
+            },
+            "title": "libpng-test.png"
+          }
+        ],
+        "instance_id": "xmp.iid:9867c3b4-465e-42e4-8064-76c0c0fe3d16",
+        "label": "adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391",
+        "signature_info": {
+          "alg": "Ps256",
+          "cert_serial_number": "117468664790937121336398959340346743515",
+          "common_name": "cai-prod",
+          "issuer": "Adobe Inc.",
+          "time": "2022-09-09T19:30:51+00:00"
+        },
+        "thumbnail": {
+          "format": "image/jpeg",
+          "identifier": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.thumbnail.claim.jpeg"
+        },
+        "title": "embed_test_Cloud.jpg"
+      }
+    },
+    "validation_results": {
+      "activeManifest": {
+        "failure": [
+          {
+            "code": "signingCredential.untrusted",
+            "explanation": "signing certificate untrusted",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+          }
+        ],
+        "informational": [],
+        "success": [
+          {
+            "code": "timeStamp.validated",
+            "explanation": "timestamp message digest matched: DigiCert Timestamp 2022 - 2",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+          },
+          {
+            "code": "timeStamp.trusted",
+            "explanation": "timestamp cert trusted: DigiCert Timestamp 2022 - 2",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+          },
+          {
+            "code": "claimSignature.insideValidity",
+            "explanation": "claim signature valid",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+          },
+          {
+            "code": "claimSignature.validated",
+            "explanation": "claim signature valid",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.thumbnail.claim.jpeg",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.thumbnail.claim.jpeg"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.thumbnail.ingredient.jpeg",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.thumbnail.ingredient.jpeg"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.ingredient",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.ingredient"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.thumbnail.ingredient.png",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.thumbnail.ingredient.png"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.ingredient__1",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.ingredient__1"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.hash.data"
+          },
+          {
+            "code": "assertion.dataHash.match",
+            "explanation": "data hash valid",
+            "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.hash.data"
+          }
+        ]
+      },
+      "ingredientDeltas": [
+        {
+          "ingredientAssertionURI": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.ingredient",
+          "validationDeltas": {
+            "failure": [],
+            "informational": [
+              {
+                "code": "ingredient.unknownProvenance",
+                "explanation": "earth_apollo17.jpg: ingredient does not have provenance",
+                "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.ingredient"
+              }
+            ],
+            "success": []
+          }
+        },
+        {
+          "ingredientAssertionURI": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.ingredient__1",
+          "validationDeltas": {
+            "failure": [],
+            "informational": [
+              {
+                "code": "ingredient.unknownProvenance",
+                "explanation": "libpng-test.png: ingredient does not have provenance",
+                "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.ingredient__1"
+              }
+            ],
+            "success": []
+          }
+        }
+      ]
+    },
+    "validation_state": "Valid",
+    "validation_status": [
+      {
+        "code": "signingCredential.untrusted",
+        "explanation": "signing certificate untrusted",
+        "url": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+      }
+    ]
+  },
+  "native_stderr_excerpt": null,
+  "note": null,
+  "process_exit_status": 0,
+  "settings_digest": "sha256:9e8ff2636c57c33a77549000ca69b733cba8f683f8fdf2e12ded512367f6a163",
+  "trust_posture": "default"
+}

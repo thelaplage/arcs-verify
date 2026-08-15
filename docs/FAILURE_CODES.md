@@ -536,3 +536,80 @@ Codes are grouped by the axis they trip.
 | `acquisition_grounding.authority_field_present` | A forbidden authority field (`admitted`, `refused`, `standing`, `canonical_id`, `trace_id`, `srs_verified`, `counterpedia_id`) is present anywhere in the envelope. Instruction-like text inside the captured source bytes has no authority effect and never trips this. |
 
 Missing/unreadable/malformed CLI input (envelope or source) remains a source-integrity/usage posture (exit 2), not a verification verdict.
+
+## C2PA native finding contract conformance (c2pa-native subcommand)
+
+Contract-conformance findings emitted by `check_report()` in
+`arcs_verify/c2pa_native.py` over a `arcs.c2pa_native_finding.report.v0.1`
+report. Contract bundle: `arcs_verify/contracts/c2pa-native-finding/v0.1/`;
+native validator pinned to `c2patool` 0.27.15 (crates.io,
+`cargo install c2patool --version 0.27.15 --locked`).
+
+These findings are about the **report's** conformance to the contract. They are
+NOT C2PA validation verdicts, and they are NOT SRS receipt verification: native
+C2PA validity, SRS envelope validity, and SRS signature validity are independent
+axes, and a conformant report may describe a C2PA subject that failed every
+native axis.
+
+Per-axis native results (`satisfied` / `failed` / `indeterminate` /
+`not_evaluated` / `not_applicable`) and per-axis comparison states are report
+content, not failure codes. There is deliberately no aggregate match Boolean and
+no master verdict.
+
+### Structure
+
+| Code | Meaning |
+|---|---|
+| `C2PA_SCHEMA` | The report does not validate against the pinned bundle schemas, or `jsonschema` was unavailable so structural validation was not performed (fail-closed). |
+| `C2PA_RECOMPUTATION_REQUIRED` | `recomputed` is absent. An independent recomputation is mandatory; a report carrying only an observation is not a verification. |
+| `C2PA_SIDE_LABEL` | A side is not labelled with its own role (`recomputed` / `observed`). |
+| `C2PA_AGGREGATE_FORBIDDEN` | The report carries a prohibited aggregate key (for example `native_observation_matches_recomputation`). The contract reports separate axes; doctrine §13 prohibits `verified` without an axis. |
+
+### Comparison presence
+
+| Code | Meaning |
+|---|---|
+| `C2PA_COMPARISON_MISSING` | `observed` is present but `comparison` is absent. |
+| `C2PA_COMPARISON_UNGROUNDED` | `comparison` is present without `observed`. A comparison with nothing to compare against must be ABSENT, never synthesized as an array of `not_evaluated` entries. |
+| `C2PA_COMPARABILITY_COUPLING` | `comparability` is not present exactly when `observed` is present. |
+
+### Axis coverage
+
+| Code | Meaning |
+|---|---|
+| `C2PA_AXIS_DUPLICATE` | An axis appears more than once in a side or in the comparison array. |
+| `C2PA_AXIS_COVERAGE` | A canonical axis is missing. Every axis is represented explicitly; omission is not a permitted way to say `not_evaluated`. |
+| `C2PA_AXIS_UNKNOWN` | An axis outside the canonical set appears. |
+
+### Comparison semantics
+
+| Code | Meaning |
+|---|---|
+| `C2PA_COMPARISON_STATE` | The comparison state is not one of `match` / `mismatch` / `not_comparable` / `not_evaluated`. |
+| `C2PA_REASON_ILLEGAL_FOR_STATE` | The `comparison_reason` is not legal for the declared state under the bundle's reason/posture matrix. |
+| `C2PA_POSTURE_ILLEGAL_FOR_REASON` | The `integrity_posture` is not the one the matrix requires for that state and reason. Causal explanation and integrity inference are separate questions and the mapping between them is fixed. |
+| `C2PA_STATUS_NOT_GROUNDED` | A comparison entry's declared `observed_status` or `recomputed_status` does not match the status actually recorded on that side. |
+| `C2PA_MATCH_WITHOUT_EQUALITY` | State `match` declared while the two sides recorded different statuses. |
+| `C2PA_MISMATCH_WITHOUT_DIFFERENCE` | State `mismatch` declared while the two sides recorded the same status. |
+| `C2PA_COMPARABILITY_NOT_RECOMPUTED` | The declared comparability predicates do not match the values recomputed from the two sides' own recorded inputs. Comparability is a recomputed fact, not an emitter assertion. |
+
+### Integrity-inference discipline
+
+| Code | Meaning |
+|---|---|
+| `C2PA_INTEGRITY_ON_NONDETERMINISTIC_AXIS` | `possible_substantive_divergence` claimed on an axis that is not `byte_deterministic`. A divergence explainable by wall-clock passage, policy basis, or an unfreezable external resource is not an integrity inference. |
+| `C2PA_INTEGRITY_WITHOUT_COMPARABLE_BASIS` | `possible_substantive_divergence` claimed while a comparability predicate is false. |
+
+### Hermeticity and evaluation posture
+
+| Code | Meaning |
+|---|---|
+| `C2PA_HERMETICITY` | A required hermetic setting was not applied: `remote_manifest_fetch` or `ocsp_fetch` not false, `allowed_network_hosts` not empty, or a hermeticity fact not false. |
+| `C2PA_CLOCK_SOURCE` | `validation_clock.source` is not `wall_clock`. |
+| `C2PA_CLOCK_PINNABLE` | `validation_clock.caller_pinnable` is not false. The pinned validator exposes no validation-clock control; hermetic execution bounds network access, not time. |
+| `C2PA_REVOCATION_IMPLIED` | The revocation axis carries a status other than `not_evaluated`. Revocation is reachable only via network OCSP, captured responses cannot be injected for offline replay, and silence is not evidence of non-revocation. |
+| `C2PA_UNAVAILABLE_AS_FAILURE` | The side reports an unavailable or errored evaluation while an axis reports something other than `not_evaluated` / `not_applicable`. An unavailable input is not a validation failure. |
+| `C2PA_UNAVAILABLE_WITH_STATE` | A native `validation_state` is recorded although no evaluation occurred. |
+
+Missing/unreadable/malformed CLI input, and an absent or version-mismatched
+native validator, remain a usage posture (exit 2), not a verification verdict.

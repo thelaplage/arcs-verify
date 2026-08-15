@@ -99,3 +99,64 @@ counterpedia_acquisition_grounded_proposal_source:
     tests/fixtures/acquisition-grounding/grounded-valid.source.html 095abe900ba69216ea54a323f697294785f10dd8b5f66279c9e55c381dbf7d3d
     note: grounded-valid.json is LITERAL producer output — emitted once by counterpedia-acquisition at d4b1127d (ground_and_compose over the adversarial-injection source bytes) and frozen byte-for-byte; grounded-valid.source.html is the exact captured source bytes it derives from. tests/test_acquisition_grounding.py pins both sha256 so a silent regeneration fails.
   runtime_copy: none; the schema is loaded at verification time from the vendored path above and its bytes are re-pinned in verifier code as GROUNDED_ENVELOPE_SCHEMA_SHA256.
+
+c2pa_native_finding_source:
+  lane: ARCSV-C2PA0
+  status: PROVISIONAL. This bundle is authored here (arcs-verify owns the C2PA independent-verification report and comparison contract); the entries below record the EXTERNAL material it pins and the SIBLING LANES it must reconcile with before merge.
+  native_validator_pin:
+    implementation: c2patool
+    version: 0.27.15
+    source: crates.io
+    install_command: cargo install c2patool --version 0.27.15 --locked
+    c2pa_specification_version: "2.4"
+    rationale: the native validator version is a verdict input. The same bytes have been observed to validate differently across versions, and this crate published five patch versions inside forty-eight hours. No "latest" resolution is permitted anywhere in this lane.
+    note: no binary is vendored. The pinned build is reproduced by the install command above; the hermetic suite runs without it by replaying frozen native reports recorded from that exact version.
+  specimen_source:
+    source_repository: contentauth/c2pa-rs
+    source_path: sdk/tests/fixtures
+    commit: eb877f68f3876ed5334263ccdd3c51982aa025f8
+    commit_pinned: true
+    pin_note: reconnaissance fetched these from branch main before a commit was pinned, so their acquisition was digest-recorded but not commit-recorded. They were re-acquired under the explicit commit above and every digest matched the recorded value, closing that gap.
+    vendored_paths: tests/fixtures/c2pa-native/specimens/
+    frozen_artifacts:
+      tests/fixtures/c2pa-native/specimens/C.jpg a2d14755db55de67a47c04090340d8266e892367be4104a45626d7a6fa6e9ffd
+      tests/fixtures/c2pa-native/specimens/CA.jpg e71bff58fc57640803e6e65f7534e2fb0c2f99018c85276cc14b30f04427cc76
+      tests/fixtures/c2pa-native/specimens/CACA.jpg e735fe9e50057f8280baf96182a38d516a4acfb144da7f1e6aad32de44c76aea
+      tests/fixtures/c2pa-native/specimens/E-sig-CA.jpg 20dc072a4c843d3b7d7cb4f4002fbb4d8f20d7ee859ca726f2458c1e0358a98c
+      tests/fixtures/c2pa-native/specimens/XCA.jpg 81f20702a2e81611b29aa773f811b59ade6095acd3d089d6ffdae6b591d6d5a5
+      tests/fixtures/c2pa-native/specimens/cloud.jpg e6ad9f51be5bb83f137322a3f260b5881738e3528aee208727e75b6daaba6092
+  captured_remote_manifest:
+    origin_uri: https://cai-manifests.adobe.com/manifests/adobe-urn-uuid-5f37e182-3687-462e-a7fb-573462780391
+    commit_pinned: false
+    pin_note: a live remote manifest store has no upstream commit to pin. Its identity is its digest, captured once and frozen. It is never re-fetched; the hermetic suite replays these bytes.
+    frozen_artifacts:
+      tests/fixtures/c2pa-native/specimens/cloud_remote_manifest.c2pa 8ba1e123178b80d7bfbdf37042c9cebff16992b130f6bc2de130ad85f582bf1e
+  trust_material_source:
+    source_repository: c2pa-org/conformance-public
+    commit: 99927caef670ca4ad9da5e5542dca39e42fad6f3
+    commit_pinned: true
+    vendored_paths: tests/fixtures/c2pa-native/trust/
+    membership_status: NOT ESTABLISHED for any specimen in this bundle. The official trust lists are vendored so the anchors_supplied trust mode is exercisable and digest-bound, not because any specimen is a member. Trust-by-supplied-allowed-list proves plumbing, not membership; they are different claims and only the former is evidenced.
+    frozen_artifacts:
+      tests/fixtures/c2pa-native/trust/C2PA-TRUST-LIST.pem 75cacc98b79ecac33713c7ecfb58d4a0ef383f3c1f886e7409f9e37e8664aea5
+      tests/fixtures/c2pa-native/trust/C2PA-TSA-TRUST-LIST.pem c688d3555f4a2f1f8d663472bbd37888ff234abdd234c25934c0f9292e4eb5c9
+  not_vendored:
+    ChatGPT_Image.png:
+      sha256: 7cd57b4a33f05e4ce7f63de18751f59f4b3ea8c55c281204e0cd6d1f621e466f
+      source: contentauth/example-assets
+      source_pin: c37f93e115289ac1ef00f899a860e6e08ab9886f
+      reason: media licensing not established. Only the native report over it is committed (tests/fixtures/c2pa-native/frozen-native-reports/expired-signing-certificate.json), together with the asset digest and the upstream commit pin, so the run is reproducible by re-acquiring the asset by digest.
+      role: expired signing certificate; the empirical basis for signer_validity being time_dependent.
+  sibling_lane_pins:
+    status: CANDIDATE. Both siblings were verified at the heads below and NEITHER carries any C2PA artifact at that head (grep -il c2pa returns nothing), so nothing is vendored from either yet. These pins record the bases the sibling lanes are developing from. REPIN TO LANDED COMMITS BEFORE MERGE READINESS.
+    arcs-standard:
+      lane: ARCS-PROV-SIGNAL0
+      candidate_head: 7b8985712dbf750c90cd746b8bf439f17eb25277
+      owns: generic provenance-signal semantics
+      vendored_paths: none
+    arcs-srs:
+      lane: SRS-C2PA-BIND0
+      candidate_head: bc7c532ef6660be9938cac7ea3ca04b5a27a6bfd
+      owns: the native observation receipt serialization that will eventually supply the `observed` side
+      vendored_paths: none
+      consequence: because no producer observation feed exists yet, the `observed` side of every comparison fixture in this lane is CONSTRUCTED and labelled x_fixture_provenance=constructed. The `recomputed` side is always genuine pinned-validator output over real specimen bytes.

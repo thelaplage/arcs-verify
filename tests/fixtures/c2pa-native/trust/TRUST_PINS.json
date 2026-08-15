@@ -1,0 +1,25 @@
+{
+  "note": "Trust material is digest-bound BYTES. A trust-list name or URI is not an acceptable substitute: the bytes are an input to the finding, and the same asset yields a different trust finding under different material.",
+  "official_c2pa_trust_list": {
+    "commit": "99927caef670ca4ad9da5e5542dca39e42fad6f3",
+    "commit_pinned": true,
+    "files": {
+      "C2PA-TRUST-LIST.pem": {
+        "bytes": 37911,
+        "sha256": "sha256:75cacc98b79ecac33713c7ecfb58d4a0ef383f3c1f886e7409f9e37e8664aea5"
+      },
+      "C2PA-TSA-TRUST-LIST.pem": {
+        "bytes": 28863,
+        "sha256": "sha256:c688d3555f4a2f1f8d663472bbd37888ff234abdd234c25934c0f9292e4eb5c9"
+      }
+    },
+    "membership_status": "NOT ESTABLISHED for any specimen in this bundle. No vendored specimen chains to this list. The list is committed so the anchors_supplied trust mode is exercisable and digest-bound, not because any specimen is a member.",
+    "repository": "https://github.com/c2pa-org/conformance-public"
+  },
+  "supplied_allowed_list": {
+    "claim_scope": "trust-by-supplied-allowed-list. This proves the trust plumbing and that trust is a function of caller-supplied material. It is NOT evidence of membership on the official public C2PA trust list; those are different claims and only the former is evidenced here.",
+    "extracted_from": "CA.jpg end-entity certificate (c2pa-rs test signer)",
+    "file": "ca-signer-ee.pem",
+    "sha256": "sha256:0b025a7f0d3134a1a42f6849cbed573f26d96ad9e50dae32c05821753a535a05"
+  }
+}

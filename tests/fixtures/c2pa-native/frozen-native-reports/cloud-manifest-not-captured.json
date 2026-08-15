@@ -1,0 +1,19 @@
+{
+  "asset": "cloud.jpg",
+  "asset_digest": "sha256:e6ad9f51be5bb83f137322a3f260b5881738e3528aee208727e75b6daaba6092",
+  "asset_not_vendored": false,
+  "asset_source": null,
+  "asset_source_pin": null,
+  "case": "cloud-manifest-not-captured",
+  "evaluation_status": "input_unavailable",
+  "evaluation_status_detail": "required manifest store was not available locally and hermetic settings forbid dereferencing it",
+  "external_manifest": null,
+  "external_manifest_digest": null,
+  "manifest_acquisition_mode": "remote_reference",
+  "native_report": null,
+  "native_stderr_excerpt": "Error: must fetch remote manifests from url https://cai-manifests.adobe.com/manifests/adobe-urn-uuid-5f37e182-3687-462e-a7fb-573462780391",
+  "note": null,
+  "process_exit_status": 1,
+  "settings_digest": "sha256:9e8ff2636c57c33a77549000ca69b733cba8f683f8fdf2e12ded512367f6a163",
+  "trust_posture": "default"
+}

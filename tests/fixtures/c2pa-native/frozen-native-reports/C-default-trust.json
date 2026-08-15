@@ -1,0 +1,150 @@
+{
+  "asset": "C.jpg",
+  "asset_digest": "sha256:a2d14755db55de67a47c04090340d8266e892367be4104a45626d7a6fa6e9ffd",
+  "asset_not_vendored": false,
+  "asset_source": null,
+  "asset_source_pin": null,
+  "case": "C-default-trust",
+  "evaluation_status": "evaluated",
+  "evaluation_status_detail": null,
+  "external_manifest": null,
+  "external_manifest_digest": null,
+  "manifest_acquisition_mode": "embedded",
+  "native_report": {
+    "active_manifest": "contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3",
+    "manifests": {
+      "contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3": {
+        "assertions": [
+          {
+            "data": {
+              "@context": "http://schema.org/",
+              "@type": "CreativeWork",
+              "author": [
+                {
+                  "@type": "Person",
+                  "name": "John Doe"
+                }
+              ]
+            },
+            "kind": "Json",
+            "label": "stds.schema-org.CreativeWork"
+          },
+          {
+            "data": {
+              "actions": [
+                {
+                  "action": "c2pa.created",
+                  "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicMedia",
+                  "parameters": {
+                    "name": "gradient"
+                  },
+                  "softwareAgent": "Make Test Images 0.33.1"
+                }
+              ]
+            },
+            "label": "c2pa.actions.v2"
+          }
+        ],
+        "claim_generator": "make_test_images/0.33.1 c2pa-rs/0.33.1",
+        "claim_generator_info": [
+          {
+            "name": "make_test_images",
+            "version": "0.33.1"
+          },
+          {
+            "name": "c2pa-rs",
+            "version": "0.33.1"
+          }
+        ],
+        "claim_version": 1,
+        "format": "image/jpeg",
+        "instance_id": "xmp:iid:22704d84-c37f-4733-a207-56c4c2e67b1a",
+        "label": "contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3",
+        "signature_info": {
+          "alg": "Ps256",
+          "cert_serial_number": "720724073027128164015125666832722375746636448153",
+          "common_name": "C2PA Signer",
+          "issuer": "C2PA Test Signing Cert",
+          "time": "2024-08-06T21:53:37+00:00"
+        },
+        "thumbnail": {
+          "format": "image/jpeg",
+          "identifier": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.assertions/c2pa.thumbnail.claim.jpeg"
+        },
+        "title": "C.jpg"
+      }
+    },
+    "validation_results": {
+      "activeManifest": {
+        "failure": [
+          {
+            "code": "signingCredential.untrusted",
+            "explanation": "signing certificate untrusted",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.signature"
+          }
+        ],
+        "informational": [],
+        "success": [
+          {
+            "code": "timeStamp.validated",
+            "explanation": "timestamp message digest matched: DigiCert Timestamp 2023",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.signature"
+          },
+          {
+            "code": "timeStamp.trusted",
+            "explanation": "timestamp cert trusted: DigiCert Timestamp 2023",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.signature"
+          },
+          {
+            "code": "claimSignature.insideValidity",
+            "explanation": "claim signature valid",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.signature"
+          },
+          {
+            "code": "claimSignature.validated",
+            "explanation": "claim signature valid",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.signature"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.thumbnail.claim.jpeg",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.assertions/c2pa.thumbnail.claim.jpeg"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/stds.schema-org.CreativeWork",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.assertions/stds.schema-org.CreativeWork"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.assertions/c2pa.actions"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.assertions/c2pa.hash.data"
+          },
+          {
+            "code": "assertion.dataHash.match",
+            "explanation": "data hash valid",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.assertions/c2pa.hash.data"
+          }
+        ]
+      }
+    },
+    "validation_state": "Valid",
+    "validation_status": [
+      {
+        "code": "signingCredential.untrusted",
+        "explanation": "signing certificate untrusted",
+        "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.signature"
+      }
+    ]
+  },
+  "native_stderr_excerpt": null,
+  "note": null,
+  "process_exit_status": 0,
+  "settings_digest": "sha256:9e8ff2636c57c33a77549000ca69b733cba8f683f8fdf2e12ded512367f6a163",
+  "trust_posture": "default"
+}

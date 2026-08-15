@@ -9,6 +9,39 @@ The versioning policy is described in [docs/VERSIONING.md](docs/VERSIONING.md).
 ## [Unreleased]
 
 ### Added
+- ARCSV-C2PA0: hermetic native C2PA recomputation and comparison v0.1.
+  - `arcs_verify/contracts/c2pa-native-finding/v0.1/`: the C2PA independent
+    verification report and comparison contract. `contract.manifest.json` pins
+    only the machine semantic artifacts (both schemas and the taxonomy);
+    downstream consumers pin that digest, not the implementing commit and not
+    README bytes.
+  - `arcs_verify/c2pa_native.py` and the `c2pa-native` subcommand: invokes a
+    pinned build of the official native implementation (`c2patool` 0.27.15) over
+    frozen inputs under mandatory hermetic settings, normalizes the scoped
+    `validation_results` object into eight per-axis canonical findings, and
+    compares against a supplied observation when one exists.
+  - `recomputed` is required; `observed` is optional; `comparison` exists if and
+    only if `observed` does. There is deliberately no aggregate match Boolean,
+    and an absent observation yields an absent comparison rather than synthetic
+    `not_evaluated` entries.
+  - Causal explanation (`comparison_reason`) is separated from integrity
+    inference (`integrity_posture`). Exactly one combination reaches
+    `possible_substantive_divergence`; divergence attributable to wall-clock
+    passage, validator version, trust basis, or policy never produces an
+    integrity accusation.
+  - Each axis carries a reproducibility class. The verifier records that network
+    access, remote resource fetch, trust-list dereference, and OCSP were all
+    disabled while simultaneously recording that the validation clock is wall
+    clock and not caller-pinnable: hermetic is not timeless.
+  - Revocation is always `not_evaluated`. It is reachable only via network OCSP
+    and captured responses cannot be injected for offline replay, so silence is
+    never represented as non-revocation.
+  - Semantic status is derived from the machine report, never from process exit
+    status; the pinned validator exits 0 for both `Valid` and `Invalid`. The
+    legacy flattened `validation_status` array is never read.
+  - Public-safe hermetic fixtures under `tests/fixtures/c2pa-native/`, with the
+    upstream specimens re-acquired under an explicit commit pin.
+  - C2PA contract-conformance codes registered in `docs/FAILURE_CODES.md`.
 - `--list-profiles` flag on the signed-SRS subcommand, printing the four named
   profiles the verifier evaluates, and argument help text plus a worked
   example in `--help`.

@@ -1,0 +1,255 @@
+{
+  "asset": "ChatGPT_Image.png",
+  "asset_digest": "sha256:7cd57b4a33f05e4ce7f63de18751f59f4b3ea8c55c281204e0cd6d1f621e466f",
+  "asset_not_vendored": true,
+  "asset_source": "contentauth/example-assets",
+  "asset_source_pin": "c37f93e115289ac1ef00f899a860e6e08ab9886f",
+  "case": "expired-signing-certificate",
+  "evaluation_status": "evaluated",
+  "evaluation_status_detail": null,
+  "external_manifest": null,
+  "external_manifest_digest": null,
+  "manifest_acquisition_mode": "embedded",
+  "native_report": {
+    "active_manifest": "urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971",
+    "manifests": {
+      "urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971": {
+        "assertions": [
+          {
+            "created": true,
+            "data": {
+              "actions": [
+                {
+                  "action": "c2pa.opened",
+                  "parameters": {
+                    "ingredients": [
+                      {
+                        "hash": "PQpbDO6GhRu+5q9TAS5DYYfQHZI7REJMW3gLESDI9g0=",
+                        "url": "self#jumbf=c2pa.assertions/c2pa.ingredient.v3"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "label": "c2pa.actions.v2"
+          }
+        ],
+        "claim_generator_info": [
+          {
+            "name": "ChatGPT",
+            "org.contentauth.c2pa_rs": "0.0.0"
+          }
+        ],
+        "claim_version": 2,
+        "ingredients": [
+          {
+            "active_manifest": "urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94",
+            "format": "png",
+            "instance_id": "xmp:iid:d980243d-1cb5-4d04-9669-65e5752b8240",
+            "label": "c2pa.ingredient.v3",
+            "manifest_data": {
+              "format": "application/c2pa",
+              "identifier": "urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94"
+            },
+            "relationship": "parentOf",
+            "thumbnail": {
+              "format": "image/jpeg",
+              "identifier": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.assertions/c2pa.thumbnail.ingredient"
+            },
+            "title": "image.png",
+            "validation_results": {
+              "activeManifest": {
+                "failure": [],
+                "informational": [],
+                "success": [
+                  {
+                    "code": "claimSignature.insideValidity",
+                    "explanation": "claim signature valid",
+                    "url": "self#jumbf=/c2pa/urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94/c2pa.signature"
+                  },
+                  {
+                    "code": "claimSignature.validated",
+                    "explanation": "claim signature valid",
+                    "url": "self#jumbf=/c2pa/urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94/c2pa.signature"
+                  },
+                  {
+                    "code": "assertion.hashedURI.match",
+                    "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
+                    "url": "self#jumbf=/c2pa/urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94/c2pa.assertions/c2pa.actions.v2"
+                  },
+                  {
+                    "code": "assertion.hashedURI.match",
+                    "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+                    "url": "self#jumbf=/c2pa/urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94/c2pa.assertions/c2pa.hash.data"
+                  },
+                  {
+                    "code": "assertion.dataHash.match",
+                    "explanation": "data hash valid",
+                    "url": "self#jumbf=/c2pa/urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94/c2pa.assertions/c2pa.hash.data"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "instance_id": "xmp:iid:94667f26-cf6b-4e5d-88db-4a5129a30a54",
+        "label": "urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971",
+        "signature_info": {
+          "alg": "Es256",
+          "cert_serial_number": "617499572571975960762842960741769199804397700166",
+          "common_name": "Truepic Lens CLI in Sora",
+          "issuer": "OpenAI"
+        },
+        "title": "image.png"
+      },
+      "urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94": {
+        "assertions": [
+          {
+            "created": true,
+            "data": {
+              "actions": [
+                {
+                  "action": "c2pa.created",
+                  "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+                  "softwareAgent": {
+                    "name": "GPT-4o"
+                  }
+                },
+                {
+                  "action": "c2pa.converted"
+                }
+              ]
+            },
+            "label": "c2pa.actions.v2"
+          }
+        ],
+        "claim_generator_info": [
+          {
+            "name": "ChatGPT",
+            "org.contentauth.c2pa_rs": "0.0.0"
+          }
+        ],
+        "claim_version": 2,
+        "instance_id": "xmp:iid:412ff266-e238-4869-b81e-b2da56461a52",
+        "label": "urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94",
+        "signature_info": {
+          "alg": "Es256",
+          "cert_serial_number": "617499572571975960762842960741769199804397700166",
+          "common_name": "Truepic Lens CLI in Sora",
+          "issuer": "OpenAI"
+        },
+        "title": "image.png"
+      }
+    },
+    "validation_results": {
+      "activeManifest": {
+        "failure": [
+          {
+            "code": "signingCredential.expired",
+            "explanation": "certificate expired",
+            "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.signature"
+          },
+          {
+            "code": "signingCredential.untrusted",
+            "explanation": "signing certificate untrusted",
+            "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.signature"
+          }
+        ],
+        "informational": [],
+        "success": [
+          {
+            "code": "claimSignature.insideValidity",
+            "explanation": "claim signature valid",
+            "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.signature"
+          },
+          {
+            "code": "claimSignature.validated",
+            "explanation": "claim signature valid",
+            "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.signature"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.thumbnail.ingredient",
+            "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.assertions/c2pa.thumbnail.ingredient"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.ingredient.v3",
+            "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.assertions/c2pa.ingredient.v3"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
+            "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.assertions/c2pa.actions.v2"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+            "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.assertions/c2pa.hash.data"
+          },
+          {
+            "code": "assertion.dataHash.match",
+            "explanation": "data hash valid",
+            "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.assertions/c2pa.hash.data"
+          }
+        ]
+      },
+      "ingredientDeltas": [
+        {
+          "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.assertions/c2pa.ingredient.v3",
+          "validationDeltas": {
+            "failure": [
+              {
+                "code": "signingCredential.expired",
+                "explanation": "certificate expired",
+                "url": "self#jumbf=/c2pa/urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94/c2pa.signature"
+              },
+              {
+                "code": "signingCredential.untrusted",
+                "explanation": "signing certificate untrusted",
+                "url": "self#jumbf=/c2pa/urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94/c2pa.signature"
+              }
+            ],
+            "informational": [],
+            "success": [
+              {
+                "code": "ingredient.manifest.validated",
+                "explanation": "ingredient hash matched",
+                "url": "self#jumbf=/c2pa/urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "validation_state": "Invalid",
+    "validation_status": [
+      {
+        "code": "signingCredential.expired",
+        "explanation": "certificate expired",
+        "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.signature"
+      },
+      {
+        "code": "signingCredential.untrusted",
+        "explanation": "signing certificate untrusted",
+        "url": "self#jumbf=/c2pa/urn:c2pa:5e7b0c6d-8e4e-41bd-88d4-e4ef2984a971/c2pa.signature"
+      },
+      {
+        "code": "signingCredential.expired",
+        "explanation": "certificate expired",
+        "url": "self#jumbf=/c2pa/urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94/c2pa.signature"
+      },
+      {
+        "code": "signingCredential.untrusted",
+        "explanation": "signing certificate untrusted",
+        "url": "self#jumbf=/c2pa/urn:c2pa:ec8fd500-c0c2-4b84-8263-f6a1bf03ea94/c2pa.signature"
+      }
+    ]
+  },
+  "native_stderr_excerpt": null,
+  "note": "The signing certificate's validity window closed on 2026-04-15. The identical bytes validated differently before that date. This specimen is the empirical basis for treating signer_validity as time_dependent and for refusing to derive an integrity accusation from a divergence on it.",
+  "process_exit_status": 0,
+  "settings_digest": "sha256:9e8ff2636c57c33a77549000ca69b733cba8f683f8fdf2e12ded512367f6a163",
+  "trust_posture": "default"
+}

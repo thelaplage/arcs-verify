@@ -56,4 +56,10 @@ arcs_verify = [
   # against implementation squash-merge commit c26af32, plus the digest
   # manifest that pins them (matched by the contract-root *.json glob above).
   "contracts/dagr-srs-verification-report-v0-2/golden/*.json",
+  # ARCSV-C2PA0: the c2pa-native-finding contract bundle. arcs_verify/c2pa_native.py
+  # reads the taxonomy and both schemas at runtime, so they must ship with the
+  # package; contract.manifest.json ships too because emitted reports carry its
+  # digest and a consumer must be able to recompute that digest locally.
+  "contracts/c2pa-native-finding/v0.1/*.json",
+  "contracts/c2pa-native-finding/v0.1/*.md",
 ]

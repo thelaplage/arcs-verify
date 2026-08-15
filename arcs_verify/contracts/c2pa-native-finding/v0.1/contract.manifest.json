@@ -1,0 +1,26 @@
+{
+  "authority": "arcs-verify owns the C2PA independent-verification report and comparison contract. arcs-standard owns generic provenance-signal semantics; arcs-srs owns the native observation receipt serialization. This bundle claims neither.",
+  "c2pa_specification_version": "2.4",
+  "contract_id": "arcs.c2pa_native_finding.v0.1",
+  "contract_version": "0.1",
+  "digest_algorithm": "sha256",
+  "excluded_from_pin": {
+    "README.md": "prose; changes here do not change machine semantics",
+    "contract.manifest.json": "prose; changes here do not change machine semantics"
+  },
+  "file_count": 3,
+  "files": {
+    "canonical-native-finding.schema.json": "4b0c2c97e4b3b63308370d684a0568af190155232b8646fd1e8ef7909f5664be",
+    "comparison-taxonomy.json": "d51baff436f28cfce3ec7ed5ef1cd26c6d405a8aed71542f28c39e5f5a60b252",
+    "native-finding-report.schema.json": "bbdb9d4d42cce0b73e5768297979a67dbead1e0288c3efba8247659e14a40b9e"
+  },
+  "native_validator_pin": {
+    "implementation": "c2patool",
+    "install_command": "cargo install c2patool --version 0.27.15 --locked",
+    "pin_rationale": "The native validator version is a verdict input: the same bytes have been observed to validate differently across versions, and this crate published five patch versions inside forty-eight hours. Resolving 'latest' would make recomputation unreproducible.",
+    "source": "crates.io",
+    "version": "0.27.15"
+  },
+  "scope_note": "Pins only the machine semantic artifacts. Downstream consumers pin the digest of this manifest, not the implementing commit and not README bytes.",
+  "status": "PROVISIONAL"
+}

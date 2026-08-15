@@ -26,6 +26,7 @@ _EXAMPLE = (
     "  arcs-verify governed-memory-sequence    verify a governed memory read sequence bundle\n"
     "  arcs-verify ingest-run-sequence ...     verify a dagr.ingest_run.v0.1 receipt sequence\n"
     "  arcs-verify acquisition-grounding ...   verify a grounded content proposal against captured source bytes\n"
+    "  arcs-verify c2pa-native ASSET           recompute a native C2PA validation hermetically\n"
     "\n"
     "exit codes: 0 all results passed; 1 verification failed; 2 usage or\n"
     "source-integrity error (not a verification verdict)."
@@ -218,6 +219,10 @@ def main(argv: list[str] | None = None) -> int:
         from .analytics_snapshot import main as analytics_snapshot_main
 
         return analytics_snapshot_main(args[1:])
+    if args and args[0] == "c2pa-native":
+        from .c2pa_native import main as c2pa_native_main
+
+        return c2pa_native_main(args[1:])
     if args and args[0] == "acquisition-grounding":
         from .acquisition_grounding import main as acquisition_grounding_main
 
