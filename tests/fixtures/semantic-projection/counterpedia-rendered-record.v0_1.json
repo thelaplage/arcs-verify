@@ -1,0 +1,101 @@
+{
+  "@context": "https://counterpedia.org/ns/projection/v0.1",
+  "@id": "SYN-REC-RW-0001",
+  "@type": "CounterpediaRenderedRecordProjection",
+  "schema": "counterpedia.semantic_projection.v0.1",
+  "source_schema_family": "garpedia.rendered_record",
+  "source_schema_version": 2,
+  "authority_posture": "projection_only",
+  "page_id": "SYN-PAGE-RW-0001",
+  "route_slug": "/records/SYN-REC-RW-0001",
+  "slug": "synthetic-reverse-wiki-bootstrap-layout",
+  "title": "Synthetic Demo: Reverse-Wiki Record for the Bootstrap Layout",
+  "status": "published",
+  "corpus_lifecycle": "published",
+  "anchor_resolution_status": "all_resolved",
+  "rendered_at": "2026-05-07T11:00:00Z",
+  "current_edition": "SYN-RW-ED-0001",
+  "editions": [
+    {
+      "edition_id": "SYN-RW-ED-0001",
+      "edition_number": 1,
+      "released_at": "2026-04-30T14:06:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "SYN-SRC-0001",
+      "source_type": "specification",
+      "publication_status": "public"
+    },
+    {
+      "source_id": "SYN-SRC-0002",
+      "source_type": "report",
+      "publication_status": "public"
+    }
+  ],
+  "entities": [
+    {
+      "entity_id": "SYN-ENT-0001",
+      "entity_kind": "concept"
+    },
+    {
+      "entity_id": "SYN-ENT-0002",
+      "entity_kind": "concept"
+    },
+    {
+      "entity_id": "SYN-ENT-0003",
+      "entity_kind": "concept"
+    }
+  ],
+  "cross_references": [
+    {
+      "cross_reference_id": "SYN-RW-XR-0001",
+      "target_record_id": "SYN-CP-SIG-0001",
+      "relationship_type": "related"
+    }
+  ],
+  "citation_spans": [
+    {
+      "span_id": "SYN-RW-SPAN-0001",
+      "source_id": "SYN-SRC-0001",
+      "supports_section_id": "rw-sec-overview",
+      "verification_state": "verbatim_verified"
+    },
+    {
+      "span_id": "SYN-RW-SPAN-0002",
+      "source_id": "SYN-SRC-0002",
+      "supports_section_id": "rw-sec-citation-spans",
+      "verification_state": "verbatim_verified"
+    }
+  ],
+  "projections": [
+    {
+      "projection_id": "SYN-RW-PROJ-0001",
+      "compression_kind": "summary",
+      "reversible_to_record": true
+    }
+  ],
+  "lineage": [
+    {
+      "event_id": "SYN-RW-EVT-0001",
+      "occurred_at": "2026-04-22T15:00:12Z",
+      "event_type": "candidate_created"
+    },
+    {
+      "event_id": "SYN-RW-EVT-0002",
+      "occurred_at": "2026-04-25T17:20:01Z",
+      "event_type": "promoted"
+    },
+    {
+      "event_id": "SYN-RW-EVT-0003",
+      "occurred_at": "2026-04-30T14:02:11Z",
+      "event_type": "publication_eligibility_set"
+    },
+    {
+      "event_id": "SYN-RW-EVT-0004",
+      "occurred_at": "2026-04-30T14:06:00Z",
+      "event_type": "edition_released"
+    }
+  ]
+}
