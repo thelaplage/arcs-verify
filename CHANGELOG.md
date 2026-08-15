@@ -12,9 +12,17 @@ The versioning policy is described in [docs/VERSIONING.md](docs/VERSIONING.md).
 - ARCSV-C2PA0: hermetic native C2PA recomputation and comparison v0.1.
   - `arcs_verify/contracts/c2pa-native-finding/v0.1/`: the C2PA independent
     verification report and comparison contract. `contract.manifest.json` pins
-    only the machine semantic artifacts (both schemas and the taxonomy);
-    downstream consumers pin that digest, not the implementing commit and not
-    README bytes.
+    only the machine semantic artifacts (both schemas and the taxonomy).
+  - The downstream pin is a **canonical semantic projection** of that manifest,
+    not the manifest file's digest. A manifest cannot exempt its own bytes from
+    a digest a consumer computes over the file, and the manifest carries prose
+    (`authority`, `scope_note`, `pin_rationale`), so a raw-file digest would
+    move on a prose clarification. `contract_semantic_digest()` hashes the RFC
+    8785 canonical form of `contract_semantic_projection()`, covering only the
+    contract identity, the digests of the three pinned machine members, and the
+    native semantic pins. Reports carry it as `contract_semantic_digest`; no
+    report carries a manifest file digest. Tests assert both directions: prose
+    edits leave the pin stable, any pinned machine member moves it.
   - `arcs_verify/c2pa_native.py` and the `c2pa-native` subcommand: invokes a
     pinned build of the official native implementation (`c2patool` 0.27.15) over
     frozen inputs under mandatory hermetic settings, normalizes the scoped
@@ -40,7 +48,16 @@ The versioning policy is described in [docs/VERSIONING.md](docs/VERSIONING.md).
     status; the pinned validator exits 0 for both `Valid` and `Invalid`. The
     legacy flattened `validation_status` array is never read.
   - Public-safe hermetic fixtures under `tests/fixtures/c2pa-native/`, with the
-    upstream specimens re-acquired under an explicit commit pin.
+    upstream specimens re-acquired under an explicit commit pin. Every
+    `observed`-side fixture is constructed and labelled as such; it proves the
+    optional input slot, the comparison machinery, and comparability discipline,
+    and does not prove end-to-end producer→verifier interoperability. That proof
+    is recorded as a deferred obligation on PROV-PACK0, owed once
+    `SRS-C2PA-BIND0` emits a real native observation artifact.
+  - `VENDORED_FROM` records the sibling lanes as **reconciliation notes marked
+    NON-RUNTIME DEPENDENCY**, not as pins with a repin-before-merge gate.
+    Nothing is vendored from either sibling and this repo consumes no bytes or
+    semantics from either, so no pin is warranted.
   - C2PA contract-conformance codes registered in `docs/FAILURE_CODES.md`.
 - `--list-profiles` flag on the signed-SRS subcommand, printing the four named
   profiles the verifier evaluates, and argument help text plus a worked

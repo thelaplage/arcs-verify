@@ -47,14 +47,61 @@ authority layers. This bundle owns exactly one of them.
 | `canonical-native-finding.schema.json` | yes | one side of an evaluation, normalized per axis |
 | `native-finding-report.schema.json` | yes | the report: `recomputed`, optional `observed`, conditional `comparison` |
 | `comparison-taxonomy.json` | yes | axes, states, reasons, postures, reproducibility classes, the reason/posture matrix |
-| `contract.manifest.json` | — | the pin itself |
+| `contract.manifest.json` | — | declares the pin; is not itself pinned |
 | `README.md` | **no** | this prose |
 
-`contract.manifest.json` pins only the machine semantic artifacts. **Downstream
-consumers pin that manifest's digest** — not the implementing commit, which
-moves for reasons unrelated to semantics, and not README bytes, which change
-when prose is clarified. If a prose edit moved the pin, consumers would learn to
-ignore pin movement, and the pin would stop meaning anything.
+## What downstream consumers pin
+
+Not a commit — it moves for reasons unrelated to semantics. Not README bytes.
+And **not the digest of `contract.manifest.json` either.**
+
+A manifest cannot exempt its own bytes from a hash somebody else computes over
+the file. `contract.manifest.json` lists itself under `excluded_from_pin`, but
+that self-declaration has no force against `sha256(contract.manifest.json)`, and
+the manifest carries prose — `authority`, `scope_note`, `pin_rationale`. So a
+raw-file digest would move on a prose clarification, which is exactly the
+behaviour that teaches consumers to ignore pin movement.
+
+The pin is therefore a **canonical semantic projection** of the manifest:
+
+```
+projection_id  arcs.c2pa_native_finding.semantic_projection.v0.1
+canonical form RFC 8785 (JCS), sha256
+
+covered:
+  contract_id
+  contract_version
+  status
+  digest_algorithm
+  files                                        (the three pinned machine members + digests)
+  native_semantic_pins.c2pa_specification_version
+  native_semantic_pins.native_validator_pin.{implementation, version, source, install_command}
+
+excluded:
+  authority, scope_note, excluded_from_pin, semantic_pin   (prose / description of the pin)
+  native_validator_pin.pin_rationale                        (prose)
+  file_count                                                (derived from files)
+  README.md bytes, contract.manifest.json bytes as a whole, the implementing commit
+```
+
+The current value — **the value to pin**:
+
+```
+contract_semantic_digest = sha256:f8d1a5c01a2dfff3465bee752c259c992d6dd5d09e46b2021a3976591ae42cac
+```
+
+It is emitted on every report as `contract_semantic_digest`, computed by
+`arcs_verify.c2pa_native.contract_semantic_digest()`, and printed by
+`tools/generate_c2pa_contract_manifest.py`. The allowlist is deliberate: a field
+added to the manifest later is outside the pin until it is named in
+`SEMANTIC_PROJECTION_INCLUDED_FIELDS`.
+
+**What this digest does not cover.** It identifies the machine contract, and
+nothing more. It does not cover the verifier's behaviour, the native validator
+binary (pinned by version, not vendored), the specimen or trust fixtures, or the
+prose in this file. It attests that a contract is what it says it is; it attests
+nothing about any evaluation, any specimen's trustworthiness, or whether the
+pinned validator was ever run.
 
 ## Shape
 
@@ -171,6 +218,26 @@ predicates must be recomputed from the two sides rather than asserted, or that a
 comparison must be *absent* rather than synthesized. Those live in
 `check_report()` in `arcs_verify/c2pa_native.py`, and the test suite demonstrates
 for each one a report the schema accepts and the checker rejects.
+
+## The observed side is constructed — and what that leaves open
+
+No producer feed for the `observed` side exists yet; the SRS native observation
+receipt that will carry one is a sibling lane (`SRS-C2PA-BIND0`) that has not
+landed. Every observed-side fixture in this bundle is therefore **constructed**
+and carries `x_fixture_provenance: constructed`. The `recomputed` side is never
+constructed: it is always genuine pinned-validator output over real specimen
+bytes.
+
+That is a legitimate way to prove the optional input slot, the comparison
+machinery, and comparability discipline — the observed side is by contract a
+*supplied assertion carrying no independent weight*, and typing an assertion as
+an assertion is what the slot is for.
+
+It does not prove **end-to-end producer→verifier interoperability**, and this
+bundle does not claim it does. That proof is a **deferred obligation on
+PROV-PACK0**, owed once `SRS-C2PA-BIND0` emits a real native observation
+artifact that can be fed through this comparison unmodified. Until then that
+property is `not_evaluated`, and `not_evaluated` is not a pass.
 
 ## Unexercised paths
 

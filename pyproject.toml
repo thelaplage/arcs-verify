@@ -58,8 +58,9 @@ arcs_verify = [
   "contracts/dagr-srs-verification-report-v0-2/golden/*.json",
   # ARCSV-C2PA0: the c2pa-native-finding contract bundle. arcs_verify/c2pa_native.py
   # reads the taxonomy and both schemas at runtime, so they must ship with the
-  # package; contract.manifest.json ships too because emitted reports carry its
-  # digest and a consumer must be able to recompute that digest locally.
+  # package; contract.manifest.json ships too because emitted reports carry the
+  # semantic digest projected from it and a consumer must be able to recompute
+  # that projection locally (the pin is over the projection, not over the file).
   "contracts/c2pa-native-finding/v0.1/*.json",
   "contracts/c2pa-native-finding/v0.1/*.md",
 ]

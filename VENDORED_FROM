@@ -147,16 +147,29 @@ c2pa_native_finding_source:
       source_pin: c37f93e115289ac1ef00f899a860e6e08ab9886f
       reason: media licensing not established. Only the native report over it is committed (tests/fixtures/c2pa-native/frozen-native-reports/expired-signing-certificate.json), together with the asset digest and the upstream commit pin, so the run is reproducible by re-acquiring the asset by digest.
       role: expired signing certificate; the empirical basis for signer_validity being time_dependent.
-  sibling_lane_pins:
-    status: CANDIDATE. Both siblings were verified at the heads below and NEITHER carries any C2PA artifact at that head (grep -il c2pa returns nothing), so nothing is vendored from either yet. These pins record the bases the sibling lanes are developing from. REPIN TO LANDED COMMITS BEFORE MERGE READINESS.
+  sibling_lane_reconciliation:
+    classification: NON-RUNTIME DEPENDENCY. These are reconciliation notes, not pins.
+    rationale: a pin is warranted only where this repo consumes bytes or semantics from another repo. Nothing here is vendored from either sibling, no sibling artifact is imported, loaded, digest-checked, or transcribed, and C1 independently validates C2PA and emits a conformant native finding report without either sibling existing. Recording sibling heads as "pins" implied a dependency that does not exist, and a REPIN-BEFORE-MERGE gate on a dependency that does not exist would block merge on the movement of bytes this repo never reads.
+    merge_gate: NONE. There is no repin gate on this lane. If a sibling later supplies bytes or semantics that this repo actually consumes, that consumption gets its own entry above, with a real pin and a real digest, at that time.
+    commitment: the reconciliation below is an expectation about future lanes, not a claim about the present. No digest is asserted for any sibling artifact because none has been produced.
     arcs-standard:
-      lane: ARCS-PROV-SIGNAL0
-      candidate_head: 7b8985712dbf750c90cd746b8bf439f17eb25277
+      lane: ARCS-PROV-ENVELOPE0
+      lane_status: REPLACED. The earlier ARCS-PROV-SIGNAL0 lane (PR #41) is being superseded by a new ARCS-PROV-ENVELOPE0 PR opened from the same base commit. Descriptive text written against #41's shape does not describe the current lane.
+      base_commit_the_lane_develops_from: 7b8985712dbf750c90cd746b8bf439f17eb25277
+      base_commit_verified: this repo confirmed that no C2PA artifact exists at that commit (grep -il c2pa returns nothing), so there is nothing there to vendor.
       owns: generic provenance-signal semantics
       vendored_paths: none
+      consumed_by_this_repo: nothing
+      reconciliation_expected: the generic provenance object drops the required `signal_result` and instead references native findings opaquely via `result_refs`. That is consistent with this bundle owning the C2PA native finding: the generic layer points at a native finding it does not interpret, and arcs-verify owns what that finding means. Reconciliation is confirming that the referent shape ARCS-PROV-ENVELOPE0 points at is the report this bundle emits. No digest is recorded because that PR has not landed and its bytes are not final.
     arcs-srs:
       lane: SRS-C2PA-BIND0
-      candidate_head: bc7c532ef6660be9938cac7ea3ca04b5a27a6bfd
+      lane_status: not landed
+      base_commit_the_lane_develops_from: bc7c532ef6660be9938cac7ea3ca04b5a27a6bfd
+      base_commit_verified: no C2PA artifact exists at that commit either.
       owns: the native observation receipt serialization that will eventually supply the `observed` side
       vendored_paths: none
+      consumed_by_this_repo: nothing
       consequence: because no producer observation feed exists yet, the `observed` side of every comparison fixture in this lane is CONSTRUCTED and labelled x_fixture_provenance=constructed. The `recomputed` side is always genuine pinned-validator output over real specimen bytes.
+      constructed_observations_prove: the optional `observed` input slot, the comparison machinery, and comparability discipline. Those proofs are real and are not weakened by the fixtures being constructed; the observed side is contractually a supplied assertion carrying no independent weight, and typing an assertion as an assertion is what the slot is for.
+      constructed_observations_do_not_prove: end-to-end producer->verifier interoperability. No producer has ever emitted an observation that this verifier then consumed.
+      deferred_obligation: PROV-PACK0 owes the interoperability proof, once SRS-C2PA-BIND0 emits a real native observation artifact: feed those producer bytes through this comparison unmodified and show the axes resolve without adaptation. Until then producer->verifier interoperability is not_evaluated, and not_evaluated is not a pass. Recorded in tests/fixtures/c2pa-native/observed/README.md and in the bundle README so the gap stays visible rather than being assumed closed. This is an obligation on PROV-PACK0; it is not a merge gate on this lane.

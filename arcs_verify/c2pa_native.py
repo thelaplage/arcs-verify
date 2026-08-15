@@ -44,6 +44,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Iterator, Sequence
 
+import rfc8785
+
 __all__ = [
     "PINNED_VALIDATOR",
     "HERMETIC_SETTINGS_TOML",
@@ -58,6 +60,11 @@ __all__ = [
     "check_report",
     "ContractBundle",
     "load_bundle",
+    "contract_semantic_projection",
+    "contract_semantic_digest",
+    "SEMANTIC_PROJECTION_ID",
+    "SEMANTIC_PROJECTION_INCLUDED_FIELDS",
+    "SEMANTIC_PROJECTION_EXCLUDED_FIELDS",
     "main",
 ]
 
@@ -146,6 +153,90 @@ FORBIDDEN_AGGREGATE_KEYS = frozenset(
 _SEVERITIES = ("success", "informational", "failure")
 
 
+# ---------------------------------------------------------------------------
+# The downstream pin: a canonical projection, not a file digest
+# ---------------------------------------------------------------------------
+
+SEMANTIC_PROJECTION_ID = "arcs.c2pa_native_finding.semantic_projection.v0.1"
+
+SEMANTIC_PROJECTION_INCLUDED_FIELDS: tuple[str, ...] = (
+    "contract_id",
+    "contract_version",
+    "status",
+    "digest_algorithm",
+    "files",
+    "native_semantic_pins.c2pa_specification_version",
+    "native_semantic_pins.native_validator_pin.implementation",
+    "native_semantic_pins.native_validator_pin.version",
+    "native_semantic_pins.native_validator_pin.source",
+    "native_semantic_pins.native_validator_pin.install_command",
+)
+"""Exactly the manifest fields the downstream semantic pin identifies.
+
+This is an allowlist, not a denylist. A field added to ``contract.manifest.json``
+later is outside the pin until it is named here deliberately.
+"""
+
+SEMANTIC_PROJECTION_EXCLUDED_FIELDS: tuple[str, ...] = (
+    "authority",
+    "scope_note",
+    "excluded_from_pin",
+    "semantic_pin",
+    "file_count",
+    "native_validator_pin.pin_rationale",
+)
+"""Manifest fields the projection deliberately drops.
+
+``authority``, ``scope_note`` and ``pin_rationale`` are prose: they explain the
+pin, they are not the pin. ``excluded_from_pin`` and ``semantic_pin`` are
+descriptions of the pinning arrangement rather than pinned semantics; the
+authoritative definition of the projection is this module plus its tests.
+``file_count`` is derived from ``files`` and carries no information ``files``
+does not already carry.
+"""
+
+
+def contract_semantic_projection(manifest: dict[str, Any]) -> dict[str, Any]:
+    """Project ``contract.manifest.json`` onto its canonical machine fields.
+
+    The manifest file cannot exempt its own bytes from a digest a consumer
+    computes over the file — a self-declaration in ``excluded_from_pin`` is not
+    enforceable against ``sha256(contract.manifest.json)``. Since the manifest
+    carries prose (``authority``, ``scope_note``, ``pin_rationale``), a digest
+    over the raw file moves when the prose is clarified, which is precisely the
+    behaviour that trains consumers to ignore pin movement.
+
+    So the downstream pin is not the file digest. It is the digest of this
+    projection: the contract identity, the digests of the three pinned machine
+    members, and the native semantic pins. Editing prose does not move it.
+    Editing any pinned machine member does.
+    """
+    validator = manifest["native_validator_pin"]
+    return {
+        "projection_id": SEMANTIC_PROJECTION_ID,
+        "contract_id": manifest["contract_id"],
+        "contract_version": manifest["contract_version"],
+        "status": manifest["status"],
+        "digest_algorithm": manifest["digest_algorithm"],
+        "files": {name: str(digest) for name, digest in sorted(manifest["files"].items())},
+        "native_semantic_pins": {
+            "c2pa_specification_version": manifest["c2pa_specification_version"],
+            "native_validator_pin": {
+                "implementation": validator["implementation"],
+                "version": validator["version"],
+                "source": validator["source"],
+                "install_command": validator["install_command"],
+            },
+        },
+    }
+
+
+def contract_semantic_digest(manifest: dict[str, Any]) -> str:
+    """``sha256`` over the RFC 8785 canonical form of the semantic projection."""
+    canonical = rfc8785.dumps(contract_semantic_projection(manifest))
+    return "sha256:" + _digest_bytes(canonical)
+
+
 @dataclass(frozen=True)
 class ContractBundle:
     """The pinned machine semantics of the c2pa-native-finding contract."""
@@ -157,7 +248,21 @@ class ContractBundle:
     manifest: dict[str, Any]
 
     @property
-    def manifest_digest(self) -> str:
+    def semantic_projection(self) -> dict[str, Any]:
+        return contract_semantic_projection(self.manifest)
+
+    @property
+    def semantic_digest(self) -> str:
+        """The value downstream consumers pin. Prose-stable by construction."""
+        return contract_semantic_digest(self.manifest)
+
+    @property
+    def manifest_file_digest(self) -> str:
+        """Digest of the manifest bytes as they sit on disk.
+
+        Recorded for provenance only. It is NOT the downstream pin: it moves
+        when manifest prose moves. Nothing in a report carries it.
+        """
         return "sha256:" + _digest_bytes((self.directory / "contract.manifest.json").read_bytes())
 
     def axis_for_code(self, code: str) -> tuple[str, str] | None:
@@ -927,7 +1032,7 @@ def build_report(
     report: dict[str, Any] = {
         "report_contract_id": CONTRACT_ID,
         "report_contract_version": CONTRACT_VERSION,
-        "contract_manifest_digest": bundle.manifest_digest,
+        "contract_semantic_digest": bundle.semantic_digest,
         "subject": dict(subject),
         "recomputed": recomputed,
         "limitations": list(BASE_LIMITATIONS) + list(extra_limitations),

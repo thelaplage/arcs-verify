@@ -21,9 +21,12 @@ from arcs_verify.c2pa_native import (
     AXIS_ORDER,
     BUNDLE_DIR,
     FORBIDDEN_AGGREGATE_KEYS,
+    SEMANTIC_PROJECTION_ID,
     build_report,
     canonical_finding_from_native_report,
     check_report,
+    contract_semantic_digest,
+    contract_semantic_projection,
     load_bundle,
 )
 
@@ -87,12 +90,7 @@ def test_bundle_contains_the_expected_artifacts():
 
 
 def test_manifest_pins_only_machine_semantic_artifacts():
-    """README bytes and the manifest itself are deliberately outside the pin.
-
-    A consumer pins the manifest digest. If prose changed that digest, a
-    clarification to the README would look identical to a semantic change, and
-    consumers would learn to ignore pin movement.
-    """
+    """README bytes and the manifest file itself are outside the pinned set."""
     manifest = BUNDLE.manifest
     assert set(manifest["files"]) == set(PINNED_FILES)
     assert "README.md" in manifest["excluded_from_pin"]
@@ -105,12 +103,157 @@ def test_manifest_digests_match_the_bundle_bytes():
         assert actual == expected, f"{name} drifted from contract.manifest.json"
 
 
-def test_reports_carry_the_manifest_digest_not_a_commit():
+# ---------------------------------------------------------------------------
+# The downstream pin is a canonical projection, not the manifest file digest
+# ---------------------------------------------------------------------------
+#
+# contract.manifest.json lists itself under excluded_from_pin, but a file cannot
+# exempt its own bytes from a digest a consumer computes over the file. The
+# manifest carries prose (authority, scope_note, pin_rationale), so a raw-file
+# digest moves on a prose edit. The tests below pin the stronger claim: the
+# published pin identifies only canonical machine fields.
+
+
+def _prose_edited(manifest: dict, **overrides: str) -> dict:
+    edited = json.loads(json.dumps(manifest))
+    edited.update(overrides)
+    return edited
+
+
+def test_semantic_projection_carries_only_canonical_machine_fields():
+    projection = contract_semantic_projection(BUNDLE.manifest)
+    assert projection["projection_id"] == SEMANTIC_PROJECTION_ID
+    assert set(projection) == {
+        "projection_id",
+        "contract_id",
+        "contract_version",
+        "status",
+        "digest_algorithm",
+        "files",
+        "native_semantic_pins",
+    }
+    assert set(projection["files"]) == set(PINNED_FILES)
+    assert set(projection["native_semantic_pins"]) == {
+        "c2pa_specification_version",
+        "native_validator_pin",
+    }
+    assert set(projection["native_semantic_pins"]["native_validator_pin"]) == {
+        "implementation",
+        "version",
+        "source",
+        "install_command",
+    }
+    def keys(node) -> set[str]:
+        found: set[str] = set()
+        if isinstance(node, dict):
+            for key, value in node.items():
+                found.add(key)
+                found |= keys(value)
+        return found
+
+    present = keys(projection)
+    for prose in (
+        "authority",
+        "scope_note",
+        "pin_rationale",
+        "excluded_from_pin",
+        "semantic_pin",
+        "file_count",
+    ):
+        assert prose not in present, f"{prose} leaked into the semantic pin"
+
+
+def test_editing_manifest_prose_does_not_move_the_semantic_digest():
+    """Direction 1: prose is outside the pin."""
+    baseline = contract_semantic_digest(BUNDLE.manifest)
+
+    for overrides in (
+        {"scope_note": "rewritten scope note; no machine field changed"},
+        {"authority": "rewritten authority statement; no machine field changed"},
+        {"excluded_from_pin": {"README.md": "reworded", "contract.manifest.json": "reworded"}},
+        {"file_count": 99},
+    ):
+        assert contract_semantic_digest(_prose_edited(BUNDLE.manifest, **overrides)) == baseline, (
+            f"editing {sorted(overrides)} moved the downstream pin"
+        )
+
+    nested = json.loads(json.dumps(BUNDLE.manifest))
+    nested["native_validator_pin"]["pin_rationale"] = "reworded rationale; same pinned version"
+    assert contract_semantic_digest(nested) == baseline
+
+    added = json.loads(json.dumps(BUNDLE.manifest))
+    added["a_new_explanatory_field"] = "prose added later"
+    assert contract_semantic_digest(added) == baseline
+
+
+def test_editing_a_pinned_machine_member_moves_the_semantic_digest():
+    """Direction 2: every canonical machine field is inside the pin."""
+    baseline = contract_semantic_digest(BUNDLE.manifest)
+
+    for name in PINNED_FILES:
+        moved = json.loads(json.dumps(BUNDLE.manifest))
+        moved["files"][name] = "0" * 64
+        assert contract_semantic_digest(moved) != baseline, f"{name} digest is outside the pin"
+
+    dropped = json.loads(json.dumps(BUNDLE.manifest))
+    del dropped["files"]["comparison-taxonomy.json"]
+    assert contract_semantic_digest(dropped) != baseline
+
+    for overrides in (
+        {"contract_id": "arcs.c2pa_native_finding.v0.2"},
+        {"contract_version": "0.2"},
+        {"status": "RATIFIED"},
+        {"digest_algorithm": "sha512"},
+        {"c2pa_specification_version": "2.5"},
+    ):
+        assert contract_semantic_digest(_prose_edited(BUNDLE.manifest, **overrides)) != baseline, (
+            f"{sorted(overrides)} is outside the pin"
+        )
+
+    for field in ("implementation", "version", "source", "install_command"):
+        moved = json.loads(json.dumps(BUNDLE.manifest))
+        moved["native_validator_pin"][field] = "changed"
+        assert contract_semantic_digest(moved) != baseline, f"validator {field} is outside the pin"
+
+
+def test_prose_edit_moves_the_manifest_file_digest_which_is_why_it_is_not_the_pin(tmp_path):
+    """The motivating asymmetry, demonstrated on bytes on disk.
+
+    Copy the bundle, reword prose in the manifest file, reload from the copy:
+    the file digest moves and the semantic digest does not.
+    """
+    copied = tmp_path / "v0.1"
+    copied.mkdir()
+    for path in BUNDLE_DIR.iterdir():
+        if path.is_file():
+            (copied / path.name).write_bytes(path.read_bytes())
+
+    target = copied / "contract.manifest.json"
+    manifest = json.loads(target.read_text(encoding="utf-8"))
+    manifest["scope_note"] = "reworded on disk"
+    manifest["authority"] = "reworded on disk"
+    manifest["native_validator_pin"]["pin_rationale"] = "reworded on disk"
+    target.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    reloaded = load_bundle(copied)
+    assert reloaded.manifest_file_digest != BUNDLE.manifest_file_digest
+    assert reloaded.semantic_digest == BUNDLE.semantic_digest
+
+
+def test_published_semantic_digest_is_the_documented_value():
+    """A silent move of the published pin fails here rather than downstream."""
+    published = "sha256:f8d1a5c01a2dfff3465bee752c259c992d6dd5d09e46b2021a3976591ae42cac"
+    assert BUNDLE.semantic_digest == published
+    readme = (BUNDLE_DIR / "README.md").read_text(encoding="utf-8")
+    assert published.split("sha256:")[1] in readme
+
+
+def test_reports_carry_the_semantic_digest_not_a_file_digest_and_not_a_commit():
     report = _report()
-    expected = "sha256:" + hashlib.sha256(
-        (BUNDLE_DIR / "contract.manifest.json").read_bytes()
-    ).hexdigest()
-    assert report["contract_manifest_digest"] == expected
+    assert report["contract_semantic_digest"] == BUNDLE.semantic_digest
+    assert "contract_manifest_digest" not in report
+    file_digest = hashlib.sha256((BUNDLE_DIR / "contract.manifest.json").read_bytes()).hexdigest()
+    assert file_digest not in json.dumps(report)
 
 
 def test_native_validator_is_pinned_to_an_exact_version():

@@ -32,6 +32,28 @@ So in every comparison test:
 | `observed` | constructed here, labelled `constructed` |
 | `recomputed` | genuine pinned-validator output over real bytes |
 
+## What these fixtures do NOT prove — a deferred obligation on PROV-PACK0
+
+Constructed observations legitimately prove three things: that the optional
+`observed` input slot works, that the comparison machinery produces the right
+axis states and postures, and that comparability is recomputed rather than
+asserted. Those are real proofs and they are not weakened by the fixtures being
+constructed.
+
+They do **not** prove **end-to-end producer→verifier interoperability**. No
+producer has ever emitted an observation that this verifier then consumed. The
+field names, the serialization, and the trust-basis and validator-identity
+declarations on the `observed` side are this lane's own construction, so a real
+producer could emit something this comparison mishandles and nothing here would
+catch it.
+
+That proof is **deferred to PROV-PACK0**, and it is owed once `SRS-C2PA-BIND0`
+emits a real native observation artifact: take that producer's bytes unmodified,
+feed them into this comparison, and show the axes resolve without adaptation. It
+is recorded here so the gap is visible rather than assumed closed. Until then,
+producer→verifier interoperability is **not evaluated**, and not evaluated is
+not a pass.
+
 ## What each fixture exists to exercise
 
 | File | Exercises |
