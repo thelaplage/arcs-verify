@@ -1,0 +1,238 @@
+{
+  "finding": {
+    "axes": [
+      {
+        "axis": "manifest_structure",
+        "contributing_reproducibility_classes": [
+          "byte_deterministic"
+        ],
+        "native_findings": [
+          {
+            "code": "assertion.hashedURI.match",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.assertions/c2pa.thumbnail.claim.jpeg"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.assertions/c2pa.thumbnail.ingredient.jpeg"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.assertions/c2pa.ingredient"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.assertions/stds.schema-org.CreativeWork"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.assertions/c2pa.actions"
+          },
+          {
+            "code": "assertion.hashedURI.match",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.assertions/c2pa.hash.data"
+          }
+        ],
+        "reproducibility_class": "byte_deterministic",
+        "status": "satisfied",
+        "status_reason": null
+      },
+      {
+        "axis": "asset_binding",
+        "contributing_reproducibility_classes": [
+          "byte_deterministic"
+        ],
+        "native_findings": [
+          {
+            "code": "assertion.dataHash.match",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.assertions/c2pa.hash.data"
+          }
+        ],
+        "reproducibility_class": "byte_deterministic",
+        "status": "satisfied",
+        "status_reason": null
+      },
+      {
+        "axis": "claim_signature",
+        "contributing_reproducibility_classes": [
+          "byte_deterministic"
+        ],
+        "native_findings": [
+          {
+            "code": "claimSignature.insideValidity",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.signature"
+          },
+          {
+            "code": "claimSignature.validated",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.signature"
+          }
+        ],
+        "reproducibility_class": "byte_deterministic",
+        "status": "satisfied",
+        "status_reason": null
+      },
+      {
+        "axis": "signer_trust",
+        "contributing_reproducibility_classes": [
+          "policy_dependent"
+        ],
+        "native_findings": [
+          {
+            "code": "signingCredential.trusted",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.signature"
+          }
+        ],
+        "reproducibility_class": "policy_dependent",
+        "status": "satisfied",
+        "status_reason": null
+      },
+      {
+        "axis": "signer_validity",
+        "contributing_reproducibility_classes": [
+          "time_dependent"
+        ],
+        "native_findings": [],
+        "reproducibility_class": "time_dependent",
+        "status": "not_evaluated",
+        "status_reason": "no native finding was produced for this axis"
+      },
+      {
+        "axis": "timestamp",
+        "contributing_reproducibility_classes": [
+          "policy_dependent",
+          "time_dependent"
+        ],
+        "native_findings": [
+          {
+            "code": "timeStamp.validated",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.signature"
+          },
+          {
+            "code": "timeStamp.trusted",
+            "ingredient_assertion_uri": null,
+            "scope": "activeManifest",
+            "severity": "success",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.signature"
+          }
+        ],
+        "reproducibility_class": "time_dependent",
+        "status": "satisfied",
+        "status_reason": null
+      },
+      {
+        "axis": "revocation",
+        "contributing_reproducibility_classes": [
+          "resource_dependent"
+        ],
+        "native_findings": [],
+        "reproducibility_class": "resource_dependent",
+        "status": "not_evaluated",
+        "status_reason": "revocation is reachable only via network OCSP, which hermetic settings disable; this is not evidence of non-revocation"
+      },
+      {
+        "axis": "ingredient",
+        "contributing_reproducibility_classes": [
+          "byte_deterministic"
+        ],
+        "native_findings": [
+          {
+            "code": "ingredient.unknownProvenance",
+            "ingredient_assertion_uri": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.assertions/c2pa.ingredient",
+            "scope": "ingredientDeltas",
+            "severity": "informational",
+            "url": "self#jumbf=/c2pa/contentauth:urn:uuid:c2677d4b-0a93-4444-876f-ed2f2d40b8cf/c2pa.assertions/c2pa.ingredient"
+          }
+        ],
+        "reproducibility_class": "byte_deterministic",
+        "status": "indeterminate",
+        "status_reason": "the native validator produced only informational findings for this axis"
+      }
+    ],
+    "evaluation_status": "evaluated",
+    "evaluation_status_detail": null,
+    "evidence_class": "supplied_producer_assertion",
+    "inputs": {
+      "asset_digest": "sha256:e71bff58fc57640803e6e65f7534e2fb0c2f99018c85276cc14b30f04427cc76",
+      "manifest_acquisition_mode": "embedded",
+      "manifest_store_digest": null,
+      "remote_manifest_uri": null,
+      "unresolved_inputs": []
+    },
+    "native_report_digest": null,
+    "native_validation_state": "Trusted",
+    "settings": {
+      "allowed_network_hosts": [],
+      "hermeticity": {
+        "network_access_permitted": false,
+        "ocsp_fetch_permitted": false,
+        "remote_resource_fetch_attempted": false,
+        "trust_list_uri_dereferenced": false
+      },
+      "ocsp_fetch": false,
+      "remote_manifest_fetch": false,
+      "settings_digest": "sha256:e7398567cee1ff04da7c5df8a44db628af8c680214bd38a98d853009dac5c4ed",
+      "verify_timestamp_trust": true,
+      "verify_trust": true
+    },
+    "side": "observed",
+    "trust_basis": {
+      "material_digest": "sha256:0b025a7f0d3134a1a42f6849cbed573f26d96ad9e50dae32c05821753a535a05",
+      "material_source": "end-entity certificate extracted from CA.jpg",
+      "material_source_pin": "c2pa-rs@eb877f68f3876ed5334263ccdd3c51982aa025f8",
+      "mode": "allowed_list_supplied",
+      "on_official_c2pa_trust_list": "not_established"
+    },
+    "unmapped_native_codes": [],
+    "validation_clock": {
+      "anchored_by_trusted_timestamp": true,
+      "caller_pinnable": false,
+      "instant": "2026-08-15T00:00:00Z",
+      "source": "wall_clock"
+    },
+    "validator": {
+      "c2pa_specification_version": "2.4",
+      "implementation": "c2patool",
+      "install_command": "cargo install c2patool --version 0.27.15 --locked",
+      "source": "crates.io",
+      "version": "0.27.15"
+    }
+  },
+  "x_fixture_mutations": [
+    "trust_basis.mode set to allowed_list_supplied with the digest of the supplied material"
+  ],
+  "x_fixture_provenance": "constructed",
+  "x_fixture_purpose": "Identical asset bytes, different trust material. The trust axis must be not_comparable, never a divergence claim.",
+  "x_fixture_rule": "The observed side is a supplied assertion and carries no independent weight. The recomputed side it is compared against is always genuine pinned-validator output over real specimen bytes."
+}

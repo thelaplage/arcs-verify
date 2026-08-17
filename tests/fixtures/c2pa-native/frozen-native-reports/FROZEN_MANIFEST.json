@@ -1,0 +1,76 @@
+{
+  "cases": {
+    "C-default-trust": {
+      "evaluation_status": "evaluated",
+      "file": "C-default-trust.json",
+      "native_validation_state": "Valid",
+      "process_exit_status": 0,
+      "sha256": "83a903be668d9696f8b9d3e3fe45db967eb384a4979499d633e7018d6881530c"
+    },
+    "CA-allowed-list-trust": {
+      "evaluation_status": "evaluated",
+      "file": "CA-allowed-list-trust.json",
+      "native_validation_state": "Trusted",
+      "process_exit_status": 0,
+      "sha256": "6e9084efa568a210a10f3bbf488e4115a6ffc567354e5a98a9b505600d2f9696"
+    },
+    "CA-default-trust": {
+      "evaluation_status": "evaluated",
+      "file": "CA-default-trust.json",
+      "native_validation_state": "Valid",
+      "process_exit_status": 0,
+      "sha256": "cd53508fd0e563c8adc6bcdeff5010792a24fb7990a91c32b0862e93e9e68712"
+    },
+    "CACA-default-trust": {
+      "evaluation_status": "evaluated",
+      "file": "CACA-default-trust.json",
+      "native_validation_state": "Valid",
+      "process_exit_status": 0,
+      "sha256": "247befc6ec8df6c563d7fdba7048659f249f1bd3587ebda5ae87f1674efcb480"
+    },
+    "E-sig-CA-claim-signature-mismatch": {
+      "evaluation_status": "evaluated",
+      "file": "E-sig-CA-claim-signature-mismatch.json",
+      "native_validation_state": "Invalid",
+      "process_exit_status": 0,
+      "sha256": "3f70da28faf6b3ad03542c1b8bdb1923bb1174e7d4fe2f41a00b214ff811d380"
+    },
+    "XCA-asset-binding-mismatch": {
+      "evaluation_status": "evaluated",
+      "file": "XCA-asset-binding-mismatch.json",
+      "native_validation_state": "Invalid",
+      "process_exit_status": 0,
+      "sha256": "19a9c52a4c3f8804c581ed7f0dcfa9fe38ee66699b69e4b86c7c0bdfd0ed6096"
+    },
+    "cloud-manifest-not-captured": {
+      "evaluation_status": "input_unavailable",
+      "file": "cloud-manifest-not-captured.json",
+      "native_validation_state": null,
+      "process_exit_status": 1,
+      "sha256": "0f3634774afeeabf0f8a1bc5469dad592fb5cb7ca8d0f83ee7b1a564ab66db31"
+    },
+    "cloud-sealed-replay": {
+      "evaluation_status": "evaluated",
+      "file": "cloud-sealed-replay.json",
+      "native_validation_state": "Valid",
+      "process_exit_status": 0,
+      "sha256": "65cfa70ca0aa4093a0ec07e4e309c2bca3377e50cce54d4cb71bbfaf2c8b56ed"
+    },
+    "expired-signing-certificate": {
+      "evaluation_status": "evaluated",
+      "file": "expired-signing-certificate.json",
+      "native_validation_state": "Invalid",
+      "process_exit_status": 0,
+      "sha256": "d1ac4739ca2405ea75fcf10d2ddb5cc894471559494f07a49428e819be9b8e0f"
+    }
+  },
+  "generator": "tools/generate_c2pa_native_fixtures.py",
+  "hermetic_settings_digest": "sha256:9e8ff2636c57c33a77549000ca69b733cba8f683f8fdf2e12ded512367f6a163",
+  "validator": {
+    "c2pa_specification_version": "2.4",
+    "implementation": "c2patool",
+    "install_command": "cargo install c2patool --version 0.27.15 --locked",
+    "source": "crates.io",
+    "version": "0.27.15"
+  }
+}

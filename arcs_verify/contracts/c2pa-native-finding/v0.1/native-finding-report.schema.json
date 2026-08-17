@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "arcs.c2pa_native_finding.report.v0.1",
+  "title": "ARCS Verify C2PA native finding report",
+  "description": "An independent-verification report over one C2PA subject. 'recomputed' is required and is always arcs-verify's own evaluation. 'observed' is optional and carries a producer's or third party's assertion. 'comparison' exists only when 'observed' exists. This report describes NATIVE C2PA validation; it is not an SRS receipt verification report and establishes nothing about SRS envelope structure, SRS signatures, or SRS issuer trust.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "report_contract_id",
+    "report_contract_version",
+    "subject",
+    "recomputed",
+    "limitations",
+    "non_claims"
+  ],
+  "properties": {
+    "report_contract_id": {"const": "arcs.c2pa_native_finding.report.v0.1"},
+    "report_contract_version": {"const": "0.1"},
+    "contract_semantic_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "sha256 over the RFC 8785 canonical form of the semantic projection of contract.manifest.json: contract identity, the digests of the three pinned machine members, and the native semantic pins. It deliberately excludes the manifest's prose fields (authority, scope_note, pin_rationale, excluded_from_pin) and the derived file_count, so clarifying prose does not move it. This is the value downstream consumers pin. It is NOT sha256 of contract.manifest.json, which no report carries: a manifest cannot exempt its own bytes from a digest computed over the file, so a raw-file digest would move on a prose edit."
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_digest"],
+      "properties": {
+        "asset_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "asset_label": {"type": ["string", "null"]},
+        "asset_source": {"type": ["string", "null"]},
+        "asset_source_pin": {"type": ["string", "null"]}
+      }
+    },
+    "recomputed": {"$ref": "arcs.c2pa_native_finding.canonical_native_finding.v0.1"},
+    "observed": {"$ref": "arcs.c2pa_native_finding.canonical_native_finding.v0.1"},
+    "comparability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validator_identity_match",
+        "validator_version_match",
+        "asset_digest_match",
+        "manifest_store_digest_match",
+        "trust_basis_match",
+        "settings_match"
+      ],
+      "properties": {
+        "validator_identity_match": {"type": "boolean"},
+        "validator_version_match": {"type": "boolean"},
+        "asset_digest_match": {"type": "boolean"},
+        "manifest_store_digest_match": {"type": "boolean"},
+        "trust_basis_match": {"type": "boolean"},
+        "settings_match": {"type": "boolean"}
+      }
+    },
+    "comparison": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Per-axis comparison. Present if and only if 'observed' is present. There is deliberately no aggregate match Boolean over this array.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "axis",
+          "state",
+          "comparison_reason",
+          "integrity_posture",
+          "reproducibility_class"
+        ],
+        "properties": {
+          "axis": {
+            "enum": [
+              "manifest_structure",
+              "asset_binding",
+              "claim_signature",
+              "signer_trust",
+              "signer_validity",
+              "timestamp",
+              "revocation",
+              "ingredient"
+            ]
+          },
+          "state": {"enum": ["match", "mismatch", "not_comparable", "not_evaluated"]},
+          "comparison_reason": {
+            "enum": [
+              "same_inputs_same_semantics",
+              "validator_implementation_delta",
+              "validator_version_delta",
+              "trust_basis_delta",
+              "revocation_basis_delta",
+              "timestamp_basis_delta",
+              "validation_clock_delta",
+              "input_delta",
+              "policy_delta",
+              "unsupported_native_feature",
+              "insufficient_evidence"
+            ],
+            "description": "Causal explanation for the state. Deliberately separate from integrity_posture: why two evaluations differ and what that licenses you to infer are different questions."
+          },
+          "integrity_posture": {
+            "enum": [
+              "no_integrity_inference",
+              "possible_substantive_divergence",
+              "not_assessable"
+            ],
+            "description": "What, if anything, this comparison licenses about integrity. A divergence caused by wall-clock passage, validator drift, or a trust-basis difference is never an integrity accusation."
+          },
+          "reproducibility_class": {
+            "enum": [
+              "byte_deterministic",
+              "policy_dependent",
+              "time_dependent",
+              "resource_dependent",
+              "validator_version_dependent"
+            ]
+          },
+          "observed_status": {
+            "oneOf": [
+              {"enum": ["satisfied", "failed", "indeterminate", "not_evaluated", "not_applicable"]},
+              {"type": "null"}
+            ]
+          },
+          "recomputed_status": {
+            "oneOf": [
+              {"enum": ["satisfied", "failed", "indeterminate", "not_evaluated", "not_applicable"]},
+              {"type": "null"}
+            ]
+          },
+          "note": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string"}
+    },
+    "non_claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string"}
+    },
+    "unexercised_paths": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"required": ["observed"]},
+      "then": {"required": ["comparison", "comparability"]},
+      "else": {
+        "not": {"anyOf": [{"required": ["comparison"]}, {"required": ["comparability"]}]}
+      }
+    }
+  ]
+}
