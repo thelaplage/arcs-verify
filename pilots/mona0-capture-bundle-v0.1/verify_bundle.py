@@ -18,10 +18,13 @@ from typing import Any
 REPORT_SCHEMA = "arcs.verify.mona0.capture_bundle_report.v0.1"
 FACTS_SCHEMA = "counterpedia.mona0.capture1.v0.1"
 MANIFEST_SCHEMA = "counterpedia.mona0.capture1_object_manifest.v0.1"
+CAPTURE_RECEIPT_SCHEMA = "acquisition.capture.v0.1"
+MCP_SURFACE_SCHEMA = "acquisition.mcp_surface.v0.1"
+CAPTURE_TOOL = "acquisition.capture_url"
 PROOFCASE = "MONA0-CAPTURE1"
 PRODUCER_REPOSITORY = "thelaplage/counterpedia-acquisition"
-PRODUCER_SURFACE = "acquisition.mcp_surface.v0.1"
-PRODUCER_TOOL = "acquisition.capture_url"
+PRODUCER_SURFACE = MCP_SURFACE_SCHEMA
+PRODUCER_TOOL = CAPTURE_TOOL
 VERIFIER_REPOSITORY = "thelaplage/arcs-verify"
 REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA256_ADDRESS_RE = re.compile(r"^sha256:([0-9a-f]{64})$")
@@ -56,6 +59,17 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 def _sha256_address(data: bytes) -> str:
     return "sha256:" + hashlib.sha256(data).hexdigest()
+
+
+def _source_id_from_url(url: str) -> str:
+    """Recompute acquisition-local canonicalization v0.1 without importing it."""
+    preimage = json.dumps(
+        {"url": url},
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode("utf-8")
+    return "src_" + hashlib.sha256(preimage).hexdigest()[:32]
 
 
 def _expected_relative_path(address: str) -> str | None:
@@ -289,6 +303,12 @@ def verify_bundle(
             if label in by_label:
                 fail("capture_topology_valid", "topology.attempt_label_duplicate")
             by_label[label] = row
+
+        if row.get("tool") != CAPTURE_TOOL:
+            fail("receipt_object_bindings_valid", "receipt.attempt_tool_mismatch")
+        if row.get("surface_schema") != MCP_SURFACE_SCHEMA:
+            fail("receipt_object_bindings_valid", "receipt.attempt_surface_schema_mismatch")
+
         status = row.get("capture_status")
         if status == "capture_failed":
             if row.get("capture_receipt") is not None or row.get("captured_object_address") is not None:
@@ -303,6 +323,8 @@ def verify_bundle(
         if not isinstance(receipt, dict):
             fail("receipt_object_bindings_valid", "receipt.missing")
             continue
+        if receipt.get("schema_version") != CAPTURE_RECEIPT_SCHEMA:
+            fail("receipt_object_bindings_valid", "receipt.schema_version_mismatch")
 
         capture_id = row.get("capture_id")
         source_id = row.get("source_id")
@@ -310,12 +332,20 @@ def verify_bundle(
         address = row.get("captured_object_address")
         byte_count = row.get("byte_count")
 
-        if not isinstance(capture_id, str) or not capture_id:
+        if not isinstance(capture_id, str) or not capture_id.startswith("cap_"):
             fail("receipt_object_bindings_valid", "receipt.capture_id_invalid")
         elif capture_id in capture_ids:
             fail("receipt_object_bindings_valid", "receipt.capture_id_duplicate")
         else:
             capture_ids.add(capture_id)
+
+        if not isinstance(source_locator, str) or not source_locator:
+            fail("receipt_object_bindings_valid", "receipt.source_locator_invalid")
+        elif source_id != _source_id_from_url(source_locator):
+            fail("receipt_object_bindings_valid", "receipt.source_id_derivation_mismatch")
+
+        if not isinstance(byte_count, int) or byte_count < 0:
+            fail("receipt_object_bindings_valid", "receipt.byte_count_invalid")
 
         for field, top_value in (
             ("capture_id", capture_id),
@@ -330,6 +360,9 @@ def verify_bundle(
         if not isinstance(address, str) or address not in artifact_map:
             fail("receipt_object_bindings_valid", "receipt.unknown_artifact")
             continue
+        producer_artifact = artifact_map[address]
+        if producer_artifact.get("byte_count") != byte_count:
+            fail("receipt_object_bindings_valid", "receipt.artifact_byte_count_mismatch")
         if not isinstance(capture_id, str) or not isinstance(source_locator, str):
             continue
         group = derived_groups.setdefault(
