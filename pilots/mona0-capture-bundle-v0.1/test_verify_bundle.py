@@ -26,6 +26,16 @@ def _address(data: bytes) -> str:
     return "sha256:" + hashlib.sha256(data).hexdigest()
 
 
+def _source_id(url: str) -> str:
+    preimage = json.dumps(
+        {"url": url},
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode("utf-8")
+    return "src_" + hashlib.sha256(preimage).hexdigest()[:32]
+
+
 def _relative_path(address: str) -> str:
     digest = address.removeprefix("sha256:")
     return f"{digest[:2]}/{digest[2:]}"
@@ -41,7 +51,7 @@ def _write_object(root: Path, data: bytes) -> tuple[str, str]:
 
 
 def _capture(label: str, url: str, capture_id: str, address: str, byte_count: int) -> dict:
-    source_id = "src_" + hashlib.sha256(url.encode("utf-8")).hexdigest()[:32]
+    source_id = _source_id(url)
     receipt = {
         "capture_id": capture_id,
         "source_id": source_id,
@@ -271,6 +281,20 @@ def test_unmanifested_object_file_breaks_closed_bundle(tmp_path: Path) -> None:
     assert report["passed"] is False
     assert report["conclusions"]["object_bytes_integrity_valid"] is False
     assert "object_store.file_set_mismatch" in report["failure_codes"]
+
+
+def test_forged_url_derived_source_id_is_rejected(tmp_path: Path) -> None:
+    facts, manifest, store = _bundle(tmp_path)
+    facts["attempts"][0]["source_id"] = "src_00000000000000000000000000000000"
+    facts["attempts"][0]["capture_receipt"]["source_id"] = facts["attempts"][0]["source_id"]
+
+    report = VERIFY.verify_bundle(
+        facts, manifest, store, verifier_revision=VERIFIER_REVISION
+    )
+
+    assert report["passed"] is False
+    assert report["conclusions"]["receipt_object_bindings_valid"] is False
+    assert "receipt.source_id_derivation_mismatch" in report["failure_codes"]
 
 
 def test_invalid_verifier_revision_is_source_error(tmp_path: Path) -> None:
