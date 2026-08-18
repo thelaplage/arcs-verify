@@ -23,13 +23,15 @@ The emitted chain this verifier recomputes is exactly:
     captured bytes / session -> grounded proposal -> declaration binding
         -> source_capture.v0.2 receipt.
 
-``srs.editorial.source_ingest.v0.1`` was NEVER emitted for this program (out of
-scope). The ``ingest_linkage`` axis is therefore ``NOT_EVALUATED`` and reports
-that source_ingest is ABSENT — but the absence is VERIFIED: an unexpectedly
-present source_ingest claim in the supplied evidence is itself a FAIL finding,
-never a pass. ``citation_pack_linkage`` is ``NOT_EVALUATED`` unless a real
-citation_pack receipt is present in the evidence. ``external_source_truth`` is
-``NOT_EVALUATED`` permanently.
+``srs.editorial.source_ingest.v0.1`` was not part of the historical TIT-S02
+one-source sequence. By default, therefore, the ``ingest_linkage`` axis is
+``NOT_EVALUATED`` and reports that source_ingest is ABSENT — but the absence is
+verified: an unexpectedly present source_ingest claim in the historical
+baseline is itself a FAIL finding, never a pass. If a literal source_ingest
+receipt is supplied as an optional witness, the axis is upgraded from verified
+absence to an independently recomputed ingest linkage check. ``citation_pack_linkage``
+is ``NOT_EVALUATED`` unless a real citation_pack receipt is present in the
+evidence. ``external_source_truth`` is ``NOT_EVALUATED`` permanently.
 
 Independence (arcs-verify's core invariant)
 -------------------------------------------
@@ -86,9 +88,18 @@ SOURCE_CAPTURE_PROFILE_VERSION = "v0.2"
 SOURCE_CAPTURE_RECEIPT_KIND = "capture_attempt"
 SOURCE_CAPTURE_RECEIPT_VERSION = "srs.core.v5.1"
 
-# The profile that was NEVER emitted for this program. Its unexpected presence
-# anywhere in the evidence is a finding, not a pass.
+# The profile that was absent from the historical TIT-S02 one-source sequence.
+# Its unexpected presence in the historical baseline is a finding, not a pass;
+# a supplied literal source_ingest receipt upgrades the axis to a real linkage
+# check instead of leaving it NOT_EVALUATED.
 SOURCE_INGEST_PROFILE_ID = "srs.editorial.source_ingest"
+SOURCE_INGEST_PROFILE_VERSION = "v0.1"
+SOURCE_INGEST_RECEIPT_KIND = "source_ingest"
+SOURCE_INGEST_RECEIPT_VERSION = "srs.core.v5.1"
+SOURCE_INGEST_PARSER_IDENTITY = "dagr-ingest.pdf"
+SOURCE_INGEST_CAPTURE_OBSERVATION_REF = "editorial-source-capture-v02-success-TIT-S02-0001"
+SOURCE_INGEST_PDO_MODULE_IDENTITY = {"module_id": "garp-ingest", "module_version": "0.1.0"}
+SOURCE_INGEST_PROTOCOL_BINDING = "counterpedia-demo-corpus-ingest/wave1"
 # A citation_pack receipt, if genuinely present, turns citation_pack_linkage
 # from NOT_EVALUATED into a real (composed) result.
 CITATION_PACK_PROFILE_MARKER = "citation_pack"
@@ -167,6 +178,8 @@ class SourceWorkEvidence:
         capture_receipt: Optional[dict],
         source_capture: Optional[dict],
         grounded_proposal: Optional[dict] = None,
+        source_ingest: Optional[dict] = None,
+        source_ingest_extraction_bytes: Optional[bytes] = None,
         proposal_source_bytes: Optional[bytes] = None,
         captured_source_bytes: Optional[bytes] = None,
         extra_receipts: Optional[list[dict]] = None,
@@ -177,6 +190,8 @@ class SourceWorkEvidence:
         self.capture_receipt = capture_receipt
         self.source_capture = source_capture
         self.grounded_proposal = grounded_proposal
+        self.source_ingest = source_ingest
+        self.source_ingest_extraction_bytes = source_ingest_extraction_bytes
         self.proposal_source_bytes = proposal_source_bytes
         self.captured_source_bytes = captured_source_bytes
         self.extra_receipts = extra_receipts or []
@@ -502,21 +517,82 @@ def verify(evidence: SourceWorkEvidence) -> dict:
         )
 
     # --------------------------------------------------------------------- #
-    # axis 5: ingest_linkage  (NOT_EVALUATED -- source_ingest ABSENT, verified)
-    #   source_ingest.v0.1 was never emitted for this program. Verify no
-    #   supplied artifact claims it; an unexpected source_ingest claim is a FAIL.
+    # axis 5: ingest_linkage
+    #   Historical TIT-S02 evidence did not include source_ingest and remains
+    #   NOT_EVALUATED when absent. If a literal source_ingest receipt is
+    #   supplied, verify its linkage to the same captured object and exact
+    #   extraction bytes instead of treating its presence as an automatic fail.
     # --------------------------------------------------------------------- #
-    ingest_present = False
-    for candidate in (source_capture, manifest, capture_receipt, binding, *evidence.extra_receipts):
-        if isinstance(candidate, dict) and candidate.get("profile_id") == SOURCE_INGEST_PROFILE_ID:
-            ingest_present = True
-            break
-    recomputed["source_ingest_absent"] = not ingest_present
-    if ingest_present:
-        findings.append("source_work_sequence.unexpected_source_ingest_present")
-        ingest_linkage = _AXIS_FAIL
+    unexpected_ingest_present = any(
+        isinstance(candidate, dict) and candidate.get("profile_id") == SOURCE_INGEST_PROFILE_ID
+        for candidate in (source_capture, manifest, capture_receipt, binding, *evidence.extra_receipts)
+    )
+    ingest_receipt = evidence.source_ingest
+    recomputed["source_ingest_absent"] = ingest_receipt is None
+    recomputed["source_ingest_present"] = ingest_receipt is not None
+
+    if ingest_receipt is None:
+        if unexpected_ingest_present:
+            findings.append("source_work_sequence.unexpected_source_ingest_present")
+            ingest_linkage = _AXIS_FAIL
+        else:
+            ingest_linkage = _NOT_EVALUATED
     else:
-        ingest_linkage = _NOT_EVALUATED
+        if unexpected_ingest_present:
+            findings.append("source_work_sequence.unexpected_source_ingest_present")
+            ingest_linkage = _AXIS_FAIL
+        else:
+            source_artifact_id = ingest_receipt.get("source_artifact_id")
+            derivation = ingest_receipt.get("derivation") or {}
+            extraction_ref = ingest_receipt.get("extraction_ref")
+            pdo_module_identity = ingest_receipt.get("pdo_module_identity")
+            ingest_identity_ok = (
+                ingest_receipt.get("profile_id") == SOURCE_INGEST_PROFILE_ID
+                and ingest_receipt.get("profile_version") == SOURCE_INGEST_PROFILE_VERSION
+                and ingest_receipt.get("receipt_kind") == SOURCE_INGEST_RECEIPT_KIND
+                and ingest_receipt.get("receipt_version") == SOURCE_INGEST_RECEIPT_VERSION
+                and ingest_receipt.get("boundary_type") == "editorial_corpus_boundary"
+                and ingest_receipt.get("protocol_binding") == SOURCE_INGEST_PROTOCOL_BINDING
+                and ingest_receipt.get("subject_ref") == captured_ref
+                and source_artifact_id == captured_ref
+                and ingest_receipt.get("capture_observation_ref")
+                == SOURCE_INGEST_CAPTURE_OBSERVATION_REF
+                and ingest_receipt.get("parser_identity") == SOURCE_INGEST_PARSER_IDENTITY
+                and pdo_module_identity == SOURCE_INGEST_PDO_MODULE_IDENTITY
+                and _is_sha256_ref(ingest_receipt.get("pdo_ref"))
+                and _is_sha256_ref(source_artifact_id)
+                and isinstance(derivation, dict)
+                and derivation.get("input_hash") == source_artifact_id
+                and derivation.get("parser_id") == SOURCE_INGEST_PARSER_IDENTITY
+                and extraction_ref == derivation.get("output_hash")
+            )
+            C(
+                "source_ingest_identity_binds_capture",
+                ingest_identity_ok,
+                "source_work_sequence.source_ingest_identity_mismatch",
+            )
+            if evidence.source_ingest_extraction_bytes is not None:
+                recomputed_ingest_extraction = _sha256_ref(evidence.source_ingest_extraction_bytes)
+                recomputed["source_ingest_extraction_ref"] = recomputed_ingest_extraction
+                C(
+                    "source_ingest_extraction_recomputes",
+                    recomputed_ingest_extraction == extraction_ref,
+                    "source_work_sequence.source_ingest_extraction_mismatch",
+                )
+            else:
+                recomputed["source_ingest_extraction_ref"] = None
+                C(
+                    "source_ingest_extraction_recomputes",
+                    False,
+                    "source_work_sequence.source_ingest_extraction_missing",
+                )
+            ingest_linkage = _fold(
+                concl,
+                (
+                    "source_ingest_identity_binds_capture",
+                    "source_ingest_extraction_recomputes",
+                ),
+            )
 
     # --------------------------------------------------------------------- #
     # axis 6: citation_pack_linkage  (NOT_EVALUATED unless a pack is present)
@@ -568,9 +644,10 @@ def verify(evidence: SourceWorkEvidence) -> dict:
             "serialized evidence; when absent, its raw-byte recompute is "
             "NOT_EVALUATED (disclosed) while the captured-object digest "
             "agreement across the receipts is still recomputed.",
-            "ingest_linkage is NOT_EVALUATED: srs.editorial.source_ingest.v0.1 "
-            "was never emitted for this program; its absence is verified and an "
-            "unexpected source_ingest claim would be a FAIL finding.",
+            "ingest_linkage is NOT_EVALUATED when source_ingest is absent from "
+            "the evidence; the historical TIT-S02 one-source sequence does not "
+            "include it. If a literal source_ingest receipt is supplied, the axis "
+            "upgrades to an independently recomputed ingest linkage check.",
             "external_source_truth is NOT_EVALUATED permanently; this verifier "
             "never establishes that the captured bytes are the true source.",
         ],
@@ -594,6 +671,8 @@ def load_sequence(
     *,
     declaration_file: str = "declaration.CAPTURE_WAVE1_P0_MANIFEST.json",
     grounded_proposal_file: Optional[str] = None,
+    source_ingest_file: Optional[str] = None,
+    source_ingest_extraction_file: Optional[str] = None,
     proposal_source_file: Optional[str] = None,
     captured_source_file: Optional[str] = None,
 ) -> SourceWorkEvidence:
@@ -608,11 +687,17 @@ def load_sequence(
     source_capture = _read_json(root / "source_capture.v0_2.receipt.json")
 
     grounded_proposal = None
+    source_ingest = None
     proposal_source_bytes = None
+    source_ingest_extraction_bytes = None
     if grounded_proposal_file:
         grounded_proposal = _read_json(root / grounded_proposal_file)
+    if source_ingest_file:
+        source_ingest = _read_json(root / source_ingest_file)
     if proposal_source_file:
         proposal_source_bytes = (root / proposal_source_file).read_bytes()
+    if source_ingest_extraction_file:
+        source_ingest_extraction_bytes = (root / source_ingest_extraction_file).read_bytes()
     captured_source_bytes = None
     if captured_source_file:
         captured_source_bytes = (root / captured_source_file).read_bytes()
@@ -624,6 +709,8 @@ def load_sequence(
         capture_receipt=capture_receipt,
         source_capture=source_capture,
         grounded_proposal=grounded_proposal,
+        source_ingest=source_ingest,
+        source_ingest_extraction_bytes=source_ingest_extraction_bytes,
         proposal_source_bytes=proposal_source_bytes,
         captured_source_bytes=captured_source_bytes,
     )
@@ -668,6 +755,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("session_dir", type=Path)
     parser.add_argument("--declaration-file", default="declaration.CAPTURE_WAVE1_P0_MANIFEST.json")
     parser.add_argument("--grounded-proposal-file", default=None)
+    parser.add_argument("--source-ingest-file", default=None)
+    parser.add_argument("--source-ingest-extraction-file", default=None)
     parser.add_argument("--proposal-source-file", default=None)
     parser.add_argument("--captured-source-file", default=None)
     parser.add_argument("--json", action="store_true", dest="as_json")
@@ -681,6 +770,8 @@ def main(argv: list[str] | None = None) -> int:
             args.session_dir,
             declaration_file=args.declaration_file,
             grounded_proposal_file=args.grounded_proposal_file,
+            source_ingest_file=args.source_ingest_file,
+            source_ingest_extraction_file=args.source_ingest_extraction_file,
             proposal_source_file=args.proposal_source_file,
             captured_source_file=args.captured_source_file,
         )

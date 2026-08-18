@@ -1,0 +1,2562 @@
+October 2, 2025 MIR-25-36
+Hull Failure and Implosion of Submersible
+Titan
+North Atlantic Ocean
+370 nautical miles southeast of St. John’s, Newfoundland
+and Labrador, Canada
+June 18, 2023
+Abstract: This report discusses the June 18, 2023, hull failure and implosion of the
+submersible Titan, manufactured and operated by OceanGate, while diving to the
+Titanic wreck in the North Atlantic Ocean, about 370 nautical miles southeast of
+St. John’s, Newfoundland and Labrador, Canada. There were five fatalities, and the
+vessel was a total loss; according to a 2023 customs declaration, the submersible’s
+value, combined with its launch and recovery system, was estimated to be about
+$4.2 million USD. Safety issues identified in this report include OceanGate’s
+inadequate engineering process for the Titan; OceanGate’s flawed analysis of Titan
+strain gage and acoustic emission (real-time monitoring system) data as a measure of
+pressure hull integrity; OceanGate’s failure to notify search and rescue assets about
+its planned expedition; and insufficient voluntary guidance and US regulations for
+pressure vessels for human occupancy. As a result of this investigation, the
+National Transportation Safety Board makes four new safety recommendations to the
+US Coast Guard.
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Contents
+Contents ................................................................................................................. i
+Figures ................................................................................................................. iii
+Tables ................................................................................................................... iv
+Acronyms and Abbreviations ................................................................................ v
+Executive Summary .............................................................................................. vi
+What Happened............................................................................................................... vi
+What We Found ............................................................................................................... vi
+What We Recommended .............................................................................................. vii
+1 Factual Information .................................................................................. 1
+1.1 Event Sequence ........................................................................................................ 1
+1.1.1 Synopsis ............................................................................................................ 1
+1.1.2 Titan Submersible ............................................................................................ 2
+1.1.3 Precasualty Events ........................................................................................... 6
+1.1.4 Event Narrative ................................................................................................. 7
+1.2 Response ................................................................................................................. 10
+1.3 Vessel Information ................................................................................................. 13
+1.3.1 General ........................................................................................................... 13
+1.3.2 Classification .................................................................................................. 14
+1.3.3 Construction ................................................................................................... 16
+1.3.4 Real-time Monitoring System ....................................................................... 23
+1.3.5 Cameras .......................................................................................................... 24
+1.3.6 Communications ............................................................................................ 24
+1.3.7 Expeditions ..................................................................................................... 25
+1.4 Damage ................................................................................................................... 30
+1.4.1 Remotely Operated Vehicle Surveys .......................................................... 30
+1.4.2 Wreckage Examination ................................................................................. 33
+1.4.3 External Camera Examination ...................................................................... 37
+1.5 Operations .............................................................................................................. 37
+1.5.1 General ........................................................................................................... 37
+i
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1.5.2 Organizational Culture.................................................................................. 38
+1.5.3 Project Execution Plan .................................................................................. 40
+1.5.4 Training ........................................................................................................... 41
+1.5.5 Other Submersibles ...................................................................................... 42
+1.6 Titan Acoustic Emission and Strain Gage Data from Dives .............................. 43
+1.7 Waterway Information and Environmental Conditions ..................................... 45
+1.8 Submersible Industry Overview ........................................................................... 46
+1.8.1 Population ...................................................................................................... 46
+1.8.2 US Coast Guard Guidance on Submersibles ............................................. 48
+2 Analysis ................................................................................................... 50
+2.1 Introduction ............................................................................................................ 50
+2.2 Hull Failure and Implosion .................................................................................... 50
+2.3 Pressure Vessel Development and Cycle Life Evaluation ................................. 53
+2.4 Pressure Vessel Monitoring .................................................................................. 56
+2.5 Emergency Procedures and Response ............................................................... 57
+2.6 OceanGate Submersible Operations and Industry Regulations ..................... 59
+3 Conclusions ............................................................................................ 65
+3.1 Findings ................................................................................................................... 65
+3.2 Probable Cause ...................................................................................................... 66
+4 Recommendations .................................................................................. 67
+4.1 New Recommendations ........................................................................................ 67
+Appendixes ......................................................................................................... 69
+Appendix A: Investigation ............................................................................................ 69
+Appendix B: Consolidated Recommendation Information ..................................... 70
+Appendix C: Titan Dives During 2021, 2022, and 2023 ........................................... 72
+Appendix D: Search and Rescue Assets ..................................................................... 74
+Appendix E: Other OceanGate Submersibles and Surface Tenders ...................... 76
+References ........................................................................................................... 78
+ii
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Figures
+Figure 1. Submersible Titan descending ............................................................................. 1
+Figure 2. Pressure vessel composite cylinder and titanium end segments .................... 3
+Figure 3. Simplified profile view and inboard profile view of Titan ................................. 4
+Figure 4. Top-down view of Titan on LARS ......................................................................... 5
+Figure 5. Area where the Titan dove to the Titanic wreckage .......................................... 8
+Figure 6. RCC Boston Search and Rescue Region ........................................................... 11
+Figure 7. Representation of co-bonding process............................................................. 21
+Figure 8. Titan and the LARS being launched via stern ramp ......................................... 26
+Figure 9. Overhead of parking lot in St. John’s where the Titan was stored ................ 28
+Figure 10. Operational mishaps during the 2023 expedition ........................................ 30
+Figure 11. Titan wreckage as discovered on the ocean floor ......................................... 31
+Figure 12. Titan wreckage on ocean floor ......................................................................... 32
+Figure 13. Recovered carbon fiber composite pressure hull outer surface and inner
+surface .................................................................................................................................... 33
+Figure 14. Recovered carbon fiber composite cylinder machined end face and mid-
+span fractured face ............................................................................................................... 34
+Figure 15. Side view of a trimmed end piece of the Titan cylinder ................................ 34
+Figure 16. Void in the adhesive layer tenting around a wrinkle, and grinding of outer
+carbon fiber plies at a wrinkle ............................................................................................. 35
+Figure 17. Voids in the adhesive between layers 1 and 2 ............................................... 36
+Figure 18. Centerline delamination i first full-scale Titan pressure vessel .................... 37
+Figure 19. Time plot from dive 80 ...................................................................................... 44
+Figure 20. Strain gage output from dive 80 ...................................................................... 44
+Figure 21. Strain gage output for dives 75 and 80–83 .................................................... 45
+Figure 22. Production of submersibles by type from 1960 to 1993 and 1994 to 2017
+................................................................................................................................................ 48
+Figure 23. Crewed submersible population from 1950 to 2017 ................................... 49
+Figure 24. Assets that participated in the search for the Titan ....................................... 59
+iii
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Tables
+Table 1. Vessel Particulars ................................................................................................... 13
+Table 2. Dives conducted using the first full-scale Titan pressure vessel ...................... 18
+Table 3. Dives conducted using the second full-scale Titan pressure vessel ............... 22
+Table 4. Dives conducted during the 2021 expedition ................................................... 25
+Table 5. Dives conducted during the 2022 expedition ................................................... 27
+Table 6. Dives conducted during the 2023 expedition ................................................... 29
+Table 7. Active submersibles and their rated depths as of 2023 ................................... 46
+Table 8. Active crewed submersibles capable of diving greater than 4,000 meters .. 47
+Table C-1. Titan dives completed during the 2021, 2022, and 2023 using the second
+(v2) full-scale pressure vessel .............................................................................................. 72
+Table D-1. Search and rescue assets utilized to search for Titan ................................... 74
+Table E-1. Vessel Particulars for Antipodes and Cyclops I .............................................. 76
+Table E-2. Vessel particulars for Horizon Arctic and Polar Prince ................................... 77
+iv
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Acronyms and Abbreviations
+Abbreviation Name
+ASME American Society of Mechanical Engineers
+CEO chief executive officer
+CFR Code of Federal Regulations
+IMO International Maritime Organization
+ISMERLO International Submarine Escape and Rescue Liaison Office
+LARS launch and recovery system
+NTSB National Transportation Safety Board
+NVIC Navigation and Vessel Inspection Circular
+OSHA Occupational Safety and Health Administration
+PVHO pressure vessel for human occupancy
+RCC Response Coordination Center
+RTM real-time monitoring system
+ROV remotely operated vehicle
+v
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Executive Summary
+What Happened
+On June 18, 2023, about 1047 local time, while diving to the wreck of the
+ocean liner Titanic in the North Atlantic Ocean, about 372 miles southeast of
+St. John’s, Newfoundland and Labrador, Canada, the submersible Titan’s pressure
+hull failed, and the vessel imploded. All five persons on board the vessel died. The
+Titan was a total loss; according to a 2023 customs declaration, the submersible’s
+value, combined with its launch and recovery system, was estimated at $5.6 million
+CAD (about $ 4.2 million USD).
+What We Found
+We found that the Titan pressure vessel likely sustained damage after it
+surfaced at the end of dive 80 in the form of one or more delaminations, which
+weakened the pressure vessel. We found that after dive 82, the Titan sustained
+additional damage (of unknown origin) that further deteriorated and weakened the
+pressure vessel. The existing delaminations and additional damage that deteriorated
+the condition of the pressure vessel between dive 82 and the casualty dive (dive 88)
+resulted in a local buckling failure that led to the implosion of the Titan.
+We found that OceanGate’s engineering process for the Titan was inadequate
+and resulted in the construction of a carbon fiber composite pressure vessel that
+contained multiple anomalies and failed to meet necessary strength and durability
+requirements. Because OceanGate did not adequately test the Titan, the company
+was unaware of the pressure vessel’s actual strength and durability, which was likely
+much lower than their target, as well as the implications of how certain operational
+changes, including storage condition and towing, could impact the integrity of the
+pressure vessel and overall safety of the vessel. Additionally, OceanGate’s analysis of
+Titan pressure vessel real-time monitoring data was flawed, so the company was
+unaware that the Titan was damaged and needed to be immediately removed from
+service after dive 80.
+We found that, had OceanGate followed Navigation and Vessel Inspection
+Circular (NVIC) 05-93 guidance for emergency response plans, they likely would have
+had emergency response assets standing by, and the Titan likely would have been
+found sooner, saving time and resources even though a rescue was not possible in
+this case. Despite OceanGate’s failure to notify search and rescue assets about its
+planned expedition, as well as the limited resources able to operate at the depth of
+vi
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+the Titanic, the US Coast Guard’s search and rescue coordination efforts were
+effective and resulted in the timely discovery of the Titan wreckage.
+We found that voluntary guidance and current US small passenger vessel
+regulations are not sufficiently tailored to current pressure vessel for human
+occupancy (PVHO) operations to ensure the safety of PVHOs in accordance with
+established technical and classification society standards. Additionally, we found that
+international standards for PVHOs would ensure consistency in design, construction,
+and operation requirements for PVHOs that operate around the world.
+We determined that the probable cause of the hull failure and implosion of the
+submersible Titan was OceanGate’s inadequate engineering process, which failed to
+establish the actual strength and durability of the Titan pressure vessel and resulted in
+the company operating a carbon fiber composite vessel that sustained delamination
+damage that was subsequently exacerbated by additional damage of unknown
+origin, resulting in a damaged internal structure that subsequently led to a local
+buckling failure of the pressure vessel. Contributing were US and international
+voluntary guidance and US small passenger vessel regulations that were insufficient
+to ensure OceanGate adhered to established industry standards. Also contributing
+was OceanGate’s flawed analysis of their pressure vessel monitoring system data,
+which led to their continued operation of a damaged pressure vessel.
+What We Recommended
+As a result of this investigation, we recommended that the US Coast Guard
+commission a panel of experts to study current PVHO operations and disseminate
+findings of the study to industry. Additionally, we recommended that the US Coast
+Guard implement US regulations for PVHOs informed by the findings of the
+recommended study and consistent with international PVHO requirements and
+guidance. We also recommended that the US Coast Guard update NVIC 05-93 to
+include the revised definition of small passenger vessel as reflected in the Passenger
+Vessel Safety Act of 1993 and to reflect the findings of the recommended study.
+Finally, we recommended that the US Coast Guard propose that the International
+Maritime Organization make MSC.1/Circ. 981 mandatory to promote consistent
+application of pressure vessel for human occupancy rules amongst member states.
+vii
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1 Factual Information
+1.1 Event Sequence
+1.1.1 Synopsis
+On June 18, 2023, about 1047 local time, while diving near the wreck of the
+ocean liner Titanic in the North Atlantic Ocean, about 372 miles southeast of
+St. John’s, Newfoundland and Labrador, Canada, the submersible Titan’s pressure
+hull failed, and the vessel imploded (see figure 1).1 All five persons on board the
+vessel died. The Titan was a total loss; according to a 2023 customs declaration, the
+submersible’s value, combined with its launch and recovery system, was estimated at
+$5.6 million CAD (about $4.2 million USD).2
+Figure 1. Submersible Titan descending on unknown date. (Source: OceanGate)
+1 In this report, all miles are nautical miles (1.15 statute miles).
+2 Visit ntsb.gov to find additional information in the public docket for this NTSB investigation
+(case no. DCA23FM036). Use the CAROL Query to search investigations.
+1
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1.1.2 Titan Submersible
+The 22-foot-long submersible Titan was designed, built, and operated by
+OceanGate Inc., through its affiliate companies, to provide expeditions to the
+wreckage site of the ocean liner RMS Titanic, which was located in the North Atlantic
+Ocean, about 370 miles southeast of St. John’s, at a depth of 3,880 meters
+(12,730 feet) (section 1.3 further describes the Titan, and section 1.5 describes
+OceanGate’s operations).3 The cylindrical-shaped 8.1-foot-long pressure hull
+(pressure vessel) portion of the submersible maintained atmospheric air pressure for
+the Titan’s human occupants during dives.4
+The pressure vessel was constructed in 2020 and consisted of a thick-walled,
+carbon fiber-based composite cylinder fitted at each end with a titanium ring
+(segment) that was capped with a titanium dome (hemisphere) (see section 1.3.3 for
+more details about the vessel’s construction) (see figure 2).5 The titanium segments
+were glued to the cylinder, and the titanium domes were bolted to the segments.
+3 (a) In this report, submersible describes any self-propelled vessel that carries people and is
+designed to operate on the surface, submerge, operate submerged, surface, and remain afloat at the
+surface. It does not include submersibles that do not carry people, such as remotely operated vehicles.
+(b) In this report, depths are listed in meters because OceanGate dive requirements and
+measurements were given in meters. Metric measurements are converted to US standard
+measurements.
+4 At sea level, atmospheric pressure is 14.7 pounds per square inch. At the depth of the Titanic
+wreckage site, water pressure is 5,554.5 pounds per square inch. A submersible’s pressure vessel is
+designed to withstand the pressure at the submersible’s rated depth and maintain atmospheric
+pressure for human occupancy.
+5 In this report, the Titan pressure vessel includes the carbon fiber-based composite cylinder,
+titanium rings, and titanium domes. Everything external to the pressure vessel comprises the “outer
+hull.”
+2
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Figure 2. Pressure vessel composite cylinder and titanium end segments. Titanium spherical
+domes (not shown) were bolted to the segments at either end. (Background source:
+OceanGate)
+Inside the pressure vessel was an occupant compartment, which could hold up
+to five people. The compartment contained the vessel’s operational control: a
+wireless, battery-operated controller that communicated with control software—
+displayed on a monitor—to allow the operator to control the thrusters and drop
+weights. Oxygen tanks, a spare controller, and extra controller batteries were also
+stored in the compartment. The forward dome included a viewing port so occupants
+could look outside the submersible. A bulkhead separated the aft dome from the
+occupant compartment; the dome contained vessel control systems, servers, and
+processors.
+Outside the pressure hull, an outer hull of fiberglass fairings was supported by
+a metal exoskeleton. Contained within the tail cone fairing were the submersible’s
+hydraulic pumps, batteries for the thrusters, and other equipment. Four reversible,
+oil-filled thrusters (two horizontal and two vertical) with speed control provided the
+submersible with propulsion and were attached to the exterior of the fairings. A
+3
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+landing frame was used to secure the submersible while being transported (see
+figure 3).
+Figure 3. From top: Simplified profile view and inboard profile view of the Titan (scale
+approximate). Area highlighted in grey (bottom image) is the pressure hull.
+For each mission, OceanGate loaded the Titan onto its launch and recovery
+system (LARS)—a purpose-built, floodable barge also owned by OceanGate that
+served as a launching platform for the vessel (see figure 4). To launch the Titan, divers
+opened valves to flood the barge, sinking it to 9.1 meters (30 feet), and then released
+the submersible, allowing it to thrust away.
+4
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Figure 4. From top: Top-down view of Titan on LARS (scale approximate), and Titan secured
+on LARS in 2022. (Source [bottom]: Garry Comber)
+The Titan had 4–6 cylindrical drop weights (operated by electric motors) per
+side with 25–30 pounds of steel shard in each weight. The weights were used to
+begin the submersible’s descent by providing negative buoyancy. To slow the Titan’s
+descent, the pilot would drop weights to achieve neutral buoyancy. To ascend to the
+surface after a dive, the pilot would drop additional weights to achieve positive
+buoyancy. The submersible could also ascend to the surface using air bags supplied
+by high-pressure air tanks in the tail (variable ballast tanks) or the landing frame
+5
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+(which could be jettisoned). The drop weights were configured to automatically
+release after being submerged 24 hours, forcing the submersible to the surface.
+To recover the Titan at the end of a dive, the Titan pilot would land the
+submersible on the submerged LARS, and divers (from the surface tender) would lock
+it down. Air stored in tanks on the LARS deck would displace the ballast water, and
+the LARS would surface with the submersible.
+1.1.3 Precasualty Events
+The Titan had completed two expeditions to the Titanic wreck—in 2021 and
+2022. An expedition included 4–5 missions, and each mission typically included one
+or more planned dives (see section 1.3.7 and Appendix C ). During the 2021 and
+2022 expeditions, the Titan attempted numerous dives to the Titanic wreck but only
+successfully completed 13 dives to the wreck. These dives took an average of
+8.3 hours to reach the Titanic and about 2.5 hours to ascend afterward.6
+For each expedition, OceanGate chartered a vessel to act as a surface tender,
+either transporting or towing the Titan to the Titanic wreckage site and providing
+support for the submersible during expeditions and dives. In 2023, OceanGate
+chartered the 220-foot-long, Canadian-flagged vessel Polar Prince for use as a
+surface tender for the Titan’s 2023 expedition season.7
+On May 12, OceanGate’s first of six planned missions for the Titan’s 2023
+expedition began. Over the next month, the Titan completed four missions: The first
+mission did not include any dives (OceanGate personnel worked to integrate with the
+Polar Prince crew and to collectively test dive procedures), the second mission
+included one uncrewed dive, the third mission included two crewed dives, and the
+fourth mission included one crewed dive. None of the dives exceeded 33 feet (10
+meters) depth. For each mission, the Polar Prince towed the LARS from St. John’s,
+Newfoundland and Labrador, Canada, to the designated dive area. At the end of
+each mission, the Polar Prince towed the LARS/Titan back to port in St. John’s.
+6 Average dive and ascent times are based on dive data from 2022, the year for which dive
+data was available for all dives. Complete dive data was not available for 2021 or 2023.
+7 In this report, surface tender refers to a surface vessel that provides support to the
+submersible.
+6
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1.1.4 Event Narrative
+On June 16, the fifth mission of the 2023 expedition began when the
+Polar Prince departed St. John’s with the Titan and LARS in tow en route to the Titanic
+dive site. There were 42 persons on board the Polar Prince:
+• 17 Polar Prince crewmembers.
+• 3 individuals called “mission specialists” who had paid to participate in
+the mission.8
+• 21 OceanGate personnel, including the OceanGate chief executive
+officer (CEO), who also served as the Titan pilot; the mission director, an
+OceanGate employee on the Polar Prince responsible for managing the
+dive); and other OceanGate employees, contractors, volunteers, and
+mission specialists’ family members.
+• 1 Titanic expedition guide who would dive with the pilot and mission
+specialists on the Titan.
+On June 18, about 0400, the Polar Prince arrived at its destination (see
+figure 5). At the time, the winds were southwest at 13–19 knots. The Polar Prince crew
+and OceanGate personnel aboard the vessel began preparing for the dive. About
+0530, the mission director and the CEO—who was also the pilot for the dive—held a
+pre-dive brief to review the dive plan and Polar Prince crewmember and mission
+specialist responsibilities during the dive.9
+8 OceanGate referred to its clients as “mission specialists.” According to the ”Project Execution
+Plan” for the Titan 2023 expedition, mission specialists were “guests who help fund OceanGate
+expeditions … [and] have the option to join the OceanGate crew” (see section 1.5.3). The crew of the
+tender (Polar Prince) assigned tasks based on their determination of each mission specialist’s
+capability. This report refers to the three paying OceanGate clients as “mission specialists” based on
+OceanGate’s labeling of them as such.
+9 OceanGate personnel briefed the mission specialists on dive plans during morning and
+evening meetings. These briefings did not involve the surface tender’s crew.
+7
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Figure 5. Area where the Titan dove to the Titanic wreckage, as indicated by a circled X.
+(Background source: Google Maps)
+To allow the mission specialists to board the Titan, three OceanGate personnel
+opened the forward dome by using a pneumatic lifting device to support the weight
+of the dome while they loosened the 18 bolts that secured the dome to the forward
+segment and the hull. About 0800, the OceanGate CEO, the Titanic expedition guide,
+and the three mission specialists boarded the Titan and began preparing the vessel
+to dive. Once aboard, all individuals involved—both on the Titan and the Polar Prince—
+conducted a 5-minute planned hold, known as a “stopski.” During a “stopski,”
+individuals typically reviewed their checklists for missed items and reflected on their
+responsibilities for the dive; there was no talking.
+About 0830, OceanGate personnel closed the forward dome by bolting it to
+the titanium segment. Divers opened the LARS valves and began sinking the platform
+(with the Titan on it) until the LARS was suspended by buoys; meanwhile, the
+OceanGate mission director conducted final checks on the Polar Prince.
+About 0900, the Titan was released from the LARS and began its descent to
+the Titanic wreckage at a rate of 98 feet per minute (30 meters per minute). It was the
+first dive of the 2023 expedition to descend below 33 feet (10 meters). The dive was
+expected to take about 8 hours (2.5 hours to descend, 3 hours to explore the wreck,
+8
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+and 2.5 hours to ascend). The Titan had an estimated 96 hours—or about 4 days—of
+emergency oxygen and carbon dioxide-scrubbing capability when it dove.
+While diving, the pilot on the Titan maintained communications with the
+Polar Prince via an acoustics system (see section 1.3). Transponders were attached to
+the submersible and transducers were suspended from the surface tender. The
+transponders used telemetry to transmit to the tender the submersible’s position and
+depth. Additionally, the system allowed the submersible occupants to exchange text
+messages with the tender.
+About 0919, the Polar Prince initiated the first communications check.
+Communications checks occurred every 10 to 15 minutes thereafter.
+At 1047, while the Titan was at a depth of 11,032 feet (3,363 meters),
+OceanGate received a message that the submersible was dropping two weights
+(which was a standard procedure at this depth to slow its descent). At 1048, the
+Polar Prince sent a message back to acknowledge the Titan’s message, but they
+received no response.
+At 1049, the Polar Prince sent the Titan a “lost tracking” message but received
+no response. OceanGate crew aboard the Polar Prince first assumed there was an
+issue with the acoustic communications equipment and sent two to three messages
+every minute in an attempt to restore communication with the submersible.10
+According to the Polar Prince captain, “this was not perceived to be an emergency by
+OceanGate.”11
+OceanGate’s “Project Execution Plan”—which detailed requirements and
+operational procedures for the Titan 2023 expedition—required the submersible to
+begin ascending to the surface 60 minutes after communications were lost with the
+surface (see section 1.5.3). The mission director calculated that, given the Titan’s
+anticipated ascent rate and last known depth (11,032 feet), the Titan should have
+surfaced about 1500 had the pilot followed OceanGate’s procedures. However, there
+10 The US Coast Guard was the lead federal agency in this investigation. In September 2024,
+the Coast Guard held a Marine Board of Investigation hearing, conducted over 2 weeks, as part of its
+accident investigation. During the hearing, the Coast Guard and NTSB investigators questioned
+25 individuals, including former OceanGate staff, former mission specialists, industry leaders,
+regulatory authorities, and search and rescue specialists. Some of the factual information in this report,
+including quotes and statements, is derived from this testimony.
+11 During the accident dive, the Titan was equipped with a different communications system
+than had been used in previous expeditions (see section 1.3.5). According to an OceanGate software
+engineer, the Titan had lost communications during previous missions when using the submersible’s
+thrusters, so it would not have been unusual for the vessel to lose communications.
+9
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+was no indication that the vessel had surfaced. The Polar Prince crew continued their
+attempts to send messages to the Titan but received no response.
+1.2 Response
+After receiving no response from the Titan, about 1500, OceanGate personnel
+directed the Polar Prince crew to search the surface for the submersible. According to
+the Polar Prince captain, he was instructed to call for help after 3 hours if the Titan had
+not been found.
+After 3 hours of searching, they still had not located the vessel, so, about 1855,
+the Polar Prince crew contacted Joint Rescue Coordination Center Halifax and, at
+1910, US Coast Guard Rescue Coordination Center (RCC) Boston. Additionally,
+OceanGate personnel aboard the Polar Prince contacted Pelagic Research Services
+(Pelagic), one of the deep water remotely operated vehicle (ROV) operating
+companies listed in OceanGate’s “Project Execution Plan,” to coordinate use of their
+ROV, Odysseus, in searching for the Titan. Pelagic immediately started preparing the
+Odysseus ROV, which was capable of reaching 19,685 feet (6,000 meters). (The
+Odysseus was in Buffalo, New York, at the time.)
+Because the area where the Titan dove was within US Coast Guard RCC
+Boston’s Search and Rescue Region, the US Coast Guard coordinated search and
+rescue efforts (see figure 6).12 The US Coast Guard did not monitor activity—including
+dives or expeditions—at the Titanic, nor were they aware of OceanGate’s “Project
+Execution Plan.” RCC Boston established a multi-agency, multinational Incident
+Management Team to coordinate resources, prioritize objectives, interpret data, and
+plan ROV operations. A US Coast Guard officer from the team testified, “… no one
+agency, and not even a single country had all the assets that we needed, and frankly,
+it took a collaboration between the public sector and private sector ….”
+12 The RCC’s role was to find and assign resources, plan searches, maintain communications
+with the on-scene coordinator, and provide search patterns. These procedures are prescribed in the
+International Aeronautical and Maritime Search and Rescue Manual, the United States National Search
+and Rescue Supplement to the International Aeronautical and Maritime Search and Rescue Manual, and
+the U.S. Coast Guard Addendum to the US National Search and Rescue Supplement (NSS) to the
+International Aeronautical and Maritime Search and Rescue Manual (IAMSAR).
+10
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+The US Coast Guard issued a SafetyNET HYDROLANT message at 2124,
+seeking assistance from nearby vessels to look out for a “21 foot submarine, white
+hull, overdue.”13
+Figure 6. RCC Boston Search and Rescue Region. (Background source: Google Maps)
+At 2200, a US Coast Guard C-130 Hercules, based in Elizabeth City, North
+Carolina, and assigned to the International Ice Patrol, launched from Newfoundland
+and Labrador. At 2203, the Coast Guard provided the Polar Prince with a search
+pattern to follow; however, the Polar Prince crew made the decision to remain where
+they were to focus on listening for possible communications from, or subsea
+indications of, the Titan. At 2325, the C-130 arrived on scene and began conducting
+an overflight air search.
+On June 19, a second Elizabeth City-based C-130 conducted the first daylight
+search. Over the next 4 days, Canadian and US aircraft and ships arrived on scene
+and searched the surface for the Titan and the persons on board (Appendix C lists
+13 (a) SafetyNET enables international broadcasts of maritime safety information and search
+and rescue-related information. HYDROLANT marine navigational warnings are issued to provide
+urgent information about persons in distress or objects/events that pose an immediate hazard to
+navigation and safety of life at sea in the Atlantic Ocean. (b) The Titan was actually 22 feet (6.7 meters)
+long.
+11
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+search and rescue assets that participated in the response). Additionally, Canadian
+naval aircraft deployed sonar buoys.14
+The International Submarine Escape and Rescue Liaison Office (ISMERLO); the
+US Navy, as well as its Undersea Rescue unit in San Diego, California; and the
+Canadian Coast Guard coordinated to locate available ROVs capable of reaching the
+depth of the Titanic. US Coast Guard search and rescue personnel testified it would
+normally take 2 weeks to get an ROV to the location (transporting it via air to an
+offshore supply vessel, outfitting the offshore supply vessel, and assembling a crew).
+On June 19, OceanGate contacted the US Air Force’s RCC for help
+transporting Pelagic’s Odysseus ROV from Buffalo (contacting the US Air Force for
+assistance with transport was not included in OceanGate’s Project Execution Plan).
+The commercial cable ship Deep Energy was the first to arrive on scene with
+ROVs. Responding to an ISMERLO request, the vessel arrived on scene about 1500
+on June 20 (about 34 hours after the request) with two ROVs capable of reaching
+9,843 feet (3,000 meters). OceanGate personnel moved from the Polar Prince to the
+Deep Energy, and the Deep Energy crew deployed one ROV to its maximum cable
+length but found nothing. Next, in an effort to reach the seabed, they dove the ROV
+beyond its rated depth, almost another 3,281 feet (1,000 meters); the ROV was
+destroyed in the process. They then used the second ROV for sonar scanning.
+Over the next 2 days, two ROVs capable of reaching 6,000 meters (19,685 feet)
+arrived on scene. The US Air Force Reserve’s Ohio-based 910th Air Wing flew the ROV
+Odysseus on a C-130 to Newfoundland and Labrador, where it was loaded aboard
+the Horizon Arctic about 0500 on June 21. The French research vessel Atalante
+responded from midocean, carrying the ROV Victor 6000.
+On June 22, both the Atalante (with the Victor 6000) and the Horizon Arctic
+(with the Odysseus) were in position over the site. Both ROVs were deployed; the
+Odysseus conducted search patterns while the Victor 6000 was positioned to serve as
+backup in case the Odysseus had to be recovered.
+At 0940, the Odysseus discovered a debris field consistent with the Titan,
+including the tail cone and both titanium domes, near the submersible’s last known
+position, about 500 meters (1,148 feet) northeast of the bow of the Titanic. There
+were no survivors.
+14 Typically used for underwater acoustic research or anti-submarine warfare, sonar buoys (or
+sonobuoys) are used to detect, locate, and track submarines.
+12
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1.3 Vessel Information
+1.3.1 General
+Built in 2020 by OceanGate, the submersible Titan was owned by Cyclops II
+Inc. and operated by OceanGate Expeditions, both affiliate companies of OceanGate
+Inc. OceanGate leased the Titan to OceanGate Expeditions, which was based in
+The Bahamas and created to operate the Titan on expeditions to the site of the Titanic
+wreckage. According to OceanGate, the Titan could dive to 4,000 meters
+(13,123 feet) and could carry up to five persons, including one pilot.
+The Titan was not registered in any US state, documented by the US National
+Vessel Documentation Center, nor inspected by any flag state.15
+Table 1 shows the vessel particulars for the Titan.
+Table 1. Vessel Particulars.a
+Vessel Titan
+NTSB Vessel Group Specialty/Other (Submersible)
+Owner/Operator Cylcops II Inc/OceanGate Expeditions
+(Commercial)
+Flag N/A
+Port of registry N/A
+Year built 2020
+Official number (US) N/A
+IMO number N/A
+Classification society N/A
+Length (overall) 22.0 ft (6.7 m)
+Breadth (max.) 9.2 ft (2.8 m)
+Draft (casualty) N/A
+Tonnage 4 GRT est.
+15 A flag state is a country where a commercial vessel is registered. The flag state routinely
+conducts inspections of vessels flagged in its country to ensure safety of the vessel and its crew and
+compliance with flag state regulations. Owners of vessels choose which country in which to register
+(“flag”) the vessel; the country may or may not be the country in which the owner resides.
+13
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Vessel Titan
+Engine power; manufacturer 4 x 12 hp; Innerspace 1002HL Hexscreen
+Electric Thrusters
+Persons on board 5
+a Most of the information in this table is sourced from OceanGate marketing materials and its operating manual
+for the Titan. The tonnage was calculated by the US Coast Guard.
+1.3.2 Classification
+Classification societies are nongovernmental organizations that establish and
+maintain standards for shipbuilding and operations. They may also be delegated by a
+flag state to perform certain flag state vessel inspection and certification functions. A
+vessel owner or operator may choose to work with a classification society to “class”
+the vessel. The classification process involves reviewing plans and documentation
+before and during construction to ensure they meet applicable classification
+standards in place at the time, witnessing critical testing, and surveying the vessel.
+Upon completion of the process, the classification society issues a certificate of
+classification for the vessel. To maintain a valid certificate of classification, a vessel
+must undergo additional periodic surveys to ensure compliance with class rules.
+According to former OceanGate personnel, the company originally intended
+for the Titan to be classed by a classification society. OceanGate’s former director of
+marine operations stated that, when he was hired in 2016, the company planned to
+class the submersible through Lloyd’s Register or DNV.16 According to the first
+OceanGate director of engineering, OceanGate also considered calling the vessel
+16 Det Norske Veritas and Germanischer Lloyd merged in 2013 to form DNV GL. The company
+changed the name to DNV in 2021.
+14
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+“experimental.”17 The first director of engineering also stated that the OceanGate
+CEO funded the classing process himself. However, the OceanGate CEO ultimately
+decided classing the Titan would take too long, and, according to the first director of
+engineering, the CEO “was extremely pressured for funding as time went on.”
+In 2018, OceanGate abandoned classing efforts. In February 2018, while
+OceanGate was designing and constructing the Titan, members of the Marine
+Technology Society’s Submarine Committee met for a conference.18 Since they were
+aware of OceanGate’s efforts to develop the Titan as well as the dangers of diving
+near the Titanic, they decided to draft a letter to the CEO of OceanGate, expressing
+“unanimous concern regarding the development of ‘TITAN’ and the planned Titanic
+Expedition.” The letter stated:
+… the current ”experimental” approach adopted by OceanGate could
+result in negative outcomes (from minor to catastrophic) that would
+have serious consequences for everyone in the industry.19
+17 (a) Classification societies have a path for owners to prove seaworthiness of new technology.
+However, classification societies and the US Coast Guard have no “experimental” design endorsement
+for vessels carrying passengers or cargo. The US Coast Guard’s current approach to passenger
+submersibles “is to require a level of safety equivalent to that required for a surface craft of similar size
+and service for owners pursuing a COI to operate as a small passenger vessel” (US Coast Guard 2025).
+Additionally, to assist submersible owners in the process of certifying vessels with a “novel design,” the
+US Coast Guard issued CG-ENG Policy Letter 01-23 to provide guidance on submitting design
+standard equivalencies for consideration. (b) Between 2016 and 2023, OceanGate had three directors
+of engineering. The first director of engineering, who had a background in diving and engineering,
+worked for the company between 2016 and 2019 during the design, development, and testing of the
+first pressure vessel (see section 1.3.3.1). The second director of engineering had a background in
+engineering management and worked for the company between 2019 and 2021, during the design
+and development of the second pressure vessel (see section 1.3.3.2). The third was a software
+engineer who had worked extensively with the acoustic emission system; he was promoted in 2021
+(after the construction of a second pressure vessel) and left the company in 2023. After the third
+director left OceanGate, a software engineer was the most senior staff member in the engineering
+department.
+18 The Marine Technology Society is an international society that “promotes awareness,
+understanding, and advancement and application of marine technology.” See
+https://www.mtsociety.org/about-us. The Marine Technology Society Submarine Committee, also
+known as the Manned Underwater Vehicles Committee, is comprised of organizations and individuals
+that participate in the “’manned’ quest, evolution and exploration of the underwater world through the
+use of submersible vehicles.” The Submarine Committee provides resources on active submersibles,
+operators, and manufacturers and organizes an annual symposium for members. See
+https://www.mtsmuv.org/committee.
+19 The Marine Technology Society’s letter was one exhibit presented during the Coast Guard’s
+2024 Marine Board of Investigation (see Exhibit CG-068).
+15
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Additionally, the letter advised OceanGate’s CEO of the importance of following class
+rules when designing and developing a submersible. The letter was signed by
+dozens of other industry representatives.
+The Marine Technology Society never formally sent the letter. However,
+according to one signatory, the CEO received the letter; afterward, in a conversation
+with the CEO, the signatory expressed concern that OceanGate was “highly inferring
+that the vehicle [Titan] is classed” and was using the name of a classification society
+on their website.20 According to the signatory, the CEO stated that classification was
+“too expensive” and “not doable.”
+OceanGate’s website was later updated to reflect that the Titan was an
+“experimental submersible.” In a 2019 blog post on its website, OceanGate stated,
+… by itself, classing is not sufficient to ensure safety. In part this is
+because classing does not properly assess the operational factors [that]
+are vital for ensuring a safe dive, and because classing assessments are
+done annual (at best) and do not ensure that the operator follows
+procedures or processes that are key to conducting safe dive
+operations. (OceanGate 2023).
+1.3.3 Construction
+Between 2016 and 2021, OceanGate developed and tested two pressure
+vessels (v1 and v2) for the Titan. OceanGate used their submersible Cyclops I as a
+prototype to build the Titan (see section 1.5.5). The company’s original optimal
+design goal was for the submersible to be rated to dive up to 6,000 meters (19,680
+feet) with a 2.25 safety factor and a 10,000-cycle life limit.21
+1.3.3.1 First Pressure Vessel
+1.3.3.1.1 Design and Development
+Before constructing a full-scale pressure vessel for the Titan, OceanGate hired
+Spencer Composites in 2015 to complete a stress analysis for a carbon fiber cylinder
+20 The signatory referenced in this report also provided testimony that OceanGate’s CEO was
+aware of the contents of the letter during the US Coast Guard’s 2024 Marine Board of Investigation.
+21 Safety factor in submersible design is the ratio between the failure depth and the maximum
+allowable operational depth. A 3,000-meter (9,843-foot) depth limit and 1.5 safety factor would
+correspond to a 4,500-meter (14,764-foot) failure depth. Cycle life limit is the number of dives (from
+the surface, diving, and back to the surface).
+16
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+design; the analysis indicated an implosion depth about 13,200 meters (43,307 feet).
+After the analysis was completed, OceanGate worked with Spencer Composites to
+construct a one-third scale model of the pressure vessel to visualize their prototype
+and test its design features. Spencer Composites constructed the model sometime
+before March 2016. The sub-scale model pressure vessel comprised two carbon fiber
+domes and a carbon fiber composite cylinder. The composite cylinder for the
+subscale model was constructed using a method called wet winding—wherein carbon
+fiber strands were run through a bath of liquid resin, and the resin-laden strands were
+then used to construct the cylinder. According to a former OceanGate director of
+marine operations, the CEO chose carbon fiber because he believed it was “better in
+compression than tension.” Additionally, since carbon fiber is lighter than other
+materials, such as steel or titanium, the CEO believed it would require less buoyancy
+and could be launched from a bigger variety of surface tenders—as opposed to
+necessitating a purpose-built ship—and it would also be easier to transport and could
+carry more people.
+During two successive tests of sub-scale models, the carbon fiber domes
+prematurely failed, so OceanGate replaced the carbon fiber domes with titanium end
+domes constructed by TiFab. During testing in June 2016, the updated sub-scale
+model pressure vessel imploded at a depth of about 4,200 meters (13,780 feet).
+According to the CEO, that model had a delamination in the carbon fiber cylinder.22
+In 2018, Spencer Composites constructed the first (v1) full-scale Titan pressure
+vessel with the outer hull—including the fairing, landing frame, and external
+equipment—again using wet winding to construct the carbon fiber cylinder and
+titanium domes.
+1.3.3.1.2 Test Dives
+Between February 2018 and June 2019, OceanGate completed 49 dives of the
+Titan v1 pressure vessel with outer hull to varying depths in Everett, Washington, and
+The Bahamas (see Table 2).23
+22 A delamination is a failure mode in layered materials where a separation forms between
+layers. The Titan carbon fiber cylinder was built from many layers (laminae). The delamination in the
+model cylinder was a separation that formed between two of these layers.
+23 OceanGate assigned a sequential dive number to each outing of the Titan (both the v1 and
+v2 pressure vessels), no matter the purpose of the outing or the maximum dive depth. Thus, dive
+numbers do not correlate with attempts to reach the Titanic. See Appendix C: for a list of expedition
+dives. See US Coast Guard MBI Exhibit CG-052 for a complete list of dives.
+17
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Table 2. Dives conducted using the first full-scale Titan pressure vessel. (Data source:
+OceanGate)
+Dive Date Location Depth reached No. dives No. crewed
+(range) beyond dives (at
+100 m least a pilot)
+1-18 2/6/18–4/9/18 Everett 3 to 37 meters 0 15
+19-48 5/8/18-4/18/19 The Bahamas 2 to 4,000 meters 13 20
+49 8/17/2019 Everett 1 meter 0 1
+During dives 42 through 44 and 45.1 through 47, conducted in The Bahamas
+in 2019, persons aboard the Titan reported hearing cracking sounds.24 In June 2019,
+after dive 48, while making preparations for a dive, an OceanGate employee noticed
+a hairline fracture in the pressure vessel cylinder and reported it to OceanGate
+leadership. An examination of the crack indicated that it had originated from a sub-
+surface delamination (an internal separation within the carbon fiber cylinder).
+OceanGate subsequently halted field testing of the Titan. OceanGate shipped the
+Titan back to Washington and attempted one dive (dive 49) in Everett Marina, but the
+dive was aborted due to an issue with the improperly secured blanks (a type of plug)
+on the LARS.
+OceanGate had planned for the Titan to begin diving to the Titanic wreck site
+in summer 2019 and had booked clients (“mission specialists”) for an expedition
+during that time. However, the first director of engineering stated that he told the
+CEO that because there was a crack, the pressure vessel hull was “done,” he was “not
+going to take this [the Titan] anywhere.” The director of engineering stated that he
+would not sign off on the planned 2019 expedition. He was terminated shortly
+thereafter. The planned 2019 expedition to the Titanic wreck site was cancelled.
+The v1 pressure vessel was shipped to the Deep Ocean Test Facility, then
+operated by Northrup Grumman, in Annapolis, Maryland, for additional testing.
+OceanGate condemned the v1 pressure vessel following this testing and postponed
+its planned 2020 expedition.
+24 Dive 45 occurred on March 20, 2019, and was an uncrewed surface/buoyancy test.
+OceanGate designated the following dive on April 12, 2019, as “dive 45.1.”
+18
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1.3.3.2 Second Pressure Vessel
+1.3.3.2.1 Design and Development
+Under a new (second) director of engineering, in 2020, OceanGate embarked
+on a second stress analysis and testing program for a second (v2) Titan pressure
+vessel design. The second stress analysis predicted an implosion depth for the
+carbon fiber cylinder of about 7,500 meters (24,606 feet). It also indicated that the
+depth of the Titan was limited to 4,200 meters (13,790 feet) due to the potential for
+deformation of the titanium forward dome around the viewport.
+OceanGate constructed a one-third scale model to test the v2 pressure vessel
+design. The carbon fiber cylinder was constructed using unidirectional filament-
+wound carbon fiber pre-impregnated with an epoxy resin (pre-preg) purchased in
+rolls instead of using the wet winding method to create resin-laden carbon fiber
+strands—as had been done for the v1 cylinder. (The pre-preg carbon fiber came from
+the fiber manufacturer with the resin already applied to the fiber.) OceanGate staff slit
+the rolls into 0.5-inch-wide reels (tows) and built the cylinder by winding the tows
+onto a cylindrical carbon steel mandrel by automatic fiber placement at an
+Electoimpact, Inc. facility, in Mukilteo, Washington.25
+OceanGate began testing the sub-scale model on July 26, 2020, at the
+University of Washington’s Oceanography Laboratory. The model pressure vessel
+developed wrinkles in the carbon fiber composite cylinder and imploded at
+2,800 meters (9,186 feet). OceanGate identified wrinkles in the cylinder as a likely
+cause of failure.
+OceanGate constructed a second sub-scale model using the pre-preg carbon
+fiber. On August 20, the second sub-scale model was tested at the same laboratory;
+OceanGate stopped the test at 2,500 meters (8,202 feet), when pressure vessel
+integrity monitoring data made it clear that the model pressure vessel was going to
+fail. The second sub-scale model had wrinkles in the cylinder like the first sub-scale
+model.
+Afterward, based on the company’s experience with the sub-scale models and
+the experience of its manufacturing partners, OceanGate decided to use a co-
+bonding process to construct the cylinder to mitigate the development of wrinkles.
+25 Automatic fiber placement is a robotic means of building carbon fiber composite structures.
+It allows the continuous application and compaction of pre-preg carbon fiber during article
+construction.
+19
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+OceanGate constructed a second (final) full-scale pressure vessel (v2) using the co-
+bonding process between November 2020 and January 2021.
+The v2 full-scale pressure vessel cylinder was manufactured from rolls of pre-
+preg carbon fiber—again by winding 0.5-inch-wide tows onto a cylindrical carbon
+steel mandrel by automatic fiber placement—and constructed as a series of five
+co-bonded, nominally 1-inch-thick composite layers. Each layer consisted of 133 pre-
+preg plies applied to the mandrel following a predetermined build ply sequence. The
+sequence consisted of two cylindrical plies followed by one longitudinal ply. The
+sequence was repeated until all 133 plies had been applied. According to data
+published by the fiber manufacturer, this would have resulted in a nominal
+0.9975-inch-thick layer. A removable layer (peel ply) was applied on top of the
+pre-preg, and the assembly was cured in an autoclave (autoclave curing was
+performed at Janicki Industries, Inc. in Hamilton, Washington).26 After autoclave
+curing, the peel ply was removed and an adhesive film was applied to the cylinder
+surface. The build ply sequence was then repeated and the assembly was autoclaved
+until the cylinder was (nominally) 5 inches thick (see figure 7).
+26 An autoclave is an oven where the air inside the chamber can be pressurized above ambient
+air pressure. The positive pressure and high temperatures were used to compress and consolidate the
+pre-preg composite material during a curing cycle.
+20
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Figure 7. Representation of co-bonding process used to manufacture the Titan’s hull. Inset is
+a cross-section of the actual Titan cylinder wall showing the co-bonded layered structure.
+The cylinder was manufactured with excess material at both ends, which was
+subsequently trimmed off. The trimmed cylinder was then glued to commercially
+21
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+pure grade 3 titanium segments.27 The cylinder-facing side of both segments
+contained an annular C-shaped channel; the cylinder was inserted into this channel
+and joined using an epoxy paste adhesive. The titanium domes were attached to the
+segments using 18 bolts to cap the pressure vessel at either end. The forward dome
+included a viewing port constructed of an acrylic window certified to 1,000 meters
+(3,281 feet).28 The segments, domes, and viewing port had been built for the v1
+pressure vessel and were reused with the replacement v2 composite cylinder.
+1.3.3.2.2 Testing
+The v2 full-scale pressure vessel was pressure tested at the Deep Ocean Test
+Facility in Annapolis between February 25 and March 4, 2021, to a simulated
+maximum depth of 4,200 meters (13,780 feet). According to analysis performed
+under contract for OceanGate, the test depth was limited by the yield strength of the
+forward titanium dome at a location around the viewport.
+From April 29 to May 25, 2021, OceanGate conducted 11 test dives (dives 50
+to 60) of the v2 pressure vessel in Washington to a maximum depth of 170 meters
+(558 feet) (dive 56) (see Table 3). Afterward, OceanGate began using the pressure
+vessel for expeditions up to a maximum depth of 3,840 meters (12,598 feet) (see
+section 1.3.7).
+Table 3. Dives conducted using the second full-scale Titan pressure vessel. (Data source:
+OceanGate)
+Dive Date Location Depth Including at
+reached least a pilot
+50 4/29/21 Everett 3 meters Yes
+51 5/2/21 Everett 7 meters Yes
+52 5/6/21 AO 79 meters Yes
+53 5/8/21 Possession Sound 8 meters Yes
+54 5/12/21 Everett 3 meters Yes
+27 Unalloyed (pure) titanium is graded 1 to 4 based on the level of trace elements allowed in
+the metal. The grades provide a tradeoff between formability and mechanical strength. Grade 3
+titanium is high-strength, formable, and corrosion-resistant.
+28 The viewing port was a non-standard design—it was thick in the middle and thinner toward
+the edge, rather than maintaining a constant thickness. Because the design had not been studied
+thoroughly, the manufacturer (Hydrospace) would only certify it to 1,000 meters.
+22
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Dive Date Location Depth Including at
+reached least a pilot
+55 5/14/21 Everett 3 meters Yes
+56 5/17/21 Al-Ind-Esk-A-Sea 79 meters Yes
+57 5/19/21 Everett 3 meters Yes
+58 5/20/21 Hat Island, Washington 170 meters Yes
+59 5/24/21 Everett 3 meters Yes
+60 5/25/21 Hat Island, Washington 162 meters Yes
+1.3.4 Real-time Monitoring System
+The Titan was equipped with a system for monitoring the structural health of
+the pressure vessel; OceanGate called it the “real-time monitoring (RTM) system.” The
+system was comprised of eight acoustic emission sensors, eight circumferential
+(hoop) strain gages, and eight longitudinal (axial) strain gages. Hoop and longitudinal
+strain gages were co-located. Some acoustic sensors were co-located with strain
+gages, and some were not. Acoustic sensors and strain gages were assigned channel
+numbers 1 through 8, but sensors and gages with the same channel number were not
+always placed in the same location. The RTM system was only operational during
+dives and recorded to a series of computers on board the Titan.
+During a dive, acoustic events were continuously monitored via the acoustic
+emission sensors. After amplification of the acoustic emission signal and analog-to-
+digital conversion, if an acoustic event exceeded a predetermined threshold, the
+event was counted as a “hit,” indicating that micro-cracking was occurring in the
+pressure vessel. Pre-programmed levels would trigger a green, yellow, or red
+indicator to the pilot based on the number of hits. The warning levels were based on
+the acoustic activity of the v1 pressure vessel when it was tested at the Deep Ocean
+Test Facility after OceanGate discovered the crack and of the sub-scale pre-preg
+pressure vessels that were built afterward. According to the third OceanGate director
+of engineering, if the system detected 30 hits during a dive, the system issued a
+yellow display warning. If 50 hits were detected, a red warning was issued, and the
+dive was to be aborted. Hit counts did not accumulate between successive dives, and
+hits while at the surface were not counted.
+OceanGate processed acoustic emission and strain gage data collected by the
+RTM system after dives, in accordance with their typical procedure. According to the
+23
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+third and final director of engineering, pressure vessel monitoring data were
+collected for the v1 Titan pressure vessel (during testing in Washington and The
+Bahamas in 2018 and 2019), but no time or depth information was included. During
+the development of the v2 pressure vessel, the data acquisition software was
+rewritten to include these parameters and to reduce the data to a manageable size.
+OceanGate staff plotted, for each v2 pressure vessel dive, pressure vessel strain side-
+by-side with dive depth as a function of time (see section 1.6). OceanGate assumed
+that, as the pressure vessel’s condition deteriorated, it would gradually transition
+from a sound pressure vessel to one that produced acoustic events of a similar
+amplitude and frequency as the previous Titan pressure vessels (v1 sub-scale models,
+v1 full-scale model, and v2 sub-scale models). OceanGate believed that these data
+would give them indication that they should safely retire the pressure vessel from
+service.
+1.3.5 Cameras
+On the Titan, four cameras provided visibility for the pilot and occupants and
+aided in navigation during dives:
+• a forward-facing camera mounted near the viewing port, which provided a
+clear view of the area forward of the Titan;
+• a camera mounted to the outer hull on the bottom of the vessel, which
+helped the pilot monitor the Titan’s proximity to the seafloor, dropping
+weights, and takeoff and landing from the LARS;
+• an aft-facing camera, which provided a view of obstacles aft of the Titan
+when the pilot reversed the submersible; and
+• an internal camera, which provided additional visibility forward through the
+viewing port.
+1.3.6 Communications
+During the 2023 expedition, the Titan was equipped with an EvoLogics
+communications system that allowed for communication—via textual messaging—
+between the submersible and the Polar Prince (surface tender).
+The Titan was also equipped with a VHF radio to communicate with personnel
+on the surface tender and an Iridium beacon used by the surface tender to locate the
+submersible after it surfaced.
+24
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1.3.7 Expeditions
+OceanGate conducted two complete expeditions to the Titanic with the final
+(v2) Titan pressure vessel hull—one in 2021 and one in 2022. In 2023, OceanGate
+completed a partial expedition with the Titan (including the casualty dive).
+OceanGate took mission specialists on each expedition.
+1.3.7.1 2021 Expedition
+The 2021 Titanic expedition began on June 24, 2021, and ended on August 6,
+2021 (five missions, including dives 61 to 70). For each expedition mission, the
+Canadian-flagged offshore supply vessel Horizon Arctic carried the Titan and its LARS
+aboard/on deck (see Appendix E for vessel particulars for the surface tenders used to
+transport the Titan). Each mission began with 2.5 days to transit to the Titanic wreck
+site from St. John’s, followed by 3–4 days on scene, and ending with another 2.5 days
+to return to St. John’s. According to the OceanGate dive log, the Titan reached
+3,840 meters (12,598 feet, the depth of the Titanic) six times and 3,500 meters
+(11,483 feet) one time during the 2021 expedition (see Table 4).
+Table 4. Dives conducted during the 2021 expedition.
+Mission Dive Date Depth reached Type of dive
+(meters)
+1 61 6/30/2021 7 System test
+62 7/3/2021 1,700 System test
+2 63 7/9/2021 3,840 System test
+64 7/13/2021 89 System test
+3 65 7/19/2021 3,500 Exploration
+4 66 7/24/2021 3,840 Exploration
+67 7/27/2021 3,840 Exploration
+68 7/28/2021 3,840 Exploration
+5 69 8/4/2021 3,840 Exploration
+70 8/5/2021 3,840 Exploration
+25
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+The Titan and its LARS experienced numerous issues during the 2021
+expedition. On June 30 (dive 61), during mission 1 of the 2021 expedition,
+OceanGate personnel and Horizon Arctic crewmembers were preparing to launch the
+LARS and Titan from the Horizon Arctic, which was outfitted with a ramp with rollers
+off the stern (figure 8 shows the ramp). After mission specialists had boarded the
+Titan, the LARS came down on the deck with enough force that the bolts holding the
+forward dome sheared (during this dive and previous dives OceanGate had only
+secured the dome using four bolts to speed recovery time). The dome slid down the
+ramp and became stuck on a fitting, with the occupants still in the now-open
+submersible. There were no injuries. Following this incident, OceanGate decided to
+secure the Titan’s domes with all 18 bolts, even though it would take longer to get the
+occupants out of the submersible during recovery. After the event, OceanGate
+executed a dive (no. 62) to 1,700 meters (5,577 feet), completing mission 1.
+Figure 8. The Titan and LARS being launched via stern ramp from the Arctic Horizon in 2022.
+(Source: Garry Comber)
+On July 9, 2021 (mission 2, dive 63), the Titan’s drop weights were jettisoned
+due to a failed electric motor, the aft port fairing was ripped off, the sonar died, and
+the lights flickered. Additionally, the CEO heard a sound he described like “a slap of
+26
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+the ruler on the table.” After the dive, OceanGate replaced the drop weight system,
+including the motors, and tested the replacements.
+On dives 67 and 68 (mission 4), the LARS was damaged while the pilot
+attempted to land the Titan on it. OceanGate did not document any maintenance
+performed on the LARS after these dives.
+After the 2021 expedition concluded on August 6, 2021, OceanGate shipped
+the Titan and LARS to Everett, where they were stowed indoors at an OceanGate
+facility during the winter season.
+1.3.7.2 2022 Expedition
+The 2022 expedition began on June 12, 2022, and ended on July 25, 2022
+(four missions, including dives 71 to 83). OceanGate again used the Horizon Arctic as
+a surface tender during this expedition. According to the OceanGate dive log, the
+Titan reached 3,840 meters (12,598 feet) seven times (see Table 5).
+Table 5. Dives conducted during the 2022 expedition.
+Mission Dive Date Depth reached Type of dive
+(meters)
+1 71 6/16/2022 7 System test
+72 6/18/2022 1,380 Exploration
+73 6/20/2022 3,840 Exploration
+2 74 7/1/2022 25 System test
+75 7/3/2022 3,840 Exploration
+76 7/6/2022 3,840 Exploration
+77 7/8/2022 30 System test
+3 78 7/11/2022 10 Exploration
+79 7/14/2022 3,840 Exploration
+80 7/15/2022 3,840 Exploration
+4 81 7/19/2022 3,840 Exploration
+82 7/22/2022 3,840 Exploration
+83 7/23/2022 2,954 Exploration
+27
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+The Titan once again experienced numerous issues during the 2022
+expedition. On June 19, 2022 (mission 1, dive 73), the Titan’s batteries died before
+the submersible could land on the LARS. The pilot was unable to use thrust, and
+divers were unable to secure the submersible on the LARS due to rough seas, so the
+Titan remained on the surface with occupants aboard overnight.
+On July 15, 2022 (mission 3, dive 80), mission specialists inside the Titan and
+the crew of a small boat on the surface heard a “loud bang” as the Titan ascended
+after successfully reaching the Titanic wreckage (3,840 meters). According to a former
+mission specialist and crew on the Horizon Arctic, staff and mission specialists were
+told the hull had shifted in its metal cradle. The CEO wanted to continue operations
+and, after inspecting the strain and acoustic emission data, told the director of
+engineering, "Let's dive again and see what happens" (see section 1.6 for acoustic
+emission data from this dive). The Titan completed three additional dives following
+dive 80 (mission 4, dives 81-83); the submersible reached 3,840 meters (12,598 feet)
+on dives 81 and 82 and 2,954 meters (9,692 feet) on the final dive of the expedition.
+After the 2022 expedition, the Titan was initially stowed at an outdoor location
+in St. John’s. It was left in a parking lot, outside, uncovered (see figure 9). In early
+2023, the submersible was moved to storage at an indoor bay dedicated for ROVs at
+Memorial University’s Marine Institute in St. John’s. In April 2023, the vessel was
+moved to the Institute’s Holyrood Facility for installation on the LARS for the 2023
+expedition.
+Figure 9. Overhead of parking lot in St. John’s where the Titan was stored, uncovered, after
+the 2022 expedition. The locations of the Titan and two containers storing its equipment are
+marked with an X. (Source: A. Harvey)
+28
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1.3.7.3 2023 Expedition
+For the 2023 expedition, OceanGate chartered the Polar Prince for use as a
+surface tender instead of the Horizon Arctic. The 2023 expedition began on May 12,
+2023; five of six planned missions were completed (see Table 6).
+Table 6. Dives conducted during the 2023 expedition.
+Mission Dive Date Depth reached Type of dive
+(meters)
+1 N/A N/A N/A No dives
+2 84 5/22/2023 8 Disabled sub drill
+3 85 5/31/2023 10 Test
+86 6/5/2023 10 Test
+4 87 6/12/2023 10 Aborted dive
+5 88 6/18/2023 3,363 Casualty dive
+(last known depth)
+During the 2023 expedition, the Titan and LARS were towed behind the
+Polar Prince instead of being transported on deck (as they had been on the
+Horizon Arctic). Typically, the LARS was trimmed by the stern while being towed. The
+Polar Prince captain stated that on the first three missions of the 2023 expedition, the
+LARS began listing to starboard after 12 hours of being towed. Each time, OceanGate
+personnel visited the LARS by small boat and corrected the list. There were also
+technical difficulties with the external cameras on the Titan.
+During mission 1, OceanGate did not have mission specialists aboard so that
+OceanGate personnel could integrate with the Polar Prince crew and collectively test
+procedures. Mission 1 did not include any dives.
+Mission 2 included one uncrewed dive for a systems check on May 22, 2023
+(dive 84). The first scheduled dive to the Titanic wreckage was to be dive 85 (mission
+3); however, this dive, along with dive 86 (mission 3) was unsuccessful. Although
+OceanGate attempted to complete dive 87 (mission 4), the dive was aborted due to
+ballast issues and a malfunction with the LARS. Dive 88 was the casualty dive.
+On missions 2-4, the Titan was not able to launch due to either weather or
+technical difficulties with the LARS (see figure 10). According to a former scientific
+director at OceanGate, on May 23, the day after dive 84 (mission 2), while the
+29
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Polar Prince was towing the LARS with the Titan on board about 30 miles southwest of
+the Titanic site, the tow trimmed forward (instead of by the stern, as was typical),
+which OceanGate attributed to a “ghost fishing net.” According to OceanGate’s
+director of administration, the Titan lost a fairing in high seas, and the blanks on the
+bottom of the hull (where penetrations let water in to sink the vessel) came loose. The
+crew found the LARS listing, and divers had to make repairs.
+Figure 10. Left to right: Operational mishaps during the 2023 expedition showing the aft
+starboard corner of the LARS tipped downward on May 20 while leaving St. John’s, and the
+aft end of the LARS tipped downward on May 27 in Witless Bay, Newfoundland and
+Labrador. (Source: Steven Taragel)
+1.4 Damage
+1.4.1 Remotely Operated Vehicle Surveys
+ROVs completed two surveys (examinations) of the Titan wreckage: one during
+the initial search and rescue mission from June 22 to June 26, 2023, and one during
+the salvage mission from September 27 to September 29, 2023.
+ROVs discovered the wreckage about 330 meters (1,083 feet) east-northeast of
+the Titanic’s bow. The aft dome, aft segment, aft portions of the cylinder, and rails
+30
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+were located together in a comingled mass that included compressed metal, plastic,
+electronic components, and other materials; the forward dome was located by itself
+(see figure 11). The forward segment and tail section were also located by
+themselves. Other pressure vessel fragments, likely from the middle or forward
+portion of the cylinder, were scattered about the ocean floor. The aft segment was
+still attached to the aft dome by two flange bolts on the port side.
+Figure 11. From top: Titan wreckage as discovered on the ocean floor, with aft dome,
+titanium ring (segment), and portion of cylinder separate from the forward dome.
+(Background source: Pelagic Research Services)
+31
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Examination of the wreckage from ROV video footage showed the pressure
+vessel had fragmented into multiple pieces. US Coast Guard and National
+Transportation Safety Board (NTSB) investigators identified several notable pressure
+vessel pieces and labeled them as Pieces A, B, C, and D (see figure 12). Investigators
+could see that the carbon fiber composite cylinder had delaminated into multiple
+layers nearly around the entire circumference and that the delaminations occurred
+between the co-bonded layers of the cylinder. One delamination was between layers
+1 and 2 and the other was between layers 3 and 4. The delamination between layers
+1 and 2 resided within the adhesive and showed signs of preexisting rubbing
+damage. The delamination between layers 3 and 4 appeared to have occurred within
+the adhesive on the port side and extended down toward the bottom side, while it
+resided within the carbon fiber composite elsewhere. On Piece D, which was found in
+the center of the wreckage but likely originated from the bottom of the pressure
+vessel, investigators identified a sigmoidal buckle (an inward bend combined with an
+adjacent outward bend). The Titan was a total loss.
+Figure 12. Counterclockwise from top: Titan wreckage on ocean floor, showing pressure
+vessel pieces A, B, C, and D. (Background source: Pelagic Research Services)
+32
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1.4.2 Wreckage Examination
+The NTSB Materials Laboratory examined a piece of the v2 composite cylinder,
+which had been recovered about 350 feet (107 meters) from the main wreckage and
+measured about 61 inches long by 20 inches wide by 1 inch thick. The outer surface
+of the recovered piece of the cylinder was coated by green film adhesive, and the
+inner surface was coated with white paint (the interior of the pressure vessel was
+painted white), indicating that the piece originated from layer 1, the innermost co-
+bonded layer (see figure 13). We examined the piece to characterize the structure
+and properties of the composite hull material and the adhesive bonding, as well as to
+determine, where possible, the modes of separation.
+Figure 13. From top: Recovered carbon fiber composite pressure hull outer surface and
+inner surface.
+One end of the piece was machined, and some bits of cured adhesive were
+still attached. The other ends/edges were fractured (see figure 14).
+33
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Figure 14. From top: Recovered carbon fiber composite cylinder machined end face, and
+mid-span fractured face.
+We also examined end pieces that had been trimmed from the v2 full-scale
+cylinder during the construction/production process (see figure 15).
+Figure 15. Side view of a trimmed end piece of the Titan cylinder.
+34
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Our examination determined
+that there was porosity between
+plies, voids in the adhesive used to
+join the co-bonded layers, and a
+preexisting disbondment between
+the first and second co-bonded
+layers. Wrinkles and waviness in the
+carbon fiber were observed on the
+trimmed end pieces, and multiple
+wrinkles in the carbon fiber had been
+leveled flush with the outer surface
+using a grinding tool during the
+manufacturing process (see
+figure 16).
+A volumetric void
+measurement determined that the
+average porosity content of the
+composite cylinder was about 2.7%.
+Microstructural analysis indicated that
+the porosity was localized in layers
+between the composite plies. The
+excess porosity resulted in an
+increase in layer thickness. Instead of
+0.9975 inches thick (the expected
+thickness), the layers were between
+Figure 16. From top: Void in the adhesive layer
+1.019 inches and 1.033 inches thick.
+tenting around a wrinkle, and grinding of outer
+Combined with the thickness of the
+carbon fiber plies at a wrinkle.
+adhesive layers, the two trimmed
+cylinder ends were 5.166 inches and 5.175 inches thick. The excess thickness
+necessitated trimming the outer diameter of the cylinder in order for it to fit inside the
+annular C-channels on the titanium rings, which could only accommodate a 5-inch-
+thick cylinder. V-notch shear tests in the through-thickness direction showed
+significant variability, ranging from 6.92 to 12.05 kilopounds per square inch.29
+Cross sections through the adhesive used to join co-cured layers showed voids
+at the layer interfaces (see figure 17). The voids were present in all layers but were
+significantly greater in size and number at the interface between the first and second
+layers and the third and fourth layers. For example, two voids, one from the layer 1/2
+29 V-notch shear tests measure the shear strength of a material. The test specimens are made
+with a V-shaped notch to control where the shear failure occurs.
+35
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+interface and one from the layer 3/4 interface, measured 0.6 inches and 0.4 inches in
+length, respectively. The voids resulted in a gap between the adhesive and the
+underlying layer.
+Figure 17. From top: Cross section of layers 1 and 2, showing adhesive between layers, and
+voids in the adhesive between layers 1 and 2.
+The examination determined that the adhesive on the top of the recovered
+layer 1 piece had likely failed before the casualty, resulting in an internal delamination
+between the first and second layers. The surface was characterized by adhesive
+regions, voids, and carbon fiber regions. The adhesive regions were rubbed flat and
+adhesive wear debris was found collecting in the voids. The rub marks in the adhesive
+were oriented in the lengthwise direction. Cracks in the adhesive and carbon fiber
+were consistent with shear sliding between the already-separated first and second
+layers during the implosion.
+The NTSB also examined trimmed end pieces from the v1 full-scale pressure
+vessel (which had been condemned) and the two one-third scale models
+manufactured after the v1 full-scale pressure vessel and before the v2 pressure
+vessel. The v1 pressure vessel cylinder’s trimmed end contained multiple
+delaminations and voids. Both scale models’ trimmed end pieces had notable
+wrinkles and delaminations (see figure 18).
+36
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Figure 18. From left to right: Centerline delamination in trimmed end piece of first full-scale
+Titan pressure vessel, and wrinkle and delamination in trimmed end piece of one-third scale
+model.
+Investigators also examined electronic components found in a compressed
+mass. Investigators suspected the mass contained a mission computer that would
+have included data related to the Titan’s performance history, operation, and other
+diagnostic information; however, investigators were not able to recover any data from
+the components.
+1.4.3 External Camera Examination
+Investigators recovered from the wreckage one of the external cameras on the
+Titan. The camera was designed to record video and still images underwater up to a
+rated depth of 6,000 meters (19,685 feet). Camera data could be stored to onboard
+memory or an attached computer, depending on the configuration.
+The camera’s outer casing was intact, but the lens had shattered. Investigators
+disassembled the casing and discovered an undamaged memory card on one of the
+camera’s circuit boards. Twelve still images and nine videos were recovered from the
+device. However, none of the images were from dive 88 (the casualty dive).
+1.5 Operations
+1.5.1 General
+OceanGate Inc. was founded in 2009. According to one of the two founders,
+the company’s vision was to “create a fleet of four or five deep-diving submersibles …
+capable of carrying five people, available for charter anywhere in the world and with
+no dedicated mother ship [surface tender].” OceanGate was initially based at
+Paine Field, Washington, but moved to Florida about 2012 and Everett, Washington,
+37
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+in 2013. Also in 2013, the original CEO (one of the founders) left the company, and
+the remaining co-founder became CEO.
+According to the 2023 expedition “Project Execution Plan” (see section 1.5.3),
+there were four branches within the organization:
+• Operations, which included a lead submersible pilot and an operations
+tech;
+• Engineering, which included three engineering techs;
+• Business Development/Client Reps/Media, which included an Expedition
+Manager, a Media Manager, an Expedition Guide, and two additional
+personnel; and
+• OceanGate Foundation, an independent organization that “advances
+understanding of the ocean by providing grants in support of scientific and
+archaeological marine research” (OceanGate n.d.).
+The plan also listed the company’s management at the beginning of the 2023
+expedition, which included the CEO, a chief operating officer, a director of logistics
+and quality assurance, a director of engineering (the third such director, who
+departed the company in 2023), and an operations manager.
+1.5.2 Organizational Culture
+OceanGate employees interviewed after the casualty provided multiple, at
+times conflicting, perspectives on the safety culture of the company leading up to,
+and at the time of, the casualty. For example, employees on the casualty expedition
+stated occupational safety was a priority and identified small boat operations
+shuttling personnel to and from the towed LARS as the biggest hazard. The
+operations manager stated that safety “was one of the things [the CEO] preached a
+lot.” According to the operations manager, the company held frequent safety
+meetings and briefs to communicate how to prevent injuries, and according to an
+OceanGate electrical engineer, employees were encouraged to speak up if
+something was unsafe.
+However, multiple OceanGate employees, including a former director of
+marine operations, a boat operator, and a contractor, testified to a working
+environment where safety issues, particularly design issues, were ignored. The former
+director of marine operations told investigators he brought design issues to the
+engineering department’s attention numerous times and was ignored. He stated, “the
+atmosphere there … was toxic.” According to the first director of engineering, the
+CEO “wouldn’t hire anybody that disagreed with him.” The chief operating officer,
+38
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+who joined the company in 2019, about the time the v1 Titan pressure vessel was
+condemned, stated there were “bickerings” between departments, which was “very
+hard on a small company.”
+According to OceanGate’s former director of marine operations, the Titan was
+not constructed or tested in accordance with standards created by the American
+Society of Mechanical Engineers (ASME) Pressure Vessels for Human Occupancy
+(PVHO) Standards Committee (there are no known recognized national or
+international standards specifically for carbon fiber pressure hulls for submersibles).30
+In a recorded discussion with the former director of marine operations, OceanGate’s
+CEO stated of the PVHO Standards Committee, “It is a volunteer group. It is not like a
+DOT [Department of Transportation] standard.”
+OceanGate’s former director of marine operations stated that the CEO was
+aware that the US Coast Guard would need to be involved if the Titan operated in US
+waters. A former operations technician (hired in 2017), who had previous experience
+as an engineer/machinery technician in the US Coast Guard, stated that he expressed
+concern to the director of quality and logistics about OceanGate’s business model—
+specifically, the company accepting paying clients as “mission specialists.” The
+technician stated to the CEO, “… you can’t just change the title of a person when
+you’re receiving compensation.” The technician also stated that, in a later
+conversation with the CEO about the same subject, the CEO stated that “if the [US]
+Coast Guard became a problem … he would buy himself a congressman and make it
+go away.” The technician resigned following this conversation, citing concerns for
+“the legality of how it [OceanGate] was operating.”
+The first director of engineering stated that he would not dive in the v1
+submersible, which he had designed, because he “knew firsthand that the operations
+group was not the right group for that role” and he “wouldn’t trust his operations
+crew.”
+In January 2018, OceanGate’s director of marine operations submitted a
+“quality control inspection report” (specific to the v1 pressure vessel) to the CEO and
+other OceanGate directors. The report stated that there were “very visible signs of
+delamination and porosity” in the machined-off ends of the v1 carbon fiber cylinder.
+30 (a) According to their operating guide, ASME’s PVHO Standards Committee develops “safety
+standards for the design, fabrication, inspection, testing, operation, maintenance, and marking of
+[PVHOs].” The Committee first published standards for PVHOs in 1977. See Operating Guide for ASME
+Committee on Pressure Vessels for Human Occupancy. (b) A PVHO is “a pressure vessel that encloses
+a human being within its pressure boundary while it is under internal or external pressure that exceeds
+2 pounds per square inch differential pressure.” See 2023 Safety Standards for Pressure Vessels for
+Human Occupancy.
+39
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+The report also included findings of pitting and scoring, excess glue, plunge holes,
+and lack of anodes, among other things, in various components of the v1 pressure
+vessel. During a subsequent conversation between the (now former) director of
+marine operations and the CEO on January 19, 2018, which the OceanGate CEO
+recorded, the CEO stated, “it’s clear that there is not a lot of confidence on your part
+in the engineering that went into this vessel, and that your experience in other vessels
+gives you serious concerns about the safety of [the Titan] from the very fundamental
+level.” On January 23, 2018, OceanGate terminated the director of marine
+operation’s employment.
+The former director of marine operations subsequently filed a complaint with
+the Occupational Safety and Health Administration (OSHA) under the Seaman’s
+Protection Act.31 He told an OSHA investigator that cut-off sections of the carbon fiber
+cylinder were “like Swiss cheese” and “you can see all the delaminations where the
+resin has not been glued properly.” OceanGate subsequently filed a lawsuit, citing a
+breach of a non-disclosure agreement, among other things. The former director of
+marine operations then dropped the complaint.
+An OSHA investigator stated that OSHA typically sent letters to the US Coast
+Guard when they opened and closed investigations, but he couldn’t recall any
+contact with the US Coast Guard for this case. The US Coast Guard Officer in Charge,
+Marine Inspection could not recall any contact with OSHA regarding OceanGate. The
+OSHA investigator could not recall any other investigations of OceanGate. After the
+casualty, the US Coast Guard and OSHA worked together to establish interagency
+training and procedures regarding complaints filed under the Seaman’s
+Protection Act.
+1.5.3 Project Execution Plan
+OceanGate developed a Project Execution Plan that contained “project
+specific requirements and operational procedures” for each Titanic expedition. The
+2023 Project Execution Plan included procedures for preparing the Titan to transit to
+and dive to the Titanic wreck site, policies applicable to mission specialists,
+information about the Titan, and emergency management information.
+According to the plan, mission specialists were “guests who help fund
+OceanGate expeditions … [who had] the option to join OceanGate crew and
+physically work with us on our equipment, perform maintenance tasks, write
+procedures, help with communications, etc.” Tasks that mission specialists could help
+31 See 46 United States Code 2114: Protection of seamen against discrimination.
+40
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+with included serving as a communication liaison, tracking, cleaning the inside or
+outside of the submersible, charging submersible batteries, reviewing video, or
+completing documentation tasks.
+Before diving or starting work, personnel, including mission specialists, were
+required to hold a “pre-job” or “pre-dive” meeting. During these meetings, personnel
+discussed risks and control measures and step-by-step task plans.
+The plan listed contact information for medical evacuation and search and
+rescue services. These contacts included Joint Rescue Coordination Centre Halifax
+(Canadian Armed Forces/Canadian Coast Guard), RCC Boston (US Coast Guard), and
+a third-party helicopter service. The plan also included emergency contact
+information for OceanGate personnel and listed seven “potential rescue ROV
+operators.”
+In addition, the plan provided step-by-step emergency procedures for nine
+events, including power failure of internal or external batteries, de-ballasting, carbon
+dioxide scrubber failure, uncontrolled internal high pressure air release, excessive
+oxygen, loss of communications, smoke/fire, and entanglement.
+1.5.4 Training
+1.5.4.1 Pilots
+OceanGate’s pilot training consisted of a tiered system to demonstrate levels
+of competency. The training and task book covered systems, crew tasks, dive theory,
+and operational tasks and included a four-page list of assessments of various normal
+and emergency procedures a pilot was required to demonstrate competency in (for
+example, pre-dive checks, navigation, entanglement, or loss of communications).32 At
+the time of the accident, the CEO and the director of logistics were the only trained
+pilots.
+The CEO held a US Coast Guard-issued credential as a master limited to
+vessels of 25 tons. The director of logistics held a credential as an ordinary seaman.33
+32 A task book includes a list of tasks an individual is required to complete in order to earn a
+qualification.
+33 An ordinary seaman is an entry-level deckhand and usually has 1 year of experience or less.
+41
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1.5.4.2 Mission Specialists
+According to the Project Execution Plan, mission specialists (OceanGate’s
+paying clients) received training in “basic seamanship, submersible operations,
+emergency procedures, communications, navigation, and submersible systems.”
+Former mission specialists described the training they had received. One
+stated that he participated in “a series of … webinars or Zoom calls” and skimmed
+through “boiler plate and common-sense type of directives” before the expedition.
+He also stated that he received “onsite training and guidance” to complete “the
+menial tasks, cleaning inside outside the sub, helping with the oil-filled housings, and
+other tasks as deemed appropriate.” According to another former mission specialist,
+OceanGate gave mission specialists “a walk-about,” to learn “what were you going to
+do, what were you going to be exposed to … just get you familiar with … the
+procedures.”
+1.5.5 Other Submersibles
+OceanGate also owned and operated two other submersibles, the Antipodes
+and Cyclops I (originally named Lula 500) (see Appendix E for vessel particulars for
+these submersibles). Both the Antipodes and Cyclops I were state-registered and
+designated as oceanographic research vessels by Coast Guard Sector Puget Sound.34
+Similar to the Titan, OceanGate leased the Antipodes and Cyclops I to OceanGate
+Expeditions to operate the submersibles on expeditions to dive sites.
+OceanGate operated the Antipodes on dives in Puget Sound, Washington;
+Monterey Bay, California; and Santa Catalina Island, California. The Antipodes was
+classed by the American Bureau of Shipping when OceanGate acquired it; the
+American Bureau of Shipping continued to class the Antipodes throughout
+OceanGate’s ownership of the submersible.
+OceanGate operated the Cyclops I in various locations, including Hudson
+Canyon off New York; San Francisco Bay, California; and the wreckage of the
+passenger vessel Andrea Doria in the North Atlantic Ocean off Nantucket Island,
+Massachusetts. When OceanGate acquired the Cyclops I, then named Lula 500, the
+34 An oceanographic research vessel is “employed only in oceanography or limnology, or both,
+or only in oceanographic or limnological research, including studies about the sea such as seismic,
+gravity meter, and magnetic exploration and other marine geophysical or geological surveys,
+atmospheric research, and biological research.” See 46 CFR Subchapter U. Such vessels are required
+to obtain a letter of designation from the Coast Guard (in lieu of a certificate of inspection) that says
+they meet the prerequisites to be an oceanographic research vessel.
+42
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+submersible was classed by the American Bureau of Shipping. Before renaming the
+submersible Cyclops I, OceanGate stripped the Lula 500 to its steel hull, keeping only
+the viewing port, steel hull, and conning tower (with hatch), which remained classed
+by the American Bureau of Shipping.
+The operations manager told investigators that OceanGate typically informed
+local authorities and the US Coast Guard of dives near the Everett Naval Station,
+Washington, to avoid calls from good Samaritans about a barge sinking or to avoid
+security concerns. Personnel diving on the Antipodes typically notified Vessel Traffic
+Service Puget Sound when they were operating there. Likewise, OceanGate staff
+testified that they had notified US Coast Guard staff in Boston before the Cyclops I
+dove on the Andrea Doria wreck.
+1.6 Titan Acoustic Emission and Strain Gage Data from Dives
+OceanGate saved and processed acoustic emission and strain gage (RTM
+system) data for Titan expedition dives they considered to be notable. Dive data were
+stored onboard the vessel during a dive and downloaded and processed after the
+completion of the dive. Partial dive data were available for dives in 2021.35 Complete
+dive data were available for 2022 expedition dives 75, 76, and 79–83. OceanGate
+plotted dive data from the 2022 expedition dives against time and correlated it with
+the vessel’s ocean depth. Because the Titan did not execute any notable dives in
+2023 leading up to the casualty dive, no data were available for the 2023 expedition,
+including the casualty dive (the implosion damaged the storage drive, and the data
+for the casualty dive were unrecoverable).
+NTSB investigators reviewed the 2022 dive data and data plots prepared by
+OceanGate and derived from acoustic emission and strain gage data. The first of
+these dives (dive 75) took place on July 3, 2022. The last of these dives (dive 83) took
+place on July 23, 2022, but at a different dive location and to a depth of only 2,954
+meters (9,691 feet). The other dives all descended to about 3,840 meters (12,598
+feet). Three of the eight acoustic sensors (channels 1, 3, and 5) did not register
+acoustic events for any of the 2022 dives.36
+OceanGate analyzed hull strain by plotting it side-by-side with dive depth as a
+function of time. OceanGate’s data plots for dive 80 (July 15, 2022), when mission
+35The data did not include the vessel’s depth, and the portion of the dive while at the ocean
+floor was not included.
+36 For the dives in 2021, channel 5 recorded occasional high-amplitude events, not recorded
+by channels 1 or 3, that could have been acoustic events.
+43
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+specialists heard a “loud bang,” showed a burst of acoustic activity and a sudden
+jump in some of the strain gages between about 1515 and 1530 (see figure 19 and
+figure 20).
+Figure 19. Time plot from dive 80 (time of day is Newfoundland and Labrador daylight time),
+showing acoustic activity (purple) and depth (green). (Background source: OceanGate)
+Figure 20. Strain gage output from dive 80, showing hoop strain (green) and longitudinal
+strain (purple) (time of day is Newfoundland and Labrador daylight time). (Background
+source: OceanGate)
+44
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Following a standard approach for evaluating the mechanical response of
+materials, the NTSB analyzed the OceanGate dive data by plotting strain data against
+dive depth.37 Through dive 80, the strain response of the hull was linear at all depths
+(a typical mechanical behavior). Changes were observed in the initial strain response
+of the hull following dive 80. During dive 81, the first dive after the audible event, the
+strain response at low depth was non-linear. The same non-linear response was
+observed for dives 82 and 83 (see figure 21). Changes in strain response were
+observed for other strain gages as well.
+Figure 21. Strain gage output for the first and last 1,000 meters of dive depth for dives 75
+and 80–83 (gage group 4 – hoop strain gage). The curves have been aligned using the linear
+portion of the descent phase of the trip. The strain for dives 81, 82, and 83 show non-linear
+behavior below 500 meters (1,640 feet) depth.
+1.7 Waterway Information and Environmental Conditions
+The casualty occurred in the Atlantic Ocean, about 370 miles southeast of St.
+John’s, Newfoundland and Labrador, Canada (see figure 5). The casualty occurred at
+a depth of 11,032 feet (3,363 meters). At the time of the casualty, seas were 2–3 feet,
+and the current was to the east-southeast at 1.6 knots. Winds were southwesterly at
+20 knots. Skies were overcast, with visibility at 5 miles. The air temperature was 69ºF,
+and the water temperature was 59ºF.
+37 The external stress on the hull increases with dive depth. Plotting the data in this way
+produces a plot that is similar to a stress/strain curve, which is a standard approach for evaluating the
+mechanical response of materials (Hertzberg and others, 2020, p. 8).
+45
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+1.8 Submersible Industry Overview
+1.8.1 Population
+According to the Marine Technology Society Manned Underwater Vehicle
+Submarine Committee, as of 2023, 326 crewed submersibles (PVHOs) had been built
+worldwide since 1960.38 Of these, 161 were active and rated for various depths (see
+Table 7). Their purposes varied, including personal use, tourism, research,
+expedition, and submarine rescue and security.
+Table 7. Active submersibles and their rated depths as of 2023. (Data source: Marine
+Techology Society)
+Rated Depth Number of Active Submersibles
+Up to 300 meters 50
+301–450 meters 49
+451–984 meters 29
+985–1,000 meters 21
+Over 1,000 meters 12
+According to the Marine Technology Society, nine known PVHOs, excluding
+the Titan, could dive to 4,000 meters (13,123 feet), exceeding the depth of the Titanic
+wreck (see Table 8). All these submersibles were designed and operated under
+review of a classification society or in accordance with a military standard; none were
+passenger-carrying submersibles.
+38 The data in this section were presented by a representative of Hydrospace Group and the
+Marine Technology Society during the September 2024 US Coast Guard Marine Board of
+Investigation. The data do not include government/military submersibles used for defense operations,
+personal/home-built submersibles, or historical submersibles that have been inactive for more than 25
+years.
+46
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Table 8. Active crewed submersibles capable of diving greater than 4,000 meters. (Data
+source: Marine Technology Society)
+Vessel Name Class/Standard Country Rated Depth Number of
+(meters) Occupants
+(max)
+Fendouzhe CCS China 11,000 3
+Limiting USA 11,000 2
+DNV
+Factor
+Jiaolong CCS China 7,000 3
+Alvin US Navy USA 6,500 3
+Shinkai 6500 NK Japan 6,500 3
+Nautile BV France 6,000 3
+Consul AS-37 Russian Navy Russia 6,000 3
+RUS AS-37 Russian Navy Russia 6,000 3
+Deep Sea 3
+CCS China 4,500
+Warrior
+According to the Marine Technology Society, from 1960 to 1993, the
+production of PVHOs was comprised of 46% research submersibles, 37% tourist
+submersibles (carrying paying passengers), and 17% government submersibles;
+“other” submersibles (small submersibles) was “not significant” (see figure 22).39 From
+1994 to 2017, 68% of submersibles produced were “other,” while 18% were tourist,
+7% were government/military, and 7% were research.
+39 The Marine Technology Society category “government” refers to submersibles used for
+rescue/support operations.
+47
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Figure 22. Production of submersibles (PVHOs) by type from 1960 to 1993 and 1994 to
+2017. (Data source: Marine Technology Society)
+According to a representative of the Marine Technology Society, this change in
+the population occurred because “all small submersible manufacturers defined their
+vehicles as not tourist subs.” The representative further stated that “the ambiguity and
+variances in adjudication [of the definition of passenger for hire] from port to port …
+left even greater confusion,” and “it didn’t take too long for the industry to realize that
+the key was to just find an exception just like all other sectors [research, government,
+and private] had one.”
+1.8.2 US Coast Guard Guidance on Submersibles
+In July 1993, the Coast Guard released Navigation and Vessel Inspection
+Circular (NVIC) 05-93, “Guidance for Certification of Passenger Carrying
+Submersibles.”40 The NVIC provides guidance for certification of passenger-carrying
+submersibles under Title 46 Code of Federal Regulations (CFR) Subchapter T (small
+passenger vessels under 100 gross tons). According to the Coast Guard, NVICs
+provide:
+40 See https://www.dco.uscg.mil/Portals/9/DCO%20Documents/5p/5ps/NVIC/1993/n5-93.pdf.
+NVIC 05-93 does not address the “other” category of submersibles discussed by the Marine
+Technology Society.
+48
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+detailed guidance about the enforcement or compliance with a certain
+[sic] Federal marine safety regulations and Coast Guard marine safety
+programs. While NVIC's are non-directive, meaning that they do not
+have the force of law, they are important "tools" for complying with the
+law. (US Coast Guard n.d.)
+At the time of NVIC 05-93’s publication, submersibles carrying six or fewer
+passengers were considered “uninspected” vessels—not small passenger vessels—and
+thus were not required to comply with regulations in 46 CFR Subchapter T. After the
+Passenger Vessel Safety Act of 1993 was signed into law in December 1993, the
+definition of a small passenger vessel changed to include any submersible less than
+100 gross tons carrying at least one passenger for hire.41 A Marine Technology
+Society representative stated that the release of NVIC 05-93 and the signing of the
+Passenger Vessel Safety Act of 1993 into law coincided with “a very steep rise in the
+number of [other] vehicles” (see figure 23).
+Figure 23. Crewed submersible population from 1950 to 2017. A dashed line marks the
+1993 publication of Coast Guard NVIC 05-93. (Background source: Marine Technology
+Society)
+41 See Public Law 103-206, Title V (December 20, 1993), codified at Title 46 United States Code
+2101. See also Public Law 103-206 Section 504. The terms “passenger(s)” and “passenger(s)-for-hire”
+are as defined in 46 United States Code 2101(21)(21a).
+49
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+2 Analysis
+2.1 Introduction
+On June 18, 2023, about 1047 local time, while diving to the wreck of the
+ocean liner Titanic in the North Atlantic Ocean, 370 miles southeast of St. John’s,
+Newfoundland and Labrador, Canada, at a depth about 11,032 feet (3,363 meters),
+the submersible Titan’s hull failed, and the vessel imploded. All five persons on board
+the vessel died.
+This analysis evaluates the following safety issues:
+• OceanGate’s inadequate engineering process for the Titan (section 2.3)
+• OceanGate’s flawed analysis of Titan strain gage and acoustic emission
+(RTM system) data as a measure of pressure hull integrity (section 2.4)
+• OceanGate’s failure to notify search and rescue assets about its planned
+expedition (section 2.5)
+• Insufficient voluntary guidance and US regulations for PVHOs (section 2.6)
+2.2 Hull Failure and Implosion
+OceanGate constructed the v2 full-scale Titan pressure vessel in 2021and
+successfully pressure-tested it, demonstrating that it was capable of reaching a depth
+of 4,200 meters (13,780 feet), marginally greater than the 3,840-meter (12,598-foot)
+dive depth required to reach the Titanic. During the 2021 and 2022 expeditions, the
+Titan successfully dove to the Titanic wreck site 13 times. However, during dive 88,
+the Titan imploded at a depth of 3,363 meters (10,032 feet). The loss of capability
+indicated that the condition of the Titan pressure vessel had deteriorated.
+The first detectable indication of damage occurred at the end of dive 80
+during the 2022 expedition, when mission specialists inside the Titan and
+crewmembers aboard a small boat on the surface heard a “loud bang” as the Titan
+ascended from a dive that reached Titanic. The NTSB reviewed the pressure vessel’s
+RTM system acoustic activity and strain gage output; about the same time the “loud
+bang” was heard, the RTM system recorded a burst of acoustic activity and a sudden
+jump in some of the strain gage outputs. The NTSB also reanalyzed the RTM system
+strain gage data for subsequent dives (after the audible event) and observed
+differences in the initial strain response of the pressure hull. While the strain response
+on dives leading up to dive 80, when the loud bang occurred, were linear, the strain
+50
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+response on dives after that event were non-linear for some strain gages when the
+vessel was near the surface.42
+The observed changes in strain response were consistent with one or more
+delaminations between co-bonded layers. If the strain response had changed at all
+depths, it could have indicated the pressure vessel had sustained significant
+compressive damage because any through-thickness damage to the carbon fiber
+composite cylinder would have diminished its capability to withstand external
+pressure. However, although the strain response at low depth (i.e., close to the
+surface with lower external pressure) changed for some strain sensors after the event
+on dive 80, the response at greater depths did not. This change in strain response is
+more consistent with a delamination between layers. The sensor that produced the
+data shown in section 1.6 was located at the forward end of the composite cylinder,
+indicating that the damage extended to the forward end of the cylinder. The
+intersection of a delamination with the end of the cylinder would have allowed the
+separated layers to initially respond differently to external pressure at shallow depths,
+but, at greater depths, the layers would have responded in a manner similar to the
+intact pressure vessel.
+The NTSB’s postcasualty examination of the Titan wreckage and review of ROV
+wreckage survey footage identified two delaminations between the five 1-inch-thick
+layers that comprised the vessel’s carbon fiber composite cylinder (in the adhesive
+interfaces). One delamination occurred between the first and second layers, and the
+other delamination occurred between the third and fourth layers. Examination of the
+trimmed end pieces revealed that these adhesive interfaces contained long extended
+voids while the other two adhesive interfaces (between the second and third layers
+and the fourth and fifth layers) did not. The voids reduced the strength of the
+adhesive, causing the delaminations to form at those locations. The piece from the
+first layer examined by the NTSB showed evidence of rubbing and accumulated wear
+debris in the voids, indicating that the delamination existed before the implosion. The
+extent of the delamination at the second interface before the implosion could not be
+determined. Therefore, the NTSB concludes that the Titan pressure vessel likely
+sustained damage after it surfaced at the end of dive 80 in the form of one or more
+delaminations that formed from voids between the cylinder’s five co-bonded layers,
+leading to the deterioration and weakening of the pressure vessel.
+Following dive 80, the Titan completed two dives (81 and 82) to the depth of
+the Titanic wreckage, indicating the initial delamination(s) sustained at the end of dive
+42 The strain response at greater depths remained linear, similar to previous dives, indicating
+that the gages themselves had not changed, but rather the pressure hull itself had changed.
+51
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+80 were not sufficient to cause implosion. Based on a review of the data, there was no
+apparent change in the strain response of the hull, beyond the new nonlinear
+responses at shallow depths, between dives 81 and 82. Therefore, the pressure
+vessel must have sustained additional damage after dive 82 and before the casualty
+dive 11 months later (dive 88).
+During dive 83 (July 25, 2022), the final successful dive, the Titan descended to
+only 2,954 meters (9,692 feet), less than the depth at which the Titan later imploded.
+If the strain response of the pressure vessel changed during this dive—compared to
+dive 82—it would have been an indication of additional damage sustained. However,
+the strain response experienced no apparent additional change during this dive,
+indicating it is unlikely the Titan sustained additional damage during the dive.
+Because the submersible did not reach depth, however, investigators could not
+exclude this possibility.
+OceanGate made multiple changes to their handling of the Titan that could
+have caused additional damage between the end of the 2022 expedition (dive 83)
+and the casualty dive. Dive data from the casualty dive were lost during the
+implosion, so the extent of additional damage to the pressure vessel at that time (or
+during the 2023 expedition) is unknown. The Titan was stored outside after the 2022
+expedition until the early spring of 2023, subjecting it to freezing temperatures. If
+water had penetrated any part of the pressure vessel and frozen, the expansion that
+occurs due to the phase change to ice could have caused additional damage.
+Additionally, during the 2023 expedition, the Titan was towed on the LARS behind
+the support vessel instead of on the support vessel as had been done for previous
+expeditions—about 2,900 miles total in open ocean. In these conditions, the Titan
+would have been subjected to vibrations, impulse loads, and upset events, which
+could have caused bending/flexing, shear, and lateral impacts. It is possible that the
+Titan sustained damage during any of these events that could have further
+deteriorated the condition of the pressure vessel. However, because OceanGate did
+not study the effects of vibrations and impulse loads on the Titan, their actual effects
+are unknown. The NTSB concludes that after dive 82, the Titan sustained additional
+damage—of unknown origin—that further deteriorated and weakened the pressure
+vessel to a point where it could not survive a dive to the depth of the Titanic.
+Three compressive failure modes are possible for laminated composite
+structures like the Titan pressure vessel: (1) material failure in compression, (2) global
+buckling, and (3) local buckling. Compressive failure occurs when the external loads
+exceed the compressive strength of the material. Buckling occurs when the original
+shape of the object becomes unstable under compressive loads. The object then is
+likely to bend and flex into a new shape. If the strength of the material is exceeded in
+this new shape, the object will fail. Global buckling occurs when the entire object
+52
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+changes its shape. Local buckling occurs when only a portion of the object changes
+its shape.
+Delaminations are a known cause of local buckling failures. The delamination
+divides a single thicker composite layer into two thinner layers. The reduction in layer
+thickness causes a significant reduction in resistance to buckling (Bolotin 1996;
+Tafreshi 2006). When a delaminated region buckles, it produces a peeling separation
+at the edge of the delamination. The delamination expands, resulting in large
+delamination fractures.
+The postcasualty condition of the Titan pressure vessel was consistent with a
+local buckling failure. The layers of the cylinder had peeled apart, producing
+extensive peel separation fractures of the hull, which is typical of a local buckling
+failure. The NTSB concludes that the existing delaminations and additional damage
+that deteriorated the condition of the pressure vessel between dive 82 and the
+casualty dive likely resulted in a local buckling failure that led to the implosion of the
+Titan.
+2.3 Pressure Vessel Development and Cycle Life Evaluation
+A quality engineering process incorporates a “Plan-Do-Check-Act” cycle to
+ensure processes are adequately managed and opportunities for improvement are
+identified and acted upon (ISO 2015). Additionally, an engineering process should
+include risk-based thinking to determine factors that could cause processes to
+deviate from planned results and mitigate negative effects (ISO 2015).
+A quality design and development program is one aspect of an engineering
+process and can help ensure the quality and safety of complex vehicles and systems,
+and is typically used by submersible manufacturers.43 A design and development
+program typically includes phases for design, testing, verification, and validation.44
+When OceanGate began developing the Titan, OceanGate defined requirements for
+the submersible. The Titan submersible was designed to carry up to five persons and
+dive to a depth of 4,000 meters, enabling it to reach deep wrecks like the Titanic.
+OceanGate eventually settled on a pressure vessel design consisting of a carbon fiber
+43 For example, ASME, 2023, PVHO-1: Safety Standard for Pressure Vessels for Human
+Occupancy, https://www.asme.org/codes-standards/find-codes-standards/safety-standard-for-
+pressure-vessels-for-human-occupancy/2023/pdf.
+44 Verification involves checking to see whether the as-manufactured item conforms to the
+design and manufacturing requirements. Validation involves checking to see if the captured
+requirements enable the intended use of the product. (ISO 2015)
+53
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+composite cylinder with titanium rings and domes enclosing each end. However,
+OceanGate did not conduct adequate verification testing before deploying and
+operating the Titan. For example, after the failure of the v1 full-scale pressure vessel,
+OceanGate used different materials (pre-preg carbon fiber) and manufacturing
+methods to create two sub-scale models (test articles) of a v2 pressure vessel. The
+sub-scale models were manufactured using a new method and materials but failed to
+meet design requirements and either imploded or nearly imploded at depths less
+than 3,000 meters (9,843 feet), significantly less than the depth needed to reach the
+Titanic wreckage. These premature implosions indicated that there was an issue with
+the design or manufacturing of the carbon fiber composite cylinder of the pressure
+vessel. OceanGate determined that wrinkles in the cylinder had likely caused the sub-
+scale models’ failure and identified the co-bonding process as a way to potentially
+mitigate wrinkle-related failures. However, OceanGate did not build or test any new
+sub-scale models using the co-bonding process; the only article produced using the
+co-bonding process was the v2 full-scale cylinder ultimately used in the casualty dive.
+After the casualty, the NTSB examined trimmed end pieces of the v2 Titan
+cylinder from when the cylinder was constructed. Investigators found wrinkles and
+waviness in the carbon fiber layers, porosity within the carbon fiber composite, and
+voids in the adhesive between several of the co-bonded layers. Additionally, it
+appeared that multiple wrinkles in the carbon fiber had been ground flush during the
+manufacturing process. The observations indicated that the co-bonding process did
+not completely eliminate the wrinkles and, at the same time, introduced additional
+anomalies. All these anomalies would have impacted the strength and durability of
+the pressure hull by reducing its compressive strength and its shear strength, and by
+providing initiating sites for cracks and delaminations. However, because OceanGate
+did not follow standard engineering processes, including developing and testing a
+sub-scale model using the manufacturing process that would be used to create the
+full-scale pressure vessel, they did not understand the effect of these anomalies and
+their potential to induce failure in the v2 full-scale pressure vessel.
+Understanding a submersible’s cycle life (durability) through evaluation is
+another aspect of an engineering process critical to ensuring the safe operation of a
+submersible, as well as its continued seaworthiness.45 However, OceanGate did not
+evaluate cycle life for the v2 Titan composite pressure vessel. OceanGate performed
+stress analysis on a carbon fiber composite pressure vessel, with all results (both v1
+45 Cycle life is the number of times a vehicle can perform an operational cycle before it reaches
+a life limit and it or one of its components must be retired from service. For the Titan, cycle life was the
+number of times Titan could dive below a defined depth and return to the surface before the vessel
+was retired.
+54
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+and v2 designs) indicating that a carbon fiber composite pressure vessel would have
+significant safety margin at the depth of the Titanic wreckage. However, these
+analyses were based on theoretical models of composite structures that assumed
+perfect geometry and fiber orientation, rather than the actual carbon fiber composite
+pressure vessel built by OceanGate.46 To rely on the models, OceanGate should have
+validated them through physical testing, but OceanGate never tested a co-bonded
+composite pressure hull to failure (full-scale or sub-scale) and, as a result, never
+established the strength or failure mode of that design. Given the presence of
+anomalies in the hull and OceanGate’s previous sub-scale model testing, it is unlikely
+that the fabricated hull would have had the strength predicted by OceanGate’s
+analysis.
+Part of a cycle life evaluation includes establishing inspection and maintenance
+intervals. Manufacturers acquire data on adequate inspection and maintenance
+intervals through testing and modeling. Inspections and maintenance are designed
+to catch and prevent emergent defects before they become critical. Because
+OceanGate did not conduct cycle life evaluation or testing of the Titan v2 co-bonded
+pressure vessel, the company did not have strength or endurance data on the hull
+and thus had no knowledge of the number of safe dives that could be executed,
+signs that the hull was beginning to weaken, or the characteristics of the vessel
+leading to an implosion—and the ability of their RTM system to detect an impending
+implosion. Additionally, OceanGate’s lack of cycle life evaluation meant that the
+company did not understand the role that the composite manufacturing process
+played in the durability of the hull. The lack of long-term performance data left
+OceanGate unaware of the possibility of delamination damage occurring at the co-
+bonded adhesive interfaces (the v2 Titan composite pressure vessel contained four
+adhesive interfaces).
+An effective vessel design and development program also includes
+consideration of how operational factors, such as the vessel’s transport, use, route,
+maneuvering, or storage, affect the safety and integrity of a vessel. For example, as
+part of a cycle life evaluation of the Titan, OceanGate could have considered the
+effects of towing the vessel (vibrations and impulse loads on the vessel) versus being
+transported aboard a surface tender. Additionally, OceanGate could have considered
+the effects of storage conditions—including environmental factors, such as weather
+46 When real structures fail by buckling, they always do so at pressures lower than those
+predicted by calculations due to the minute irregularities in all real structures. It is common to add a
+correction, called a knockdown factor, to account for this difference. The organizations that performed
+strength calculations for OceanGate applied these knockdown factors to their results.
+55
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+and atmosphere/temperature—on the vessel. However, OceanGate did not consider
+these factors as part of its vessel design and development program for the Titan.
+The NTSB concludes that OceanGate’s engineering process for the Titan was
+inadequate and resulted in the construction of a carbon fiber composite pressure
+vessel that contained multiple anomalies and failed to meet necessary strength and
+durability requirements. The NTSB further concludes that because OceanGate did
+not perform adequate testing, including cycle life evaluation, of the Titan pressure
+vessel, the company was unaware of its actual strength and durability, which was
+likely much lower than their target, as well as the implications of how certain
+operational changes, including storage condition and towing, could impact the
+integrity of the pressure vessel and overall safety of the vessel.
+2.4 Pressure Vessel Monitoring
+OceanGate had limited means to monitor the pressure vessel’s integrity to
+determine whether its condition had deteriorated. Interviews with multiple
+OceanGate staff indicated that using ultrasonic inspection or other non-destructive
+methods was impractical or impossible (the size of the Titan made it difficult to
+manipulate, and the submersible’s thickness attenuated the signal). The fairing and
+rubberized coating on the pressure vessel’s outer surface made a visual inspection
+impractical. Instead, OceanGate monitored the Titan pressure vessel’s integrity using
+its RTM system.
+OceanGate analyzed data from the strain gages against time. However,
+analyzing strain data in this way was flawed because it was difficult for OceanGate to
+compare data between dives. A more appropriate means of evaluating strain data
+would have been to evaluate it against depth, since the external pressure acting on
+the pressure vessel is a direct result of the vessel’s depth. This method of analysis is
+akin to a stress/strain plot, which is a standard method used in evaluating the
+mechanical properties of materials (Hertzberg and others 2020, p. 8). For example,
+after the implosion, the NTSB evaluated the Titan strain data against the vessel’s
+depth and identified the change in the low-depth strain response in the pressure
+vessel after dive 80.
+OceanGate only analyzed acoustic emission data captured during a dive, so
+the data could not be used to capture and alert crew to damaging events that
+occurred at the surface or while the Titan was stowed. Additionally, OceanGate based
+their evaluation of acoustic emission data on the signals from previous Titan pressure
+vessels—the v1 full-scale hull and sub-scale models. However, this method of
+evaluation was flawed because the v1 full-scale pressure vessel and sub-scale models
+were manufactured using a different method and produced different acoustic activity
+56
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+due to anomalies in their structures—anomalies that were different from those
+investigators found in the v2 full-scale hull. OceanGate did not build and test
+composite sub-scale models made using the co-bonding process. Therefore, they
+had no data on how a co-bonded structure would deteriorate and fail or how the
+acoustic data from such a structure would evolve before the implosion. OceanGate
+assumed that, as the pressure vessel condition deteriorated, it would gradually
+transition from a sound pressure vessel to one that produced acoustic events of a
+similar amplitude and frequency as their previous test articles and that they would be
+able to safely retire the pressure vessel from service. However, this did not occur. The
+sensors produced activity on the dives that followed dive 80 but never produced the
+type of acoustic emission signal that would have triggered an alert and thus did not
+detect the initial damage. The NTSB concludes that because OceanGate’s analysis of
+Titan pressure vessel strain gage and acoustic emission (RTM system) data was
+flawed, the company was unable to identify that the pressure vessel was damaged
+after dive 80 and that it needed to be immediately removed from service.
+2.5 Emergency Procedures and Response
+The Coast Guard’s NVIC provides guidance for certification of passenger-
+carrying submersibles, including provisions for search and rescue in emergency
+situations. Specifically, US Coast Guard NVIC 05-93 recommends that “appropriate
+rescue facilities” must be ready in case a submersible is not able to surface on its own.
+The NVIC further states that the US Coast Guard does not have underwater search
+and rescue capability, and because underwater rescue resources may not be
+immediately available, “the submersible operator must anticipate all likely casualty
+situations and provide for the ready availability of specific resources” (see section
+2.6). Additionally, according to OceanGate’s former director of marine operations, it
+was industry practice to have a second asset (either an ROV or a second crewed
+submersible) on site or readily available elsewhere and to train for emergency
+recoveries. However, although OceanGate’s Project Execution Plan for the Titan listed
+search and rescue assets to notify in case of an emergency, the plan did not require
+OceanGate personnel to notify search and rescue assets or have assets on-site before
+conducting diving operations. Thus on the day of the casualty, OceanGate did not
+have assets standing by when the Polar Prince lost communications with the Titan.
+Because the implosion occurred in US Coast Guard RCC Boston’s
+internationally agreed search and rescue region, the US Coast Guard coordinated
+search and rescue efforts. However, according to the US Coast Guard, no one agency
+or country had all the assets needed to perform the search, so additional
+coordination with other US agencies and organizations and other countries was
+needed (see figure 24). Additionally, Pelagic’s ROV capable of reaching 6,000
+57
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+meters, the Odysseus, was in Buffalo, New York, at the time of the casualty and had to
+be transported to the Titanic wreckage location via Newfoundland and Labrador. US
+Coast Guard SAR personnel testified it would normally take 2 weeks to get an ROV in
+the air, an offshore supply vessel outfitted, and a crew assembled. In the search for
+the Titan, responders transported the Odysseus, along with another ROV capable of
+reaching 6,000 meters (19,685 feet), to the scene within 4 days—just a few hours over
+the theoretical window of available oxygen (96 hours) in the Titan crew compartment.
+Although search and rescue efforts could not have saved lives due to the catastrophic
+nature of the casualty, adequately planning for emergency situations—such as the loss
+of a vessel at the surface or loss of communications or propulsion at depth—by
+preparing potential search and rescue assets is imperative for future emergency
+situations involving submersibles wherein search and rescue efforts could have a
+positive impact. The NTSB concludes that had OceanGate followed NVIC 05-93
+guidance for emergency response plans, they likely would have had emergency
+response assets standing by and the Titan likely would have been found sooner,
+saving time and resources even though a rescue was not possible in this case. The
+NTSB further concludes that despite OceanGate’s failure to notify search and rescue
+assets about its planned expedition, and the limited resources able to operate at the
+depth of the Titanic wreckage, the US Coast Guard’s response coordination efforts
+were effective and resulted in the timely discovery of the Titan wreckage.
+58
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Figure 24. Assets that participated in the search for the Titan. A circled X marks the location
+of the Titan. Vessels are shown at their location about 2124 on June 18.
+2.6 OceanGate Submersible Operations and Industry Regulations
+According to the US Coast Guard, the Titan was a vessel of the United States
+(US Coast Guard 2025).47 Additionally, because OceanGate operated the Titan with
+passengers for hire, it was required to be inspected by the US Coast Guard and to
+comply with regulations in 46 CFR Subchapter T, which define design, construction,
+47 A vessel of the United States means a vessel: (1) documented or required to be documented
+under the laws of the United States; (2) owned in the United States; or (3) owned by a citizen or
+resident of the United States and not registered under a foreign flag. See 46 United States Code
+Section 116 and 46 CFR Subchapter A 4.40-5. The Titan was owned by a US-based company
+(OceanGate). Vessels with US ownership may be, and often are, registered in other countries, making
+those countries the “flag state” of the vessel. However, the Titan was not registered under any flag state
+and therefore was a vessel of the United States.
+59
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+and operations standards for small passenger vessels (US Coast Guard 2025).48
+However, OceanGate did not register or document the Titan in the United States, nor
+did they arrange to have it inspected by the US Coast Guard.
+In July 1993, the US Coast Guard published NVIC 05-93, which recognized that
+the Coast Guard’s inspection regulations were developed primarily with surface craft
+in mind and that, “many of the requirements cannot be applied to or may otherwise
+be inappropriate for submersibles.” Accordingly, the NVIC provides voluntary
+guidance for the design, construction, and operation of “passenger carrying
+submersibles” subject to regulations in 46 CFR Subchapter T. NVIC 05-93 also
+provided guidance for submersibles that would be subject to regulation as
+“uninspected” vessels under 46 CFR Subchapter C. OceanGate’s operation of the
+Titan did not meet many of the guidelines in the NVIC. For example, the NVIC
+recommended restricting submersible operations to waters less than a submersible’s
+rated depth or the “depth to which its rescue assistance is effective (45 meters [150
+feet] in the case of no-decompression diving).” Operations were not permitted
+deeper than the “demonstrated capability of the available rescue equipment,” and
+“Lifting capability on the surface must be available within a reasonable time,
+considering the amount of reserve life support on board the submersible.” The Titan
+regularly dove beyond 45 meters, and OceanGate regularly operated the Titan
+without rescue assistance on standby and capable of reaching the submersible while
+it dove to the Titanic wreckage, as was the case on the day of the casualty (see section
+2.5).
+At the time of the NVIC’s publication in 1993, submersibles carrying six or
+fewer passengers (like the Titan) were considered uninspected vessels—not small
+passenger vessels—and thus were not required to comply with regulations in
+46 CFR Subchapter T. This description was included in the NVIC. After the Passenger
+Vessel Safety Act of 1993 was signed into law, the definition of a small passenger
+vessel changed to include any submersible carrying at least one passenger for hire.
+48 (a) While the NTSB does not determine whether specific operator conduct violates statutory
+or regulatory requirements that may be the subject of enforcement by the US Coast Guard, we note
+OceanGate’s intent to avoid safety oversight by assigning tasks to those paying to ride. (b) In the
+United States, any submersible that is less than 100 gross tons and carries at least one passenger for
+hire is considered a small passenger vessel and is subject to inspection. See 46 CFR Subchapter T
+175.110 and 46 United States Code Section 3311. Any passenger-carrying submersible that is 100
+gross tons or more is subject to inspection under 46 CFR Subchapter H. According to 46 U.S.C. Section
+2101(29), “passenger” means an individual carried on the vessel except—(i) the owner or an individual
+representative of the owner or, in the case of a vessel under charter, an individual charterer or
+individual representative of the charterer; (ii) the master; or (iii) a member of the crew engaged in the
+business of the vessel who has not contributed consideration for carriage and who is paid for on board
+services. (See 46 U.S.C. 2101 for the complete definition of “passenger” and “passenger for hire.”)
+60
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+The NVIC has not been updated since its release to reflect this change, and the US
+Coast Guard does not have specific inspection standards for the design or
+construction of submersibles but instead adapts regulatory inspection standards to
+attempt to meet a level of safety equivalent to surface vessels. The US Coast Guard
+also recognizes that the NVIC lacks comprehensive, submersible-specific inspection
+standards (US Coast Guard 2025).
+Since 1993 and the publication of the NVIC, the submersible (PVHO)
+population—type, purpose, and size—in the United States has changed significantly.
+Before 1993, most submersibles were either research (46%) or passenger-carrying
+tourist (37%) submersibles. After 1993, the majority (68%) of submersibles produced
+were “other” (small submersibles), while 17% were tourist, 7% were
+government/military, and 7% were research (see figure 22 and figure 23). According
+to a representative of the Marine Technology Society, this change in the population
+occurred because “all small submersible manufacturers defined their vehicles as not
+tourist subs.” The representative further stated that “the ambiguity and variances in
+adjudication [of the definition of passenger for hire] from port to port … left even
+greater confusion,” and “it didn’t take too long for the industry to realize that the key
+was to just find an exception just like all other sectors [research, government, and
+private] had one.” This is the approach OceanGate took with the Titan and its other
+submersibles, the Antipodes and Cyclops I. In its report of investigation into the Titan
+implosion, the US Coast Guard outlined what it characterized as OceanGate’s
+“Circumvention of U.S. Laws and International Standards” (US Coast Guard 2025).
+OceanGate called the Titan an “experimental” craft to avoid applicable design,
+construction, and testing rules and standards (there is no official US Coast Guard or
+classification society “experimental” vessel endorsement or designation, and
+therefore, there are not separate standards for “experimental” vessels). Additionally,
+interviews with OceanGate personnel indicated that OceanGate called its passengers
+“mission specialists” in an attempt to avoid the statutory and regulatory implications
+of, and, by extension, the NVIC guidance relating to, the designation of the Titan as a
+passenger-carrying submersible with at least one passenger for hire. Similarly,
+OceanGate categorized the Antipodes and Cyclops I as oceanographic research
+vessels and received letters of designation from the US Coast Guard for each, despite
+taking paying clients aboard these submersibles during expeditions. According to a
+former Coast Guard captain in Seattle, OceanGate discussed certification for one of
+their other submersibles, the Antipodes, but the restriction on diving depth—a
+maximum of 45 meters, as outlined in NVIC 05-93—and requirements for credentialed
+pilots and pre-designated routes made certification unfeasible.
+The number of known PVHOs that can dive to the depth of the Titanic wreck
+site is small—only nine others, according to the Marine Technology Society. Class
+61
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+societies, such as the American Bureau of Shipping, Lloyd’s Register, RINA, and DNV,
+have established rules for the design and construction of manned submersibles.49
+Additionally, since 1977, AMSE’s PVHO Standards Committee has published
+recognized industry standards for submersibles, diving bells, and personnel transfer
+capsules.50 However, the existing regulations and voluntary guidance, as currently
+written, enabled OceanGate’s operation of the Titan in an unsafe manner. The NTSB
+concludes that voluntary guidance and current US small passenger vessel regulations
+are not sufficiently tailored to current PVHO operations to ensure the safety of PVHOs
+in accordance with established technical and classification society standards.
+Organizations like the PHVO Standards Committee, the Marine Technology
+Society, and classification societies, among others, have at their disposal a wealth of
+expertise related to submersible operations. The US Coast Guard worked with some
+of these organizations when developing NVIC 05-93. The NVIC states:
+Submersible technology is not new, but its application in the passenger
+carrying industry is still very much under study. Although we have
+established a safe baseline, as this industry grows we will see many
+technological advances which will have to be carefully considered in
+view of safety.
+The NTSB recommends that the US Coast Guard commission a panel of experts to
+study current PVHO operations, including, at a minimum, the availability of domestic
+and international design and construction standards; the competency and
+credentialing of persons on board; the distinction between crew and passengers and
+whether all PVHOs should be inspected regardless of operational category;
+maintenance and operation of submersibles; the effects of operational changes, such
+as storage conditions and towing; failure modes and best practices; and emergency
+response procedures, and disseminate findings of the study to industry. The NTSB
+also recommends that the US Coast Guard implement US regulations for PVHOs
+49 The deepest rated submersibles (see Table 8) are all classed or meet US Navy standards,
+including Limiting Factor by DNV and Fendouzhe by the CCS. Other classification societies also
+provide rules for classing submersibles. For example, see the American Bureau of Shipping’s 2021
+Rules for Building and Classing Underwater Vehicles, Systems and Hyperbaric Facilities, or DNV’s 2021
+Rules for classification—Underwater Technology, Manned Submersibles. (Det Norske Veritas and
+Germanischer Lloyd merged in 2013 to form DNV GL. The company changed the name to DNV in
+2021.)
+50 See PVHO1-Safety Standard for Pressure Vessels for Human Occupancy, 2023. Other
+organizations that have published standards for pressure vessels include the US Navy (Systems
+Certification Procedure and Criteria Manual for Deep Submergence Systems, NAVMAT P-9020); the
+Society of Naval Architects and Marine Engineers; and the Marine Technology Society.
+62
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+informed by the findings of the study recommended in Safety Recommendation M-
+25-012. If necessary, obtain legislative authority to act on this recommendation. The
+NTSB further recommends that the US Coast Guard revise NVIC 05-93 to include the
+revised definition of small passenger vessel as reflected in the Passenger Vessel
+Safety Act of 1993 and to reflect the findings of the study recommended in Safety
+Recommendation M-25-012.
+Although the Titan was a vessel of the United States and should have been
+inspected in accordance with US regulations and guidance, OceanGate did not
+operate it as a US-flagged vessel. Any unflagged or stateless vessel operating in non-
+US waters becomes subject to the rules of whomever encounters it. Currently, rules
+and regulations applicable to PVHOs vary internationally; there is no mandatory
+standard. In 2001, the International Maritime Organization (IMO) released
+MSC.1/Circ. 981, “Guidelines for the Design, Construction and Operation of
+Passenger Submersible Craft,” which provides guidance for passenger submersibles
+to provide “the highest practical standards of safety for passengers and crew on such
+craft.”51 The circular states that submersibles should meet the design, construction,
+and maintenance requirements of a recognized organization, typically a class society,
+or comply with applicable standards recognized by the flag state administration.52
+The circular further states that the management of passenger submersibles should
+comply with the International Safety Management Code.53 However, these guidelines
+are voluntary unless made mandatory by the flag state, which has not been done by
+the United States. Therefore, there are no international rules/standards applicable to
+PVHOs operating internationally. As such, rules and standards applicable to PVHOs
+operating internationally vary, allowing operators to exploit any gaps that may exist in
+design, construction, and operation requirements. Given the changes in the PVHO
+population since the introduction of MSC.1/Circ. 981, the NTSB concludes that
+international standards for PVHOs would ensure consistency in design, construction,
+and operation requirements for PVHOs that operate around the world. US Coast
+51 The International Maritime Organization (IMO) is the global standard-setting authority for the
+safety, security, and environmental performance of international shipping. Its main role is to create a
+regulatory framework for the shipping industry that is universally adopted and implemented. IMO
+measures cover all aspects of international shipping, including ship design, construction, equipment,
+manning, operation, and disposal.
+52 Flag administrations may issue a Safety Compliance Certificate for Passenger Submersible
+Craft for vessels meeting the requirements of the circular.
+53 The International Safety Management Code was developed to provide a standard for the
+safe management and operation of ships and for pollution prevention. Under the International Safety
+Management Code, companies that own or operate vessels subject to the International Convention for
+the Safety of Life at Sea must develop, implement, and maintain a safety management system.
+63
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Guard is the head of the delegation representing the United States at IMO. The NTSB
+believes IMO is the best way to reach other flag states throughout the world that
+currently have, and may have in the future, passenger-carrying submersibles
+operating that fall within their jurisdictions. Thus, the NTSB recommends that the US
+Coast Guard propose that IMO make MSC.1/Circ. 981 mandatory to promote
+consistent application of PVHO rules amongst member states.
+64
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+3 Conclusions
+3.1 Findings
+1. The Titan pressure vessel likely sustained damage after it surfaced at the end of
+dive 80 in the form of one or more delaminations that formed from voids between
+the cylinder’s five co-bonded layers, leading to the deterioration and weakening
+of the pressure vessel.
+2. After dive 82, the Titan sustained additional damage—of unknown origin—that
+further deteriorated and weakened the pressure vessel to a point where it could
+not survive a dive to the depth of the Titanic.
+3. The existing delaminations and additional damage that deteriorated the condition
+of the pressure vessel between dive 82 and the casualty dive likely resulted in a
+local buckling failure that led to the implosion of the Titan.
+4. OceanGate’s engineering process for the Titan was inadequate and resulted in the
+construction of a carbon fiber composite pressure vessel that contained multiple
+anomalies and failed to meet necessary strength and durability requirements.
+5. Because OceanGate did not perform adequate testing, including cycle life
+evaluation, of the Titan pressure vessel, the company was unaware of its actual
+strength and durability, which was likely much lower than their target, as well as
+the implications of how certain operational changes, including storage condition
+and towing, could impact the integrity of the pressure vessel and overall safety of
+the vessel.
+6. Because OceanGate’s analysis of Titan pressure vessel strain gage and acoustic
+emission (real-time monitoring system) data was flawed, the company was unable
+to identify that the pressure vessel was damaged after dive 80 and that it needed
+to be immediately removed from service.
+7. Had OceanGate followed Navigation and Vessel Inspection Circular 05-93
+guidance for emergency response plans, they likely would have had emergency
+response assets standing by and the Titan likely would have been found sooner,
+saving time and resources even though a rescue was not possible in this case.
+8. Despite OceanGate’s failure to notify search and rescue assets about its planned
+expedition, and the limited resources able to operate at the depth of the Titanic
+wreckage, the US Coast Guard’s response coordination efforts were effective and
+resulted in the timely discovery of the Titan wreckage.
+9. Voluntary guidance and current US small passenger vessel regulations are not
+sufficiently tailored to current pressure vessel for human occupancy operations to
+ensure the safety of pressure vessels for human occupancy in accordance with
+established technical and classification society standards.
+65
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+10. International standards for pressure vessels for human occupancy would ensure
+consistency in design, construction, and operation requirements for pressure
+vessels for human occupancy that operate around the world.
+3.2 Probable Cause
+The National Transportation Safety Board determines that the probable cause
+of the hull failure and implosion of the submersible Titan was OceanGate’s
+inadequate engineering process, which failed to establish the actual strength and
+durability of the Titan pressure vessel and resulted in the company operating a
+carbon fiber composite vessel that sustained delamination damage that was
+subsequently exacerbated by additional damage of unknown origin, resulting in a
+damaged internal structure that subsequently led to a local buckling failure of the
+pressure vessel. Contributing were US and international voluntary guidance and US
+small passenger vessel regulations that were insufficient to ensure OceanGate
+adhered to established industry standards. Also contributing was OceanGate’s
+flawed analysis of their pressure vessel monitoring system data, which led to their
+continued operation of a damaged pressure vessel.
+66
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+4 Recommendations
+4.1 New Recommendations
+As a result of this investigation, the National Transportation Safety Board
+makes the following new safety recommendations.
+To the US Coast Guard:
+Commission a panel of experts to study current pressure vessel for
+human occupancy (PVHO) operations, including, at a minimum, the
+availability of domestic and international design and construction
+standards; the competency and credentialing of persons on board;
+the distinction between crew and passengers and whether all PVHOs
+should be inspected regardless of operational category;
+maintenance and operation of submersibles; the effects of
+operational changes, such as storage conditions and towing; failure
+modes and best practices; and emergency response procedures,
+and disseminate findings of the study to industry. (M-25-012)
+Implement US regulations for pressure vessels for human occupancy
+informed by the findings of the study recommended in Safety
+Recommendation M-25-012. If necessary, obtain legislative authority
+to act on this recommendation. (M-25-013)
+Revise Navigation and Vessel Inspection Circular 05-93 to include
+the revised definition of small passenger vessel as reflected in the
+Passenger Vessel Safety Act of 1993 and to reflect the findings of the
+study recommended in Safety Recommendation M-25-012. (M-25-
+014)
+Propose that the International Maritime Organization make
+MSC.1/Circ. 981 mandatory to promote consistent application of
+pressure vessel for human occupancy rules amongst member states.
+(M-25-015)
+67
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+BY THE NATIONAL TRANSPORTATION SAFETY BOARD
+JENNIFER L. HOMENDY MICHAEL GRAHAM
+Chairwoman Member
+THOMAS CHAPMAN J. TODD INMAN
+Member Member
+Report Date: October 2, 2025
+68
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Appendixes
+Appendix A: Investigation
+The US Coast Guard was the lead US federal agency in this investigation. The
+National Transportation Safety Board (NTSB) learned of this casualty from the Coast
+Guard on June 18, 2023. NTSB investigators traveled to Newfoundland and
+Labrador, Canada; Washington; North Carolina; and Rhode Island to inspect the
+wreckage of the Titan and exemplar equipment and to interview OceanGate staff.
+Wreckage retrieved from the accident site by the Odysseus and the
+Horizon Arctic was taken to Rhode Island by the Coast Guard buoy tender Sycamore.
+The Coast Guard additionally contracted with the US Navy’s Supervisor of Salvage
+(SUPSALV) to retrieve additional wreckage from the accident scene, accompanied by
+NTSB and Coast Guard investigators, in September 2023, retrieving the aft dome and
+an external camera among the wreckage. NTSB investigators also participated in the
+Coast Guard Marine Board of Investigation hearings in September 2024.
+The US Coast Guard and SubC Imaging (owner of the external camera
+retrieved from the wreckage) were parties to the investigation. The United Kingdom,
+France, and Canada were Substantially Interested States.
+Investigators recovered from the wreckage a camera designed to record video
+and still images underwater up to a rated depth of 6,000 meters (19,685 feet). The
+camera’s outer casing was intact, but the lens had shattered. Investigators
+disassembled the casing and discovered an undamaged memory card on one of the
+camera’s circuit boards. Twelve still images and nine videos were recovered from the
+device. However, none of the images were from mission 5, dive 88 (the accident
+dive).
+69
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Appendix B: Consolidated Recommendation Information
+Title 49 United States Code 1117(b) requires the following information on the
+recommendations in this report.
+For each recommendation—
+(1) a brief summary of the Board’s collection and analysis of the specific
+accident investigation information most relevant to the recommendation;
+(2) a description of the Board’s use of external information, including studies,
+reports, and experts, other than the findings of a specific accident investigation, if any
+were used to inform or support the recommendation, including a brief summary of
+the specific safety benefits and other effects identified by each study, report, or
+expert; and
+(3) a brief summary of any examples of actions taken by regulated entities
+before the publication of the safety recommendation, to the extent such actions are
+known to the Board, that were consistent with the recommendation.
+To the US Coast Guard
+M-25-012
+Commission a panel of experts to study current pressure vessel for
+human occupancy (PVHO) operations, including, at a minimum, the
+availability of domestic and international design and construction
+standards; the competency and credentialing of persons on board;
+the distinction between crew and passengers and whether all PVHOs
+should be inspected regardless of operational category;
+maintenance and operation of submersibles; the effects of
+operational changes, such as storage conditions and towing; failure
+modes and best practices; and emergency response procedures,
+and disseminate findings of the study to industry.
+Information that addresses the requirements of 49 USC 1117(b), as applicable,
+can be found in section 2.6, OceanGate Submersible Operations and Industry
+Regulations. Information supporting (b)(1) can be found on pages 59-63; (b)(2) can
+be found on pages 46-48; and (b)(3) can be found on pages 48-49.
+M-25-013
+Implement US regulations for pressure vessels for human occupancy
+informed by the findings of the study recommended in Safety
+70
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Recommendation M-25-012. If necessary, obtain legislative authority
+to act on this recommendation.
+Information that addresses the requirements of 49 USC 1117(b), as applicable,
+can be found in section 2.6, OceanGate Submersible Operations and Industry
+Regulations. Information supporting (b)(1) can be found on pages 59-63; (b)(2) can
+be found on pages 46-48; and (b)(3) can be found on pages 48-49.
+M-25-014
+Revise Navigation and Vessel Inspection Circular 05-93 to include
+the revised definition of small passenger vessel as reflected in the
+Passenger Vessel Safety Act of 1993 and to reflect the findings of the
+study recommended in Safety Recommendation M-25-012.
+Information that addresses the requirements of 49 USC 1117(b), as applicable,
+can be found in section 2.6, OceanGate Submersible Operations and Industry
+Regulations. Information supporting (b)(1) can be found on pages 59-63; (b)(2) can
+be found on pages 46-48; and (b)(3) can be found on pages 48-49.
+M-25-015
+Propose that the International Maritime Organization make
+MSC.1/Circ. 981 mandatory to promote consistent application of
+pressure vessel for human occupancy rules amongst member states.
+Information that addresses the requirements of 49 USC 1117(b), as applicable,
+can be found in section 2.6, OceanGate Submersible Operations and Industry
+Regulations. Information supporting (b)(1) can be found on pages 63-64; (b)(2) can
+be found on pages 46-48; and (b)(3) can be found on pages 48-49.
+71
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Appendix C: Titan Dives During 2021, 2022, and 2023
+Table C-1. Titan dives completed during the 2021, 2022, and 2023 using the second (v2) full-
+scale pressure vessel. (Data source: OceanGate)
+Expedition Mission Dive Date Depth Type of dive
+reached
+(meters)
+Testing N/A 50a 4/29/2021 3 System test
+(V2
+pressure
+vessel)
+51 5/2/2021 7 System test
+52 5/6/2021 79 System test
+53 5/8/2021 8 System test
+54 5/12/2021 3 System test
+55 5/14/2021 3 System test
+56 5/17/2021 79 System test
+57 5/19/2021 3 System test
+58 5/20/2021 170 System test
+59 5/24/2021 3 System test
+60 5/25/2021 162 System test
+2021 1 61 6/30/2021 7 System test
+62 7/3/2021 1,700 System test
+2 63 7/9/2021 3,840 System test
+64 7/13/2021 89 System test
+3 65 7/19/2021 3,500 Exploration
+4 66 7/24/2021 3,840 Exploration
+67 7/27/2021 3,840 Exploration
+68 7/28/2021 3,840 Exploration
+5 69 8/4/2021 3,840 Exploration
+72
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Expedition Mission Dive Date Depth Type of dive
+reached
+(meters)
+70 8/5/2021 3,840 Exploration
+2022 1 71 6/16/2022 7 System test
+72 6/18/2022 1,380 Exploration
+73 6/20/2022 3,840 Exploration
+2 74 7/1/2022 25 System test
+75 7/3/2022 3,840 Exploration
+76 7/6/2022 3,840 Exploration
+77 7/8/2022 30 System test
+3 78 7/11/2022 10 Exploration
+79 7/14/2022 3,840 Exploration
+80 7/15/2022 3,840 Exploration
+4 81 7/19/2022 3,840 Exploration
+82 7/22/2022 3,840 Exploration
+83 7/23/2022 2,954 Exploration
+2023 1 N/A N/A N/A No dives
+2 84 5/22/2023 8 Disabled sub drill
+3 85 5/31/2023 10 Test
+86 6/5/2023 10 Test
+4 87 6/12/2023 10 Aborted dive
+5 88 6/18/2023 3,363 (last Casualty dive
+known
+depth)
+a OceanGate numbered all dives—including test and exploration dives—sequentially, beginning with
+“1” and continuing to “49” using the first full-scale pressure vessel, and beginning with “50” and
+ending with “88” for the second full-scale pressure vessel.
+73
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Appendix D: Search and Rescue Assets
+Table D-1. Search and rescue assets utilized to search for Titan.
+Resource Description Role
+US Air National Guard unit based at Provided C-130 for air search
+Francis S. Gabreski Air National
+106th Rescue Wing
+Guard Base, Westhampton, New
+York
+US Air Force reserve unit based at Transported remotely operated
+910th Air Wing Youngstown Air Reserve Station, vehicle (ROV) Odysseus to
+Ohio Newfoundland and Labrador
+Air Station US Coast Guard air station based in Provided C-130 for air search and
+Elizabeth City Elizabeth City, North Carolina International Air Patrol
+Ferried French ROV team and
+CCGS Ann Harvey Canadian Coast Guard buoy tender
+Canadian Forces medical personnel
+Embarked 6,000-meter ROV Victor
+Atalante Offshore supply vessel
+6000
+Loaded flyaway deep ocean salvage
+Atlantic Kingfisher Offshore supply vessel system 6000-meter-capable heave
+compensated lifting package
+Canadian-flagged offshore Transported ROV package for
+Atlantic Merlin
+tug/supply ship Skandi Vinland
+Deployed the first ROV at the scene,
+Deep Energy Bahamas-flagged cable ship a Schilling Robotics 3000-meter
+Working Class ROV
+Royal Canadian Navy coastal Transported mobile decompression
+HMCS Glace Bay
+defense vessel chamber
+Canadian-flagged anchor handling Embarked 6,000-meter ROV
+Horizon Arctic
+tug supply vessel Odysseus
+Canadian Coast Guard offshore On-scene coordinator; equipped
+CCGS John Cabot
+fisheries research vessel with sonar
+CCGS Kopit Canadian Coast Guard icebreaking Surface search
+Hopson buoy tender
+Royal Canadian Air CP-140 Aurora and P-8A Poseidon Air and sub-surface search
+Force patrol aircraft
+Skandi Vinland Cable ship On-scene ROV
+74
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Resource Description Role
+US Coast Guard Transported wreckage to Rhode
+US Coast Guard buoy tender
+Cutter Sycamore Island
+Ferried US Coast Guard Salvage
+Canadian Coast Guard fisheries
+CCGS Teleost Engineering Response Team to the
+research vessel
+scene
+Ferried medics and US Navy subject
+CCGS Terry Fox Canadian Coast Guard icebreaker
+matter experts
+Vizconde de Eza Research vessel Sonar capable
+75
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Appendix E: Other OceanGate Submersibles and Surface Tenders
+Table E-1. Vessel Particulars for OceanGate submersibles Antipodes and Cyclops I.
+Vessel Antipodes Cyclops I
+NTSB Vessel Group Specialty/Other Specialty/Other
+(Submersible) (Submersible)
+Owner/Operator OceanGate (Commercial) OceanGate (Commercial)
+Flag N/A N/A
+Port of registry N/A N/A
+Year built 1973 2015 (rebuild)
+Official number (US) WN 9815 NZ WN 6745 SF
+IMO number N/A N/A
+Classification society American Bureau of None
+Shipping
+Length (overall) 13.0 ft (6.7 m) 22 ft (67.2 m)
+Breadth (max.) 8.0 ft (2.8 m) 8.5 ft (14.6 m)
+Draft (casualty) N/A N/A
+Rated Depth 1,000.0 ft (304.8 m) 1,700 ft (518.2 m)
+Number of Occupants 5 5
+(max.)
+Tonnage N/A N/A
+Engine power; N/A N/A
+manufacturer
+76
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Table E-2. Vessel particulars for surface tenders Horizon Arctic and Polar Prince.
+Vessel Horizon Arctic Polar Prince
+NTSB Vessel Group Offshore (Offshore supply Cargo, General (Cargo ship)
+vessel)
+Owner/Operator Horizon Maritime Services Horizon Maritime Services Ltd
+Ltd (Commercial) (Commercial)
+Flag Canada Canada
+Port of registry St. John’s, Canada St. John’s, Canada
+Year built 2016 1959
+IMO number 9732838 5329566
+Classification society DNV DNV
+Length (overall) 307.0 ft (93.6 m) 220.4 ft (67.2 m)
+Breadth (max.) 78.72 ft (24.0 m) 48.0 ft (14.6 m)
+Draft (casualty) 25.6 ft (7.8m) 15.4 ft (4.7 m)
+Tonnage 8,143 GT ITC 2,062 GT ITC
+Engine power; 4 x 954 kW (1,279 hp);
+2 x 6,000 kW (8,046 hp);
+manufacturer Diesel Electric Fairbanks Morse
+Bergen B32:40V12A
+8-38D8-1/8
+77
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+References
+Bolotin, Vladimir V. “Delaminations in composite structures: Its origin, buckling,
+growth and stability.” Composites: Part B 27B (1996), 129-145.
+Hertzberg, R.W. and others. 2020. Deformation and Fracture Mechanics of
+Engineering Materials: Sixth Edition. John Wiley & Sons, Inc.
+International Maritime Organization. 2001. MSC.1/Circ. 981, “Guidelines for the
+Design, Construction and Operation of Passenger Submersible Craft.”
+ISO (International Organization for Standardization). Quality management systems—
+Requirements. ISO 9001: 2015. ISO. September 15, 2015.
+OceanGate Foundation. n.d. “About Us.” Linkedin.
+https://www.linkedin.com/company/oceangate-foundation.
+Tafreshi, Azam. “Delamination buckling and postbuckling in composite cylindrical
+shells under combined axial compression and external pressure.” Composite
+Structures 72(4) (2006), 401-418.
+US Coast Guard. 1993. “Navigation and Vessel Inspection Circular 05-93: Guidance
+for Certification of Passenger Carrying Submersibles.”
+______. 2025. “Report of the Marine Board of Investigation into the Implosion of the
+Submersible Titan (CG1788361) in the North Atlantic Ocean near the Wreck
+Site of the RMS Titanic Resulting in the Loss of Five Lives on June 18, 2023.”
+Department of Homeland Security.
+______. n.d. “Navigation and Vessel Inspection Circulars: Background Information.”
+OceanGate. 2023. “Why Isn’t Titan Classed?” archived June 21, 2023, at
+https://web.archive.org/web/20230621082139/https://oceangate.com/news-
+and-media/blog/2019-0221-why-titan-is-not-classed.html
+78
+
+Hull Failure and Implosion of Submersible Titan MIR-25-36
+Casualty Summary
+NTSB casualty category Flooding/Hull Failure
+Location North Atlantic Ocean, 900 nm east of Cape Cod, Massachusetts
+41°43.98’ N, 49°59.9’ W
+Date June 18, 2023
+Time 1047 Newfoundland and Labrador daylight time (coordinated universal
+time –2.5 hours)
+Injuries 5 fatal
+Property damage $5.6 million CAD (about $ 4.2 million USD) est.
+Environmental damage None
+Persons on board 5
+NTSB investigators worked closely with our counterparts from Coast Guard Office of Investigations
+and Analysis throughout this investigation.
+The NTSB is an independent federal agency charged by Congress with investigating every civil aviation
+accident in the United States and significant events in the other modes of transportation—railroad, transit, highway,
+marine, pipeline, and commercial space. We determine the probable causes of the accidents and events we
+investigate and issue safety recommendations aimed at preventing future occurrences. In addition, we conduct
+transportation safety research studies and offer information and other assistance to family members and survivors
+for each accident or event we investigate. We also serve as the appellate authority for enforcement actions
+involving aviation and mariner certificates issued by the Federal Aviation Administration (FAA) and US Coast Guard,
+and we adjudicate appeals of civil penalty actions taken by the FAA.
+The NTSB does not assign fault or blame for an accident or incident; rather, as specified by NTSB
+regulation, “accident/incident investigations are fact-finding proceedings with no formal issues and no adverse
+parties … and are not conducted for the purpose of determining the rights or liabilities of any person” (Title
+49 Code of Federal Regulations section 831.4). Assignment of fault or legal liability is not relevant to the NTSB’s
+statutory mission to improve transportation safety by investigating accidents and incidents and issuing safety
+recommendations. In addition, statutory language prohibits the admission into evidence or use of any part of an
+NTSB report related to an accident in a civil action for damages resulting from a matter mentioned in the report
+(Title 49 United States Code section 1154(b)).
+For more detailed background information on this report, visit the NTSB Case Analysis and Reporting
+Online (CAROL) website and search for NTSB accident ID DCA23FM036. Recent publications are available in their
+entirety on the NTSB website. Other information about available publications also may be obtained from the
+website or by contacting —
+National Transportation Safety Board
+Records Management Division, CIO-40
+490 L’Enfant Plaza, SW
+Washington, DC 20594
+(800) 877-6799 or (202) 314-6551
+79

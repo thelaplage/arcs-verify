@@ -446,7 +446,8 @@ def test_unexpected_source_ingest_is_a_finding_not_a_pass() -> None:
     ev.extra_receipts = [{"profile_id": "srs.editorial.source_ingest", "profile_version": "v0.1"}]
     report = sws.verify(ev)
     assert report["ingest_linkage"] == "FAIL"
-    assert report["recomputed"]["source_ingest_absent"] is False
+    assert report["recomputed"]["source_ingest_absent"] is True
+    assert report["recomputed"]["source_ingest_present"] is False
     assert "source_work_sequence.unexpected_source_ingest_present" in report["failure_codes"]
 
 
