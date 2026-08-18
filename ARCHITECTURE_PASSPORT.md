@@ -160,7 +160,7 @@ conclusions. `authenticity_verified` and `signature_verified` remain
 
 ARCS Verify does not own receipt emission, runtime admission, execution
 enforcement, producer truthfulness, source-system retention behavior,
-organization policy, GARPedia presentation, DAGR runtime semantics, or SRS
+organization policy, Counterpedia presentation, DAGR runtime semantics, or SRS
 normative authority.
 
 It limits its claims to what the supplied artifacts establish.
