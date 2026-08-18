@@ -23,9 +23,10 @@ subject_ref_origin_source:
   runtime_copy: arcs_verify/data/srs-envelope-v0.2.1.schema.json (byte-identical to the vendored schema)
 activity_governed_read_source:
   source_repository: arcs-srs
-  source_pr: 34 (feat/srs-activity-governed-read-schema-v0-1)
+  source_pr: 34 (feat/srs-activity-governed-read-schema-v0-1), MERGED
+  merge_commit: b40c643ae5b860464fe7bf1debf94642d14f454c
   reviewed_head: 47c95f8
-  status: PROVISIONAL; arcs-srs #34 is unmerged. Rebase these bytes onto the merged commit when #34 lands.
+  status: PROVISIONAL. arcs-srs #34 has merged (merge commit above landed on arcs-srs main), but the source PR's own description states the profile itself remains PROVISIONAL until >=2 distinct products demonstrate reuse without modification; merging the PR did not ratify or stabilize the profile. Merged and provisional are independent facts, not mutually exclusive. Re-verified byte-identical against the merge commit: no re-pin required.
   field_schema: schemas/activity-profiles/v0.1/srs.activity.governed_read.v0.1.schema.json 7b89ebe13cd87b3ac456077fa80f40914e6129a3d78a9e6dd87d6963fda29f19
   vendored_paths: vendor/arcs-srs/schemas/activity-profiles/v0.1/, vendor/arcs-srs/vectors/activity-governed-read-v0.1/
   runtime_copy: arcs_verify/data/srs.activity.governed_read.v0.1.schema.json (byte-identical to the vendored field schema; pinned in verifier.py as ACTIVITY_GOVERNED_READ_SCHEMA_SHA256)
