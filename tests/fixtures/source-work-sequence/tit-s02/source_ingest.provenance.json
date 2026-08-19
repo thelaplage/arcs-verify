@@ -1,0 +1,13 @@
+{
+  "source_url": "https://data.ntsb.gov/Docket/Document/docBLOB?FileExtension=pdf&FileName=MIR2536-Rel.pdf&ID=19420353",
+  "source_artifact_id": "sha256:ffdbd3dfde2d776b07783ebeacef5183fa3b7c5e13ca7cd06f90c70bb937f84b",
+  "source_bytes_sha256": "sha256:ffdbd3dfde2d776b07783ebeacef5183fa3b7c5e13ca7cd06f90c70bb937f84b",
+  "extraction_ref": "sha256:c95bf3ff650312c66246c5208ff31ac39ae58636c2574ca783570275347488e8",
+  "parser_identity": "dagr-ingest.pdf",
+  "parser_method": "pdfplumber",
+  "parser_event_output_hash": "c95bf3ff650312c66246c5208ff31ac39ae58636c2574ca783570275347488e8",
+  "capture_observation_ref": "editorial-source-capture-v02-success-TIT-S02-0001",
+  "pdo_ref": "sha256:0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f9",
+  "receipt_id": "dagr-ingest-src-ingest-ffdbd3dfde2d776b",
+  "receipt_sha256": "sha256:0f3bf01285133c0c3ba48de6c437fa5b93542560a1e8e845403b12a126e06ec6"
+}
