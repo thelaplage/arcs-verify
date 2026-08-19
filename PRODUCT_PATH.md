@@ -49,7 +49,7 @@ The report must not collapse all values into Boolean success. It must preserve
 
 The same verifier-side boundary can support:
 
-- GARPedia;
+- Counterpedia;
 - proof packs;
 - CI verification;
 - cross-organizational evidence exchange;

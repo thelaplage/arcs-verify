@@ -263,7 +263,7 @@ Supported Python: **3.11 and newer** (`requires-python >= 3.11`).
 | Receipt protocol and profiles | SRS |
 | Open runtime and adapters | Open receipt-emitter/runtime binding (separate repository) |
 | Public reference implementations | ARCS Verify and examples |
-| Public read and demo surfaces | GARPedia, Overlay, Showcase |
+| Public read and demo surfaces | Counterpedia, Overlay, Showcase |
 | Commercial operator products | Countervail, Workbench, managed deployments |
 
 MCP is the first supported binding: the receipt-emitter/runtime lives in the
