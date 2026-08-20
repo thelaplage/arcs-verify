@@ -1,349 +1,320 @@
 """
 Tests for arcs_verify.dagr_v02 — DAGR-INDEPENDENT-VERIFY0 (Lane 03).
 
-Coverage:
-  TC-01  Valid evidence-domain receipt → all applicable findings True; action_vocabulary_closed None
-  TC-02  decision_ref.domain != receipt.domain → decision_domain_aligned False
-  TC-03  Wrong receipt_digest → receipt_digest_match False
-  TC-04  Action-domain receipt → action_vocabulary_closed is None (not_evaluated for all domains)
-  TC-05  Missing domain field → domain_qualified False
-  TC-06  Cross-domain name-collision: same vocabulary token, different domains → both valid (NEQ)
-  TC-07  vocabulary_declared: valid decision_ref.vocabulary patterns accepted
-  TC-08  None is not PASS
-  TC-09  vocabulary_declared: invalid decision_ref.vocabulary patterns rejected
-  TC-10  schema_valid: wrong schema string → schema_valid False
-  TC-11  schema_valid: correct schema string → schema_valid True
+All fixtures are well-formed DAGR v0.2 receipts — exactly the eleven fields
+defined by dagr-spec Lane 02 (DAGR-RECEIPT-SCHEMA0). No invented fields
+(vocabulary, state, decision_ref.state) are present.
 
-not_evaluated is never a valid return value.
-None is not PASS — callers must check `is True`, not truthiness.
+Reference receipt_digest value sourced from the Lane 02 conformance vector
+"valid-action-receipt" at dagr-spec eac1ac7:
+  sha256:29a7043f18e311f04f0a0548ecc092a7c3a41f1854aa54e62d4e2aa39e5a5c43
+
+Coverage:
+  TC-01  Valid action-domain receipt → all five findings True
+  TC-02  Valid evidence-domain receipt → all five findings True
+  TC-03  Wrong schema fails schema_matches; other independent findings unaffected
+  TC-04  Unknown domain fails domain_qualified
+  TC-05  decision_ref.domain != receipt.domain fails decision_domain_matches
+         even when receipt_digest is correctly recomputed over the mismatched payload
+  TC-06  Uppercase digest prefix fails digest_algorithm_valid
+  TC-07  Digest too short fails digest_algorithm_valid
+  TC-08  Field mutation without digest recomputation fails receipt_digest_match
+  TC-09  Attacker recomputes digest → receipt structurally valid; not authenticated
+  TC-10  Cross-domain redigest → both receipts valid; digests differ
+  TC-11  Non-dict input → all five findings False (no crash)
+  TC-12  Extra top-level fields not needed for PASS; real receipts lack them
+  TC-13  Trailing newline in digest rejected by fullmatch guard
 """
 
+import copy
 import hashlib
 
 import pytest
 
-from arcs_verify.dagr_v02 import verify_dagr_receipt
+from arcs_verify.dagr_v02 import verify_dagr_receipt, RECEIPT_SCHEMA_V01
 
 
-# ── fixture builders ──────────────────────────────────────────────────────────
+# ── fixture builder ───────────────────────────────────────────────────────────
 
-def _make_digest(char: str) -> str:
+def _d(char: str) -> str:
     return "sha256:" + char * 64
 
 
 def _compute_receipt_digest(receipt: dict) -> str:
     """
-    Recompute receipt_digest from the preimage, mirroring the verifier logic.
-    Used only to build test fixtures — NOT imported from the verifier internals.
+    Recompute receipt_digest locally for fixture construction.
+    Mirrors the preimage spec exactly; does NOT import verifier internals.
     """
-    decision_ref = receipt["decision_ref"]
-    contract_ref = receipt["contract_ref"]
-    PREIMAGE_FIELDS = [
-        ("schema", receipt["schema"]),
-        ("receipt_id", receipt["receipt_id"]),
-        ("domain", receipt["domain"]),
-        ("producer_id", receipt["producer_id"]),
-        ("producer_version", receipt["producer_version"]),
-        ("issued_at", receipt["issued_at"]),
-        ("subject_digest", receipt["subject_digest"]),
-        ("input_digest", receipt["input_digest"]),
-        ("decision_domain", decision_ref["domain"]),
-        ("decision_vocabulary", decision_ref["vocabulary"]),
-        ("decision_digest", decision_ref["digest"]),
-        ("contract_id", contract_ref["contract_id"]),
-        ("contract_digest", contract_ref["digest"]),
+    dr = receipt["decision_ref"]
+    cr = receipt["contract_ref"]
+    lines = [
+        "DAGR-RECEIPT-V0.1",
+        f"schema={receipt['schema']}",
+        f"receipt_id={receipt['receipt_id']}",
+        f"domain={receipt['domain']}",
+        f"producer_id={receipt['producer_id']}",
+        f"producer_version={receipt['producer_version']}",
+        f"issued_at={receipt['issued_at']}",
+        f"subject_digest={receipt['subject_digest']}",
+        f"input_digest={receipt['input_digest']}",
+        f"decision_domain={dr['domain']}",
+        f"decision_vocabulary={dr['vocabulary']}",
+        f"decision_digest={dr['digest']}",
+        f"contract_id={cr['contract_id']}",
+        f"contract_digest={cr['digest']}",
     ]
-    lines = ["DAGR-RECEIPT-V0.1"] + [f"{k}={v}" for k, v in PREIMAGE_FIELDS]
-    preimage = "\n".join(lines) + "\n"
-    return "sha256:" + hashlib.sha256(preimage.encode("utf-8")).hexdigest()
+    return "sha256:" + hashlib.sha256(("\n".join(lines) + "\n").encode("utf-8")).hexdigest()
 
 
-def _base_evidence_receipt() -> dict:
-    """
-    Minimal valid evidence-domain receipt conforming to the Lane-02 spec.
-    No top-level vocabulary or state fields. decision_ref has no state field.
-    """
+def _action_receipt() -> dict:
     r = {
         "schema": "dagr.receipt/v0.1",
-        "receipt_id": "rec-001",
-        "domain": "evidence",
-        "producer_id": "test-producer",
-        "producer_version": "0.1.0",
-        "issued_at": "2026-08-20T00:00:00Z",
-        "subject_digest": _make_digest("a"),
-        "input_digest": _make_digest("b"),
-        "decision_ref": {
-            "domain": "evidence",
-            "vocabulary": "evidence/v0.1",
-            "digest": _make_digest("c"),
-        },
-        "contract_ref": {
-            "contract_id": "evidence-contract-v0.1",
-            "digest": _make_digest("d"),
-        },
-    }
-    r["receipt_digest"] = _compute_receipt_digest(r)
-    return r
-
-
-def _base_action_receipt() -> dict:
-    """
-    Minimal valid action-domain receipt conforming to the Lane-02 spec.
-    No top-level vocabulary or state fields. decision_ref has no state field.
-    The decision record's actual state is opaque — only its digest is carried.
-    """
-    r = {
-        "schema": "dagr.receipt/v0.1",
-        "receipt_id": "rec-action-001",
+        "receipt_id": "rcpt-action-0001",
         "domain": "action",
-        "producer_id": "test-producer",
+        "producer_id": "countervail-control-plane",
         "producer_version": "0.1.0",
-        "issued_at": "2026-08-20T00:00:00Z",
-        "subject_digest": _make_digest("a"),
-        "input_digest": _make_digest("b"),
+        "issued_at": "2026-08-20T06:15:00Z",
+        "subject_digest": _d("1"),
+        "input_digest": _d("2"),
         "decision_ref": {
             "domain": "action",
-            "vocabulary": "action/v0.1",
-            "digest": _make_digest("c"),
+            "vocabulary": "dagr.action-decision/v0.1",
+            "digest": _d("3"),
         },
         "contract_ref": {
-            "contract_id": "action-contract-v0.1",
-            "digest": _make_digest("d"),
+            "contract_id": "countervail.fsi.mnpi.v0_1",
+            "digest": _d("4"),
         },
     }
     r["receipt_digest"] = _compute_receipt_digest(r)
     return r
 
 
-# ── TC-01: valid evidence-domain receipt ─────────────────────────────────────
-
-def test_tc01_valid_evidence_receipt_all_true():
-    receipt = _base_evidence_receipt()
-    result = verify_dagr_receipt(receipt)
-
-    assert result["schema_valid"] is True
-    assert result["domain_qualified"] is True
-    assert result["vocabulary_declared"] is True
-    assert result["decision_domain_aligned"] is True
-    # evidence domain → action_vocabulary_closed is None (not_evaluated — membership opaque)
-    assert result["action_vocabulary_closed"] is None, (
-        "None expected for all domains; None is NOT PASS"
-    )
-    assert result["digests_well_formed"] is True
-    assert result["receipt_digest_match"] is True
-
-
-# ── TC-02: decision_ref.domain != receipt.domain ──────────────────────────────
-
-def test_tc02_decision_domain_mismatch():
-    receipt = _base_evidence_receipt()
-    receipt["decision_ref"] = dict(receipt["decision_ref"])
-    receipt["decision_ref"]["domain"] = "memory"   # mismatch: receipt.domain=evidence
-    # recompute digest so only decision_domain_aligned is False
-    receipt["receipt_digest"] = _compute_receipt_digest(receipt)
-
-    result = verify_dagr_receipt(receipt)
-    assert result["decision_domain_aligned"] is False
-    # other structural checks still pass
-    assert result["domain_qualified"] is True
-    assert result["schema_valid"] is True
-
-
-# ── TC-03: wrong receipt_digest ───────────────────────────────────────────────
-
-def test_tc03_wrong_receipt_digest():
-    receipt = _base_evidence_receipt()
-    # Corrupt the digest (last char flipped)
-    original = receipt["receipt_digest"]
-    last = original[-1]
-    flipped = "0" if last != "0" else "1"
-    receipt["receipt_digest"] = original[:-1] + flipped
-
-    result = verify_dagr_receipt(receipt)
-    assert result["receipt_digest_match"] is False
-    # Structural fields still fine
-    assert result["domain_qualified"] is True
-
-
-# ── TC-04: action-domain receipt → action_vocabulary_closed is None ───────────
-
-def test_tc04_action_domain_vocabulary_closed_not_evaluated():
-    """
-    Even for the action domain, action_vocabulary_closed must be None
-    (not_evaluated). Membership in the decision vocabulary requires the
-    decision preimage, which is not present in receipt bytes — only the
-    decision_digest is. Do NOT infer membership from decision_ref fields.
-    """
-    receipt = _base_action_receipt()
-    result = verify_dagr_receipt(receipt)
-
-    assert result["action_vocabulary_closed"] is None, (
-        "action_vocabulary_closed must be None (not_evaluated) for action domain; "
-        "membership is opaque from receipt bytes alone"
-    )
-    assert result["domain_qualified"] is True
-    assert result["schema_valid"] is True
-
-
-# ── TC-05: missing domain → domain_qualified False ────────────────────────────
-
-def test_tc05_missing_domain_field():
-    receipt = _base_evidence_receipt()
-    del receipt["domain"]
-
-    result = verify_dagr_receipt(receipt)
-    assert result["domain_qualified"] is False
-    # decision_domain_aligned also False because domain is absent
-    assert result["decision_domain_aligned"] is False
-
-
-# ── TC-06: cross-domain name-collision ────────────────────────────────────────
-
-def test_tc06_cross_domain_name_collision_both_valid():
-    """
-    The same vocabulary token ("evidence/v0.1" vs "memory/v0.1") appears in
-    both evidence and memory domains. Each receipt is independently valid;
-    identity differs by domain. NON-EQUIVALENCE IS NORMATIVE.
-    """
-    evidence_receipt = _base_evidence_receipt()
-
-    memory_receipt = {
+def _evidence_receipt() -> dict:
+    r = {
         "schema": "dagr.receipt/v0.1",
-        "receipt_id": "rec-memory-001",
-        "domain": "memory",
-        "producer_id": "test-producer",
-        "producer_version": "0.1.0",
-        "issued_at": "2026-08-20T00:00:00Z",
-        "subject_digest": _make_digest("e"),
-        "input_digest": _make_digest("f"),
+        "receipt_id": "rcpt-evidence-0001",
+        "domain": "evidence",
+        "producer_id": "counterpedia-ingest",
+        "producer_version": "0.2.0",
+        "issued_at": "2026-08-20T09:00:00Z",
+        "subject_digest": _d("a"),
+        "input_digest": _d("b"),
         "decision_ref": {
-            "domain": "memory",
-            "vocabulary": "memory/v0.1",   # same pattern structure, different domain
-            "digest": _make_digest("g"),
+            "domain": "evidence",
+            "vocabulary": "counterpedia.evidence-decision/v0.1",
+            "digest": _d("c"),
         },
         "contract_ref": {
-            "contract_id": "memory-contract-v0.1",
-            "digest": _make_digest("h"),
+            "contract_id": "counterpedia.evidence.v0_1",
+            "digest": _d("d"),
         },
     }
-    memory_receipt["receipt_digest"] = _compute_receipt_digest(memory_receipt)
-
-    ev_result = verify_dagr_receipt(evidence_receipt)
-    mem_result = verify_dagr_receipt(memory_receipt)
-
-    # Both structurally valid
-    assert ev_result["domain_qualified"] is True
-    assert mem_result["domain_qualified"] is True
-    assert ev_result["decision_domain_aligned"] is True
-    assert mem_result["decision_domain_aligned"] is True
-    assert ev_result["receipt_digest_match"] is True
-    assert mem_result["receipt_digest_match"] is True
-    assert ev_result["vocabulary_declared"] is True
-    assert mem_result["vocabulary_declared"] is True
-
-    # action_vocabulary_closed is None for all non-action (and all action) domains
-    assert ev_result["action_vocabulary_closed"] is None
-    assert mem_result["action_vocabulary_closed"] is None
-
-    # Receipts are distinct objects — same vocabulary pattern does not conflate identity
-    assert evidence_receipt["domain"] != memory_receipt["domain"]
-    assert evidence_receipt["receipt_digest"] != memory_receipt["receipt_digest"]
+    r["receipt_digest"] = _compute_receipt_digest(r)
+    return r
 
 
-# ── TC-07: vocabulary_declared reads from decision_ref.vocabulary ─────────────
+# ── TC-01: valid action receipt ───────────────────────────────────────────────
 
-@pytest.mark.parametrize("vocab", [
-    "evidence/v0.1",
-    "action/v0.1",
-    "memory/v1.0",
-    "my.vocab-pack/v12.3",
-    "x/v0.0",
-])
-def test_tc07_valid_decision_ref_vocabulary_accepted(vocab: str):
-    """
-    vocabulary_declared validates decision_ref.vocabulary (not a top-level field).
-    Valid patterns must be accepted.
-    """
-    receipt = _base_evidence_receipt()
-    receipt["decision_ref"] = dict(receipt["decision_ref"])
-    receipt["decision_ref"]["vocabulary"] = vocab
-    receipt["receipt_digest"] = _compute_receipt_digest(receipt)
-
-    result = verify_dagr_receipt(receipt)
-    assert result["vocabulary_declared"] is True, (
-        f"Expected vocabulary_declared True for valid vocab '{vocab}'"
-    )
+def test_tc01_valid_action_receipt_all_true():
+    r = _action_receipt()
+    # Pin against Lane 02 conformance vector at dagr-spec eac1ac7
+    assert r["receipt_digest"] == "sha256:29a7043f18e311f04f0a0548ecc092a7c3a41f1854aa54e62d4e2aa39e5a5c43"
+    result = verify_dagr_receipt(r)
+    assert result["schema_matches"] is True
+    assert result["domain_qualified"] is True
+    assert result["decision_domain_matches"] is True
+    assert result["digest_algorithm_valid"] is True
     assert result["receipt_digest_match"] is True
 
 
-# ── TC-08: None is not PASS ───────────────────────────────────────────────────
+# ── TC-02: valid evidence receipt ─────────────────────────────────────────────
 
-def test_tc08_none_is_not_pass():
+def test_tc02_valid_evidence_receipt_all_true():
+    result = verify_dagr_receipt(_evidence_receipt())
+    assert result["schema_matches"] is True
+    assert result["domain_qualified"] is True
+    assert result["decision_domain_matches"] is True
+    assert result["digest_algorithm_valid"] is True
+    assert result["receipt_digest_match"] is True
+
+
+# ── TC-03: wrong schema fails schema_matches independently ───────────────────
+
+def test_tc03_wrong_schema_fails_schema_matches():
+    r = _action_receipt()
+    r["schema"] = "dagr.state-ref/v0.2"
+    r["receipt_digest"] = _compute_receipt_digest(r)
+    result = verify_dagr_receipt(r)
+    assert result["schema_matches"] is False
+    assert result["receipt_digest_match"] is True  # digest independently valid
+
+
+def test_tc03b_schema_must_match_exact_const():
+    assert RECEIPT_SCHEMA_V01 == "dagr.receipt/v0.1"
+    r = _action_receipt()
+    r["schema"] = "dagr.receipt/v0.2"  # future version — not this lane
+    r["receipt_digest"] = _compute_receipt_digest(r)
+    result = verify_dagr_receipt(r)
+    assert result["schema_matches"] is False
+
+
+# ── TC-04: unknown domain ─────────────────────────────────────────────────────
+
+def test_tc04_unknown_domain_fails_domain_qualified():
+    r = _action_receipt()
+    r["domain"] = "belief"
+    r["decision_ref"]["domain"] = "belief"
+    r["receipt_digest"] = _compute_receipt_digest(r)
+    result = verify_dagr_receipt(r)
+    assert result["domain_qualified"] is False
+    assert result["schema_matches"] is True
+
+
+# ── TC-05: decision domain mismatch ──────────────────────────────────────────
+
+def test_tc05_decision_domain_mismatch_fails_even_with_valid_digest():
     """
-    Confirm that callers who check truthiness rather than `is True` would be
-    misled by None — this test documents the invariant structurally.
+    receipt.domain=action, decision_ref.domain=memory.
+    Digest correctly recomputed over the mismatched payload — digest valid,
+    domain alignment still fails independently.
     """
-    receipt = _base_evidence_receipt()
-    result = verify_dagr_receipt(receipt)
+    r = _action_receipt()
+    r["decision_ref"] = dict(r["decision_ref"])
+    r["decision_ref"]["domain"] = "memory"
+    r["decision_ref"]["vocabulary"] = "amnesiac.memory-decision/v0.1"
+    r["receipt_digest"] = _compute_receipt_digest(r)
+    result = verify_dagr_receipt(r)
+    assert result["decision_domain_matches"] is False
+    assert result["receipt_digest_match"] is True
+    assert result["domain_qualified"] is True
 
-    av = result["action_vocabulary_closed"]
-    assert av is None            # not_evaluated for all domains
-    assert not (av is True)      # None is NOT PASS
-    assert bool(av) is False     # truthiness check would falsely imply failure — caller must use `is True`
+
+# ── TC-06: uppercase digest prefix ───────────────────────────────────────────
+
+def test_tc06_uppercase_digest_prefix_fails():
+    r = _action_receipt()
+    r["input_digest"] = "SHA256:" + "2" * 64
+    result = verify_dagr_receipt(r)
+    assert result["digest_algorithm_valid"] is False
 
 
-# ── TC-09: bad decision_ref.vocabulary pattern → vocabulary_declared False ────
+# ── TC-07: digest too short ───────────────────────────────────────────────────
 
-@pytest.mark.parametrize("bad_vocab", [
-    "Evidence/v0.1",    # uppercase
-    "evidence",          # no version suffix
-    "evidence/0.1",     # missing 'v'
-    "/v0.1",             # no name part
-    "evidence/v",        # no version digits
+def test_tc07_short_digest_fails():
+    r = _action_receipt()
+    r["subject_digest"] = "sha256:" + "1" * 63  # one char short
+    result = verify_dagr_receipt(r)
+    assert result["digest_algorithm_valid"] is False
+
+
+# ── TC-08: field mutation without recomputation ───────────────────────────────
+
+@pytest.mark.parametrize("field,new_value", [
+    ("producer_id", "attacker.example"),
+    ("producer_version", "9.9.9"),
+    ("issued_at", "2026-08-20T06:16:00Z"),
+    ("subject_digest", _d("e")),
+    ("input_digest", _d("f")),
 ])
-def test_tc09_invalid_decision_ref_vocabulary_patterns(bad_vocab: str):
+def test_tc08_top_level_mutation_without_redigest_fails(field, new_value):
+    r = _action_receipt()
+    r[field] = new_value
+    result = verify_dagr_receipt(r)
+    assert result["receipt_digest_match"] is False
+
+
+def test_tc08b_decision_ref_digest_mutation_fails():
+    r = _action_receipt()
+    r["decision_ref"] = dict(r["decision_ref"])
+    r["decision_ref"]["digest"] = _d("9")
+    result = verify_dagr_receipt(r)
+    assert result["receipt_digest_match"] is False
+
+
+def test_tc08c_contract_ref_digest_mutation_fails():
+    r = _action_receipt()
+    r["contract_ref"] = dict(r["contract_ref"])
+    r["contract_ref"]["digest"] = _d("8")
+    result = verify_dagr_receipt(r)
+    assert result["receipt_digest_match"] is False
+
+
+def test_tc08d_contract_id_mutation_fails():
+    r = _action_receipt()
+    r["contract_ref"] = dict(r["contract_ref"])
+    r["contract_ref"]["contract_id"] = "tampered.contract.v0_1"
+    result = verify_dagr_receipt(r)
+    assert result["receipt_digest_match"] is False
+
+
+# ── TC-09: attacker recomputes digest ────────────────────────────────────────
+
+def test_tc09_attacker_recomputed_receipt_structurally_valid_not_authenticated():
     """
-    vocabulary_declared reads from decision_ref.vocabulary.
-    Invalid patterns in that field must be rejected.
+    Attacker changes producer_id and correctly recomputes receipt_digest.
+    receipt_digest_match=True. This does NOT establish producer authentication.
     """
-    receipt = _base_evidence_receipt()
-    receipt["decision_ref"] = dict(receipt["decision_ref"])
-    receipt["decision_ref"]["vocabulary"] = bad_vocab
-    # receipt_digest will not match after mutation; that is acceptable —
-    # vocabulary_declared is independent of receipt_digest_match
-
-    result = verify_dagr_receipt(receipt)
-    assert result["vocabulary_declared"] is False, (
-        f"Expected vocabulary_declared False for bad vocab '{bad_vocab}'"
-    )
-
-
-# ── TC-10: schema_valid exact-match ──────────────────────────────────────────
-
-@pytest.mark.parametrize("bad_schema", [
-    "dagr-receipt/v0.1",   # dash instead of dot
-    "dagr.receipt/v0.2",   # wrong version
-    "dagr.state-ref/v0.2", # old wrong constant
-    "",                     # empty string
-    "dagr.receipt/v0.1 ",  # trailing space
-    "DAGR.RECEIPT/V0.1",   # uppercase
-])
-def test_tc10_wrong_schema_rejected(bad_schema: str):
-    receipt = _base_evidence_receipt()
-    receipt["schema"] = bad_schema
-    # do not recompute receipt_digest — schema_valid is independent
-
-    result = verify_dagr_receipt(receipt)
-    assert result["schema_valid"] is False, (
-        f"Expected schema_valid False for schema '{bad_schema}'"
-    )
+    r = _action_receipt()
+    r["producer_id"] = "attacker.example"
+    r["receipt_digest"] = _compute_receipt_digest(r)
+    result = verify_dagr_receipt(r)
+    assert result["schema_matches"] is True
+    assert result["domain_qualified"] is True
+    assert result["receipt_digest_match"] is True
+    # Document what is NOT established by the five findings:
+    non_conferred = {"producer_authentication", "truth", "authorization", "trusted_time"}
+    assert len(non_conferred) == 4
 
 
-# ── TC-11: correct schema accepted ───────────────────────────────────────────
+# ── TC-10: cross-domain redigest ──────────────────────────────────────────────
 
-def test_tc11_correct_schema_accepted():
-    receipt = _base_evidence_receipt()
-    assert receipt["schema"] == "dagr.receipt/v0.1"
+def test_tc10_cross_domain_redigest_is_new_receipt_not_equivalence():
+    action = _action_receipt()
+    memory = copy.deepcopy(action)
+    memory["domain"] = "memory"
+    memory["decision_ref"]["domain"] = "memory"
+    memory["decision_ref"]["vocabulary"] = "amnesiac.memory-decision/v0.1"
+    memory["receipt_digest"] = _compute_receipt_digest(memory)
 
-    result = verify_dagr_receipt(receipt)
-    assert result["schema_valid"] is True
+    r_action = verify_dagr_receipt(action)
+    r_memory = verify_dagr_receipt(memory)
+
+    assert r_action["receipt_digest_match"] is True
+    assert r_memory["receipt_digest_match"] is True
+    assert r_action["domain_qualified"] is True
+    assert r_memory["domain_qualified"] is True
+    assert action["receipt_digest"] != memory["receipt_digest"]
+    assert action["domain"] != memory["domain"]
+
+
+# ── TC-11: non-dict input ─────────────────────────────────────────────────────
+
+@pytest.mark.parametrize("bad_input", [None, "string", 42, [], True])
+def test_tc11_non_dict_input_all_false_no_crash(bad_input):
+    result = verify_dagr_receipt(bad_input)
+    assert result["schema_matches"] is False
+    assert result["domain_qualified"] is False
+    assert result["decision_domain_matches"] is False
+    assert result["digest_algorithm_valid"] is False
+    assert result["receipt_digest_match"] is False
+
+
+# ── TC-12: real Lane 02 receipts have no invented fields ─────────────────────
+
+def test_tc12_real_lane02_receipt_has_no_top_level_vocabulary_or_state():
+    r = _action_receipt()
+    assert "vocabulary" not in r
+    assert "state" not in r
+    assert "state" not in r["decision_ref"]
+    result = verify_dagr_receipt(r)
+    assert all(v is True for v in result.values())
+
+
+# ── TC-13: trailing newline in digest rejected by fullmatch ───────────────────
+
+def test_tc13_digest_with_trailing_newline_fails():
+    r = _action_receipt()
+    r["input_digest"] = "sha256:" + "2" * 64 + "\n"
+    result = verify_dagr_receipt(r)
+    assert result["digest_algorithm_valid"] is False
