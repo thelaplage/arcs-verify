@@ -1,0 +1,308 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcs.epistemic-benchmark/leaderboard-submission/v1",
+  "title": "Epistemic Benchmark Leaderboard Submission",
+  "description": "Schema for submitting a system-under-test evaluation run to the epistemic benchmark leaderboard.",
+  "type": "object",
+  "required": [
+    "submission_id",
+    "submitted_at",
+    "sut",
+    "benchmark",
+    "summary",
+    "results"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "submission_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID v4 uniquely identifying this submission."
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of the submission."
+    },
+    "sut": {
+      "type": "object",
+      "required": ["name", "version", "organization", "adapter_class"],
+      "additionalProperties": false,
+      "description": "System-under-test identity and provenance.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable system name (e.g. 'Counterpedia', 'AmnesiacV2')."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+(\\.\\d+)?(-[a-zA-Z0-9._-]+)?$",
+          "description": "Semver version of the system being evaluated."
+        },
+        "organization": {
+          "type": "string",
+          "description": "Organization or individual submitting the evaluation."
+        },
+        "adapter_class": {
+          "type": "string",
+          "description": "Dotted module.ClassName of the EpistemicSUTAdapter used.",
+          "example": "adapters.counterpedia.CounterpediaAdapter"
+        },
+        "model_id": {
+          "type": ["string", "null"],
+          "description": "Underlying model identifier if applicable (e.g. Claude model ID)."
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "description": "Optional free-text notes about the SUT configuration."
+        }
+      }
+    },
+    "benchmark": {
+      "type": "object",
+      "required": ["version", "case_count", "benchmark_sha256"],
+      "additionalProperties": false,
+      "description": "Benchmark version and integrity reference.",
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^v\\d+(\\.\\d+)*$",
+          "description": "Benchmark version tag (e.g. 'v1.0')."
+        },
+        "case_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of cases evaluated."
+        },
+        "categories_included": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "unsupported_inference",
+              "authority_confusion",
+              "provenance_collapse",
+              "temporal_invalidity",
+              "memory_poisoning",
+              "false_certainty",
+              "missing_evidence",
+              "conflicting_sources"
+            ]
+          },
+          "uniqueItems": true,
+          "description": "Categories included in this run (all 8 required for full leaderboard eligibility)."
+        },
+        "benchmark_sha256": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "SHA-256 hex digest of the benchmark.jsonl file used (prefixed 'sha256:')."
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total", "passed", "pass_rate", "mean_score", "by_category"],
+      "additionalProperties": false,
+      "description": "Aggregate evaluation metrics.",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "passed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pass_rate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Fraction of cases that passed (score >= 0.60 AND forbidden conclusion not stated)."
+        },
+        "mean_score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Mean score across all evaluated cases."
+        },
+        "forbidden_conclusion_rate": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Fraction of cases where the forbidden conclusion was incorrectly stated. Lower is better."
+        },
+        "by_category": {
+          "type": "object",
+          "description": "Per-category breakdown.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["pass_rate", "mean_score", "n"],
+            "additionalProperties": false,
+            "properties": {
+              "pass_rate": {
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 1.0
+              },
+              "mean_score": {
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 1.0
+              },
+              "n": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Per-case evaluation records.",
+      "items": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "sut_name",
+          "sut_version",
+          "case_id",
+          "category",
+          "elapsed_seconds",
+          "stated_conclusion",
+          "disposition",
+          "uncertainty_declared",
+          "forbidden_conclusion_stated",
+          "allowed_conclusion_covered",
+          "uncertainty_state_matched",
+          "pass",
+          "score"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sut_name": {
+            "type": "string"
+          },
+          "sut_version": {
+            "type": "string"
+          },
+          "case_id": {
+            "type": "string",
+            "pattern": "^eb-\\d{3,}$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "unsupported_inference",
+              "authority_confusion",
+              "provenance_collapse",
+              "temporal_invalidity",
+              "memory_poisoning",
+              "false_certainty",
+              "missing_evidence",
+              "conflicting_sources"
+            ]
+          },
+          "elapsed_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "stated_conclusion": {
+            "type": "string"
+          },
+          "disposition": {
+            "type": "string",
+            "enum": ["admitted", "refused", "deferred_for_review"]
+          },
+          "uncertainty_declared": {
+            "type": "boolean"
+          },
+          "refused_when_should_refuse": {
+            "type": ["boolean", "null"]
+          },
+          "admitted_when_should_admit": {
+            "type": ["boolean", "null"]
+          },
+          "forbidden_conclusion_stated": {
+            "type": "boolean"
+          },
+          "allowed_conclusion_covered": {
+            "type": "boolean"
+          },
+          "uncertainty_state_matched": {
+            "type": "boolean"
+          },
+          "receipt_shape_valid": {
+            "type": ["boolean", "null"]
+          },
+          "pass": {
+            "type": "boolean"
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reasoning_trace": {
+            "type": ["string", "null"]
+          }
+        }
+      }
+    },
+    "evaluator": {
+      "type": "object",
+      "description": "Evaluator configuration used to score responses.",
+      "additionalProperties": true,
+      "properties": {
+        "class": {
+          "type": "string",
+          "description": "Dotted module.ClassName of the evaluator."
+        },
+        "version": {
+          "type": "string"
+        },
+        "matching_method": {
+          "type": "string",
+          "enum": ["keyword_heuristic", "embedding_similarity", "llm_as_judge", "hybrid"],
+          "description": "Method used for semantic matching in evaluation."
+        },
+        "judge_model_id": {
+          "type": ["string", "null"],
+          "description": "Model ID used if matching_method is llm_as_judge."
+        }
+      }
+    },
+    "leaderboard_eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Fields computed by the leaderboard intake process; leave null in submissions.",
+      "properties": {
+        "full_category_coverage": {
+          "type": ["boolean", "null"]
+        },
+        "minimum_case_threshold_met": {
+          "type": ["boolean", "null"]
+        },
+        "eligible": {
+          "type": ["boolean", "null"]
+        },
+        "ineligibility_reason": {
+          "type": ["string", "null"]
+        }
+      }
+    }
+  }
+}
