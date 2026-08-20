@@ -1,5 +1,5 @@
 """
-DAGR v0.2 independent receipt verifier.
+DAGR v0.1 independent receipt verifier.
 
 INDEPENDENCE CONTRACT: this module imports nothing from dagr-spec,
 dagr-runtime, counterpedia, countervail, or amnesiac. It works from
@@ -14,19 +14,12 @@ import re
 
 # ── contract constants ────────────────────────────────────────────────────────
 
-SCHEMA_V02 = "dagr.state-ref/v0.2"
+SCHEMA_V01 = "dagr.receipt/v0.1"
 
 RESERVED_DOMAINS = frozenset({"evidence", "memory", "action", "organization"})
 
-ACTION_VOCABULARY_V01 = frozenset(
-    {"permitted", "permitted_with_constraints", "review_required", "refused"}
-)
-
 # vocabulary: ^[a-z][a-z0-9_.-]*/v[0-9]+\.[0-9]+$
 _VOCABULARY_RE = re.compile(r"^[a-z][a-z0-9_.-]*/v[0-9]+\.[0-9]+$")
-
-# state: ^[A-Za-z][A-Za-z0-9_.-]*$
-_STATE_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_.-]*$")
 
 # digest: sha256: + exactly 64 lowercase hex chars
 _DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -110,11 +103,18 @@ def _build_preimage(receipt: dict) -> str | None:
 
 def verify_dagr_receipt(receipt: dict) -> dict:
     """
-    Verify a DAGR v0.2 receipt against the byte-level contract.
+    Verify a DAGR v0.1 receipt against the byte-level contract.
 
-    Returns eight separate Boolean findings. not_evaluated is never
-    a valid return value. None is returned only for action_vocabulary_closed
-    when domain is not "action" — None is NOT PASS.
+    Returns seven separate findings. None is returned for action_vocabulary_closed
+    because membership in the decision vocabulary requires the decision preimage,
+    which is NOT present in the receipt bytes — only the decision_digest is.
+    Returning None for this finding is NOT PASS; it means not_evaluated.
+
+    NOTE on action_vocabulary_closed: The decision record's actual state is
+    opaque from the receipt alone. Only its digest is carried. Membership cannot
+    be verified from receipt bytes alone. This finding is always None
+    (not_evaluated) for ALL domains, including "action". Do NOT check
+    decision_ref for a state field — no such field exists in the spec.
 
     Parameters
     ----------
@@ -124,62 +124,49 @@ def verify_dagr_receipt(receipt: dict) -> dict:
     Returns
     -------
     dict with keys:
+        schema_valid            : bool
         domain_qualified        : bool
-        vocabulary_valid        : bool
-        state_scoped            : bool
-        decision_domain_matches : bool
-        action_vocabulary_closed: bool | None
-        digest_algorithm_valid  : bool
+        vocabulary_declared     : bool
+        decision_domain_aligned : bool
+        digests_well_formed     : bool
         receipt_digest_match    : bool
-        schema_present          : bool
+        action_vocabulary_closed: None  (always not_evaluated — see note above)
     """
 
-    # ── schema_present ────────────────────────────────────────────────────────
+    # ── schema_valid ──────────────────────────────────────────────────────────
     schema = receipt.get("schema") if isinstance(receipt, dict) else None
-    schema_present: bool = isinstance(schema, str) and len(schema) > 0
+    schema_valid: bool = schema == SCHEMA_V01
 
     # ── domain_qualified ─────────────────────────────────────────────────────
     domain = receipt.get("domain") if isinstance(receipt, dict) else None
     domain_qualified: bool = isinstance(domain, str) and domain in RESERVED_DOMAINS
 
-    # ── vocabulary_valid ─────────────────────────────────────────────────────
-    vocabulary = receipt.get("vocabulary") if isinstance(receipt, dict) else None
-    vocabulary_valid: bool = (
+    # ── vocabulary_declared ───────────────────────────────────────────────────
+    # vocabulary lives in decision_ref, not at the top level of the receipt
+    decision_ref = receipt.get("decision_ref") if isinstance(receipt, dict) else None
+    vocabulary = decision_ref.get("vocabulary") if isinstance(decision_ref, dict) else None
+    vocabulary_declared: bool = (
         isinstance(vocabulary, str) and bool(_VOCABULARY_RE.match(vocabulary))
     )
 
-    # ── state_scoped ─────────────────────────────────────────────────────────
-    state = receipt.get("state") if isinstance(receipt, dict) else None
-    state_scoped: bool = (
-        isinstance(state, str) and bool(_STATE_RE.match(state))
-    )
-
-    # ── decision_domain_matches ───────────────────────────────────────────────
-    decision_ref = receipt.get("decision_ref") if isinstance(receipt, dict) else None
+    # ── decision_domain_aligned ───────────────────────────────────────────────
     if isinstance(decision_ref, dict):
         decision_domain = decision_ref.get("domain")
-        decision_domain_matches: bool = (
+        decision_domain_aligned: bool = (
             isinstance(decision_domain, str)
             and isinstance(domain, str)
             and decision_domain == domain
         )
     else:
-        decision_domain_matches = False
+        decision_domain_aligned = False
 
     # ── action_vocabulary_closed ──────────────────────────────────────────────
-    if domain == "action":
-        if isinstance(decision_ref, dict):
-            decision_state = decision_ref.get("state")
-            action_vocabulary_closed: bool | None = (
-                isinstance(decision_state, str)
-                and decision_state in ACTION_VOCABULARY_V01
-            )
-        else:
-            action_vocabulary_closed = False
-    else:
-        action_vocabulary_closed = None  # not applicable; None is NOT PASS
+    # INVARIANT: membership in the decision vocabulary requires the decision
+    # preimage, not available in receipt bytes. Always not_evaluated (None).
+    # None is NOT PASS.
+    action_vocabulary_closed: None = None
 
-    # ── digest_algorithm_valid ────────────────────────────────────────────────
+    # ── digests_well_formed ───────────────────────────────────────────────────
     digest_fields: list[bool] = []
 
     for top_key in ("subject_digest", "input_digest", "receipt_digest"):
@@ -197,7 +184,7 @@ def verify_dagr_receipt(receipt: dict) -> dict:
     else:
         digest_fields.append(False)
 
-    digest_algorithm_valid: bool = all(digest_fields)
+    digests_well_formed: bool = all(digest_fields)
 
     # ── receipt_digest_match ──────────────────────────────────────────────────
     claimed_digest = receipt.get("receipt_digest") if isinstance(receipt, dict) else None
@@ -211,12 +198,11 @@ def verify_dagr_receipt(receipt: dict) -> dict:
         receipt_digest_match = False
 
     return {
-        "domain_qualified": domain_qualified,
-        "vocabulary_valid": vocabulary_valid,
-        "state_scoped": state_scoped,
-        "decision_domain_matches": decision_domain_matches,
+        "schema_valid":             schema_valid,
+        "domain_qualified":         domain_qualified,
+        "vocabulary_declared":      vocabulary_declared,
+        "decision_domain_aligned":  decision_domain_aligned,
+        "digests_well_formed":      digests_well_formed,
+        "receipt_digest_match":     receipt_digest_match,
         "action_vocabulary_closed": action_vocabulary_closed,
-        "digest_algorithm_valid": digest_algorithm_valid,
-        "receipt_digest_match": receipt_digest_match,
-        "schema_present": schema_present,
     }
