@@ -25,6 +25,12 @@ jobs:
           ref: 0a0e25674fbe8afca9705d16ca937cb4940969a0
           token: ${{ secrets.ECOSYSTEM_KIT_CHECKOUT_TOKEN }}
           path: .ecosystem-kit-pinned
+      # Lightweight .ecosystem/ structure check — runs unconditionally without
+      # the private arcs-ecosystem-kit.  Verifies all declaration files exist,
+      # are valid JSON-compatible YAML, carry the correct repository key, and
+      # that RELEASE_STATE.yaml has required fields.  Full schema-backed
+      # validation against the kit schemas is handled by pytest below.
+      - run: python3 tools/check_ecosystem_structure.py
       - run: pytest -q
         env:
           ARCS_ECOSYSTEM_KIT_PATH: ${{ github.workspace }}/.ecosystem-kit-pinned
