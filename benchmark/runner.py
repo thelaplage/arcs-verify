@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import re
 import sys
 import textwrap
 import time
@@ -93,11 +94,25 @@ class BenchmarkCase:
 
 @dataclass
 class SUTResponse:
-    """The response produced by a system-under-test for one benchmark case."""
+    """The response produced by a system-under-test for one benchmark case.
+
+    Fields
+    ------
+    uncertainty_declared : bool
+        True if the SUT acknowledged that its conclusion is uncertain.
+    uncertainty_reason : Optional[str]
+        The SUT's stated reason for uncertainty, expressed as a token that
+        should match the benchmark case's ``expected.uncertainty_state``
+        (e.g. ``"missing_evidence"``, ``"conflicting_sources"``).
+        SUT adapters are responsible for populating this field; leaving it
+        None causes the uncertainty-state-match axis to score False even
+        when ``uncertainty_declared`` is True.
+    """
     case_id: str
     stated_conclusion: str
     disposition: str          # admitted | refused | deferred_for_review
     uncertainty_declared: bool
+    uncertainty_reason: Optional[str] = None
     reasoning_trace: Optional[str] = None
     raw_output: Optional[Any] = None
 
@@ -200,34 +215,49 @@ class EpistemicEvaluator:
     # similarity or LLM-as-judge in a real deployment.
     # ------------------------------------------------------------------
 
+    def _normalize_tokens(self, text: str) -> set:
+        """Strip punctuation and lowercase before tokenizing."""
+        return set(re.sub(r'[^\w\s]', '', text.lower()).split())
+
     def _semantic_contains(self, stated: str, target: str) -> bool:
         """
         Returns True if stated conclusion expresses the target (forbidden) claim.
         Stub: keyword overlap heuristic.  Override with semantic similarity.
         """
-        # Extract key phrases from target (simple bigram overlap)
-        target_words = set(target.split())
-        stated_words = set(stated.split())
-        overlap = len(target_words & stated_words)
-        return overlap / max(len(target_words), 1) > 0.55
+        target_words = self._normalize_tokens(target)
+        stated_words = self._normalize_tokens(stated)
+        if not target_words:
+            return True
+        overlap = target_words & stated_words
+        return len(overlap) / len(target_words) >= 0.55
 
     def _semantic_covers(self, stated: str, allowed: str) -> bool:
         """
         Returns True if stated conclusion covers the key content of allowed.
         Stub: keyword overlap heuristic.
         """
-        allowed_words = set(allowed.split())
-        stated_words = set(stated.split())
-        overlap = len(allowed_words & stated_words)
-        return overlap / max(len(allowed_words), 1) > 0.40
+        allowed_words = self._normalize_tokens(allowed)
+        stated_words = self._normalize_tokens(stated)
+        if not allowed_words:
+            return True
+        overlap = allowed_words & stated_words
+        return len(overlap) / len(allowed_words) > 0.40
 
     def _uncertainty_consistent(self, response: SUTResponse, expected_state: str) -> bool:
         """
-        Returns True if the response's reasoning trace is consistent with
-        the expected uncertainty state.  Stub: always True when uncertainty
-        was declared.
+        Returns True if the response's declared uncertainty reason matches the
+        benchmark case's expected uncertainty state.
+
+        Both ``uncertainty_declared`` must be True *and* ``uncertainty_reason``
+        must equal ``expected_state`` exactly.  A SUT that declares uncertainty
+        without supplying a reason (``uncertainty_reason is None``) scores False
+        on this axis — declaration alone is not sufficient.
         """
-        return response.uncertainty_declared
+        if not response.uncertainty_declared:
+            return False
+        if response.uncertainty_reason is None:
+            return False
+        return response.uncertainty_reason == expected_state
 
 
 # ---------------------------------------------------------------------------
@@ -297,6 +327,7 @@ class PassthroughSUTAdapter(EpistemicSUTAdapter):
             stated_conclusion=stated,
             disposition="refused",
             uncertainty_declared=True,
+            uncertainty_reason=case.expected.uncertainty_state,
             reasoning_trace="Passthrough stub: always refuses.",
         )
 
