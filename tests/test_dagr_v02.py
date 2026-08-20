@@ -16,7 +16,10 @@ Coverage:
   TC-04  Unknown domain fails domain_qualified
   TC-05  decision_ref.domain != receipt.domain fails decision_domain_matches
          even when receipt_digest is correctly recomputed over the mismatched payload
-  TC-06  Uppercase digest prefix fails digest_algorithm_valid
+  TC-06  Uppercase digest prefix fails digest_algorithm_valid (input_digest)
+  TC-06b receipt_digest invalid format fails digest_algorithm_valid
+  TC-06c decision_ref.digest invalid format fails digest_algorithm_valid
+  TC-06d contract_ref.digest invalid format fails digest_algorithm_valid
   TC-07  Digest too short fails digest_algorithm_valid
   TC-08  Field mutation without digest recomputation fails receipt_digest_match
   TC-09  Attacker recomputes digest → receipt structurally valid; not authenticated
@@ -24,6 +27,7 @@ Coverage:
   TC-11  Non-dict input → all five findings False (no crash)
   TC-12  Extra top-level fields not needed for PASS; real receipts lack them
   TC-13  Trailing newline in digest rejected by fullmatch guard
+  TC-14  Return dict has EXACTLY the 5 expected keys — no old keys present
 """
 
 import copy
@@ -199,6 +203,36 @@ def test_tc06_uppercase_digest_prefix_fails():
     assert result["digest_algorithm_valid"] is False
 
 
+# ── TC-06b/c/d: digest_algorithm_valid covers all five digest fields ──────────
+
+def test_tc06b_receipt_digest_invalid_format_fails():
+    """receipt_digest itself is one of the 5 digest fields checked."""
+    r = _action_receipt()
+    r["receipt_digest"] = "SHA256:" + "2" * 64  # uppercase prefix
+    result = verify_dagr_receipt(r)
+    assert result["digest_algorithm_valid"] is False
+
+
+def test_tc06c_decision_ref_digest_invalid_format_fails():
+    """decision_ref.digest is one of the 5 digest fields checked."""
+    r = _action_receipt()
+    r["decision_ref"] = dict(r["decision_ref"])
+    r["decision_ref"]["digest"] = "sha256:" + "3" * 63  # one char short
+    r["receipt_digest"] = _compute_receipt_digest(r)
+    result = verify_dagr_receipt(r)
+    assert result["digest_algorithm_valid"] is False
+
+
+def test_tc06d_contract_ref_digest_invalid_format_fails():
+    """contract_ref.digest is one of the 5 digest fields checked."""
+    r = _action_receipt()
+    r["contract_ref"] = dict(r["contract_ref"])
+    r["contract_ref"]["digest"] = "sha256:" + "4" * 65  # one char long
+    r["receipt_digest"] = _compute_receipt_digest(r)
+    result = verify_dagr_receipt(r)
+    assert result["digest_algorithm_valid"] is False
+
+
 # ── TC-07: digest too short ───────────────────────────────────────────────────
 
 def test_tc07_short_digest_fails():
@@ -318,3 +352,38 @@ def test_tc13_digest_with_trailing_newline_fails():
     r["input_digest"] = "sha256:" + "2" * 64 + "\n"
     result = verify_dagr_receipt(r)
     assert result["digest_algorithm_valid"] is False
+
+
+# ── TC-14: return dict has exactly the 5 expected keys ───────────────────────
+
+_EXPECTED_KEYS = frozenset({
+    "schema_matches",
+    "domain_qualified",
+    "decision_domain_matches",
+    "digest_algorithm_valid",
+    "receipt_digest_match",
+})
+_OLD_KEYS = frozenset({
+    "schema_present",
+    "vocabulary_valid",
+    "state_scoped",
+    "action_vocabulary_closed",
+})
+
+
+def test_tc14_return_dict_has_exactly_five_expected_keys_valid_receipt():
+    result = verify_dagr_receipt(_action_receipt())
+    assert set(result.keys()) == _EXPECTED_KEYS
+
+
+def test_tc14b_return_dict_has_exactly_five_expected_keys_invalid_input():
+    result = verify_dagr_receipt(None)
+    assert set(result.keys()) == _EXPECTED_KEYS
+
+
+def test_tc14c_no_old_keys_present():
+    """Explicitly assert that removed keys from the old 8-finding API are absent."""
+    result = verify_dagr_receipt(_action_receipt())
+    assert _OLD_KEYS.isdisjoint(result.keys()), (
+        f"Old keys found in result: {_OLD_KEYS & set(result.keys())}"
+    )
