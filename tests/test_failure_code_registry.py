@@ -31,6 +31,7 @@ MODULES = [
     "arcs_verify/c2pa_native.py",
     "arcs_verify/amnesiac/verifier.py",
     "arcs_verify/amnesiac/public_proof.py",
+    "arcs_verify/universal.py",
 ]
 
 # Signatures that mark a module as one that emits verifier failure codes. The
