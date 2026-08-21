@@ -1,3 +1,32 @@
+"""SRS receipt verifier — structural and cryptographic conformance.
+
+L02 Binding Model (DAGR constitutional contract, ratified 2026-08-20):
+
+The DAGR receipt binding model separates five semantic roles. arcs-verify's
+position within that model is stated here so callers cannot mistake this
+module's authority boundary:
+
+- Semantic owner: the governance authority that defines what a governed action
+  means and what its receipt must contain (garp-doctrine / arcs-srs).
+- Carrier: the SRS envelope that transports the signed receipt payload between
+  emitter and verifier (arcs-srs schema, byte-frozen per ENVELOPE_SCHEMA_PINS).
+- Emitter: the producer that executes the governed action and emits a signed
+  SRS receipt (dagr-mcp or another DAGR-conformant producer). arcs-verify
+  NEVER imports emitter code — issuer/verifier separation is inviolate.
+- Verifier: arcs-verify. Role: bytes in → structural/crypto/profile findings
+  out. Re-derives conformance from the artifact's own bytes plus the pinned
+  profile authority. Trusts no emitter claim. Is NOT a certifier of
+  implementations, a policy authority, a gateway, a custody store, or a
+  knowledge base.
+- Consumer: downstream that reads the verification report to make trust or
+  admission decisions (dagr-ops, counterpedia-agent, dagr packs, etc.).
+
+Verdict discipline (NEQ-02/03/04/05/06): not_evaluated != pass;
+not_applicable != pass; envelope_valid != profile_pass;
+emitter_assertion != independently_recomputed_finding;
+disclosure != verdict. See arcs_verify.verdict_discipline for importable
+constants and arcs_verify.neq for all 11 NEQ assertions.
+"""
 from __future__ import annotations
 
 import base64
