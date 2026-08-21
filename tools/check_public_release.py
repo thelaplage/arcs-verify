@@ -32,7 +32,13 @@ PRIVATE_PATH_MARKERS = (
     "~" + "/" + "arcs-anchor",
 )
 INTERNAL_REVIEWER = "Stein" + "er"
-PRIVATE_IMPORT_ROOTS = ("garp" + "_sdk", "garp" + "_core", "garp" + "_local")
+PRIVATE_IMPORT_ROOTS = (
+    "garp" + "_sdk",
+    "garp" + "_core",
+    "garp" + "_local",
+    # countergraph is a producer; arcs-verify must never import producer code
+    "counter" + "graph",
+)
 WITHDRAWN_LANGUAGE = (
     "none is externally verifiable",
     "the record-governance layer is empty",

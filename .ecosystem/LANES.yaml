@@ -171,6 +171,108 @@
         }
       ],
       "notes": "This lane does not modify verifier algorithms, supported receipt profiles, DAGR producer code, or runtime package dependencies."
+    },
+    {
+      "lane_id": "execution-binding0-cg-replay0-v0-1",
+      "status": "active",
+      "owner": {
+        "name": "ARCS Verify maintainers"
+      },
+      "start_date": "2026-08-21",
+      "objective": "Add an independent digest-binding verifier for countergraph.execution-packet/v0.1 (EXECUTION-BINDING0 Lane 4: CG-REPLAY0). No countergraph or producer import. Seven conclusions: packet_digest_valid, packet_id_valid, projection_integrity_valid, query_binding_valid, result_digest_valid, execution_digest_valid, execution_reproduced. truth_verified: not_evaluated always. authority_conferred: false always.",
+      "repositories_touched": [
+        "arcs-verify",
+        "countergraph"
+      ],
+      "capabilities_touched": [
+        "EVIDENCE_VALIDATE_STRUCTURE",
+        "EVIDENCE_RECOMPUTE_SERIALIZED_CHAIN"
+      ],
+      "contracts_touched": [
+        "arcs_verify.cg_execution_replay.report.v0_1",
+        "countergraph.execution-packet/v0.1",
+        "countergraph.query-execution/v0.1",
+        "countergraph.canonical-json/v0.1"
+      ],
+      "produced_artifacts": [
+        {
+          "artifact_id": "cg-execution-replay-verifier",
+          "artifact_type": "module",
+          "path_or_ref": "arcs_verify/cg_execution_replay.py",
+          "claim_status": "validated"
+        },
+        {
+          "artifact_id": "cg-execution-replay-tests",
+          "artifact_type": "test",
+          "path_or_ref": "tests/test_cg_execution_replay.py",
+          "claim_status": "validated"
+        },
+        {
+          "artifact_id": "cg-execution-replay-vectors",
+          "artifact_type": "fixture",
+          "path_or_ref": "packs/cg.execution.replay/v0.1/vectors.json",
+          "claim_status": "validated"
+        },
+        {
+          "artifact_id": "cg-replay0-independence-guard",
+          "artifact_type": "tool",
+          "path_or_ref": "tools/check_public_release.py",
+          "claim_status": "validated",
+          "notes": "PRIVATE_IMPORT_ROOTS now includes 'countergraph' to enforce static independence from the producer."
+        }
+      ],
+      "consumed_upstream_work": [
+        {
+          "work_id": "countergraph.execution-packet-schema.v0.1",
+          "semantic_authority": "countergraph",
+          "claim_status": "validated",
+          "notes": "Literal producer bytes from countergraph PR #152 commit aadf0801fbaff4137d1ddd079102a3500969da15 pinned in vectors.json."
+        },
+        {
+          "work_id": "execution-binding0.digest-taxonomy0",
+          "semantic_authority": "garp-doctrine",
+          "claim_status": "declared",
+          "notes": "Vocabulary freeze: digest binding != replay != truth; authority_effect always none."
+        }
+      ],
+      "overlap_keys": [
+        "CG-REPLAY0 independence",
+        "countergraph execution-packet digest binding",
+        "producer/verifier separation"
+      ],
+      "blockers": [],
+      "downstream_blocks": [
+        "EXECUTION-BINDING0 Lane 5 (RESEARCH-EXEC-REF0)",
+        "EXECUTION-BINDING0 Lane 6 (EXECUTION-INPUT0)"
+      ],
+      "completion_gates": [
+        {
+          "gate_id": "no-countergraph-import",
+          "description": "Runtime sys.modules check passes: no 'countergraph' import after loading verifier.",
+          "status": "passed"
+        },
+        {
+          "gate_id": "static-independence-guard",
+          "description": "check_public_release.py PRIVATE_IMPORT_ROOTS includes 'countergraph'.",
+          "status": "passed"
+        },
+        {
+          "gate_id": "golden-vector-tests",
+          "description": "Two literal golden vectors from countergraph PR #152 pass all seven digest-binding checks.",
+          "status": "passed"
+        },
+        {
+          "gate_id": "mutation-tests",
+          "description": "All four digest-field mutation tests fail as expected.",
+          "status": "passed"
+        },
+        {
+          "gate_id": "full-test-suite",
+          "description": "Full arcs-verify pytest suite passes.",
+          "status": "passed"
+        }
+      ],
+      "notes": "This lane does not make graph reads DAGR events. authority_effect is always 'none'. The verifier recomputes digest bindings from bytes; it does not verify that the traversal result represents real-world truth (truth_verified: not_evaluated)."
     }
   ]
 }

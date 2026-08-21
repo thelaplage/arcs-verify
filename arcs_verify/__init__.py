@@ -14,6 +14,10 @@ from .schema import (
     SCHEMA_PIN_V0_2_0,
     SCHEMA_PIN_V0_2_1,
 )
+from .cg_execution_replay import (
+    CGExecutionReplayReport,
+    verify_cg_execution_packet,
+)
 
 __all__ = [
     # Core verifier
@@ -30,5 +34,8 @@ __all__ = [
     "RECEIPT_VERSION",
     "SCHEMA_PIN_V0_2_0",
     "SCHEMA_PIN_V0_2_1",
+    # CG-REPLAY0 (EXECUTION-BINDING0 Lane 4)
+    "CGExecutionReplayReport",
+    "verify_cg_execution_packet",
 ]
 __version__ = "0.1.1"
