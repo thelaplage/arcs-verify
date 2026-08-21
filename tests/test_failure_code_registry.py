@@ -32,6 +32,11 @@ MODULES = [
     "arcs_verify/amnesiac/verifier.py",
     "arcs_verify/amnesiac/public_proof.py",
     "arcs_verify/universal.py",
+    # CG-REPLAY0 Lane 4 — execution-packet digest-binding verifiers
+    "arcs_verify/cg_execution_replay.py",
+    "arcs_verify/cg_replay.py",
+    # Counterplayer study verifier
+    "arcs_verify/counterplayer_study.py",
 ]
 
 # Signatures that mark a module as one that emits verifier failure codes. The
