@@ -308,7 +308,13 @@ def test_tc12_real_lane02_receipt_has_no_top_level_vocabulary_or_state():
     assert "state" not in r
     assert "state" not in r["decision_ref"]
     result = verify_dagr_receipt(r)
-    assert all(v is True for v in result.values())
+    # Assert all five boolean findings are True; dagr_constitution_id is a non-boolean
+    # metadata field added by L11 and is excluded from the boolean sweep.
+    _BOOLEAN_FINDING_KEYS = (
+        "schema_matches", "domain_qualified", "decision_domain_matches",
+        "digest_algorithm_valid", "receipt_digest_match",
+    )
+    assert all(result[k] is True for k in _BOOLEAN_FINDING_KEYS)
 
 
 # ── TC-13: trailing newline in digest rejected by fullmatch ───────────────────

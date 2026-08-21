@@ -19,6 +19,8 @@ Receipt validity does not establish:
 import hashlib
 import re
 
+from arcs_verify.dagr_constitutional_consumer import DAGR_CONSTITUTIONAL_CONTRACT_ID
+
 # ── contract constants ────────────────────────────────────────────────────────
 
 RECEIPT_SCHEMA_V01 = "dagr.receipt/v0.1"
@@ -185,4 +187,5 @@ def verify_dagr_receipt(receipt: dict) -> dict:
         "decision_domain_matches": decision_domain_matches,
         "digest_algorithm_valid": digest_algorithm_valid,
         "receipt_digest_match": receipt_digest_match,
+        "dagr_constitution_id": DAGR_CONSTITUTIONAL_CONTRACT_ID,
     }
