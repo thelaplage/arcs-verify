@@ -614,3 +614,61 @@ no master verdict.
 
 Missing/unreadable/malformed CLI input, and an absent or version-mismatched
 native validator, remain a usage posture (exit 2), not a verification verdict.
+
+## Counterplayer study verification (`counterplayer-study` subcommand)
+
+| Code | Meaning |
+|---|---|
+| `bundle_invalid` | The study bundle is absent or is not a well-formed JSON object. |
+| `producer_pin_mismatch` | The counterplayer repository or commit pin in the bundle does not match the verifier's pinned value. |
+| `manifest_invalid` | `StudyArtifactManifest` is missing or has a field-set mismatch. |
+| `manifest_shape_invalid` | `StudyArtifactManifest` schema or digest field shape is invalid. |
+| `manifest_identity_mismatch` | The manifest identity (schema + ref) does not match the declared identity. |
+| `manifest_digest_mismatch` | The recomputed manifest digest does not match the declared value. |
+| `manifest_canonicalization_failed` | Manifest canonicalization failed during digest recomputation. |
+| `impact_invalid` | The study impact document is absent or is not a well-formed JSON object. |
+| `impact_artifact_mismatch` | The impact artifact reference does not match the manifest. |
+| `impact_digest_mismatch` | The recomputed impact digest does not match the declared value. |
+| `impact_canonicalization_failed` | Impact document canonicalization failed during digest recomputation. |
+| `recall_invalid` | The recall document is absent or is not a well-formed JSON object. |
+| `recall_refs_invalid` | The recall document's reference set is invalid or inconsistent. |
+| `recall_artifact_mismatch` | The recall artifact reference does not match the manifest. |
+| `recall_digest_mismatch` | The recomputed recall digest does not match the declared value. |
+| `recall_canonicalization_failed` | Recall document canonicalization failed during digest recomputation. |
+
+## CG execution-packet digest-binding verification (`cg-replay` subcommand)
+
+The `arcs_verify/cg_execution_replay.py` and `arcs_verify/cg_replay.py` modules
+verify digest bindings in `countergraph.execution-packet/v0.1` packets.
+Both modules use `_fail(code, detail)` with code at argument index 0; the
+failure code registry structural sweep (HELPER_CODE_ARG = 1) does not extract
+their codes via AST, so codes are listed here as a manual registry entry.
+
+`arcs_verify/cg_execution_replay.py` (nested-schema packet form):
+
+| Code | Meaning |
+|---|---|
+| `invalid_packet` | The packet is not a well-formed dict. |
+| `wrong_packet_schema` | `schema` field is absent or does not match `countergraph.execution-packet/v0.1`. |
+| `unsupported_packet_kind` | `packet_kind` is not `query_execution`; only query executions are supported. |
+| `invalid_packet_digest` | `packet_digest` is absent or not a well-formed sha256 digest. |
+| `packet_digest_error` | Packet digest recomputation raised an exception. |
+| `missing_root_execution` | `root_execution` is absent or not a dict. |
+| `wrong_execution_schema` | `root_execution.schema` does not match `countergraph.query-execution/v0.1`. |
+
+`arcs_verify/cg_replay.py` (flat-schema packet form, CG-REPLAY0 Lane 4):
+
+| Code | Meaning |
+|---|---|
+| `invalid_packet` | The packet is not a well-formed dict. |
+| `wrong_packet_schema` | `schema` field is absent or does not match `countergraph.execution-packet/v0.1`. |
+| `missing_query` | `query` field is absent or not a dict. |
+| `invalid_query_digest` | `query_digest` is absent or not a well-formed sha256 digest. |
+| `query_digest_error` | Query digest recomputation raised an exception. |
+| `missing_result` | `result` field is absent or not a dict. |
+| `invalid_result_digest` | `result_digest` is absent or not a well-formed sha256 digest. |
+| `result_digest_error` | Result digest recomputation raised an exception. |
+| `invalid_execution_digest` | `execution_digest` is absent or not a well-formed sha256 digest. |
+| `execution_digest_error` | Execution digest recomputation raised an exception. |
+| `invalid_execution_packet_digest` | `execution_packet_digest` is absent or not a well-formed sha256 digest. |
+| `execution_packet_digest_error` | Execution packet digest recomputation raised an exception. |
