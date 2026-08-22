@@ -40,6 +40,8 @@ MODULES = [
     # ADMISSION-EVENT-VERIFY1 — admission-event supersession verifiers
     "arcs_verify/admission_event.py",
     "arcs_verify/admission_event_v0_2.py",
+    # OKF-ARCS-BRIDGE0 — OKF Attested Computation verifier-side bindings
+    "arcs_verify/okf_attested_computation.py",
 ]
 
 # Signatures that mark a module as one that emits verifier failure codes. The

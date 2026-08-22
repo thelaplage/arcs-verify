@@ -716,3 +716,26 @@ Independently verifies the v0.2 supersession bindings against the exact vendored
 | `authority_field.forbidden:<key>` | Dynamic. An authority-shaped key (e.g. `truth`, `verified`, `authority_effect`, `standing_score`, `reliance_score`, `reputation_score`, `trust_score`) is present anywhere in the signed receipt — checked recursively at the root and inside any nested object or list. |
 
 Shared schema/signature/trust codes (`schema.digest_mismatch`, `envelope.schema_invalid`, `envelope.schema_unreadable`, `signature_object_invalid`, `signature_invalid`, `key_id_unresolved`, `key_untrusted`, `preimage_canonicalization_failed`, `signature_encoding_invalid`, `public_key_encoding_invalid`, `attestation.missing_required_limit`) are documented above and emitted here with the same meaning.
+## OKF Attested Computation verifier-side bindings (`okf-attested-computation` subcommand)
+
+`arcs_verify/okf_attested_computation.py` (OKF-ARCS-BRIDGE0) independently
+binds an OKF v0.2 "Attested Computation" declaration to its referenced
+executor/attester resources and to separately supplied run evidence. It never
+executes any referenced resource and never fetches over the network. Static
+codes plus dynamic families keyed by `role` (`executor` | `attester`) or by
+the declared receipt field name.
+
+| Code | Meaning |
+|---|---|
+| `okf_attested_computation.declaration_malformed` | The declaration could not be read, its frontmatter fence is absent/unclosed, the frontmatter violates the supported block-YAML subset, the parsed frontmatter is not a mapping, or `parameters` is present but not a mapping. |
+| `okf_attested_computation.wrong_type` | The frontmatter `type` field is not `"Attested Computation"`. |
+| `okf_attested_computation.missing_runtime` | The frontmatter `runtime` field is absent, empty, or not a string. |
+| `okf_attested_computation.missing_executor_resource` | `executor` is not a mapping, or `executor.resource` is absent, empty, or not a string. |
+| `okf_attested_computation.missing_executor_receipt` | `executor` is not a mapping, or `executor.receipt` is absent or not a list of non-empty strings. |
+| `okf_attested_computation.missing_attester_resource` | `attester` is not a mapping, or `attester.resource` is absent, empty, or not a string. |
+| `okf_attested_computation.unsafe_resource_reference:<role>` | Dynamic. The declared resource path for `<role>` (`executor` or `attester`) is absolute, contains a `..` segment, or resolves outside `--bundle-root` (including via symlink). |
+| `okf_attested_computation.resource_missing:<role>` | Dynamic. The declared resource path for `<role>` resolves safely under the bundle root but no file exists there (or it became unreadable at read time). |
+| `okf_attested_computation.resource_not_a_file:<role>` | Dynamic. The declared resource path for `<role>` resolves to something that is not a regular file (e.g. a directory). |
+| `okf_attested_computation.resource_binding_mismatch:<role>` | Dynamic (concrete completions in current bytes: `okf_attested_computation.resource_binding_mismatch:executor`, `okf_attested_computation.resource_binding_mismatch:attester`). The supplied run evidence carries an `<role>_resource_digest` claim that is malformed or does not match the independently recomputed digest of the referenced resource bytes. |
+| `okf_attested_computation.receipt_field_absent:<field>` | Dynamic. A field name listed in `executor.receipt` is absent from the supplied run evidence object. |
+| `okf_attested_computation.run_evidence_malformed` | The run evidence could not be read, was not valid JSON, or its top-level JSON value is not an object. |

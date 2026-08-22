@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "stdout_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "executor_resource_digest": "not-a-sha256-digest"
+}

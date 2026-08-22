@@ -177,6 +177,34 @@ does not establish historical authenticity, signature validity, or trusted
 publication identity; those conclusions remain `not_evaluated` (see
 **Reserved conclusions**).
 
+## OKF Attested Computation bindings
+
+OKF-ARCS-BRIDGE0 (`okf-attested-computation`) is the first verifier-side
+interoperability bridge to Open Knowledge Format (OKF) v0.2 "Attested
+Computation" declarations. It is **not** an execution engine: it never runs
+the declared executor or attester, and never fetches a referenced resource
+over the network. It independently recomputes content digests for the
+declaration's referenced executor/attester resources under a supplied bundle
+root, and checks declared receipt-field presence in separately supplied run
+evidence:
+
+```bash
+arcs-verify okf-attested-computation \
+  declaration.md \
+  --bundle-root ./bundle \
+  --run ./run.json
+```
+
+`execution_verified`, `attester_verdict_verified`, and `truth_verified` are
+permanent reserved conclusions (always `not_evaluated`); `authority_conferred`
+is a permanent reserved constant (always `false`). A structural PASS
+(`declaration_valid`, `resource_bindings_valid`, `receipt_shape_satisfied`)
+never promotes any of the four. See
+[docs/OKF_ARCS_BRIDGE0.md](docs/OKF_ARCS_BRIDGE0.md) for the full
+interoperability layering, the supported declaration surface, and the
+deferred `OKF-ARCS-EXECUTION-ADAPTER0` execution-side lane (owned by a
+runtime/emitter repository, not this one).
+
 ## Reserved conclusions
 
 The independent `amnesiac-chain` profile reports conclusions in the
