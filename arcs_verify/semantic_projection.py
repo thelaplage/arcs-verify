@@ -195,7 +195,6 @@ class SemanticProjectionReport:
                 "verification, admission, publication, standing, or truth"
             ),
             "limits": list(SEMANTIC_PROJECTION_LIMITS),
-            "authority_movement": 0,
         }
 
 
