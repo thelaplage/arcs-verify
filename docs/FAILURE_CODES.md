@@ -739,3 +739,23 @@ the declared receipt field name.
 | `okf_attested_computation.resource_binding_mismatch:<role>` | Dynamic (concrete completions in current bytes: `okf_attested_computation.resource_binding_mismatch:executor`, `okf_attested_computation.resource_binding_mismatch:attester`). The supplied run evidence carries an `<role>_resource_digest` claim that is malformed or does not match the independently recomputed digest of the referenced resource bytes. |
 | `okf_attested_computation.receipt_field_absent:<field>` | Dynamic. A field name listed in `executor.receipt` is absent from the supplied run evidence object. |
 | `okf_attested_computation.run_evidence_malformed` | The run evidence could not be read, was not valid JSON, or its top-level JSON value is not an object. |
+
+## Federation run replay verification (`arcs_verify/federation_replay.py`, library-only)
+
+FEDERATION-REPLAY0 (COUNTERPEDIA-FEDERATION-WAVE2, Lane L02): independently
+replays a federation run's artifact digest bindings offline from
+caller-supplied literal bytes. Not wired to a CLI subcommand — call
+`replay_federation_run(envelope, artifact_bytes)` directly. `authority_effect`
+is always `"none"` and `truth_verified` is always `"not_evaluated"` on every
+code path; a successful replay confers no authority, and a run with zero
+artifact rows resolves to `NOT_EVALUATED`, never `PASS`. These four codes are
+structural (envelope-level) failures returned via `_fail(run_id, code,
+detail)`; per-artifact-row outcomes (`PASS` / `FAIL` / `NOT_EVALUATED`) carry
+a free-text `reason` instead of a registered code.
+
+| Code | Meaning |
+|---|---|
+| `invalid_envelope` | `envelope` is not a mapping. |
+| `missing_run_id` | `envelope["run_id"]` is absent, empty, or not a string. |
+| `invalid_artifact_bytes` | `artifact_bytes` is not a mapping. |
+| `invalid_artifacts_field` | `envelope["artifacts"]` is absent or not a list. |

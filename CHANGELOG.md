@@ -31,6 +31,18 @@ The versioning policy is described in [docs/VERSIONING.md](docs/VERSIONING.md).
     runtime/emitter repository, not this one).
   - New failure-code family: `okf_attested_computation.*` (see
     `docs/FAILURE_CODES.md`).
+- FEDERATION-REPLAY0 (COUNTERPEDIA-FEDERATION-WAVE2, Lane L02, DRAFT,
+  AUTHORITY_MOVEMENT=0): `arcs_verify/federation_replay.py`, an independent
+  offline replay verifier for a federation run's artifact digest bindings.
+  `replay_federation_run(envelope, artifact_bytes)` recomputes sha256 over
+  caller-supplied literal bytes and compares against each artifact row's
+  declared digest, returning per-row PASS/FAIL/NOT_EVALUATED plus a run-level
+  `overall_status`. `authority_effect` is always `"none"` and `truth_verified`
+  is always `"not_evaluated"`; a run with zero artifact rows is
+  `NOT_EVALUATED`, never `PASS`. Imports no producer code. This module does
+  not define or own the FederationRunEnvelope wire schema — that authority
+  belongs to FEDERATION-RUN-ENVELOPE0 (counterpedia-agent Lane L01), not yet
+  landed; see the module docstring's "SCHEMA AUTHORITY NOTE".
 - ARCSV-C2PA0: hermetic native C2PA recomputation and comparison v0.1.
   - `arcs_verify/contracts/c2pa-native-finding/v0.1/`: the C2PA independent
     verification report and comparison contract. `contract.manifest.json` pins
