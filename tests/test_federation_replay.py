@@ -4,14 +4,17 @@ verifier.
 
 Tests verify:
   - digest-binding recomputation against caller-supplied literal bytes
-  - permanent non-findings: authority_effect="none", truth_verified="not_evaluated"
-    on every code path, including structural failure
+  - permanent non-findings: no authority-effect field exists on the report
+    (structural absence, not a none-pinned value), truth_verified is always
+    "not_evaluated" on every code path, including structural failure
   - NOT_EVALUATED never collapses into PASS: missing bytes, and a run with
     zero artifact rows, are both NOT_EVALUATED, never PASS
   - structural rejection paths: malformed envelope, missing run_id, malformed
     artifacts field, malformed artifact_bytes, malformed rows
   - mutation tests: a tampered digest flips that row and the run to FAIL
   - independence: no producer repository is imported by this module
+  - NE-11: authority-effect fields cannot be injected into the report,
+    either via the dataclass constructor or via untrusted envelope/row input
 """
 
 from __future__ import annotations
@@ -119,7 +122,7 @@ def test_replay_pass_fail_and_not_evaluated() -> None:
     r = replay_federation_run(env, {"a": good, "b": b"tampered"})
     assert [c.status for c in r.checks] == [PASS, FAIL, NOT_EVALUATED]
     assert r.overall_status == FAIL
-    assert r.authority_effect == "none"
+    assert not hasattr(r, "authority_effect")
 
 
 def test_missing_only_is_not_evaluated_not_failure() -> None:
@@ -163,7 +166,7 @@ class TestGoldenReplay:
         env = _good_envelope(("a", sha256_bytes(b"x"), "srs"))
         d = replay_federation_run(env, {"a": b"x"}).to_dict()
         assert d["overall_status"] == PASS
-        assert d["authority_effect"] == "none"
+        assert "authority_effect" not in d
         assert d["truth_verified"] == "not_evaluated"
         assert d["failure_code"] is None
         assert d["failure_detail"] is None
@@ -184,7 +187,8 @@ class TestVacuousRun:
 
     def test_zero_artifacts_still_carries_permanent_non_findings(self):
         report = replay_federation_run({"run_id": "run:empty", "artifacts": []}, {})
-        assert report.authority_effect == "none"
+        assert not hasattr(report, "authority_effect")
+        assert "authority_effect" not in report.to_dict()
         assert report.truth_verified == "not_evaluated"
 
 
@@ -310,19 +314,19 @@ class TestEnvelopeStructuralRejection:
 class TestPermanentNonFindings:
     def test_structural_failure_still_sets_non_findings(self):
         report = replay_federation_run("nope", {})  # type: ignore[arg-type]
-        assert report.authority_effect == "none"
+        assert not hasattr(report, "authority_effect")
         assert report.truth_verified == "not_evaluated"
 
     def test_digest_mismatch_still_sets_non_findings(self):
         env = _good_envelope(("a", sha256_bytes(b"good"), "srs"))
         report = replay_federation_run(env, {"a": b"bad"})
-        assert report.authority_effect == "none"
+        assert not hasattr(report, "authority_effect")
         assert report.truth_verified == "not_evaluated"
 
     def test_pass_path_still_sets_non_findings(self):
         env = _good_envelope(("a", sha256_bytes(b"good"), "srs"))
         report = replay_federation_run(env, {"a": b"good"})
-        assert report.authority_effect == "none"
+        assert not hasattr(report, "authority_effect")
         assert report.truth_verified == "not_evaluated"
 
     def test_non_equivalences_present_on_every_path(self):
@@ -335,6 +339,106 @@ class TestPermanentNonFindings:
         ):
             assert "replayable != authorized" in report.non_equivalences
             assert "replayable != admitted" in report.non_equivalences
+
+
+# ── NE-11: authority-effect field structural absence ────────────────────────
+
+
+class TestAuthorityEffectStructuralAbsence:
+    """rule NE-11: this report expresses "no authority" by never defining an
+    authority-effect field at all, not by pinning one to "none". Injecting
+    such a field — via direct construction or via untrusted envelope/row
+    input — must fail closed: either rejected outright, or accepted without
+    any effect and never surfaced in this verifier's own output."""
+
+    def test_report_has_no_authority_effect_attribute(self):
+        env = _good_envelope(("a", sha256_bytes(b"x"), "srs"))
+        report = replay_federation_run(env, {"a": b"x"})
+        assert not hasattr(report, "authority_effect")
+
+    def test_to_dict_never_contains_authority_effect_key(self):
+        for report in (
+            replay_federation_run("nope", {}),  # type: ignore[arg-type]
+            replay_federation_run({"run_id": "run:1", "artifacts": []}, {}),
+            replay_federation_run(
+                _good_envelope(("a", sha256_bytes(b"x"), "srs")), {"a": b"x"}
+            ),
+        ):
+            assert "authority_effect" not in report.to_dict()
+
+    def test_constructing_report_with_authority_effect_kwarg_fails_closed(self):
+        base_kwargs = dict(
+            run_id="run:1",
+            checks=(),
+            overall_status=PASS,
+            artifacts_total=0,
+            artifacts_passed=0,
+            artifacts_failed=0,
+            artifacts_not_evaluated=0,
+        )
+        for injected in ("none", "admitted"):
+            with pytest.raises(TypeError):
+                FederationReplayReport(  # type: ignore[call-arg]
+                    **base_kwargs, authority_effect=injected
+                )
+
+    def test_constructing_report_with_trusted_or_admitted_kwarg_fails_closed(self):
+        base_kwargs = dict(
+            run_id="run:1",
+            checks=(),
+            overall_status=PASS,
+            artifacts_total=0,
+            artifacts_passed=0,
+            artifacts_failed=0,
+            artifacts_not_evaluated=0,
+        )
+        with pytest.raises(TypeError):
+            FederationReplayReport(**base_kwargs, trusted=True)  # type: ignore[call-arg]
+        with pytest.raises(TypeError):
+            FederationReplayReport(**base_kwargs, admitted=True)  # type: ignore[call-arg]
+
+    def test_envelope_level_authority_claim_injection_is_ignored_not_honored(self):
+        """A hostile envelope naming authority_effect/trusted/admitted at the
+        top level must never surface in, or influence, the replay report —
+        this module does not read or forward those keys."""
+        good = b"x"
+        env = {
+            "run_id": "run:1",
+            "artifacts": [{"kind": "srs", "ref": "a", "digest": sha256_bytes(good)}],
+            "authority_effect": "admitted",
+            "trusted": True,
+            "admitted": True,
+        }
+        report = replay_federation_run(env, {"a": good})
+        assert report.overall_status == PASS
+        d = report.to_dict()
+        assert "authority_effect" not in d
+        assert "trusted" not in d
+        assert "admitted" not in d
+
+    def test_row_level_authority_claim_injection_is_ignored_not_honored(self):
+        """A hostile artifact row naming authority_effect/trusted/admitted
+        must never surface in, or influence, that row's replay check."""
+        good = b"x"
+        env = {
+            "run_id": "run:1",
+            "artifacts": [
+                {
+                    "kind": "srs",
+                    "ref": "a",
+                    "digest": sha256_bytes(good),
+                    "authority_effect": "admitted",
+                    "trusted": True,
+                    "admitted": True,
+                }
+            ],
+        }
+        report = replay_federation_run(env, {"a": good})
+        assert report.checks[0].status == PASS
+        row_dict = report.checks[0].to_dict()
+        assert "authority_effect" not in row_dict
+        assert "trusted" not in row_dict
+        assert "admitted" not in row_dict
 
 
 # ── dataclass sanity ─────────────────────────────────────────────────────────

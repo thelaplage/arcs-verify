@@ -49,7 +49,9 @@ VERIFICATION VOCABULARY (permanent non-equivalences)
   replayable != admitted
   digest match != authenticity
   a run with zero replayed artifact rows is NOT_EVALUATED, never PASS
-  authority_effect is always "none" — this verifier confers no authority
+  this report carries no authority-effect field of any kind — non-authority
+    is expressed by the field's structural absence, never by a "none" value;
+    an object that names no authority-bearing field grants none
   truth_verified is always "not_evaluated" — a digest match does not
     establish that the underlying federation exchange occurred
 
@@ -91,7 +93,7 @@ _PERMANENT_NON_EQUIVALENCES: tuple[str, ...] = (
     "replayable != true",
     "replayable != admitted",
     "digest match != authenticity",
-    "authority_effect:none is a hard constant, not a posture",
+    "no authority-effect field exists on this report — absence, not a none value, is the guarantee",
 )
 
 
@@ -139,10 +141,12 @@ class ArtifactReplayCheck:
 class FederationReplayReport:
     """Independent offline-replay findings for one federation run envelope.
 
-    authority_effect is always "none" on every code path: a successful
-    replay never confers authority, admission, or trust. truth_verified is
-    always "not_evaluated": a digest match does not establish that the
-    underlying federation exchange occurred or that its content is true.
+    This report has no authority-effect field on any code path: a
+    successful replay never confers authority, admission, or trust, and
+    that guarantee is expressed by the field's absence rather than by a
+    "none"-pinned value. truth_verified is always "not_evaluated": a digest
+    match does not establish that the underlying federation exchange
+    occurred or that its content is true.
     """
 
     run_id: str
@@ -152,7 +156,6 @@ class FederationReplayReport:
     artifacts_passed: int
     artifacts_failed: int
     artifacts_not_evaluated: int
-    authority_effect: str = "none"
     truth_verified: str = "not_evaluated"
     non_equivalences: tuple[str, ...] = _PERMANENT_NON_EQUIVALENCES
     failure_code: str | None = None
@@ -168,7 +171,6 @@ class FederationReplayReport:
             "artifacts_passed": self.artifacts_passed,
             "artifacts_failed": self.artifacts_failed,
             "artifacts_not_evaluated": self.artifacts_not_evaluated,
-            "authority_effect": self.authority_effect,
             "truth_verified": self.truth_verified,
             "non_equivalences": list(self.non_equivalences),
             "failure_code": self.failure_code,
@@ -215,9 +217,10 @@ def replay_federation_run(
             is not a validation failure.
 
     Returns:
-        A FederationReplayReport. ``authority_effect`` is always "none" and
-        ``truth_verified`` is always "not_evaluated", on every code path,
-        including structural failure.
+        A FederationReplayReport. It carries no authority-effect field on
+        any code path — non-authority is structural absence, not a "none"
+        value — and ``truth_verified`` is always "not_evaluated", on every
+        code path, including structural failure.
     """
     if not isinstance(envelope, Mapping):
         return _fail("", "invalid_envelope", "envelope must be a mapping")
