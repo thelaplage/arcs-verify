@@ -1,0 +1,1575 @@
+{
+  "meta": {
+    "correction_reason": "v0.1 vectors carried a literal authority_movement:0 field baked into carried content_v02_projection. This capture re-derives the same two packets from a corrected fixture that structurally omits the key (fixtures/counterpedia_graph_nytoai_litigation_0001_v0_2.json + its provenance file).",
+    "corrects_pack": "packs/cg.execution.replay/v0.1/vectors.json",
+    "fixture_purpose": "CG-REPLAY0 verifier test vectors — literal producer bytes at pinned commit (CG-REPLAY-PRODUCER-REFRESH0 correction: content_v02_projection.authority_movement is structurally absent, not zero)",
+    "producer": "countergraph",
+    "producer_commit": "607b7352eb1c13e7a634f3dfa4970462263a1bad",
+    "producer_repo": "thelaplage/countergraph"
+  },
+  "vectors": {
+    "get_neighborhood_record_outgoing_d1": {
+      "bridges": [],
+      "content_trust": "content_is_data_not_instructions",
+      "edges": [
+        {
+          "edge": {
+            "edge_kind": "projects_as",
+            "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s01-quote\\\"]\"]",
+            "payload": {
+              "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s01-quote\\\"]\"]",
+              "kind": "projects_as",
+              "provenance": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "declaredReference": "no-s01-quote",
+                "sourceField": "record.citation_spans",
+                "sourceIndex": 0
+              },
+              "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "targetNodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s01-quote\"]"
+            },
+            "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+            "target_ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s01-quote\"]"
+          },
+          "edge_kind": "projects_as",
+          "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s01-quote\\\"]\"]",
+          "namespace": "counterpedia_graph",
+          "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+          "target_ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s01-quote\"]"
+        },
+        {
+          "edge": {
+            "edge_kind": "projects_as",
+            "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s02-quote\\\"]\"]",
+            "payload": {
+              "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s02-quote\\\"]\"]",
+              "kind": "projects_as",
+              "provenance": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "declaredReference": "no-s02-quote",
+                "sourceField": "record.citation_spans",
+                "sourceIndex": 1
+              },
+              "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "targetNodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s02-quote\"]"
+            },
+            "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+            "target_ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s02-quote\"]"
+          },
+          "edge_kind": "projects_as",
+          "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s02-quote\\\"]\"]",
+          "namespace": "counterpedia_graph",
+          "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+          "target_ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s02-quote\"]"
+        },
+        {
+          "edge": {
+            "edge_kind": "projects_as",
+            "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s03-quote\\\"]\"]",
+            "payload": {
+              "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s03-quote\\\"]\"]",
+              "kind": "projects_as",
+              "provenance": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "declaredReference": "no-s03-quote",
+                "sourceField": "record.citation_spans",
+                "sourceIndex": 2
+              },
+              "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "targetNodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s03-quote\"]"
+            },
+            "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+            "target_ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s03-quote\"]"
+          },
+          "edge_kind": "projects_as",
+          "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s03-quote\\\"]\"]",
+          "namespace": "counterpedia_graph",
+          "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+          "target_ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s03-quote\"]"
+        },
+        {
+          "edge": {
+            "edge_kind": "projects_as",
+            "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"edition\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-EDITION-1\\\"]\"]",
+            "payload": {
+              "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"edition\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-EDITION-1\\\"]\"]",
+              "kind": "projects_as",
+              "provenance": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "declaredReference": "NYT-OPENAI-LITIGATION-EDITION-1",
+                "sourceField": "record.editions",
+                "sourceIndex": 0
+              },
+              "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "targetNodeId": "[\"edition\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-EDITION-1\"]"
+            },
+            "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+            "target_ref": "[\"edition\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-EDITION-1\"]"
+          },
+          "edge_kind": "projects_as",
+          "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"edition\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-EDITION-1\\\"]\"]",
+          "namespace": "counterpedia_graph",
+          "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+          "target_ref": "[\"edition\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-EDITION-1\"]"
+        },
+        {
+          "edge": {
+            "edge_kind": "projects_as",
+            "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s01-plaintiff-complaint\\\"]\"]",
+            "payload": {
+              "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s01-plaintiff-complaint\\\"]\"]",
+              "kind": "projects_as",
+              "provenance": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "declaredReference": "source:nyt-openai:no-s01-plaintiff-complaint",
+                "sourceField": "record.sources",
+                "sourceIndex": 0
+              },
+              "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "targetNodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s01-plaintiff-complaint\"]"
+            },
+            "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+            "target_ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s01-plaintiff-complaint\"]"
+          },
+          "edge_kind": "projects_as",
+          "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s01-plaintiff-complaint\\\"]\"]",
+          "namespace": "counterpedia_graph",
+          "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+          "target_ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s01-plaintiff-complaint\"]"
+        },
+        {
+          "edge": {
+            "edge_kind": "projects_as",
+            "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s02-defendant-statement\\\"]\"]",
+            "payload": {
+              "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s02-defendant-statement\\\"]\"]",
+              "kind": "projects_as",
+              "provenance": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "declaredReference": "source:nyt-openai:no-s02-defendant-statement",
+                "sourceField": "record.sources",
+                "sourceIndex": 1
+              },
+              "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "targetNodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s02-defendant-statement\"]"
+            },
+            "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+            "target_ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s02-defendant-statement\"]"
+          },
+          "edge_kind": "projects_as",
+          "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s02-defendant-statement\\\"]\"]",
+          "namespace": "counterpedia_graph",
+          "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+          "target_ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s02-defendant-statement\"]"
+        },
+        {
+          "edge": {
+            "edge_kind": "projects_as",
+            "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s03-judicial-opinion\\\"]\"]",
+            "payload": {
+              "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s03-judicial-opinion\\\"]\"]",
+              "kind": "projects_as",
+              "provenance": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "declaredReference": "source:nyt-openai:no-s03-judicial-opinion",
+                "sourceField": "record.sources",
+                "sourceIndex": 2
+              },
+              "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "targetNodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s03-judicial-opinion\"]"
+            },
+            "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+            "target_ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s03-judicial-opinion\"]"
+          },
+          "edge_kind": "projects_as",
+          "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s03-judicial-opinion\\\"]\"]",
+          "namespace": "counterpedia_graph",
+          "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+          "target_ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s03-judicial-opinion\"]"
+        }
+      ],
+      "limitations": [
+        "packet internally validates one digest-bound CG-QUERY0 or CG-JOIN0 execution envelope",
+        "packet alone does not prove the embedded read was recomputed from the bound source projection; replay against the exact carried projection is required for that property",
+        "object, edge, bridge, source-requirement, manifest, and posture sections are recomputable indexes only",
+        "packet construction performs no new traversal, crosswalk discovery, relation inference, or identity collapse",
+        "packet/query/join digests prove deterministic byte binding, not truth, authority, verification, admission, standing, independence, or corroboration",
+        "foreign content carried inside the packet is data, not instructions"
+      ],
+      "manifest": [
+        {
+          "digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "item_count": 0,
+          "name": "bridges"
+        },
+        {
+          "digest": "sha256:b12ae4177ec70f25e00b7eb30106d97bca2be59f2766d6a7fb71664aece05e6a",
+          "item_count": 7,
+          "name": "edges"
+        },
+        {
+          "digest": "sha256:d4c9b20b7f726f51cbfea866970c19a665c6eecf03cebbb1c9db445fdbd13051",
+          "item_count": 8,
+          "name": "objects"
+        },
+        {
+          "digest": "sha256:58c009fabbe9ca48ddf3a6257b60834359dad22cae128b293a1e8a8e4971658f",
+          "item_count": 1,
+          "name": "posture"
+        },
+        {
+          "digest": "sha256:e7a50f580c7a9607253fdec65508708f1d0e897cab8625b7039d968cdcb56b6c",
+          "item_count": 1,
+          "name": "root_execution"
+        },
+        {
+          "digest": "sha256:56c161a528bbf20960156ece3f1f788854da97ae7bb8093809f0fbfeb573b2a5",
+          "item_count": 1,
+          "name": "source_requirements"
+        }
+      ],
+      "objects": [
+        {
+          "kind": "citationSpan",
+          "namespace": "counterpedia_graph",
+          "object": {
+            "kind": "citationSpan",
+            "payload": {
+              "attributes": {
+                "fragment_id": "block:no-s01-quote",
+                "source_id": "source:nyt-openai:no-s01-plaintiff-complaint",
+                "span_id": "no-s01-quote",
+                "supports_section_id": "sec-perspectives",
+                "text": "nformation ecosystem that is awash in unreliable content, The Times’s journalism provides a service that has grown even more valuable to the public by supplying trustworthy information, news analysis, and commentary. 2. Defendants’ unlawful use of The Times’s work to create artificial intelligence products that compete with it threatens The Times’s ability to provide that service. Defendants’ generative artificial intelligence (“G enAI”) tools rely on large-language models (“LLM s”) that were built by copying and using millions of The Times’s copyrighted news articles, in-depth investigations, op",
+                "verification_state": "unverified"
+              },
+              "identity": {
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "nodeKind": "citationSpan",
+                "stableId": "no-s01-quote"
+              },
+              "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+              "kind": "citationSpan",
+              "nodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s01-quote\"]",
+              "origin": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "sourceField": "record.citation_spans",
+                "sourceIndex": 0
+              },
+              "stableId": "no-s01-quote"
+            },
+            "ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s01-quote\"]"
+          },
+          "ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s01-quote\"]"
+        },
+        {
+          "kind": "citationSpan",
+          "namespace": "counterpedia_graph",
+          "object": {
+            "kind": "citationSpan",
+            "payload": {
+              "attributes": {
+                "fragment_id": "block:no-s02-quote",
+                "source_id": "source:nyt-openai:no-s02-defendant-statement",
+                "span_id": "no-s02-quote",
+                "supports_section_id": "sec-perspectives",
+                "text": "in a new window), American Journalism Project(opens in a new window) and NYU(opens in a new window) offer a glimpse into our approach.2. Training is fair use, but we provide an opt-out because it’s the right thing to doTraining AI models using publicly available internet materials is fair use, as supported by long-standing and widely accepted precedents. We view this principle as fair to creators, necessary for innovators, and critical for US competitiveness.The principle that training AI models is permitted as a fair use is supported by a wide range of academics(opens",
+                "verification_state": "unverified"
+              },
+              "identity": {
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "nodeKind": "citationSpan",
+                "stableId": "no-s02-quote"
+              },
+              "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+              "kind": "citationSpan",
+              "nodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s02-quote\"]",
+              "origin": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "sourceField": "record.citation_spans",
+                "sourceIndex": 1
+              },
+              "stableId": "no-s02-quote"
+            },
+            "ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s02-quote\"]"
+          },
+          "ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s02-quote\"]"
+        },
+        {
+          "kind": "citationSpan",
+          "namespace": "counterpedia_graph",
+          "object": {
+            "kind": "citationSpan",
+            "payload": {
+              "attributes": {
+                "fragment_id": "block:no-s03-quote",
+                "source_id": "source:nyt-openai:no-s03-judicial-opinion",
+                "span_id": "no-s03-quote",
+                "supports_section_id": "sec-judicial-treatment",
+                "text": "icles as a matter of law. The Court therefore grants OpenAI’s motion to dismiss CIR’s claim of direct infringement under 17 U.S.C. § 501 insofar as it relates to the “abridgments” contained in Exhibit 11. X. C ONCLUSION For the foregoing reasons, the Court denies (1) OpenAI’s motions to dismiss the direct infringement claims involving conduct occurring more than three years before the complaints were filed; (2) defendants’ motions to dismiss the contributory copyright infringement claims; and (3) defendants’ motions to dismiss the state and federal trademark dilution claims in the Daily News action. The Court grants defen",
+                "verification_state": "unverified"
+              },
+              "identity": {
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "nodeKind": "citationSpan",
+                "stableId": "no-s03-quote"
+              },
+              "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+              "kind": "citationSpan",
+              "nodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s03-quote\"]",
+              "origin": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "sourceField": "record.citation_spans",
+                "sourceIndex": 2
+              },
+              "stableId": "no-s03-quote"
+            },
+            "ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s03-quote\"]"
+          },
+          "ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s03-quote\"]"
+        },
+        {
+          "kind": "edition",
+          "namespace": "counterpedia_graph",
+          "object": {
+            "kind": "edition",
+            "payload": {
+              "attributes": {
+                "edition_id": "NYT-OPENAI-LITIGATION-EDITION-1",
+                "edition_number": 1,
+                "released_at": "2026-08-16T05:42:52Z"
+              },
+              "identity": {
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "nodeKind": "edition",
+                "stableId": "NYT-OPENAI-LITIGATION-EDITION-1"
+              },
+              "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+              "kind": "edition",
+              "nodeId": "[\"edition\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-EDITION-1\"]",
+              "origin": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "sourceField": "record.editions",
+                "sourceIndex": 0
+              },
+              "stableId": "NYT-OPENAI-LITIGATION-EDITION-1"
+            },
+            "ref": "[\"edition\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-EDITION-1\"]"
+          },
+          "ref": "[\"edition\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-EDITION-1\"]"
+        },
+        {
+          "kind": "record",
+          "namespace": "counterpedia_graph",
+          "object": {
+            "kind": "record",
+            "payload": {
+              "attributes": {
+                "content_v02_projection": {
+                  "claim_support_edge_count": 0,
+                  "explicit_refusals": [
+                    {
+                      "refusal_basis": "governed proof run: candidate assertion explicitly refused in arcs-amnesiac PR #130, NYT-OPENAI-PROOF0-REAL-RUN1",
+                      "refused_claim_text": "the court held that OpenAI's training on NYT works was lawful fair use",
+                      "upstream_proof_commit": "fb2256962fbe11c7c948b96a84a4da74a1bfd119"
+                    }
+                  ],
+                  "proof_bindings": {
+                    "source_capture_bundle_hash": "sha256:cde58448384131d3b70a1c3d0d302185e9faa84832cdff60fee92a94367ade2e",
+                    "upstream_proof_commit": "fb2256962fbe11c7c948b96a84a4da74a1bfd119",
+                    "upstream_proof_repository": "thelaplage/arcs-amnesiac",
+                    "verifier_report_hash": "sha256:bd7f03df6e4ab5ec9907a3d29c8a852ebae6ef866ed2019c1a06b42f34d5fc1e"
+                  },
+                  "proposition_bindings": [
+                    {
+                      "block_id": "no-s01-quote",
+                      "citation_span_id": "no-s01-quote",
+                      "epistemic_state": "contested",
+                      "epistemic_state_id": "es-plaintiff-allegation",
+                      "role": "plaintiff_allegation",
+                      "source_ref": "source:nyt-openai:no-s01-plaintiff-complaint"
+                    },
+                    {
+                      "block_id": "no-s02-quote",
+                      "citation_span_id": "no-s02-quote",
+                      "epistemic_state": "unknown",
+                      "epistemic_state_id": "es-defendant-position",
+                      "role": "defendant_position",
+                      "source_ref": "source:nyt-openai:no-s02-defendant-statement"
+                    },
+                    {
+                      "block_id": "no-s03-quote",
+                      "citation_span_id": "no-s03-quote",
+                      "epistemic_state": "not_addressed",
+                      "epistemic_state_id": "es-judicial-treatment",
+                      "role": "judicial_treatment",
+                      "source_ref": "source:nyt-openai:no-s03-judicial-opinion"
+                    }
+                  ],
+                  "schema": "counterpedia.content-v02-graph-projection/v0.1",
+                  "source_composition_id": "counterpedia.content-v02/nyt-openai-litigation-0001/e1",
+                  "source_page_id": "NYT-OPENAI-LITIGATION-0001",
+                  "source_schema": "counterpedia.content/v0.2"
+                },
+                "corpus_lifecycle": "admitted",
+                "current_edition": "NYT-OPENAI-LITIGATION-EDITION-1",
+                "page_id": "NYT-OPENAI-LITIGATION-0001",
+                "record_id": "NYT-OPENAI-LITIGATION-0001",
+                "rendered_at": "2026-08-16T05:42:52Z",
+                "route_slug": "nyt-openai-litigation-0001",
+                "slug": "nyt-openai-litigation-0001",
+                "status": "active",
+                "title": "The New York Times v. OpenAI: litigation-intersection record"
+              },
+              "identity": {
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "nodeKind": "record",
+                "stableId": "NYT-OPENAI-LITIGATION-0001"
+              },
+              "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+              "kind": "record",
+              "nodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "origin": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "sourceField": "record"
+              },
+              "stableId": "NYT-OPENAI-LITIGATION-0001"
+            },
+            "ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]"
+          },
+          "ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]"
+        },
+        {
+          "kind": "source",
+          "namespace": "counterpedia_graph",
+          "object": {
+            "kind": "source",
+            "payload": {
+              "attributes": {
+                "acquisition_source_id": "src_619a0013128462ad7a01a2cec82b4529",
+                "capture_hash": "sha256:5eb30edbdedf0af0ec0c66e8e85a4fca3446610817dd0511fce9f7241572ea53",
+                "capture_id": "cap_be2d93a3-553f-4c09-bb02-f0406d8bf9ea",
+                "capture_integrity": {
+                  "capture_referent": {
+                    "referent_id": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.612697/gov.uscourts.nysd.612697.1.0_1.pdf",
+                    "referent_kind": "external_document",
+                    "referent_note": "NYT v. OpenAI complaint (S.D.N.Y., ECF No. 1). Byte digest from governed capture NO-S01 (counterpedia-acquisition PR #51)."
+                  },
+                  "integrity_class": "captured_bytes"
+                },
+                "capture_receipt_digest": "sha256:ce26f15362716434e3b8bb0531ab9264c1b1d036daf8a8ea2a7e2354be4a775a",
+                "label": "The New York Times Company v. Microsoft Corporation and OpenAI — ECF No. 1 (Complaint)",
+                "slug": "nyt-openai-no-s01-plaintiff-complaint",
+                "source_id": "source:nyt-openai:no-s01-plaintiff-complaint",
+                "source_locator": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.612697/gov.uscourts.nysd.612697.1.0_1.pdf",
+                "span_ids": [
+                  "no-s01-quote"
+                ],
+                "upstream_audit_path": "docs/nyt-openai-capture1/NYT_OPENAI_CAPTURE1_AUDIT_RECORD.json",
+                "upstream_merge_commit": "f00e8e856f447854b7b4459043c3b8c554787f0a",
+                "upstream_repository": "thelaplage/counterpedia-acquisition"
+              },
+              "identity": {
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "nodeKind": "source",
+                "stableId": "source:nyt-openai:no-s01-plaintiff-complaint"
+              },
+              "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+              "kind": "source",
+              "nodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s01-plaintiff-complaint\"]",
+              "origin": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "sourceField": "record.sources",
+                "sourceIndex": 0
+              },
+              "stableId": "source:nyt-openai:no-s01-plaintiff-complaint"
+            },
+            "ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s01-plaintiff-complaint\"]"
+          },
+          "ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s01-plaintiff-complaint\"]"
+        },
+        {
+          "kind": "source",
+          "namespace": "counterpedia_graph",
+          "object": {
+            "kind": "source",
+            "payload": {
+              "attributes": {
+                "acquisition_source_id": "src_53079fce32c24f74a1d5ef9ceaf947eb",
+                "capture_hash": "sha256:f886a23fe9ad8c38c640f3521b69e88df139fde4f5ad1e84bfbf209afd90392b",
+                "capture_id": "cap_1f62835c-8eaf-4035-9f25-45a32edca9fb",
+                "capture_integrity": {
+                  "capture_referent": {
+                    "referent_id": "https://web.archive.org/web/20240510112256id_/https://openai.com/index/openai-and-journalism/",
+                    "referent_kind": "external_document",
+                    "referent_note": "OpenAI ‘OpenAI and journalism’ — Wayback Machine capture (timestamp 20240510112256). CORR0: reclassified from rejected by offline acceptance replay; is_new_capture_event=false."
+                  },
+                  "integrity_class": "captured_bytes"
+                },
+                "capture_receipt_digest": "sha256:ac034837e0a7f609fba310d4f1cbb0c27727a618e83330f6399df66d009b0d82",
+                "is_new_capture_event": false,
+                "label": "OpenAI, “OpenAI and journalism” — Wayback Machine capture (2024-05-10)",
+                "slug": "nyt-openai-no-s02-defendant-statement",
+                "source_id": "source:nyt-openai:no-s02-defendant-statement",
+                "source_locator": "https://web.archive.org/web/20240510112256id_/https://openai.com/index/openai-and-journalism/",
+                "span_ids": [
+                  "no-s02-quote"
+                ],
+                "upstream_audit_path": "docs/nyt-openai-no-s02-archive1/NYT_OPENAI_NO_S02_ARCHIVE1_CORR0_ACCEPTANCE_REPLAY.json",
+                "upstream_merge_commit": "af4f4304b5589474ff9359845bf97eab4eb39355",
+                "upstream_repository": "thelaplage/counterpedia-acquisition"
+              },
+              "identity": {
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "nodeKind": "source",
+                "stableId": "source:nyt-openai:no-s02-defendant-statement"
+              },
+              "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+              "kind": "source",
+              "nodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s02-defendant-statement\"]",
+              "origin": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "sourceField": "record.sources",
+                "sourceIndex": 1
+              },
+              "stableId": "source:nyt-openai:no-s02-defendant-statement"
+            },
+            "ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s02-defendant-statement\"]"
+          },
+          "ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s02-defendant-statement\"]"
+        },
+        {
+          "kind": "source",
+          "namespace": "counterpedia_graph",
+          "object": {
+            "kind": "source",
+            "payload": {
+              "attributes": {
+                "acquisition_source_id": "src_593dff9213322bf9a2b28de9bb7c2a8e",
+                "capture_hash": "sha256:1944d092241e9891baa8136be8463ce30bf3c7fd6a285697cb6f8c1dce592587",
+                "capture_id": "cap_d30e3a27-9a75-401a-8130-6147e4d89d5c",
+                "capture_integrity": {
+                  "capture_referent": {
+                    "referent_id": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.612697/gov.uscourts.nysd.612697.514.0_1.pdf",
+                    "referent_kind": "external_document",
+                    "referent_note": "NYT v. OpenAI Rule 12(b)(6) opinion (S.D.N.Y., ECF No. 514). Byte digest from governed capture NO-S03 (counterpedia-acquisition PR #60)."
+                  },
+                  "integrity_class": "captured_bytes"
+                },
+                "capture_receipt_digest": "sha256:a61ae57ec3814a73d7d6517a0434cf5a5ce35855774ab85df57843e78286efad",
+                "label": "The New York Times Company v. Microsoft Corporation and OpenAI — ECF No. 514 (Rule 12(b)(6) Opinion)",
+                "slug": "nyt-openai-no-s03-judicial-opinion",
+                "source_id": "source:nyt-openai:no-s03-judicial-opinion",
+                "source_locator": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.612697/gov.uscourts.nysd.612697.514.0_1.pdf",
+                "span_ids": [
+                  "no-s03-quote"
+                ],
+                "upstream_audit_path": "docs/nyt-openai-capture1-r1/NYT_OPENAI_CAPTURE1_R1_AUDIT_RECORD.json",
+                "upstream_merge_commit": "f9aa8469360710b944fcf3b2fe53692a276e491e",
+                "upstream_repository": "thelaplage/counterpedia-acquisition"
+              },
+              "identity": {
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "nodeKind": "source",
+                "stableId": "source:nyt-openai:no-s03-judicial-opinion"
+              },
+              "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+              "kind": "source",
+              "nodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s03-judicial-opinion\"]",
+              "origin": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "sourceField": "record.sources",
+                "sourceIndex": 2
+              },
+              "stableId": "source:nyt-openai:no-s03-judicial-opinion"
+            },
+            "ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s03-judicial-opinion\"]"
+          },
+          "ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s03-judicial-opinion\"]"
+        }
+      ],
+      "packet_digest": "sha256:a421288b1961f9225cb5e862d230a6376a001a2967b7b1d275e0cb7b7f6fda49",
+      "packet_id": "cg:execution-packet:sha256:a421288b1961f9225cb5e862d230a6376a001a2967b7b1d275e0cb7b7f6fda49",
+      "packet_kind": "query_execution",
+      "packet_version": "countergraph.execution-packet/v0.1",
+      "posture": {
+        "any_truncated": true,
+        "coverage": {
+          "attempted": 1,
+          "executed": 1,
+          "expected": 1,
+          "failed": 0,
+          "not_found": 0,
+          "truncated": 1,
+          "unavailable": 0
+        },
+        "join_posture": null,
+        "member_postures": [
+          {
+            "namespace": "counterpedia_graph",
+            "operation": "get_neighborhood",
+            "posture": "truncated",
+            "query_digest": "sha256:141a213b8d66178d3c7c35c9cfb5f7b5f028c8f82d5f0ac78ff1021748512ac6"
+          }
+        ],
+        "source_frontier": [
+          {
+            "depth_frontier_count": 0,
+            "namespace": "counterpedia_graph",
+            "projection_digest": "sha256:38077b8216db33dc5378dc648417875d73f23f47427f1cd0283cdbc155f5a18b",
+            "unresolved_reference_count": 0
+          }
+        ],
+        "truncation_reasons": [
+          "counterpedia_graph:max_depth"
+        ]
+      },
+      "root_execution": {
+        "execution_digest": "sha256:e7a50f580c7a9607253fdec65508708f1d0e897cab8625b7039d968cdcb56b6c",
+        "execution_version": "countergraph.query-execution/v0.1",
+        "limitations": [
+          "execution is deterministic only for the exact carried projection bound by the query",
+          "replay proves reproducibility of Countergraph computation, not real-world truth",
+          "no relationship, identity equivalence, verification, admission, or standing is inferred"
+        ],
+        "posture": "truncated",
+        "query": {
+          "execution_scope": null,
+          "limitations": [
+            "query binds one namespace and one exact carried projection",
+            "replay does not search another namespace when an object is absent",
+            "query/result digests prove deterministic byte binding, not truth or authority",
+            "execution carries only explicit relationships returned by CG-AGENT-READ0",
+            "execution_scope is a method-requirement declaration, not an authority grant"
+          ],
+          "namespace": "counterpedia_graph",
+          "operation": "get_neighborhood",
+          "query_digest": "sha256:141a213b8d66178d3c7c35c9cfb5f7b5f028c8f82d5f0ac78ff1021748512ac6",
+          "query_version": "countergraph.query/v0.1",
+          "read_query": {
+            "direction": "outgoing",
+            "edge_kinds": null,
+            "max_depth": 1,
+            "max_edges": 200,
+            "max_nodes": 100,
+            "namespace": "counterpedia_graph",
+            "op": "get_neighborhood",
+            "root_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]"
+          },
+          "schema": "countergraph.query/v0.1",
+          "source_requirement": {
+            "adapter_version": "countergraph.counterpedia-graph-adapter/v0.1",
+            "carried_schema": "countergraph.counterpedia-graph-carried/v0.1",
+            "namespace": "counterpedia_graph",
+            "projection_digest": "sha256:38077b8216db33dc5378dc648417875d73f23f47427f1cd0283cdbc155f5a18b",
+            "upstream": {
+              "commit": "b0b4c5bbfe90ef5df0c703e7d2c3b0d0ea2faf75",
+              "identity_blob_sha": "83d7e709d3d33cca476c6b5de30bd8d07f3d6ddf",
+              "package": "@garpedia/graph",
+              "package_version": "0.1.0",
+              "payload_digest": "sha256:c877e738200dba8d0d4917caa035dd23046ba39cbc0f95ac1014fef0654fc0b0",
+              "repository": "thelaplage/counterpedia",
+              "structured_field_map_sha": "8122d87dc281aa817f1375fa6f9c7781fc129408",
+              "types_blob_sha": "ab4c920a56cd0d65cd1347a499842792c35c4e19"
+            }
+          }
+        },
+        "query_digest": "sha256:141a213b8d66178d3c7c35c9cfb5f7b5f028c8f82d5f0ac78ff1021748512ac6",
+        "read_result": {
+          "edges": [
+            {
+              "edge_kind": "projects_as",
+              "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s01-quote\\\"]\"]",
+              "payload": {
+                "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s01-quote\\\"]\"]",
+                "kind": "projects_as",
+                "provenance": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "declaredReference": "no-s01-quote",
+                  "sourceField": "record.citation_spans",
+                  "sourceIndex": 0
+                },
+                "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+                "targetNodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s01-quote\"]"
+              },
+              "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "target_ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s01-quote\"]"
+            },
+            {
+              "edge_kind": "projects_as",
+              "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s02-quote\\\"]\"]",
+              "payload": {
+                "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s02-quote\\\"]\"]",
+                "kind": "projects_as",
+                "provenance": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "declaredReference": "no-s02-quote",
+                  "sourceField": "record.citation_spans",
+                  "sourceIndex": 1
+                },
+                "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+                "targetNodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s02-quote\"]"
+              },
+              "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "target_ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s02-quote\"]"
+            },
+            {
+              "edge_kind": "projects_as",
+              "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s03-quote\\\"]\"]",
+              "payload": {
+                "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"citationSpan\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"no-s03-quote\\\"]\"]",
+                "kind": "projects_as",
+                "provenance": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "declaredReference": "no-s03-quote",
+                  "sourceField": "record.citation_spans",
+                  "sourceIndex": 2
+                },
+                "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+                "targetNodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s03-quote\"]"
+              },
+              "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "target_ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s03-quote\"]"
+            },
+            {
+              "edge_kind": "projects_as",
+              "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"edition\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-EDITION-1\\\"]\"]",
+              "payload": {
+                "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"edition\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-EDITION-1\\\"]\"]",
+                "kind": "projects_as",
+                "provenance": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "declaredReference": "NYT-OPENAI-LITIGATION-EDITION-1",
+                  "sourceField": "record.editions",
+                  "sourceIndex": 0
+                },
+                "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+                "targetNodeId": "[\"edition\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-EDITION-1\"]"
+              },
+              "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "target_ref": "[\"edition\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-EDITION-1\"]"
+            },
+            {
+              "edge_kind": "projects_as",
+              "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s01-plaintiff-complaint\\\"]\"]",
+              "payload": {
+                "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s01-plaintiff-complaint\\\"]\"]",
+                "kind": "projects_as",
+                "provenance": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "declaredReference": "source:nyt-openai:no-s01-plaintiff-complaint",
+                  "sourceField": "record.sources",
+                  "sourceIndex": 0
+                },
+                "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+                "targetNodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s01-plaintiff-complaint\"]"
+              },
+              "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "target_ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s01-plaintiff-complaint\"]"
+            },
+            {
+              "edge_kind": "projects_as",
+              "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s02-defendant-statement\\\"]\"]",
+              "payload": {
+                "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s02-defendant-statement\\\"]\"]",
+                "kind": "projects_as",
+                "provenance": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "declaredReference": "source:nyt-openai:no-s02-defendant-statement",
+                  "sourceField": "record.sources",
+                  "sourceIndex": 1
+                },
+                "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+                "targetNodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s02-defendant-statement\"]"
+              },
+              "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "target_ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s02-defendant-statement\"]"
+            },
+            {
+              "edge_kind": "projects_as",
+              "edge_ref": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s03-judicial-opinion\\\"]\"]",
+              "payload": {
+                "edgeId": "[\"projects_as\",\"[\\\"record\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"NYT-OPENAI-LITIGATION-0001\\\"]\",\"[\\\"source\\\",\\\"counterpedia/NYT-OPENAI-LITIGATION-0001\\\",\\\"source:nyt-openai:no-s03-judicial-opinion\\\"]\"]",
+                "kind": "projects_as",
+                "provenance": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "declaredReference": "source:nyt-openai:no-s03-judicial-opinion",
+                  "sourceField": "record.sources",
+                  "sourceIndex": 2
+                },
+                "sourceNodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+                "targetNodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s03-judicial-opinion\"]"
+              },
+              "source_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "target_ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s03-judicial-opinion\"]"
+            }
+          ],
+          "limitations": [
+            "namespace-scoped traversal only; no cross-adapter identity merge",
+            "proximity does not imply support, truth, trust, independence, or authority",
+            "returned edges are explicit carried relations only",
+            "source unresolved-reference and depth-frontier counts describe the upstream carried graph, not inferred absences"
+          ],
+          "max_depth_reached": 1,
+          "namespace": "counterpedia_graph",
+          "nodes": [
+            {
+              "kind": "citationSpan",
+              "payload": {
+                "attributes": {
+                  "fragment_id": "block:no-s01-quote",
+                  "source_id": "source:nyt-openai:no-s01-plaintiff-complaint",
+                  "span_id": "no-s01-quote",
+                  "supports_section_id": "sec-perspectives",
+                  "text": "nformation ecosystem that is awash in unreliable content, The Times’s journalism provides a service that has grown even more valuable to the public by supplying trustworthy information, news analysis, and commentary. 2. Defendants’ unlawful use of The Times’s work to create artificial intelligence products that compete with it threatens The Times’s ability to provide that service. Defendants’ generative artificial intelligence (“G enAI”) tools rely on large-language models (“LLM s”) that were built by copying and using millions of The Times’s copyrighted news articles, in-depth investigations, op",
+                  "verification_state": "unverified"
+                },
+                "identity": {
+                  "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                  "nodeKind": "citationSpan",
+                  "stableId": "no-s01-quote"
+                },
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "kind": "citationSpan",
+                "nodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s01-quote\"]",
+                "origin": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "sourceField": "record.citation_spans",
+                  "sourceIndex": 0
+                },
+                "stableId": "no-s01-quote"
+              },
+              "ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s01-quote\"]"
+            },
+            {
+              "kind": "citationSpan",
+              "payload": {
+                "attributes": {
+                  "fragment_id": "block:no-s02-quote",
+                  "source_id": "source:nyt-openai:no-s02-defendant-statement",
+                  "span_id": "no-s02-quote",
+                  "supports_section_id": "sec-perspectives",
+                  "text": "in a new window), American Journalism Project(opens in a new window) and NYU(opens in a new window) offer a glimpse into our approach.2. Training is fair use, but we provide an opt-out because it’s the right thing to doTraining AI models using publicly available internet materials is fair use, as supported by long-standing and widely accepted precedents. We view this principle as fair to creators, necessary for innovators, and critical for US competitiveness.The principle that training AI models is permitted as a fair use is supported by a wide range of academics(opens",
+                  "verification_state": "unverified"
+                },
+                "identity": {
+                  "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                  "nodeKind": "citationSpan",
+                  "stableId": "no-s02-quote"
+                },
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "kind": "citationSpan",
+                "nodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s02-quote\"]",
+                "origin": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "sourceField": "record.citation_spans",
+                  "sourceIndex": 1
+                },
+                "stableId": "no-s02-quote"
+              },
+              "ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s02-quote\"]"
+            },
+            {
+              "kind": "citationSpan",
+              "payload": {
+                "attributes": {
+                  "fragment_id": "block:no-s03-quote",
+                  "source_id": "source:nyt-openai:no-s03-judicial-opinion",
+                  "span_id": "no-s03-quote",
+                  "supports_section_id": "sec-judicial-treatment",
+                  "text": "icles as a matter of law. The Court therefore grants OpenAI’s motion to dismiss CIR’s claim of direct infringement under 17 U.S.C. § 501 insofar as it relates to the “abridgments” contained in Exhibit 11. X. C ONCLUSION For the foregoing reasons, the Court denies (1) OpenAI’s motions to dismiss the direct infringement claims involving conduct occurring more than three years before the complaints were filed; (2) defendants’ motions to dismiss the contributory copyright infringement claims; and (3) defendants’ motions to dismiss the state and federal trademark dilution claims in the Daily News action. The Court grants defen",
+                  "verification_state": "unverified"
+                },
+                "identity": {
+                  "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                  "nodeKind": "citationSpan",
+                  "stableId": "no-s03-quote"
+                },
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "kind": "citationSpan",
+                "nodeId": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s03-quote\"]",
+                "origin": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "sourceField": "record.citation_spans",
+                  "sourceIndex": 2
+                },
+                "stableId": "no-s03-quote"
+              },
+              "ref": "[\"citationSpan\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"no-s03-quote\"]"
+            },
+            {
+              "kind": "edition",
+              "payload": {
+                "attributes": {
+                  "edition_id": "NYT-OPENAI-LITIGATION-EDITION-1",
+                  "edition_number": 1,
+                  "released_at": "2026-08-16T05:42:52Z"
+                },
+                "identity": {
+                  "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                  "nodeKind": "edition",
+                  "stableId": "NYT-OPENAI-LITIGATION-EDITION-1"
+                },
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "kind": "edition",
+                "nodeId": "[\"edition\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-EDITION-1\"]",
+                "origin": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "sourceField": "record.editions",
+                  "sourceIndex": 0
+                },
+                "stableId": "NYT-OPENAI-LITIGATION-EDITION-1"
+              },
+              "ref": "[\"edition\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-EDITION-1\"]"
+            },
+            {
+              "kind": "record",
+              "payload": {
+                "attributes": {
+                  "content_v02_projection": {
+                    "claim_support_edge_count": 0,
+                    "explicit_refusals": [
+                      {
+                        "refusal_basis": "governed proof run: candidate assertion explicitly refused in arcs-amnesiac PR #130, NYT-OPENAI-PROOF0-REAL-RUN1",
+                        "refused_claim_text": "the court held that OpenAI's training on NYT works was lawful fair use",
+                        "upstream_proof_commit": "fb2256962fbe11c7c948b96a84a4da74a1bfd119"
+                      }
+                    ],
+                    "proof_bindings": {
+                      "source_capture_bundle_hash": "sha256:cde58448384131d3b70a1c3d0d302185e9faa84832cdff60fee92a94367ade2e",
+                      "upstream_proof_commit": "fb2256962fbe11c7c948b96a84a4da74a1bfd119",
+                      "upstream_proof_repository": "thelaplage/arcs-amnesiac",
+                      "verifier_report_hash": "sha256:bd7f03df6e4ab5ec9907a3d29c8a852ebae6ef866ed2019c1a06b42f34d5fc1e"
+                    },
+                    "proposition_bindings": [
+                      {
+                        "block_id": "no-s01-quote",
+                        "citation_span_id": "no-s01-quote",
+                        "epistemic_state": "contested",
+                        "epistemic_state_id": "es-plaintiff-allegation",
+                        "role": "plaintiff_allegation",
+                        "source_ref": "source:nyt-openai:no-s01-plaintiff-complaint"
+                      },
+                      {
+                        "block_id": "no-s02-quote",
+                        "citation_span_id": "no-s02-quote",
+                        "epistemic_state": "unknown",
+                        "epistemic_state_id": "es-defendant-position",
+                        "role": "defendant_position",
+                        "source_ref": "source:nyt-openai:no-s02-defendant-statement"
+                      },
+                      {
+                        "block_id": "no-s03-quote",
+                        "citation_span_id": "no-s03-quote",
+                        "epistemic_state": "not_addressed",
+                        "epistemic_state_id": "es-judicial-treatment",
+                        "role": "judicial_treatment",
+                        "source_ref": "source:nyt-openai:no-s03-judicial-opinion"
+                      }
+                    ],
+                    "schema": "counterpedia.content-v02-graph-projection/v0.1",
+                    "source_composition_id": "counterpedia.content-v02/nyt-openai-litigation-0001/e1",
+                    "source_page_id": "NYT-OPENAI-LITIGATION-0001",
+                    "source_schema": "counterpedia.content/v0.2"
+                  },
+                  "corpus_lifecycle": "admitted",
+                  "current_edition": "NYT-OPENAI-LITIGATION-EDITION-1",
+                  "page_id": "NYT-OPENAI-LITIGATION-0001",
+                  "record_id": "NYT-OPENAI-LITIGATION-0001",
+                  "rendered_at": "2026-08-16T05:42:52Z",
+                  "route_slug": "nyt-openai-litigation-0001",
+                  "slug": "nyt-openai-litigation-0001",
+                  "status": "active",
+                  "title": "The New York Times v. OpenAI: litigation-intersection record"
+                },
+                "identity": {
+                  "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                  "nodeKind": "record",
+                  "stableId": "NYT-OPENAI-LITIGATION-0001"
+                },
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "kind": "record",
+                "nodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+                "origin": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "sourceField": "record"
+                },
+                "stableId": "NYT-OPENAI-LITIGATION-0001"
+              },
+              "ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]"
+            },
+            {
+              "kind": "source",
+              "payload": {
+                "attributes": {
+                  "acquisition_source_id": "src_619a0013128462ad7a01a2cec82b4529",
+                  "capture_hash": "sha256:5eb30edbdedf0af0ec0c66e8e85a4fca3446610817dd0511fce9f7241572ea53",
+                  "capture_id": "cap_be2d93a3-553f-4c09-bb02-f0406d8bf9ea",
+                  "capture_integrity": {
+                    "capture_referent": {
+                      "referent_id": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.612697/gov.uscourts.nysd.612697.1.0_1.pdf",
+                      "referent_kind": "external_document",
+                      "referent_note": "NYT v. OpenAI complaint (S.D.N.Y., ECF No. 1). Byte digest from governed capture NO-S01 (counterpedia-acquisition PR #51)."
+                    },
+                    "integrity_class": "captured_bytes"
+                  },
+                  "capture_receipt_digest": "sha256:ce26f15362716434e3b8bb0531ab9264c1b1d036daf8a8ea2a7e2354be4a775a",
+                  "label": "The New York Times Company v. Microsoft Corporation and OpenAI — ECF No. 1 (Complaint)",
+                  "slug": "nyt-openai-no-s01-plaintiff-complaint",
+                  "source_id": "source:nyt-openai:no-s01-plaintiff-complaint",
+                  "source_locator": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.612697/gov.uscourts.nysd.612697.1.0_1.pdf",
+                  "span_ids": [
+                    "no-s01-quote"
+                  ],
+                  "upstream_audit_path": "docs/nyt-openai-capture1/NYT_OPENAI_CAPTURE1_AUDIT_RECORD.json",
+                  "upstream_merge_commit": "f00e8e856f447854b7b4459043c3b8c554787f0a",
+                  "upstream_repository": "thelaplage/counterpedia-acquisition"
+                },
+                "identity": {
+                  "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                  "nodeKind": "source",
+                  "stableId": "source:nyt-openai:no-s01-plaintiff-complaint"
+                },
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "kind": "source",
+                "nodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s01-plaintiff-complaint\"]",
+                "origin": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "sourceField": "record.sources",
+                  "sourceIndex": 0
+                },
+                "stableId": "source:nyt-openai:no-s01-plaintiff-complaint"
+              },
+              "ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s01-plaintiff-complaint\"]"
+            },
+            {
+              "kind": "source",
+              "payload": {
+                "attributes": {
+                  "acquisition_source_id": "src_53079fce32c24f74a1d5ef9ceaf947eb",
+                  "capture_hash": "sha256:f886a23fe9ad8c38c640f3521b69e88df139fde4f5ad1e84bfbf209afd90392b",
+                  "capture_id": "cap_1f62835c-8eaf-4035-9f25-45a32edca9fb",
+                  "capture_integrity": {
+                    "capture_referent": {
+                      "referent_id": "https://web.archive.org/web/20240510112256id_/https://openai.com/index/openai-and-journalism/",
+                      "referent_kind": "external_document",
+                      "referent_note": "OpenAI ‘OpenAI and journalism’ — Wayback Machine capture (timestamp 20240510112256). CORR0: reclassified from rejected by offline acceptance replay; is_new_capture_event=false."
+                    },
+                    "integrity_class": "captured_bytes"
+                  },
+                  "capture_receipt_digest": "sha256:ac034837e0a7f609fba310d4f1cbb0c27727a618e83330f6399df66d009b0d82",
+                  "is_new_capture_event": false,
+                  "label": "OpenAI, “OpenAI and journalism” — Wayback Machine capture (2024-05-10)",
+                  "slug": "nyt-openai-no-s02-defendant-statement",
+                  "source_id": "source:nyt-openai:no-s02-defendant-statement",
+                  "source_locator": "https://web.archive.org/web/20240510112256id_/https://openai.com/index/openai-and-journalism/",
+                  "span_ids": [
+                    "no-s02-quote"
+                  ],
+                  "upstream_audit_path": "docs/nyt-openai-no-s02-archive1/NYT_OPENAI_NO_S02_ARCHIVE1_CORR0_ACCEPTANCE_REPLAY.json",
+                  "upstream_merge_commit": "af4f4304b5589474ff9359845bf97eab4eb39355",
+                  "upstream_repository": "thelaplage/counterpedia-acquisition"
+                },
+                "identity": {
+                  "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                  "nodeKind": "source",
+                  "stableId": "source:nyt-openai:no-s02-defendant-statement"
+                },
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "kind": "source",
+                "nodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s02-defendant-statement\"]",
+                "origin": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "sourceField": "record.sources",
+                  "sourceIndex": 1
+                },
+                "stableId": "source:nyt-openai:no-s02-defendant-statement"
+              },
+              "ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s02-defendant-statement\"]"
+            },
+            {
+              "kind": "source",
+              "payload": {
+                "attributes": {
+                  "acquisition_source_id": "src_593dff9213322bf9a2b28de9bb7c2a8e",
+                  "capture_hash": "sha256:1944d092241e9891baa8136be8463ce30bf3c7fd6a285697cb6f8c1dce592587",
+                  "capture_id": "cap_d30e3a27-9a75-401a-8130-6147e4d89d5c",
+                  "capture_integrity": {
+                    "capture_referent": {
+                      "referent_id": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.612697/gov.uscourts.nysd.612697.514.0_1.pdf",
+                      "referent_kind": "external_document",
+                      "referent_note": "NYT v. OpenAI Rule 12(b)(6) opinion (S.D.N.Y., ECF No. 514). Byte digest from governed capture NO-S03 (counterpedia-acquisition PR #60)."
+                    },
+                    "integrity_class": "captured_bytes"
+                  },
+                  "capture_receipt_digest": "sha256:a61ae57ec3814a73d7d6517a0434cf5a5ce35855774ab85df57843e78286efad",
+                  "label": "The New York Times Company v. Microsoft Corporation and OpenAI — ECF No. 514 (Rule 12(b)(6) Opinion)",
+                  "slug": "nyt-openai-no-s03-judicial-opinion",
+                  "source_id": "source:nyt-openai:no-s03-judicial-opinion",
+                  "source_locator": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.612697/gov.uscourts.nysd.612697.514.0_1.pdf",
+                  "span_ids": [
+                    "no-s03-quote"
+                  ],
+                  "upstream_audit_path": "docs/nyt-openai-capture1-r1/NYT_OPENAI_CAPTURE1_R1_AUDIT_RECORD.json",
+                  "upstream_merge_commit": "f9aa8469360710b944fcf3b2fe53692a276e491e",
+                  "upstream_repository": "thelaplage/counterpedia-acquisition"
+                },
+                "identity": {
+                  "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                  "nodeKind": "source",
+                  "stableId": "source:nyt-openai:no-s03-judicial-opinion"
+                },
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "kind": "source",
+                "nodeId": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s03-judicial-opinion\"]",
+                "origin": {
+                  "artifactFamily": "page_model",
+                  "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                  "sourceField": "record.sources",
+                  "sourceIndex": 2
+                },
+                "stableId": "source:nyt-openai:no-s03-judicial-opinion"
+              },
+              "ref": "[\"source\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"source:nyt-openai:no-s03-judicial-opinion\"]"
+            }
+          ],
+          "operation": "get_neighborhood",
+          "posture": "truncated",
+          "query": {
+            "direction": "outgoing",
+            "edge_kinds": null,
+            "max_depth": 1,
+            "max_edges": 200,
+            "max_nodes": 100,
+            "namespace": "counterpedia_graph",
+            "op": "get_neighborhood",
+            "root_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]"
+          },
+          "query_digest": "sha256:9114a996f73387e999165e846e5ab2cd5c0798b406d3acf6a9a0591128e61658",
+          "read_version": "countergraph.agent-read/v0.1",
+          "result_digest": "sha256:7076170715afea354a909c3fb38227521ef4e21d508f295c5da5c60e835dfa31",
+          "root_ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+          "schema": "countergraph.agent-read-result/v0.1",
+          "source": {
+            "adapter_version": "countergraph.counterpedia-graph-adapter/v0.1",
+            "carried_schema": "countergraph.counterpedia-graph-carried/v0.1",
+            "depth_frontier_count": 0,
+            "namespace": "counterpedia_graph",
+            "projection_digest": "sha256:38077b8216db33dc5378dc648417875d73f23f47427f1cd0283cdbc155f5a18b",
+            "unresolved_reference_count": 0,
+            "upstream": {
+              "commit": "b0b4c5bbfe90ef5df0c703e7d2c3b0d0ea2faf75",
+              "identity_blob_sha": "83d7e709d3d33cca476c6b5de30bd8d07f3d6ddf",
+              "package": "@garpedia/graph",
+              "package_version": "0.1.0",
+              "payload_digest": "sha256:c877e738200dba8d0d4917caa035dd23046ba39cbc0f95ac1014fef0654fc0b0",
+              "repository": "thelaplage/counterpedia",
+              "structured_field_map_sha": "8122d87dc281aa817f1375fa6f9c7781fc129408",
+              "types_blob_sha": "ab4c920a56cd0d65cd1347a499842792c35c4e19"
+            }
+          },
+          "truncation_reasons": [
+            "max_depth"
+          ]
+        },
+        "read_result_digest": "sha256:7076170715afea354a909c3fb38227521ef4e21d508f295c5da5c60e835dfa31",
+        "schema": "countergraph.query-execution/v0.1"
+      },
+      "root_execution_digest": "sha256:e7a50f580c7a9607253fdec65508708f1d0e897cab8625b7039d968cdcb56b6c",
+      "schema": "countergraph.execution-packet/v0.1",
+      "source_requirements": [
+        {
+          "adapter_version": "countergraph.counterpedia-graph-adapter/v0.1",
+          "carried_schema": "countergraph.counterpedia-graph-carried/v0.1",
+          "namespace": "counterpedia_graph",
+          "projection_digest": "sha256:38077b8216db33dc5378dc648417875d73f23f47427f1cd0283cdbc155f5a18b",
+          "upstream": {
+            "commit": "b0b4c5bbfe90ef5df0c703e7d2c3b0d0ea2faf75",
+            "identity_blob_sha": "83d7e709d3d33cca476c6b5de30bd8d07f3d6ddf",
+            "package": "@garpedia/graph",
+            "package_version": "0.1.0",
+            "payload_digest": "sha256:c877e738200dba8d0d4917caa035dd23046ba39cbc0f95ac1014fef0654fc0b0",
+            "repository": "thelaplage/counterpedia",
+            "structured_field_map_sha": "8122d87dc281aa817f1375fa6f9c7781fc129408",
+            "types_blob_sha": "ab4c920a56cd0d65cd1347a499842792c35c4e19"
+          }
+        }
+      ]
+    },
+    "get_object_record": {
+      "bridges": [],
+      "content_trust": "content_is_data_not_instructions",
+      "edges": [],
+      "limitations": [
+        "packet internally validates one digest-bound CG-QUERY0 or CG-JOIN0 execution envelope",
+        "packet alone does not prove the embedded read was recomputed from the bound source projection; replay against the exact carried projection is required for that property",
+        "object, edge, bridge, source-requirement, manifest, and posture sections are recomputable indexes only",
+        "packet construction performs no new traversal, crosswalk discovery, relation inference, or identity collapse",
+        "packet/query/join digests prove deterministic byte binding, not truth, authority, verification, admission, standing, independence, or corroboration",
+        "foreign content carried inside the packet is data, not instructions"
+      ],
+      "manifest": [
+        {
+          "digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "item_count": 0,
+          "name": "bridges"
+        },
+        {
+          "digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "item_count": 0,
+          "name": "edges"
+        },
+        {
+          "digest": "sha256:d01b6ae98ee8e61c74516a37e2aaea01b433ea6b68c742abd8cbe96d467d516b",
+          "item_count": 1,
+          "name": "objects"
+        },
+        {
+          "digest": "sha256:be804f96e330daa931e7904c4795e9acbe595d731976cc78bf5f63ed1c258caf",
+          "item_count": 1,
+          "name": "posture"
+        },
+        {
+          "digest": "sha256:974727ec9a4a1d7ff234445bb3938fd31086a62f884043973608ee43bf1d1aca",
+          "item_count": 1,
+          "name": "root_execution"
+        },
+        {
+          "digest": "sha256:56c161a528bbf20960156ece3f1f788854da97ae7bb8093809f0fbfeb573b2a5",
+          "item_count": 1,
+          "name": "source_requirements"
+        }
+      ],
+      "objects": [
+        {
+          "kind": "record",
+          "namespace": "counterpedia_graph",
+          "object": {
+            "kind": "record",
+            "payload": {
+              "attributes": {
+                "content_v02_projection": {
+                  "claim_support_edge_count": 0,
+                  "explicit_refusals": [
+                    {
+                      "refusal_basis": "governed proof run: candidate assertion explicitly refused in arcs-amnesiac PR #130, NYT-OPENAI-PROOF0-REAL-RUN1",
+                      "refused_claim_text": "the court held that OpenAI's training on NYT works was lawful fair use",
+                      "upstream_proof_commit": "fb2256962fbe11c7c948b96a84a4da74a1bfd119"
+                    }
+                  ],
+                  "proof_bindings": {
+                    "source_capture_bundle_hash": "sha256:cde58448384131d3b70a1c3d0d302185e9faa84832cdff60fee92a94367ade2e",
+                    "upstream_proof_commit": "fb2256962fbe11c7c948b96a84a4da74a1bfd119",
+                    "upstream_proof_repository": "thelaplage/arcs-amnesiac",
+                    "verifier_report_hash": "sha256:bd7f03df6e4ab5ec9907a3d29c8a852ebae6ef866ed2019c1a06b42f34d5fc1e"
+                  },
+                  "proposition_bindings": [
+                    {
+                      "block_id": "no-s01-quote",
+                      "citation_span_id": "no-s01-quote",
+                      "epistemic_state": "contested",
+                      "epistemic_state_id": "es-plaintiff-allegation",
+                      "role": "plaintiff_allegation",
+                      "source_ref": "source:nyt-openai:no-s01-plaintiff-complaint"
+                    },
+                    {
+                      "block_id": "no-s02-quote",
+                      "citation_span_id": "no-s02-quote",
+                      "epistemic_state": "unknown",
+                      "epistemic_state_id": "es-defendant-position",
+                      "role": "defendant_position",
+                      "source_ref": "source:nyt-openai:no-s02-defendant-statement"
+                    },
+                    {
+                      "block_id": "no-s03-quote",
+                      "citation_span_id": "no-s03-quote",
+                      "epistemic_state": "not_addressed",
+                      "epistemic_state_id": "es-judicial-treatment",
+                      "role": "judicial_treatment",
+                      "source_ref": "source:nyt-openai:no-s03-judicial-opinion"
+                    }
+                  ],
+                  "schema": "counterpedia.content-v02-graph-projection/v0.1",
+                  "source_composition_id": "counterpedia.content-v02/nyt-openai-litigation-0001/e1",
+                  "source_page_id": "NYT-OPENAI-LITIGATION-0001",
+                  "source_schema": "counterpedia.content/v0.2"
+                },
+                "corpus_lifecycle": "admitted",
+                "current_edition": "NYT-OPENAI-LITIGATION-EDITION-1",
+                "page_id": "NYT-OPENAI-LITIGATION-0001",
+                "record_id": "NYT-OPENAI-LITIGATION-0001",
+                "rendered_at": "2026-08-16T05:42:52Z",
+                "route_slug": "nyt-openai-litigation-0001",
+                "slug": "nyt-openai-litigation-0001",
+                "status": "active",
+                "title": "The New York Times v. OpenAI: litigation-intersection record"
+              },
+              "identity": {
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "nodeKind": "record",
+                "stableId": "NYT-OPENAI-LITIGATION-0001"
+              },
+              "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+              "kind": "record",
+              "nodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "origin": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "sourceField": "record"
+              },
+              "stableId": "NYT-OPENAI-LITIGATION-0001"
+            },
+            "ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]"
+          },
+          "ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]"
+        }
+      ],
+      "packet_digest": "sha256:30e66f3abe026b15d006818e8da9156d4f6873184b8d547d62cc3f9ce0d67b04",
+      "packet_id": "cg:execution-packet:sha256:30e66f3abe026b15d006818e8da9156d4f6873184b8d547d62cc3f9ce0d67b04",
+      "packet_kind": "query_execution",
+      "packet_version": "countergraph.execution-packet/v0.1",
+      "posture": {
+        "any_truncated": false,
+        "coverage": {
+          "attempted": 1,
+          "executed": 1,
+          "expected": 1,
+          "failed": 0,
+          "not_found": 0,
+          "truncated": 0,
+          "unavailable": 0
+        },
+        "join_posture": null,
+        "member_postures": [
+          {
+            "namespace": "counterpedia_graph",
+            "operation": "get_object",
+            "posture": "complete",
+            "query_digest": "sha256:4c11b0e3dae42cb274d049a3138d9e85f0183b8e7138a7e116f718b909739050"
+          }
+        ],
+        "source_frontier": [
+          {
+            "depth_frontier_count": 0,
+            "namespace": "counterpedia_graph",
+            "projection_digest": "sha256:38077b8216db33dc5378dc648417875d73f23f47427f1cd0283cdbc155f5a18b",
+            "unresolved_reference_count": 0
+          }
+        ],
+        "truncation_reasons": []
+      },
+      "root_execution": {
+        "execution_digest": "sha256:974727ec9a4a1d7ff234445bb3938fd31086a62f884043973608ee43bf1d1aca",
+        "execution_version": "countergraph.query-execution/v0.1",
+        "limitations": [
+          "execution is deterministic only for the exact carried projection bound by the query",
+          "replay proves reproducibility of Countergraph computation, not real-world truth",
+          "no relationship, identity equivalence, verification, admission, or standing is inferred"
+        ],
+        "posture": "complete",
+        "query": {
+          "execution_scope": null,
+          "limitations": [
+            "query binds one namespace and one exact carried projection",
+            "replay does not search another namespace when an object is absent",
+            "query/result digests prove deterministic byte binding, not truth or authority",
+            "execution carries only explicit relationships returned by CG-AGENT-READ0",
+            "execution_scope is a method-requirement declaration, not an authority grant"
+          ],
+          "namespace": "counterpedia_graph",
+          "operation": "get_object",
+          "query_digest": "sha256:4c11b0e3dae42cb274d049a3138d9e85f0183b8e7138a7e116f718b909739050",
+          "query_version": "countergraph.query/v0.1",
+          "read_query": {
+            "namespace": "counterpedia_graph",
+            "op": "get_object",
+            "ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]"
+          },
+          "schema": "countergraph.query/v0.1",
+          "source_requirement": {
+            "adapter_version": "countergraph.counterpedia-graph-adapter/v0.1",
+            "carried_schema": "countergraph.counterpedia-graph-carried/v0.1",
+            "namespace": "counterpedia_graph",
+            "projection_digest": "sha256:38077b8216db33dc5378dc648417875d73f23f47427f1cd0283cdbc155f5a18b",
+            "upstream": {
+              "commit": "b0b4c5bbfe90ef5df0c703e7d2c3b0d0ea2faf75",
+              "identity_blob_sha": "83d7e709d3d33cca476c6b5de30bd8d07f3d6ddf",
+              "package": "@garpedia/graph",
+              "package_version": "0.1.0",
+              "payload_digest": "sha256:c877e738200dba8d0d4917caa035dd23046ba39cbc0f95ac1014fef0654fc0b0",
+              "repository": "thelaplage/counterpedia",
+              "structured_field_map_sha": "8122d87dc281aa817f1375fa6f9c7781fc129408",
+              "types_blob_sha": "ab4c920a56cd0d65cd1347a499842792c35c4e19"
+            }
+          }
+        },
+        "query_digest": "sha256:4c11b0e3dae42cb274d049a3138d9e85f0183b8e7138a7e116f718b909739050",
+        "read_result": {
+          "limitations": [
+            "namespace-scoped lookup only",
+            "missing here does not mean non-existent outside the carried projection",
+            "returned data does not imply verification, admission, standing, trust, or truth"
+          ],
+          "namespace": "counterpedia_graph",
+          "object": {
+            "kind": "record",
+            "payload": {
+              "attributes": {
+                "content_v02_projection": {
+                  "claim_support_edge_count": 0,
+                  "explicit_refusals": [
+                    {
+                      "refusal_basis": "governed proof run: candidate assertion explicitly refused in arcs-amnesiac PR #130, NYT-OPENAI-PROOF0-REAL-RUN1",
+                      "refused_claim_text": "the court held that OpenAI's training on NYT works was lawful fair use",
+                      "upstream_proof_commit": "fb2256962fbe11c7c948b96a84a4da74a1bfd119"
+                    }
+                  ],
+                  "proof_bindings": {
+                    "source_capture_bundle_hash": "sha256:cde58448384131d3b70a1c3d0d302185e9faa84832cdff60fee92a94367ade2e",
+                    "upstream_proof_commit": "fb2256962fbe11c7c948b96a84a4da74a1bfd119",
+                    "upstream_proof_repository": "thelaplage/arcs-amnesiac",
+                    "verifier_report_hash": "sha256:bd7f03df6e4ab5ec9907a3d29c8a852ebae6ef866ed2019c1a06b42f34d5fc1e"
+                  },
+                  "proposition_bindings": [
+                    {
+                      "block_id": "no-s01-quote",
+                      "citation_span_id": "no-s01-quote",
+                      "epistemic_state": "contested",
+                      "epistemic_state_id": "es-plaintiff-allegation",
+                      "role": "plaintiff_allegation",
+                      "source_ref": "source:nyt-openai:no-s01-plaintiff-complaint"
+                    },
+                    {
+                      "block_id": "no-s02-quote",
+                      "citation_span_id": "no-s02-quote",
+                      "epistemic_state": "unknown",
+                      "epistemic_state_id": "es-defendant-position",
+                      "role": "defendant_position",
+                      "source_ref": "source:nyt-openai:no-s02-defendant-statement"
+                    },
+                    {
+                      "block_id": "no-s03-quote",
+                      "citation_span_id": "no-s03-quote",
+                      "epistemic_state": "not_addressed",
+                      "epistemic_state_id": "es-judicial-treatment",
+                      "role": "judicial_treatment",
+                      "source_ref": "source:nyt-openai:no-s03-judicial-opinion"
+                    }
+                  ],
+                  "schema": "counterpedia.content-v02-graph-projection/v0.1",
+                  "source_composition_id": "counterpedia.content-v02/nyt-openai-litigation-0001/e1",
+                  "source_page_id": "NYT-OPENAI-LITIGATION-0001",
+                  "source_schema": "counterpedia.content/v0.2"
+                },
+                "corpus_lifecycle": "admitted",
+                "current_edition": "NYT-OPENAI-LITIGATION-EDITION-1",
+                "page_id": "NYT-OPENAI-LITIGATION-0001",
+                "record_id": "NYT-OPENAI-LITIGATION-0001",
+                "rendered_at": "2026-08-16T05:42:52Z",
+                "route_slug": "nyt-openai-litigation-0001",
+                "slug": "nyt-openai-litigation-0001",
+                "status": "active",
+                "title": "The New York Times v. OpenAI: litigation-intersection record"
+              },
+              "identity": {
+                "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+                "nodeKind": "record",
+                "stableId": "NYT-OPENAI-LITIGATION-0001"
+              },
+              "instanceId": "counterpedia/NYT-OPENAI-LITIGATION-0001",
+              "kind": "record",
+              "nodeId": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]",
+              "origin": {
+                "artifactFamily": "page_model",
+                "artifactIdentity": "NYT-OPENAI-LITIGATION-0001",
+                "sourceField": "record"
+              },
+              "stableId": "NYT-OPENAI-LITIGATION-0001"
+            },
+            "ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]"
+          },
+          "operation": "get_object",
+          "posture": "complete",
+          "query": {
+            "namespace": "counterpedia_graph",
+            "op": "get_object",
+            "ref": "[\"record\",\"counterpedia/NYT-OPENAI-LITIGATION-0001\",\"NYT-OPENAI-LITIGATION-0001\"]"
+          },
+          "query_digest": "sha256:2e0d828f17b282fbd54e24eca9298b387197b0a600bf4e85094ff38bd81cf5a1",
+          "read_version": "countergraph.agent-read/v0.1",
+          "result_digest": "sha256:c3e397956eb292f69ca03200bebb7c2db3304e3a3c982ae88bd36ea42abb4ebb",
+          "schema": "countergraph.agent-read-result/v0.1",
+          "source": {
+            "adapter_version": "countergraph.counterpedia-graph-adapter/v0.1",
+            "carried_schema": "countergraph.counterpedia-graph-carried/v0.1",
+            "depth_frontier_count": 0,
+            "namespace": "counterpedia_graph",
+            "projection_digest": "sha256:38077b8216db33dc5378dc648417875d73f23f47427f1cd0283cdbc155f5a18b",
+            "unresolved_reference_count": 0,
+            "upstream": {
+              "commit": "b0b4c5bbfe90ef5df0c703e7d2c3b0d0ea2faf75",
+              "identity_blob_sha": "83d7e709d3d33cca476c6b5de30bd8d07f3d6ddf",
+              "package": "@garpedia/graph",
+              "package_version": "0.1.0",
+              "payload_digest": "sha256:c877e738200dba8d0d4917caa035dd23046ba39cbc0f95ac1014fef0654fc0b0",
+              "repository": "thelaplage/counterpedia",
+              "structured_field_map_sha": "8122d87dc281aa817f1375fa6f9c7781fc129408",
+              "types_blob_sha": "ab4c920a56cd0d65cd1347a499842792c35c4e19"
+            }
+          }
+        },
+        "read_result_digest": "sha256:c3e397956eb292f69ca03200bebb7c2db3304e3a3c982ae88bd36ea42abb4ebb",
+        "schema": "countergraph.query-execution/v0.1"
+      },
+      "root_execution_digest": "sha256:974727ec9a4a1d7ff234445bb3938fd31086a62f884043973608ee43bf1d1aca",
+      "schema": "countergraph.execution-packet/v0.1",
+      "source_requirements": [
+        {
+          "adapter_version": "countergraph.counterpedia-graph-adapter/v0.1",
+          "carried_schema": "countergraph.counterpedia-graph-carried/v0.1",
+          "namespace": "counterpedia_graph",
+          "projection_digest": "sha256:38077b8216db33dc5378dc648417875d73f23f47427f1cd0283cdbc155f5a18b",
+          "upstream": {
+            "commit": "b0b4c5bbfe90ef5df0c703e7d2c3b0d0ea2faf75",
+            "identity_blob_sha": "83d7e709d3d33cca476c6b5de30bd8d07f3d6ddf",
+            "package": "@garpedia/graph",
+            "package_version": "0.1.0",
+            "payload_digest": "sha256:c877e738200dba8d0d4917caa035dd23046ba39cbc0f95ac1014fef0654fc0b0",
+            "repository": "thelaplage/counterpedia",
+            "structured_field_map_sha": "8122d87dc281aa817f1375fa6f9c7781fc129408",
+            "types_blob_sha": "ab4c920a56cd0d65cd1347a499842792c35c4e19"
+          }
+        }
+      ]
+    }
+  }
+}
