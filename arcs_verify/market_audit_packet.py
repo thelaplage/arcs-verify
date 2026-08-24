@@ -22,9 +22,14 @@ WHAT THIS MODULE IS NOT
   - Not a verifier of the referenced artifacts' contents. It records refs
     and digests, not payloads, and never fetches or validates the bytes a
     ref points to.
-  - Not a signer, issuer, or authority. `authority_effect`, `truth_effect`,
-    and `admission_effect` are hard-pinned to "none" and cannot be
-    promoted; construction raises ValueError if any is set otherwise.
+  - Not a signer, issuer, or authority. It carries no `authority_effect`,
+    `truth_effect`, or `admission_effect` field at all — non-authority is
+    expressed by the absence of these fields from the packet, not by a
+    value pinned to "none". `MarketAuditPacket` is a frozen dataclass with
+    exactly three fields (`packet_id`, `artifact_refs`, `created_at`);
+    attempting to construct one with any authority-shaped keyword (e.g.
+    `authority_effect`, `trusted`, `admitted`) raises `TypeError`, since no
+    such field is declared.
   - `audit_completeness` reports which categories are present as native
     refs. Completeness is a structural finding: assembling a packet !=
     verifying it, and a passing packet-digest recomputation is not proof
@@ -147,35 +152,27 @@ class MarketAuditPacket:
     """A portable, immutable bundle of native artifact refs for one governed
     market transaction.
 
-    Confers no authority, truth, or admission effect: those three fields
-    are hard-pinned to "none". Construction rejects any attempt to promote
-    them (`ValueError`) — the dataclass is frozen, so no later mutation can
-    promote them either.
+    Confers no authority, truth, or admission effect. This is expressed by
+    structural absence: the dataclass declares no `authority_effect`,
+    `truth_effect`, or `admission_effect` field, so none of those semantics
+    can be serialized into the packet body. Construction rejects (`TypeError`)
+    any attempt to inject such a field as a keyword argument, since it is not
+    a declared field — the dataclass is frozen, so no later mutation could
+    promote one even if it existed.
     """
 
     packet_id: str
     artifact_refs: dict[str, str]
     created_at: str
-    authority_effect: str = "none"
-    truth_effect: str = "none"
-    admission_effect: str = "none"
-
-    def __post_init__(self) -> None:
-        if any(getattr(self, k) != "none" for k in ("authority_effect", "truth_effect", "admission_effect")):
-            raise ValueError("audit packet cannot promote authority/truth/admission semantics")
 
     def body(self) -> dict[str, Any]:
-        """The canonical, portable body used for digesting. Effect fields
-        are always the hard "none" constants regardless of instance state
-        (belt-and-suspenders; the constructor already forbids any other
-        value)."""
+        """The canonical, portable body used for digesting. Carries no
+        authority/truth/admission field — non-authority is structural
+        absence here, not a "none"-pinned value (see module docstring)."""
         return {
             "packet_id": self.packet_id,
             "artifact_refs": dict(sorted(self.artifact_refs.items())),
             "created_at": self.created_at,
-            "authority_effect": "none",
-            "truth_effect": "none",
-            "admission_effect": "none",
         }
 
     def digest(self) -> str:
@@ -213,7 +210,9 @@ def audit_completeness(packet: MarketAuditPacket) -> dict[str, Any]:
     `complete and not malformed_refs`.
 
     This is a structural finding, not an authority, truth, or admission
-    verdict — those effects are permanently "none" (see module docstring).
+    verdict. Those effects are not represented in this result at all —
+    `MarketAuditPacket` declares no authority/truth/admission field to
+    report on (see module docstring).
     """
     missing = [key for key in REQUIRED if key not in packet.artifact_refs]
     malformed = sorted(
@@ -226,8 +225,5 @@ def audit_completeness(packet: MarketAuditPacket) -> dict[str, Any]:
         "missing": missing,
         "malformed_refs": malformed,
         "packet_digest": packet.digest(),
-        "authority_effect": "none",
-        "truth_effect": "none",
-        "admission_effect": "none",
         "non_equivalences": _PERMANENT_NON_EQUIVALENCES,
     }

@@ -6,8 +6,8 @@ Coverage:
   T01  incomplete packet stays non-authoritative (original contract)
   T02  complete packet with well-formed native refs → complete=True, no malformed
   T03  present-but-malformed ref is reported separately from missing
-  T04  authority/truth/admission effects are permanently "none" in completeness
-  T05  constructing with a promoted effect field raises ValueError
+  T04  authority/truth/admission fields are structurally absent from completeness
+  T05  injecting an authority-shaped keyword at construction fails closed (TypeError)
   T06  packet is frozen — attempted mutation raises
   T07  digest is stable under artifact_refs key-order permutation
   T08  digest changes when any ref value changes (tamper-sensitive)
@@ -53,7 +53,7 @@ def test_incomplete_packet_stays_non_authoritative():
     p = MarketAuditPacket('p1', {'offer': 'o', 'authorization': 'a'}, '2026-08-23T00:00:00Z')
     r = audit_completeness(p)
     assert r['complete'] is False
-    assert r['authority_effect'] == 'none'
+    assert 'authority_effect' not in r
 
 
 # ── T02: complete packet with well-formed native refs ─────────────────────────
@@ -78,22 +78,59 @@ def test_malformed_ref_reported_separately_from_missing():
     assert r['malformed_refs'] == ['offer']
 
 
-# ── T04: effects permanently "none" in every completeness result ─────────────
+# ── T04: authority/truth/admission fields are structurally absent ────────────
 
-def test_completeness_effects_always_none():
+def test_completeness_has_no_authority_fields():
     p = MarketAuditPacket('p4', {}, '2026-08-23T00:00:00Z')
     r = audit_completeness(p)
-    assert r['authority_effect'] == 'none'
-    assert r['truth_effect'] == 'none'
-    assert r['admission_effect'] == 'none'
+    assert 'authority_effect' not in r
+    assert 'truth_effect' not in r
+    assert 'admission_effect' not in r
 
 
-# ── T05: promoted effect field rejected at construction ──────────────────────
+def test_packet_object_has_no_authority_attributes():
+    p = MarketAuditPacket('p4b', {}, '2026-08-23T00:00:00Z')
+    assert not hasattr(p, 'authority_effect')
+    assert not hasattr(p, 'truth_effect')
+    assert not hasattr(p, 'admission_effect')
 
-@pytest.mark.parametrize("field", ["authority_effect", "truth_effect", "admission_effect"])
-def test_promoted_effect_field_raises(field):
-    kwargs = {"packet_id": "p5", "artifact_refs": {}, "created_at": "2026-08-23T00:00:00Z", field: "granted"}
-    with pytest.raises(ValueError):
+
+def test_body_and_to_dict_carry_no_authority_fields():
+    p = MarketAuditPacket('p4c', _complete_refs(), '2026-08-23T00:00:00Z')
+    for key in ('authority_effect', 'truth_effect', 'admission_effect'):
+        assert key not in p.body()
+        assert key not in p.to_dict()
+
+
+# ── T05: injecting an authority-shaped keyword fails closed ──────────────────
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("authority_effect", "none"),
+        ("authority_effect", "admitted"),
+        ("truth_effect", "none"),
+        ("admission_effect", "none"),
+        ("trusted", True),
+        ("admitted", True),
+        ("authorized", True),
+        ("standing", "good"),
+    ],
+)
+def test_authority_shaped_injection_fails_closed(field, value):
+    """No authority-shaped keyword is a declared field on MarketAuditPacket
+    (structural absence per NE-11), so any attempt to inject one at
+    construction — whether pinned to "none" or promoted to an admitting
+    value — is rejected by the dataclass itself: `TypeError` for an
+    undeclared keyword argument. Absence is enforced, not merely defaulted.
+    """
+    kwargs = {
+        "packet_id": "p5",
+        "artifact_refs": {},
+        "created_at": "2026-08-23T00:00:00Z",
+        field: value,
+    }
+    with pytest.raises(TypeError):
         MarketAuditPacket(**kwargs)
 
 
@@ -102,7 +139,17 @@ def test_promoted_effect_field_raises(field):
 def test_packet_is_frozen():
     p = MarketAuditPacket('p6', {}, '2026-08-23T00:00:00Z')
     with pytest.raises(Exception):
-        p.authority_effect = "granted"  # type: ignore[misc]
+        p.packet_id = "mutated"  # type: ignore[misc]
+
+
+def test_packet_is_frozen_even_against_nonexistent_authority_attribute():
+    """A frozen dataclass rejects ALL attribute assignment, so a post-hoc
+    attempt to bolt an authority-shaped attribute onto an existing instance
+    is also blocked — belt-and-suspenders alongside construction-time
+    rejection in test_authority_shaped_injection_fails_closed."""
+    p = MarketAuditPacket('p6b', {}, '2026-08-23T00:00:00Z')
+    with pytest.raises(Exception):
+        p.authority_effect = "granted"  # type: ignore[misc,attr-defined]
 
 
 # ── T07: digest stable under key-order permutation ────────────────────────────
