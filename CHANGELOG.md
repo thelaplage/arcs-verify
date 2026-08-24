@@ -9,6 +9,28 @@ The versioning policy is described in [docs/VERSIONING.md](docs/VERSIONING.md).
 ## [Unreleased]
 
 ### Added
+- MARKET-AUDIT-PACKET0: portable native-ref audit packet assembly for
+  independent market-transaction replay (`arcs_verify/market_audit_packet.py`,
+  moved from a root-level stub into the package).
+  - `MarketAuditPacket`: frozen, immutable bundle of native (`sha256:<hex>`)
+    artifact refs across the 13 lifecycle categories of one governed market
+    transaction (offer, discovery, selection, quote, quote_acceptance,
+    authorization, execution, receipt, witness, verification, sla,
+    settlement, history). `authority_effect` / `truth_effect` /
+    `admission_effect` are hard-pinned to `"none"`; construction rejects any
+    attempt to promote them.
+  - `audit_completeness`: structural completeness only — which categories
+    are present (`missing`) versus present-but-not-a-well-formed-native-ref
+    (`malformed_refs`), plus the packet digest and permanent
+    non-equivalences. Completeness carries zero authority/truth/admission
+    effect: assembling a packet != verifying it.
+  - `recompute_packet_digest` / `verify_packet_digest`: independent digest
+    recomputation over a plain dict body, so a recipient can recompute and
+    compare a serialized packet's self-declared `packet_digest` without any
+    dependency on this class or on producer code. A passing recomputation
+    is not proof the real-world transaction occurred.
+  - Imports nothing from any producer/DAGR/market implementation; covered by
+    `tools/check_public_release.py` and an in-suite import-independence test.
 - ARCSV-C2PA0: hermetic native C2PA recomputation and comparison v0.1.
   - `arcs_verify/contracts/c2pa-native-finding/v0.1/`: the C2PA independent
     verification report and comparison contract. `contract.manifest.json` pins
