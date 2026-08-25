@@ -23,7 +23,7 @@ a replacement — it repeats the same digest-binding/mutation/independence
 coverage against the new pack, plus two tests specific to the correction
 itself.
 
-Producer commit: c67d74409c590db34a3ea4a57c5505270fa8dec3 (countergraph,
+Producer commit: 25e39ee800e9d3e6bb217cbc957b69f7e40b5ece (countergraph,
 CG-REPLAY-PRODUCER-REFRESH0, PR #170 head after vendoring the real
 counterpedia producer bytes and eliminating the PENDING_FILL_AFTER_COMMIT
 placeholder)
@@ -99,7 +99,7 @@ def test_meta_producer_commit_is_real_not_a_placeholder() -> None:
     that produced the vendored fixture bytes underneath it — never a
     placeholder string."""
     meta = _pack()["meta"]
-    assert meta["producer_commit"] == "c67d74409c590db34a3ea4a57c5505270fa8dec3"
+    assert meta["producer_commit"] == "25e39ee800e9d3e6bb217cbc957b69f7e40b5ece"
     assert len(meta["producer_commit"]) == 40
     assert "PENDING_FILL" not in json.dumps(meta)
 

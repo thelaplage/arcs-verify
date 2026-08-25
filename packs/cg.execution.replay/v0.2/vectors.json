@@ -4,7 +4,7 @@
     "corrects_pack": "packs/cg.execution.replay/v0.1/vectors.json",
     "fixture_purpose": "CG-REPLAY0 verifier test vectors — literal producer bytes at pinned commit (CG-REPLAY-PRODUCER-REFRESH0 correction: content_v02_projection.authority_movement is structurally absent, not zero)",
     "producer": "countergraph",
-    "producer_commit": "c67d74409c590db34a3ea4a57c5505270fa8dec3",
+    "producer_commit": "25e39ee800e9d3e6bb217cbc957b69f7e40b5ece",
     "producer_repo": "thelaplage/countergraph",
     "upstream_producer_commit": "81f3a88f5102104477bed739a2b0c8ce54e6fdce",
     "upstream_producer_note": "countergraph's fixture is a byte-for-byte vendored copy of counterpedia main's public/garpedia/graph-fixtures/NYT-OPENAI-LITIGATION-0001.graph{,.provenance}.json at this commit; see countergraph's fixtures/counterpedia_graph_nytoai_litigation_0001_v0_2.vendor_manifest.json.",
