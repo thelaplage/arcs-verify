@@ -1,11 +1,14 @@
 {
   "meta": {
-    "correction_reason": "v0.1 vectors carried a literal authority_movement:0 field baked into carried content_v02_projection. This capture re-derives the same two packets from a corrected fixture that structurally omits the key (fixtures/counterpedia_graph_nytoai_litigation_0001_v0_2.json + its provenance file).",
+    "correction_reason": "v0.1 vectors carried a literal authority_movement:0 field baked into carried content_v02_projection. This capture re-derives the same two packets from countergraph's corrected fixture, which vendors counterpedia main's real content_v02 graph producer output byte-for-byte (counterpedia commit 81f3a88f5102104477bed739a2b0c8ce54e6fdce, PR #589) and structurally omits the key (fixtures/counterpedia_graph_nytoai_litigation_0001_v0_2.json + its vendored provenance file).",
     "corrects_pack": "packs/cg.execution.replay/v0.1/vectors.json",
     "fixture_purpose": "CG-REPLAY0 verifier test vectors — literal producer bytes at pinned commit (CG-REPLAY-PRODUCER-REFRESH0 correction: content_v02_projection.authority_movement is structurally absent, not zero)",
     "producer": "countergraph",
-    "producer_commit": "607b7352eb1c13e7a634f3dfa4970462263a1bad",
-    "producer_repo": "thelaplage/countergraph"
+    "producer_commit": "c67d74409c590db34a3ea4a57c5505270fa8dec3",
+    "producer_repo": "thelaplage/countergraph",
+    "upstream_producer_commit": "81f3a88f5102104477bed739a2b0c8ce54e6fdce",
+    "upstream_producer_note": "countergraph's fixture is a byte-for-byte vendored copy of counterpedia main's public/garpedia/graph-fixtures/NYT-OPENAI-LITIGATION-0001.graph{,.provenance}.json at this commit; see countergraph's fixtures/counterpedia_graph_nytoai_litigation_0001_v0_2.vendor_manifest.json.",
+    "upstream_producer_repo": "thelaplage/counterpedia"
   },
   "vectors": {
     "get_neighborhood_record_outgoing_d1": {

@@ -6,10 +6,16 @@ packs/cg.execution.replay/v0.1/vectors.json carried literal countergraph
 producer bytes whose content_v02_projection field included an authority-shaped
 `authority_movement: 0` scalar baked into carried content. This v0.2 pack
 re-derives the same two packets (get_object on the NYT-OPENAI-LITIGATION-0001
-record; get_neighborhood outgoing depth=1 from the same root) from a corrected
-countergraph capture that structurally OMITS that key — see
-countergraph's fixtures/counterpedia_graph_nytoai_litigation_0001_v0_2.provenance.json
-for the correction record on the producer side.
+record; get_neighborhood outgoing depth=1 from the same root) from
+countergraph's corrected capture, which vendors counterpedia main's real
+content_v02 graph producer output byte-for-byte (counterpedia commit
+81f3a88f5102104477bed739a2b0c8ce54e6fdce, PR #589 — the actual NE-11 fix
+to lib/garpedia/contentV02GraphProjection.ts) and structurally OMITS that
+key — see countergraph's
+fixtures/counterpedia_graph_nytoai_litigation_0001_v0_2.provenance.json
+(the vendored counterpedia provenance) and
+fixtures/counterpedia_graph_nytoai_litigation_0001_v0_2.vendor_manifest.json
+(the vendoring record) for the chain.
 
 v0.1 is preserved untouched as historical producer evidence; see
 tests/test_cg_execution_replay.py. This file is a parallel gate for v0.2, not
@@ -17,8 +23,12 @@ a replacement — it repeats the same digest-binding/mutation/independence
 coverage against the new pack, plus two tests specific to the correction
 itself.
 
-Producer commit: 607b7352eb1c13e7a634f3dfa4970462263a1bad (countergraph,
-CG-REPLAY-PRODUCER-REFRESH0)
+Producer commit: c67d74409c590db34a3ea4a57c5505270fa8dec3 (countergraph,
+CG-REPLAY-PRODUCER-REFRESH0, PR #170 head after vendoring the real
+counterpedia producer bytes and eliminating the PENDING_FILL_AFTER_COMMIT
+placeholder)
+Upstream producer commit: 81f3a88f5102104477bed739a2b0c8ce54e6fdce
+(thelaplage/counterpedia, PR #589)
 Fixture: packs/cg.execution.replay/v0.2/vectors.json
 """
 
@@ -80,6 +90,22 @@ def test_meta_documents_the_correction() -> None:
     assert meta["producer_repo"] == "thelaplage/countergraph"
     assert meta["corrects_pack"] == "packs/cg.execution.replay/v0.1/vectors.json"
     assert "authority_movement" in meta["correction_reason"]
+
+
+def test_meta_producer_commit_is_real_not_a_placeholder() -> None:
+    """Regression gate: this pack must record the real countergraph commit
+    that produced these packets (PR #170's head after it stopped emitting
+    PENDING_FILL_AFTER_COMMIT), and the real upstream counterpedia commit
+    that produced the vendored fixture bytes underneath it — never a
+    placeholder string."""
+    meta = _pack()["meta"]
+    assert meta["producer_commit"] == "c67d74409c590db34a3ea4a57c5505270fa8dec3"
+    assert len(meta["producer_commit"]) == 40
+    assert "PENDING_FILL" not in json.dumps(meta)
+
+    assert meta["upstream_producer_repo"] == "thelaplage/counterpedia"
+    assert meta["upstream_producer_commit"] == "81f3a88f5102104477bed739a2b0c8ce54e6fdce"
+    assert len(meta["upstream_producer_commit"]) == 40
 
 
 def test_authority_movement_is_structurally_absent(get_object_packet, neighborhood_packet) -> None:
