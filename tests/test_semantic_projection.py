@@ -42,7 +42,10 @@ def test_report_shape_follows_house_conventions() -> None:
     data = verify_semantic_projection(load()).to_dict()
     assert data["schema"] == SEMANTIC_PROJECTION_REPORT_SCHEMA
     assert data["verification_profile"] == SEMANTIC_PROJECTION_PROFILE
-    assert data["authority_movement"] == 0
+    # NE-11: no permanently-pinned authority-shaped field. This report is not
+    # an authority owner, so "no authority movement" must be structural
+    # absence, not a none/zero-pinned field on the payload.
+    assert "authority_movement" not in data
     # Independent conclusions, not one master Boolean.
     assert len(data["conclusions"]) == 9
     assert all(value == "true" for value in data["conclusions"].values())
