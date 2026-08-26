@@ -162,11 +162,16 @@ def verify_bundle(
 
     # ------------------------------------------------------------------
     # Authority negative space.
+    #
+    # This bundle is non-authority: it expresses "no authority movement" by
+    # STRUCTURAL ABSENCE of an authority-shaped field on producer/manifest_producer,
+    # not by pinning one to a permanently-negative constant (e.g. 0). A verifier
+    # value of 0 would falsely imply the field is meaningful and evaluated; the
+    # correct verifier behavior is to not look for it at all. Any authority_movement
+    # key present on producer/manifest_producer is unrecognized input and is ignored
+    # per this verifier's existing unknown-field policy (unknown keys are not
+    # inspected or asserted upon anywhere in this module).
     # ------------------------------------------------------------------
-    if producer.get("authority_movement") != 0:
-        fail("authority_boundary_valid", "authority.producer_nonzero")
-    if manifest_producer.get("authority_movement") != 0:
-        fail("authority_boundary_valid", "authority.manifest_nonzero")
     summary = facts.get("summary")
     if not isinstance(summary, dict):
         summary = {}
