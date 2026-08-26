@@ -137,7 +137,6 @@ def _bundle(tmp_path: Path, *, original_bytes: bytes = b"original", rendition_by
             "revision": PRODUCER_REVISION,
             "surface": "acquisition.mcp_surface.v0.1",
             "tool": "acquisition.capture_url",
-            "authority_movement": 0,
         },
         "summary": {
             "attempt_count": 3,
@@ -179,7 +178,6 @@ def _bundle(tmp_path: Path, *, original_bytes: bytes = b"original", rendition_by
             "repository": "thelaplage/counterpedia-acquisition",
             "revision": PRODUCER_REVISION,
             "object_store_implementation": "acquisition.fs_store.FilesystemObjectStore",
-            "authority_movement": 0,
         },
         "store_root": "generated/mona0-object-store",
         "layout": "<root>/<sha256_hex[:2]>/<sha256_hex[2:]>",
@@ -208,6 +206,33 @@ def test_valid_bundle_passes_but_reserved_conclusions_stay_not_evaluated(tmp_pat
     assert report["conclusions"]["source_independence_verified"] == "not_evaluated"
     assert report["conclusions"]["signature_verified"] == "not_evaluated"
     assert report["verifier"]["imports_producer_implementation"] is False
+    assert "authority_movement" not in facts["producer"]
+    assert "authority_movement" not in manifest["producer"]
+
+
+def test_injected_authority_movement_field_is_ignored_not_enforced(tmp_path: Path) -> None:
+    """This bundle is non-authority: it expresses "no authority movement" by
+    STRUCTURAL ABSENCE of the field, not by requiring a pinned negative value.
+
+    A hostile producer/manifest that injects an authority-shaped field (with
+    any value, including a nonzero one that would have tripped the old
+    `!= 0` requirement) must not change the verdict. This verifier has no
+    unknown-field rejection policy anywhere else in this module either
+    (unrecognized keys are never inspected), so an injected authority_movement
+    key is inert here too — matching that existing policy rather than
+    inventing new verifier semantics for this one field.
+    """
+    facts, manifest, store = _bundle(tmp_path)
+    facts["producer"]["authority_movement"] = 7
+    manifest["producer"]["authority_movement"] = "definitely not zero"
+
+    report = VERIFY.verify_bundle(
+        facts, manifest, store, verifier_revision=VERIFIER_REVISION
+    )
+
+    assert report["passed"] is True
+    assert report["conclusions"]["authority_boundary_valid"] is True
+    assert report["failure_codes"] == []
 
 
 def test_tampered_object_bytes_fail_independent_digest_check(tmp_path: Path) -> None:
