@@ -37,6 +37,9 @@ MODULES = [
     "arcs_verify/cg_replay.py",
     # Counterplayer study verifier
     "arcs_verify/counterplayer_study.py",
+    # ADMISSION-EVENT-VERIFY1 — admission-event supersession verifiers
+    "arcs_verify/admission_event.py",
+    "arcs_verify/admission_event_v0_2.py",
 ]
 
 # Signatures that mark a module as one that emits verifier failure codes. The
