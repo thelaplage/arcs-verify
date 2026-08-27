@@ -1,13 +1,9 @@
 """Independent verifier for ``srs.activity.admission_event.v0.2``.
 
-v0.2 is additive over the landed v0.1 verifier. This module reuses only
-verifier-owned low-level helpers/constants; it does not rewrite the receipt to
-v0.1 and imports no DAGR/Counterpedia producer implementation.
-
-The new independent finding is ``supersession_binding``. A PASS for a
-SUPERSEDED receipt requires exact predecessor/successor references, distinct
-editions, both event refs in ``basis_refs``, and the required
-supersession-not-retirement attestation.
+The v0.2 profile schema is vendored byte-identically from the exact arcs-srs
+source blob and validated directly. Python logic below is limited to cross-field
+rules JSON Schema cannot express plus verifier-owned cryptographic/raw-content
+checks. No producer/runtime implementation is imported.
 """
 from __future__ import annotations
 
@@ -29,12 +25,17 @@ from arcs_verify import admission_event as v01
 PROFILE = "srs.activity.admission_event.v0.2"
 PROFILE_ID = "srs.activity.admission_event"
 PROFILE_VERSION = "v0.2"
-PROFILE_SOURCE_HEAD = "b276945eed5fb83a6eb08df09d122da62a59cc60"
+PROFILE_SOURCE_HEAD = "d2e0652b9e2f7b224dbaad042b53acede418b194"
 PROFILE_SOURCE_PATH = (
     "schemas/activity-profiles/v0.2/"
     "srs.activity.admission_event.v0.2.schema.json"
 )
-PROFILE_SOURCE_BLOB_SHA1 = "7338dbbe161ac4454b0454d27713efbc52079dc0"
+PROFILE_SOURCE_BLOB_SHA1 = "a91eb860688d4a449d0042174a55706e344a304a"
+PROFILE_SCHEMA_PATH = (
+    Path(__file__).resolve().parent
+    / "data"
+    / "srs.activity.admission_event.v0.2.schema.json"
+)
 
 SUPERSESSION_LIMIT = (
     "A SUPERSEDED admission-event receipt records replacement by the named "
@@ -42,14 +43,27 @@ SUPERSESSION_LIMIT = (
     "false, invalid, deleted, or retired; terminal withdrawal without a "
     "replacement is outside this profile."
 )
-SUPERSESSION_KEYS = frozenset(
+
+AUTHORITY_SHAPED_KEYS = frozenset(
     {
-        "kind",
-        "predecessor_event_ref",
-        "predecessor_event_digest",
-        "successor_event_ref",
-        "successor_event_digest",
-        "successor_subject_edition_ref",
+        "aggregate_verdict",
+        "aggregate_activity_verdict",
+        "trust_score",
+        "reputation",
+        "reputation_score",
+        "activity_score",
+        "reliance_score",
+        "standing_score",
+        "truth",
+        "verified",
+        "authority_effect",
+        "authority_movement",
+        "admission_effect",
+        "standing_effect",
+        "truth_effect",
+        "evidentiary_weight",
+        "verdict_weight",
+        "corroboration_weight",
     }
 )
 
@@ -58,13 +72,16 @@ SUPERSESSION_KEYS = frozenset(
 class AdmissionEventV02VerificationReport:
     envelope_schema_digest: bool = False
     envelope: bool = False
+    profile_schema_digest: bool = False
     profile: bool = False
     supersession_binding: bool = False
+    authority_field_exclusion: bool = False
     raw_content_exclusion: bool = False
     attestation_limits_present: bool = False
     signature_valid: bool = False
     issuer_key_resolved: bool = False
     issuer_key_trusted: bool = False
+    profile_schema_sha256: str | None = None
     failure_codes: list[str] = field(default_factory=list)
     details: list[str] = field(default_factory=list)
 
@@ -74,8 +91,10 @@ class AdmissionEventV02VerificationReport:
             (
                 self.envelope_schema_digest,
                 self.envelope,
+                self.profile_schema_digest,
                 self.profile,
                 self.supersession_binding,
+                self.authority_field_exclusion,
                 self.raw_content_exclusion,
                 self.attestation_limits_present,
                 self.signature_valid,
@@ -89,180 +108,94 @@ class AdmissionEventV02VerificationReport:
         data["passed"] = self.passed
         data["profile_identity"] = PROFILE
         data["profile_source_head"] = PROFILE_SOURCE_HEAD
+        data["profile_source_path"] = PROFILE_SOURCE_PATH
         data["profile_source_blob_sha1"] = PROFILE_SOURCE_BLOB_SHA1
         return data
 
 
-def _dedupe(
-    report: AdmissionEventV02VerificationReport,
-) -> AdmissionEventV02VerificationReport:
+def _dedupe(report: AdmissionEventV02VerificationReport) -> AdmissionEventV02VerificationReport:
     report.failure_codes = list(dict.fromkeys(report.failure_codes))
     report.details = list(dict.fromkeys(report.details))
     return report
 
 
-def _profile_errors(receipt: Mapping[str, Any]) -> list[str]:
+def _git_blob_sha1(data: bytes) -> str:
+    return hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\0" + data).hexdigest()
+
+
+def _profile_schema(report: AdmissionEventV02VerificationReport) -> dict[str, Any] | None:
+    try:
+        data = PROFILE_SCHEMA_PATH.read_bytes()
+    except OSError as exc:
+        report.failure_codes.append("profile_schema.unreadable")
+        report.details.append(str(exc))
+        return None
+    report.profile_schema_sha256 = "sha256:" + hashlib.sha256(data).hexdigest()
+    report.profile_schema_digest = _git_blob_sha1(data) == PROFILE_SOURCE_BLOB_SHA1
+    if not report.profile_schema_digest:
+        report.failure_codes.append("profile_schema.source_blob_mismatch")
+        return None
+    try:
+        schema = json.loads(data)
+        Draft202012Validator.check_schema(schema)
+    except Exception as exc:
+        report.failure_codes.append("profile_schema.invalid")
+        report.details.append(str(exc))
+        return None
+    return schema
+
+
+def _walk_keys(value: Any):
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            yield str(key)
+            yield from _walk_keys(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from _walk_keys(item)
+
+
+def _authority_errors(receipt: Mapping[str, Any]) -> list[str]:
     errors: list[str] = []
-    missing = sorted(v01.REQUIRED - receipt.keys())
-    if missing:
-        errors.append("admission_event_v02.missing_required:" + ",".join(missing))
-
-    expected = {
-        "receipt_version": v01.RECEIPT_VERSION,
-        "profile_id": PROFILE_ID,
-        "profile_version": PROFILE_VERSION,
-        "receipt_type": "provenance",
-        "receipt_kind": "admission_event",
-        "boundary_type": "admission_event_boundary",
-    }
-    for key, expected_value in expected.items():
-        if receipt.get(key) != expected_value:
-            errors.append(f"admission_event_v02.invalid_{key}")
-
-    for key in (
-        "receipt_id",
-        "protocol_binding",
-        "subject_ref",
-        "issuer_id",
-        "runtime_instance_id",
-        "boundary_id",
-        "issued_at",
-        "namespace_authority_ref",
-        "subject_record_ref",
-        "subject_edition_ref",
-        "governed_result_ref",
-        "policy_profile_ref",
-        "disposition_id",
-    ):
-        value = receipt.get(key)
-        if not isinstance(value, str) or not value or value.strip() != value:
-            errors.append(f"admission_event_v02.invalid_text:{key}")
-
-    if receipt.get("visibility") not in v01.VISIBILITY:
-        errors.append("admission_event_v02.invalid_visibility")
-    if receipt.get("standing_act") not in v01.STANDING_ACTS:
-        errors.append("admission_event_v02.invalid_standing_act")
-    if receipt.get("subject_ref") != receipt.get("subject_edition_ref"):
-        errors.append("admission_event_v02.subject_binding_mismatch")
-
-    for key in ("governed_result_digest", "policy_digest", "disposition_digest"):
-        value = receipt.get(key)
-        if not isinstance(value, str) or v01.SHA256_REF.fullmatch(value) is None:
-            errors.append(f"admission_event_v02.invalid_digest:{key}")
-
-    basis = receipt.get("basis_refs")
-    basis_strings = (
-        [item for item in basis if isinstance(item, str)]
-        if isinstance(basis, list)
-        else []
-    )
-    if (
-        not isinstance(basis, list)
-        or not basis
-        or len(set(basis_strings)) != len(basis)
-        or not all(v01._basis_ref(item) for item in basis)
-    ):
-        errors.append("admission_event_v02.invalid_basis_refs")
-
-    covered = receipt.get("artifact_classes_covered")
-    covered_set = (
-        set(covered)
-        if isinstance(covered, list) and all(isinstance(x, str) for x in covered)
-        else set()
-    )
-    if not v01.COVERED.issubset(covered_set):
-        errors.append("admission_event_v02.missing_required_covered_classes")
-
-    excluded = receipt.get("artifact_classes_excluded")
-    excluded_set = (
-        set(excluded)
-        if isinstance(excluded, list) and all(isinstance(x, str) for x in excluded)
-        else set()
-    )
-    if not v01.EXCLUDED.issubset(excluded_set):
-        errors.append("admission_event_v02.missing_required_excluded_classes")
-
-    limitations = receipt.get("machine_limitations")
-    codes = (
-        {
-            item.get("code")
-            for item in limitations
-            if isinstance(item, Mapping) and isinstance(item.get("code"), str)
-        }
-        if isinstance(limitations, list)
-        else set()
-    )
-    if "CONTENT_NOT_VERIFIED" not in codes:
-        errors.append("admission_event_v02.missing_content_not_verified")
-
-    if any(key in receipt for key in v01.AGGREGATE_KEYS):
-        errors.append("admission_event_v02.aggregate_field_present")
-
-    extensions = receipt.get("extensions")
-    if not isinstance(extensions, Mapping):
-        errors.append("admission_event_v02.extensions_not_object")
-        return errors
-
-    supersession = extensions.get("supersession")
-    if receipt.get("standing_act") == "SUPERSEDED":
-        if not isinstance(supersession, Mapping):
-            errors.append("admission_event_v02.supersession_extension_missing")
-        else:
-            if set(supersession) != SUPERSESSION_KEYS:
-                errors.append("admission_event_v02.supersession_extension_shape")
-            if supersession.get("kind") != "replacement_admission":
-                errors.append("admission_event_v02.supersession_kind_invalid")
-            for key in ("predecessor_event_ref", "successor_event_ref"):
-                if not v01._basis_ref(supersession.get(key)):
-                    errors.append(f"admission_event_v02.invalid_supersession_ref:{key}")
-            for key in ("predecessor_event_digest", "successor_event_digest"):
-                value = supersession.get(key)
-                if not isinstance(value, str) or v01.SHA256_REF.fullmatch(value) is None:
-                    errors.append(f"admission_event_v02.invalid_supersession_digest:{key}")
-            successor_edition = supersession.get("successor_subject_edition_ref")
-            if (
-                not isinstance(successor_edition, str)
-                or not successor_edition
-                or successor_edition.strip() != successor_edition
-            ):
-                errors.append(
-                    "admission_event_v02.invalid_text:successor_subject_edition_ref"
-                )
-    elif supersession is not None:
-        errors.append("admission_event_v02.supersession_extension_wrong_act")
+    for key in _walk_keys(receipt):
+        normalized = v01._normalize_key(key)
+        if normalized in AUTHORITY_SHAPED_KEYS:
+            errors.append(f"authority_field.forbidden:{key}")
     return errors
 
 
 def _supersession_errors(receipt: Mapping[str, Any]) -> list[str]:
+    if receipt.get("subject_ref") != receipt.get("subject_edition_ref"):
+        return ["admission_event_v02.subject_binding_mismatch"]
+
     extensions = receipt.get("extensions")
-    supersession = (
-        extensions.get("supersession")
-        if isinstance(extensions, Mapping)
-        else None
-    )
+    supersession = extensions.get("supersession") if isinstance(extensions, Mapping) else None
     if receipt.get("standing_act") != "SUPERSEDED":
-        return (
-            ["admission_event_v02.supersession_extension_wrong_act"]
-            if supersession is not None
-            else []
-        )
+        return []
     if not isinstance(supersession, Mapping):
         return ["admission_event_v02.supersession_extension_missing"]
 
     errors: list[str] = []
     predecessor = supersession.get("predecessor_event_ref")
     successor = supersession.get("successor_event_ref")
+    successor_record = supersession.get("successor_subject_record_ref")
+    successor_edition = supersession.get("successor_subject_edition_ref")
+    owner_binding_ref = supersession.get("semantic_owner_binding_ref")
+
     if predecessor == successor:
         errors.append("admission_event_v02.supersession_same_event")
-    if receipt.get("subject_edition_ref") == supersession.get(
-        "successor_subject_edition_ref"
-    ):
+    if receipt.get("subject_edition_ref") == successor_edition:
         errors.append("admission_event_v02.supersession_same_edition")
+    if receipt.get("subject_record_ref") != successor_record:
+        errors.append("admission_event_v02.supersession_cross_record")
+
     basis = receipt.get("basis_refs")
     if not isinstance(basis, list) or predecessor not in basis:
         errors.append("admission_event_v02.predecessor_ref_not_in_basis")
     if not isinstance(basis, list) or successor not in basis:
         errors.append("admission_event_v02.successor_ref_not_in_basis")
+    if not isinstance(basis, list) or owner_binding_ref not in basis:
+        errors.append("admission_event_v02.semantic_owner_binding_ref_not_in_basis")
     return errors
 
 
@@ -272,35 +205,45 @@ def verify_admission_event_v0_2_receipt(
 ) -> AdmissionEventV02VerificationReport:
     report = AdmissionEventV02VerificationReport()
 
-    schema_bytes = v01.ENVELOPE_SCHEMA_PATH.read_bytes()
-    schema_sha = hashlib.sha256(schema_bytes).hexdigest()
-    report.envelope_schema_digest = schema_sha == v01.ENVELOPE_SCHEMA_SHA256
+    envelope_bytes = v01.ENVELOPE_SCHEMA_PATH.read_bytes()
+    envelope_sha = hashlib.sha256(envelope_bytes).hexdigest()
+    report.envelope_schema_digest = envelope_sha == v01.ENVELOPE_SCHEMA_SHA256
     if not report.envelope_schema_digest:
         report.failure_codes.append("schema.digest_mismatch")
 
     try:
-        schema = json.loads(schema_bytes)
-        schema_errors = sorted(
-            Draft202012Validator(schema).iter_errors(dict(receipt)),
+        envelope_schema = json.loads(envelope_bytes)
+        envelope_errors = sorted(
+            Draft202012Validator(envelope_schema).iter_errors(dict(receipt)),
             key=lambda error: list(error.path),
         )
     except Exception as exc:
         report.failure_codes.append("envelope.schema_unreadable")
         report.details.append(str(exc))
         return _dedupe(report)
-
-    report.envelope = not schema_errors
-    for error in schema_errors:
+    report.envelope = not envelope_errors
+    for error in envelope_errors:
         report.failure_codes.append("envelope.schema_invalid")
         report.details.append(error.message)
 
-    profile_errors = _profile_errors(receipt)
-    report.profile = not profile_errors
-    report.failure_codes.extend(profile_errors)
+    schema = _profile_schema(report)
+    if schema is not None:
+        profile_errors = sorted(
+            Draft202012Validator(schema).iter_errors(dict(receipt)),
+            key=lambda error: list(error.path),
+        )
+        report.profile = not profile_errors
+        for error in profile_errors:
+            report.failure_codes.append("admission_event_v02.profile_schema_invalid")
+            report.details.append(error.message)
 
     supersession_errors = _supersession_errors(receipt)
     report.supersession_binding = not supersession_errors
     report.failure_codes.extend(supersession_errors)
+
+    authority_errors = _authority_errors(receipt)
+    report.authority_field_exclusion = not authority_errors
+    report.failure_codes.extend(authority_errors)
 
     raw_errors = v01._raw_content_errors(receipt)
     report.raw_content_exclusion = not raw_errors
@@ -344,12 +287,8 @@ def verify_admission_event_v0_2_receipt(
         return _dedupe(report)
 
     try:
-        public_key = v01._b64url_decode(
-            entry.get("public_key"), code="public_key_encoding_invalid"
-        )
-        signature_bytes = v01._b64url_decode(
-            signature.get("signature"), code="signature_encoding_invalid"
-        )
+        public_key = v01._b64url_decode(entry.get("public_key"), code="public_key_encoding_invalid")
+        signature_bytes = v01._b64url_decode(signature.get("signature"), code="signature_encoding_invalid")
         if len(public_key) != 32:
             raise ValueError("public_key_encoding_invalid")
         if len(signature_bytes) != 64:
@@ -367,9 +306,7 @@ def verify_admission_event_v0_2_receipt(
         return _dedupe(report)
 
     try:
-        Ed25519PublicKey.from_public_bytes(public_key).verify(
-            signature_bytes, canonical
-        )
+        Ed25519PublicKey.from_public_bytes(public_key).verify(signature_bytes, canonical)
         report.signature_valid = True
     except InvalidSignature:
         report.failure_codes.append("signature_invalid")
@@ -380,9 +317,7 @@ def verify_admission_event_v0_2_receipt(
             entry.get("trusted") is True
             and entry.get("issuer_id") == receipt.get("issuer_id")
             and entry.get("algorithm") in (None, "Ed25519")
-            and v01._parse_time(entry["not_before"])
-            <= issued_at
-            <= v01._parse_time(entry["not_after"])
+            and v01._parse_time(entry["not_before"]) <= issued_at <= v01._parse_time(entry["not_after"])
         )
     except Exception:
         report.issuer_key_trusted = False
@@ -418,8 +353,10 @@ def main(argv: list[str] | None = None) -> int:
         for key in (
             "envelope_schema_digest",
             "envelope",
+            "profile_schema_digest",
             "profile",
             "supersession_binding",
+            "authority_field_exclusion",
             "raw_content_exclusion",
             "attestation_limits_present",
             "signature_valid",
@@ -427,6 +364,8 @@ def main(argv: list[str] | None = None) -> int:
             "issuer_key_trusted",
         ):
             print(f"{key}: {'PASS' if getattr(report, key) else 'FAIL'}")
+        if report.profile_schema_sha256:
+            print(f"profile_schema_sha256: {report.profile_schema_sha256}")
         for code in report.failure_codes:
             print(f"failure: {code}")
     return 0 if report.passed else 1
