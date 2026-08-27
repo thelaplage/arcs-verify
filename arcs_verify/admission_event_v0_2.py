@@ -22,6 +22,7 @@ from jsonschema import Draft202012Validator
 
 from arcs_verify import admission_event as v01
 
+REPORT_CONTRACT = "arcs.verify.admission-event-v0.2-report/v0.1"
 PROFILE = "srs.activity.admission_event.v0.2"
 PROFILE_ID = "srs.activity.admission_event"
 PROFILE_VERSION = "v0.2"
@@ -82,6 +83,13 @@ class AdmissionEventV02VerificationReport:
     issuer_key_resolved: bool = False
     issuer_key_trusted: bool = False
     profile_schema_sha256: str | None = None
+    verified_receipt_id: str | None = None
+    verified_receipt_canonical_json_sha256: str | None = None
+    verified_receipt_profile_id: str | None = None
+    verified_receipt_profile_version: str | None = None
+    verified_subject_record_ref: str | None = None
+    verified_subject_edition_ref: str | None = None
+    verified_supersession: dict[str, Any] | None = None
     failure_codes: list[str] = field(default_factory=list)
     details: list[str] = field(default_factory=list)
 
@@ -105,6 +113,7 @@ class AdmissionEventV02VerificationReport:
 
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
+        data["report_contract"] = REPORT_CONTRACT
         data["passed"] = self.passed
         data["profile_identity"] = PROFILE
         data["profile_source_head"] = PROFILE_SOURCE_HEAD
@@ -199,6 +208,28 @@ def _supersession_errors(receipt: Mapping[str, Any]) -> list[str]:
     return errors
 
 
+def _capture_verified_identity(
+    report: AdmissionEventV02VerificationReport,
+    receipt: Mapping[str, Any],
+) -> None:
+    try:
+        report.verified_receipt_canonical_json_sha256 = (
+            "sha256:" + hashlib.sha256(rfc8785.dumps(dict(receipt))).hexdigest()
+        )
+    except Exception:
+        report.failure_codes.append("verified_receipt_canonicalization_failed")
+        return
+    report.verified_receipt_id = receipt.get("receipt_id") if isinstance(receipt.get("receipt_id"), str) else None
+    report.verified_receipt_profile_id = receipt.get("profile_id") if isinstance(receipt.get("profile_id"), str) else None
+    report.verified_receipt_profile_version = receipt.get("profile_version") if isinstance(receipt.get("profile_version"), str) else None
+    report.verified_subject_record_ref = receipt.get("subject_record_ref") if isinstance(receipt.get("subject_record_ref"), str) else None
+    report.verified_subject_edition_ref = receipt.get("subject_edition_ref") if isinstance(receipt.get("subject_edition_ref"), str) else None
+    if receipt.get("standing_act") == "SUPERSEDED" and report.profile and report.supersession_binding:
+        extensions = receipt.get("extensions")
+        if isinstance(extensions, Mapping) and isinstance(extensions.get("supersession"), Mapping):
+            report.verified_supersession = copy.deepcopy(dict(extensions["supersession"]))
+
+
 def verify_admission_event_v0_2_receipt(
     receipt: Mapping[str, Any],
     keyring: Mapping[str, Any],
@@ -269,21 +300,19 @@ def verify_admission_event_v0_2_receipt(
         or signature.get("canonicalization") != "RFC8785-JCS"
     ):
         report.failure_codes.append("signature_object_invalid")
+        _capture_verified_identity(report, receipt)
         return _dedupe(report)
 
     key_id = signature.get("key_id")
     entries = keyring.get("issuers", []) if isinstance(keyring, Mapping) else []
     entry = next(
-        (
-            item
-            for item in entries
-            if isinstance(item, Mapping) and item.get("key_id") == key_id
-        ),
+        (item for item in entries if isinstance(item, Mapping) and item.get("key_id") == key_id),
         None,
     )
     report.issuer_key_resolved = entry is not None
     if entry is None:
         report.failure_codes.append("key_id_unresolved")
+        _capture_verified_identity(report, receipt)
         return _dedupe(report)
 
     try:
@@ -295,6 +324,7 @@ def verify_admission_event_v0_2_receipt(
             raise ValueError("signature_encoding_invalid")
     except ValueError as exc:
         report.failure_codes.append(str(exc))
+        _capture_verified_identity(report, receipt)
         return _dedupe(report)
 
     preimage = copy.deepcopy(dict(receipt))
@@ -303,6 +333,7 @@ def verify_admission_event_v0_2_receipt(
         canonical = rfc8785.dumps(preimage)
     except Exception:
         report.failure_codes.append("preimage_canonicalization_failed")
+        _capture_verified_identity(report, receipt)
         return _dedupe(report)
 
     try:
@@ -323,6 +354,8 @@ def verify_admission_event_v0_2_receipt(
         report.issuer_key_trusted = False
     if not report.issuer_key_trusted:
         report.failure_codes.append("key_untrusted")
+
+    _capture_verified_identity(report, receipt)
     return _dedupe(report)
 
 
@@ -351,21 +384,15 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(report.to_dict(), indent=2, sort_keys=True))
     else:
         for key in (
-            "envelope_schema_digest",
-            "envelope",
-            "profile_schema_digest",
-            "profile",
-            "supersession_binding",
-            "authority_field_exclusion",
-            "raw_content_exclusion",
-            "attestation_limits_present",
-            "signature_valid",
-            "issuer_key_resolved",
-            "issuer_key_trusted",
+            "envelope_schema_digest", "envelope", "profile_schema_digest", "profile",
+            "supersession_binding", "authority_field_exclusion", "raw_content_exclusion",
+            "attestation_limits_present", "signature_valid", "issuer_key_resolved", "issuer_key_trusted",
         ):
             print(f"{key}: {'PASS' if getattr(report, key) else 'FAIL'}")
         if report.profile_schema_sha256:
             print(f"profile_schema_sha256: {report.profile_schema_sha256}")
+        if report.verified_receipt_canonical_json_sha256:
+            print(f"verified_receipt_canonical_json_sha256: {report.verified_receipt_canonical_json_sha256}")
         for code in report.failure_codes:
             print(f"failure: {code}")
     return 0 if report.passed else 1
