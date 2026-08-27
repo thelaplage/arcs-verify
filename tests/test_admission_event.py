@@ -107,6 +107,7 @@ def test_valid_signed_admission_event_passes_all_axes() -> None:
     assert report.failure_codes == []
     assert report.envelope is True
     assert report.profile is True
+    assert report.raw_content_exclusion is True
     assert report.signature_valid is True
     assert report.issuer_key_resolved is True
     assert report.issuer_key_trusted is True
@@ -164,6 +165,28 @@ def test_resigned_aggregate_field_is_rejected() -> None:
     assert "admission_event.aggregate_field_present" in report.failure_codes
 
 
+def test_resigned_access_token_field_is_raw_content_failure() -> None:
+    body = _receipt_body()
+    body["access_token"] = "opaque-secret-material"
+    receipt, keyring, _ = _sign(body)
+    report = verify_admission_event_receipt(receipt, keyring)
+    assert report.passed is False
+    assert report.signature_valid is True
+    assert report.raw_content_exclusion is False
+    assert "raw_content.forbidden_key:access_token" in report.failure_codes
+
+
+def test_resigned_bearer_token_value_is_raw_content_failure() -> None:
+    body = _receipt_body()
+    body["extensions"] = {"note": "Bearer abcdefghijklmnop"}
+    receipt, keyring, _ = _sign(body)
+    report = verify_admission_event_receipt(receipt, keyring)
+    assert report.passed is False
+    assert report.signature_valid is True
+    assert report.raw_content_exclusion is False
+    assert "raw_content.prohibited_value" in report.failure_codes
+
+
 def test_wrong_issuer_for_resolved_key_is_not_trusted() -> None:
     receipt, keyring, _ = _sign(_receipt_body())
     keyring["issuers"][0]["issuer_id"] = "issuer.test/not-the-emitter"
@@ -188,5 +211,6 @@ def test_verifier_imports_no_dagr_producer_or_runtime_code() -> None:
     assert not [name for name in imported if name.startswith("dagr_mcp")]
 
 
-def test_profile_source_head_is_exact_arcs_srs_pr52_head() -> None:
+def test_profile_source_is_exact_arcs_srs_pr52_schema_blob() -> None:
     assert admission_event.PROFILE_SOURCE_HEAD == "ac7b04feb390c99055bd265157ef616ecb7ff9dc"
+    assert admission_event.PROFILE_SOURCE_BLOB_SHA1 == "02a4bb2a2eea7b6051ae78c804ef9e1a6199560e"
