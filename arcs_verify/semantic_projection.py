@@ -25,8 +25,11 @@ Limits
 ------
 - NOT_EVALUATED is not PASS. not_applicable is not PASS.
 - Conformance of a projection is not conformance of the record it projects.
-- The producer's own declarations (``authority_posture``, ``source_schema_*``)
-  are checked for presence and value, not corroborated against the record.
+- The producer's own declarations (``source_schema_*``) are checked for
+  presence and value, not corroborated against the record. ``authority_posture``
+  is NOT one of these: NE-11 requires structural absence, not a none/value-pinned
+  field, so this module checks that the key is entirely absent rather than
+  checking it for a particular value.
 - ``verification_reports[].passed`` is the upstream verifier's assertion as
   carried by the projection. This module neither recomputes it nor gates on it;
   an emitter assertion is not a recomputed finding.
@@ -49,7 +52,11 @@ EXPECTED_CONTEXT = "https://counterpedia.org/ns/projection/v0.1"
 EXPECTED_TYPE = "CounterpediaRenderedRecordProjection"
 EXPECTED_SOURCE_SCHEMA_FAMILY = "garpedia.rendered_record"
 EXPECTED_SOURCE_SCHEMA_VERSION = 2
-EXPECTED_POSTURE = "projection_only"
+
+# NE-11: the producer no longer emits `authority_posture` at all (structural
+# absence, not a none/value-pinned field). There is deliberately no
+# EXPECTED_POSTURE constant here -- pinning a "correct" value for a field that
+# must not exist would just relocate the same defect into the verifier.
 
 SEMANTIC_PROJECTION_LIMITS: tuple[str, ...] = (
     "Semantic projection conformance is not evidence verification, admission, "
@@ -142,7 +149,7 @@ class SemanticProjectionReport:
     context_identity_declared: Conclusion = Conclusion.NOT_EVALUATED
     node_type_declared: Conclusion = Conclusion.NOT_EVALUATED
     subject_identity_stable: Conclusion = Conclusion.NOT_EVALUATED
-    projection_posture_declared: Conclusion = Conclusion.NOT_EVALUATED
+    authority_posture_absent: Conclusion = Conclusion.NOT_EVALUATED
     source_schema_declared: Conclusion = Conclusion.NOT_EVALUATED
     required_scalars_present: Conclusion = Conclusion.NOT_EVALUATED
     required_collections_valid: Conclusion = Conclusion.NOT_EVALUATED
@@ -162,7 +169,7 @@ class SemanticProjectionReport:
                 self.context_identity_declared,
                 self.node_type_declared,
                 self.subject_identity_stable,
-                self.projection_posture_declared,
+                self.authority_posture_absent,
                 self.source_schema_declared,
                 self.required_scalars_present,
                 self.required_collections_valid,
@@ -182,7 +189,7 @@ class SemanticProjectionReport:
                 "context_identity_declared": self.context_identity_declared.value,
                 "node_type_declared": self.node_type_declared.value,
                 "subject_identity_stable": self.subject_identity_stable.value,
-                "projection_posture_declared": self.projection_posture_declared.value,
+                "authority_posture_absent": self.authority_posture_absent.value,
                 "source_schema_declared": self.source_schema_declared.value,
                 "required_scalars_present": self.required_scalars_present.value,
                 "required_collections_valid": self.required_collections_valid.value,
@@ -291,10 +298,17 @@ def verify_semantic_projection(
         "@id must be a stable non-blank governed identifier",
     )
 
-    report.projection_posture_declared = conclude(
-        projection.get("authority_posture") == EXPECTED_POSTURE,
-        "INVALID_PROJECTION_POSTURE",
-        f"authority_posture must be {EXPECTED_POSTURE}",
+    # NE-11: `authority_posture` is an authority-shaped field. On a
+    # non-authority projection artifact, "no posture asserted" must be
+    # structural absence of the key -- never a none/value-pinned field
+    # (`authority_posture: "projection_only"` would just be the same defect
+    # wearing a fixed value). A projection that carries the key at all, with
+    # any value, fails this conclusion.
+    report.authority_posture_absent = conclude(
+        "authority_posture" not in projection,
+        "AUTHORITY_POSTURE_NOT_ABSENT",
+        "authority_posture must be structurally absent; it is not a field "
+        "this non-authority projection may declare with any value",
     )
 
     report.source_schema_declared = conclude(

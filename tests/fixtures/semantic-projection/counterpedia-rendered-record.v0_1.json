@@ -5,7 +5,6 @@
   "schema": "counterpedia.semantic_projection.v0.1",
   "source_schema_family": "garpedia.rendered_record",
   "source_schema_version": 2,
-  "authority_posture": "projection_only",
   "page_id": "SYN-PAGE-RW-0001",
   "route_slug": "/records/SYN-REC-RW-0001",
   "slug": "synthetic-reverse-wiki-bootstrap-layout",
