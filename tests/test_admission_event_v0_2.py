@@ -152,7 +152,7 @@ def test_valid_signed_superseded_v02_passes_all_axes() -> None:
 def test_vendored_profile_bytes_are_exact_source_blob() -> None:
     data = admission_event_v02.PROFILE_SCHEMA_PATH.read_bytes()
     assert admission_event_v02._git_blob_sha1(data) == admission_event_v02.PROFILE_SOURCE_BLOB_SHA1
-    assert admission_event_v02.PROFILE_SOURCE_HEAD == "d2e0652b9e2f7b224dbaad042b53acede418b194"
+    assert admission_event_v02.PROFILE_SOURCE_HEAD == "c74e9faa5bcf965391de6f37e494e033d6552b1c"
     assert admission_event_v02.PROFILE_SOURCE_BLOB_SHA1 == "a91eb860688d4a449d0042174a55706e344a304a"
 
 

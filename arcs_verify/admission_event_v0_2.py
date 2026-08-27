@@ -26,7 +26,7 @@ REPORT_CONTRACT = "arcs.verify.admission-event-v0.2-report/v0.1"
 PROFILE = "srs.activity.admission_event.v0.2"
 PROFILE_ID = "srs.activity.admission_event"
 PROFILE_VERSION = "v0.2"
-PROFILE_SOURCE_HEAD = "d2e0652b9e2f7b224dbaad042b53acede418b194"
+PROFILE_SOURCE_HEAD = "c74e9faa5bcf965391de6f37e494e033d6552b1c"
 PROFILE_SOURCE_PATH = (
     "schemas/activity-profiles/v0.2/"
     "srs.activity.admission_event.v0.2.schema.json"
