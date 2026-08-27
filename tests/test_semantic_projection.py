@@ -83,7 +83,8 @@ def test_scope_and_limits_state_the_boundary() -> None:
         ({"@type": "AnythingAtAll"}, "node_type_declared"),
         ({"@id": "_:blank"}, "subject_identity_stable"),
         ({"@id": ""}, "subject_identity_stable"),
-        ({"authority_posture": "authoritative"}, "projection_posture_declared"),
+        ({"authority_posture": "projection_only"}, "authority_posture_absent"),
+        ({"authority_posture": "authoritative"}, "authority_posture_absent"),
         ({"source_schema_family": "not.the.owner"}, "source_schema_declared"),
         ({"source_schema_version": 1}, "source_schema_declared"),
         ({"title": ""}, "required_scalars_present"),
@@ -126,6 +127,46 @@ def test_producer_forbidden_key_is_rejected_here_too() -> None:
     assert any(
         f.code == "FORBIDDEN_AUTHORITY_ASSERTION" for f in report.findings
     )
+
+
+def test_pinned_fixture_has_no_authority_posture_at_any_depth() -> None:
+    """NE-11 hostile-absence check on the pinned producer bytes themselves.
+
+    `authority_posture` must be structurally absent from the fixture, not
+    merely absent at the top level -- there is no depth at which a
+    non-authority projection may carry this key.
+    """
+
+    def walk(node: object) -> None:
+        if isinstance(node, dict):
+            assert "authority_posture" not in node
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    walk(load())
+
+
+def test_injected_authority_posture_fails_regardless_of_value() -> None:
+    """A projection that (re-)adds `authority_posture` fails conformance no
+    matter what value it carries: presence is the defect, not the value.
+
+    NE-11: "no authority posture" on a non-authority artifact must be
+    structural absence, never a none/value-pinned field -- so
+    `authority_posture: "projection_only"` is exactly as non-conformant as
+    `authority_posture: "authoritative"`.
+    """
+    for value in ("projection_only", "authoritative", "none", "", None):
+        projection = load()
+        projection["authority_posture"] = value
+        report = verify_semantic_projection(projection)
+        assert report.authority_posture_absent is Conclusion.FALSE
+        assert report.passed is False
+        assert any(
+            f.code == "AUTHORITY_POSTURE_NOT_ABSENT" for f in report.findings
+        )
 
 
 def test_missing_required_collection_fails() -> None:
