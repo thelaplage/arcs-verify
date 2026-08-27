@@ -672,3 +672,47 @@ their codes via AST, so codes are listed here as a manual registry entry.
 | `execution_digest_error` | Execution digest recomputation raised an exception. |
 | `invalid_execution_packet_digest` | `execution_packet_digest` is absent or not a well-formed sha256 digest. |
 | `execution_packet_digest_error` | Execution packet digest recomputation raised an exception. |
+
+## Profile: `srs.activity.admission_event.v0.1` (`arcs_verify/admission_event.py`)
+
+| Code | Meaning |
+|---|---|
+| `envelope.schema_unreadable` | The pinned SRS envelope schema file could not be read from disk. |
+| `admission_event.subject_binding_mismatch` | The receipt's subject reference and subject-edition reference are not the same logical subject as required by the profile. |
+| `admission_event.extensions_not_object` | `extensions` is present but is not a JSON object. |
+| `admission_event.aggregate_field_present` | An authority-shaped aggregate/verdict field is present at the root; the profile forbids it. |
+| `admission_event.invalid_visibility` | The declared visibility value is not one the profile admits. |
+| `admission_event.invalid_standing_act` | A declared standing-act entry is not a valid, known standing-act shape. |
+| `admission_event.invalid_basis_refs` | The `basis_refs` collection is absent or malformed. |
+| `admission_event.missing_content_not_verified` | A required `content_not_verified` disclosure is absent. |
+| `admission_event.missing_required_covered_classes` | The receipt does not cover the artifact classes the profile requires as covered. |
+| `admission_event.missing_required_excluded_classes` | The receipt does not exclude the artifact classes the profile requires as excluded. |
+| `attestation.missing_required_limit` | A profile-required attestation limit string is absent from `attestation_limits`. |
+| `admission_event.invalid_<field>` | Dynamic. A fixed-value field carries the wrong value; the code names the field. |
+| `admission_event.invalid_digest:<field>` | Dynamic. A field required to be a `sha256:` digest is not well-formed; the code names the field. |
+| `admission_event.invalid_text:<field>` | Dynamic. A field required to be a non-empty text value is not; the code names the field. |
+
+Shared schema/signature/trust/raw-content codes (`schema.digest_mismatch`, `envelope.schema_invalid`, `signature_object_invalid`, `signature_invalid`, `key_id_unresolved`, `key_untrusted`, `preimage_canonicalization_failed`, `signature_encoding_invalid`, `public_key_encoding_invalid`, `raw_content.*`) are documented in the Signed-SRS verification tables above and emitted here with the same meaning.
+
+## Profile: `srs.activity.admission_event.v0.2` (`arcs_verify/admission_event_v0_2.py`)
+
+Independently verifies the v0.2 supersession bindings against the exact vendored `srs.activity.admission_event.v0.2` schema bytes (git-blob-SHA1 pinned) and the recursive authority membrane.
+
+| Code | Meaning |
+|---|---|
+| `profile_schema.source_blob_mismatch` | The vendored v0.2 profile-schema file's git blob SHA-1 does not match the pinned `PROFILE_SOURCE_BLOB_SHA1`; the schema bytes are not the pinned #53 source. |
+| `profile_schema.unreadable` | The vendored v0.2 profile-schema file could not be read from disk. |
+| `profile_schema.invalid` | The vendored v0.2 profile-schema file is not well-formed JSON Schema. |
+| `admission_event_v02.profile_schema_invalid` | The receipt does not validate against the vendored v0.2 profile schema. One code per schema error; details carry validator messages. |
+| `admission_event_v02.subject_binding_mismatch` | The receipt's subject and subject-edition references are not the same logical subject. |
+| `admission_event_v02.supersession_extension_missing` | The mandatory `extensions.supersession` block is absent. |
+| `admission_event_v02.supersession_same_event` | Predecessor and successor name the same governed event; a supersession must replace a distinct event. |
+| `admission_event_v02.supersession_same_edition` | Predecessor and successor name the same subject edition; a supersession must replace a distinct edition. |
+| `admission_event_v02.supersession_cross_record` | `successor_subject_record_ref` does not equal `subject_record_ref`; a supersession must stay within the same logical record. |
+| `admission_event_v02.predecessor_ref_not_in_basis` | The predecessor event reference is not present in the signed `basis_refs`. |
+| `admission_event_v02.successor_ref_not_in_basis` | The successor event reference is not present in the signed `basis_refs`. |
+| `admission_event_v02.semantic_owner_binding_ref_not_in_basis` | The Counterpedia semantic-owner binding reference is not present in the signed `basis_refs`. |
+| `verified_receipt_canonicalization_failed` | The verified receipt could not be serialized to its RFC 8785 canonical form for identity capture. |
+| `authority_field.forbidden:<key>` | Dynamic. An authority-shaped key (e.g. `truth`, `verified`, `authority_effect`, `standing_score`, `reliance_score`, `reputation_score`, `trust_score`) is present anywhere in the signed receipt — checked recursively at the root and inside any nested object or list. |
+
+Shared schema/signature/trust codes (`schema.digest_mismatch`, `envelope.schema_invalid`, `envelope.schema_unreadable`, `signature_object_invalid`, `signature_invalid`, `key_id_unresolved`, `key_untrusted`, `preimage_canonicalization_failed`, `signature_encoding_invalid`, `public_key_encoding_invalid`, `attestation.missing_required_limit`) are documented above and emitted here with the same meaning.
