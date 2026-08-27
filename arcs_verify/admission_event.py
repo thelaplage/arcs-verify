@@ -1,9 +1,13 @@
-"""Independent verifier for srs.activity.admission_event.v0.1.
+"""Independent verifier for ``srs.activity.admission_event.v0.1``.
 
-This module imports no DAGR producer/runtime implementation. It consumes only
+The verifier imports no DAGR producer/runtime implementation. It consumes only
 serialized receipt content, a serialized trust bundle, and verifier-owned
 contract constants. The profile is provisional while arcs-srs PR #52 is
-unmerged; PROFILE_SOURCE_HEAD pins the exact proposed contract reviewed here.
+unmerged, so both the exact reviewed commit and exact schema blob are pinned.
+
+A PASS is deliberately narrow: structural/profile/cryptographic conformance to
+this pinned profile plus the supplied trust bundle. It is not factual truth,
+publication, universal standing, current validity, or warranted reliance.
 """
 from __future__ import annotations
 
@@ -27,7 +31,13 @@ PROFILE = "srs.activity.admission_event.v0.1"
 PROFILE_ID = "srs.activity.admission_event"
 PROFILE_VERSION = "v0.1"
 PROFILE_SOURCE_HEAD = "ac7b04feb390c99055bd265157ef616ecb7ff9dc"
-PROFILE_SOURCE_PATH = "schemas/activity-profiles/v0.1/srs.activity.admission_event.v0.1.schema.json"
+PROFILE_SOURCE_PATH = (
+    "schemas/activity-profiles/v0.1/"
+    "srs.activity.admission_event.v0.1.schema.json"
+)
+# Git blob identity of the exact schema reviewed at PROFILE_SOURCE_HEAD.
+PROFILE_SOURCE_BLOB_SHA1 = "02a4bb2a2eea7b6051ae78c804ef9e1a6199560e"
+
 RECEIPT_VERSION = "srs.core.v5.1"
 ENVELOPE_SCHEMA_PATH = (
     Path(__file__).resolve().parent / "data" / "srs-envelope-v0.2.1.schema.json"
@@ -35,35 +45,78 @@ ENVELOPE_SCHEMA_PATH = (
 ENVELOPE_SCHEMA_SHA256 = (
     "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
 )
+
 SHA256_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
 HEX_COMMIT = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
 OPAQUE_REF = re.compile(r"^[A-Za-z][A-Za-z0-9._+/-]*:[^\s]+$")
-VISIBILITY = frozenset({"LOCAL", "PRIVATE_ORG", "SHARED", "PUBLIC_CANDIDATE", "PUBLIC"})
+STABLE_IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/+@-]*$")
+VISIBILITY = frozenset(
+    {"LOCAL", "PRIVATE_ORG", "SHARED", "PUBLIC_CANDIDATE", "PUBLIC"}
+)
 STANDING_ACTS = frozenset({"ADMITTED", "REFUSED", "DEFERRED", "SUPERSEDED"})
-REQUIRED = frozenset({
-    "receipt_version", "profile_id", "profile_version", "receipt_id",
-    "receipt_type", "receipt_kind", "boundary_type", "protocol_binding",
-    "subject_ref", "issuer_id", "runtime_instance_id", "boundary_id",
-    "issued_at", "visibility", "namespace_authority_ref", "subject_record_ref",
-    "subject_edition_ref", "standing_act", "governed_result_ref",
-    "governed_result_digest", "policy_profile_ref", "policy_digest",
-    "disposition_id", "disposition_digest", "basis_refs",
-    "artifact_classes_covered", "artifact_classes_excluded",
-    "attestation_limits", "machine_limitations", "extensions",
-})
-COVERED = frozenset({
-    "admission_event_record", "subject_edition_identity",
-    "governed_result_identity", "policy_identity",
-})
-EXCLUDED = frozenset({
-    "subject_content_bytes", "evidence_content_bytes",
-    "universal_truth", "downstream_reliance",
-})
-AGGREGATE_KEYS = frozenset({
-    "aggregate_verdict", "aggregate_activity_verdict", "trust_score",
-    "reputation", "reputation_score", "activity_score", "reliance_score",
-    "standing_score",
-})
+
+REQUIRED = frozenset(
+    {
+        "receipt_version",
+        "profile_id",
+        "profile_version",
+        "receipt_id",
+        "receipt_type",
+        "receipt_kind",
+        "boundary_type",
+        "protocol_binding",
+        "subject_ref",
+        "issuer_id",
+        "runtime_instance_id",
+        "boundary_id",
+        "issued_at",
+        "visibility",
+        "namespace_authority_ref",
+        "subject_record_ref",
+        "subject_edition_ref",
+        "standing_act",
+        "governed_result_ref",
+        "governed_result_digest",
+        "policy_profile_ref",
+        "policy_digest",
+        "disposition_id",
+        "disposition_digest",
+        "basis_refs",
+        "artifact_classes_covered",
+        "artifact_classes_excluded",
+        "attestation_limits",
+        "machine_limitations",
+        "extensions",
+    }
+)
+COVERED = frozenset(
+    {
+        "admission_event_record",
+        "subject_edition_identity",
+        "governed_result_identity",
+        "policy_identity",
+    }
+)
+EXCLUDED = frozenset(
+    {
+        "subject_content_bytes",
+        "evidence_content_bytes",
+        "universal_truth",
+        "downstream_reliance",
+    }
+)
+AGGREGATE_KEYS = frozenset(
+    {
+        "aggregate_verdict",
+        "aggregate_activity_verdict",
+        "trust_score",
+        "reputation",
+        "reputation_score",
+        "activity_score",
+        "reliance_score",
+        "standing_score",
+    }
+)
 ATTESTATION_LIMIT = (
     "This receipt records that the named authority performed the declared standing "
     "act for the exact subject edition and binds that event to the referenced "
@@ -71,11 +124,45 @@ ATTESTATION_LIMIT = (
     "publication, universal standing, current validity, downstream reliance, or "
     "that the governed result itself was correctly decided."
 )
-SIGNATURE_MEMBERS = frozenset({"algorithm", "canonicalization", "key_id", "signature"})
-RAW_CONTENT_KEYS = frozenset({
-    "prompt_text", "transcript", "raw_payload", "tool_arguments", "arguments",
-    "result_body", "headers",
-})
+SIGNATURE_MEMBERS = frozenset(
+    {"algorithm", "canonicalization", "key_id", "signature"}
+)
+
+# Match the repository's existing verifier discipline: raw content and secrets
+# cannot be smuggled under content-shaped keys. Reference/digest/id suffixes are
+# accepted only when the value proves it is actually reference material.
+RAW_KEY_RE = re.compile(
+    r"(?:^|_)("
+    r"api_?key|apikey|password|secret(?:_?value)?|"
+    r"credential(?:_?material)?|private_?key|privatekey|"
+    r"access_?token|accesstoken|refresh_?token|refreshtoken|"
+    r"provider_?token|session_?cookie|authorization(?:_?header)?|"
+    r"prompt_?text|transcript|raw_?(?:payload|content|prompt|output)|"
+    r"tool_?arguments?|arguments|tool_?result|result_?body|result|"
+    r"request_?body|response_?body|content_?payloads?|"
+    r"document_?body|message_?body|file_?body|"
+    r"raw_?scope_?grant|scope_?document|user_?content|tenant_?content|"
+    r"headers?"
+    r")(?:$|_)",
+    re.IGNORECASE,
+)
+PRIVATE_MARKERS = (
+    "/Users/",
+    "/home/",
+    "/private/var",
+    "C:\\\\",
+    "~/garp-",
+    "~/arcs-anchor",
+)
+PROHIBITED_VALUE_RE = re.compile(
+    r"(?:"
+    r"Bearer\s+[A-Za-z0-9._~-]+|"
+    r"\bsk-(?:ant-)?[A-Za-z0-9_-]{8,}|"
+    r"\bgh[pousr]_[A-Za-z0-9]{20,}|"
+    r"\bxox[baprs]-[A-Za-z0-9-]{10,}|"
+    r"\bAIza[0-9A-Za-z_-]{20,}"
+    r")"
+)
 
 
 @dataclass
@@ -93,26 +180,31 @@ class AdmissionEventVerificationReport:
 
     @property
     def passed(self) -> bool:
-        return all((
-            self.envelope_schema_digest,
-            self.envelope,
-            self.profile,
-            self.raw_content_exclusion,
-            self.attestation_limits_present,
-            self.signature_valid,
-            self.issuer_key_resolved,
-            self.issuer_key_trusted,
-        ))
+        return all(
+            (
+                self.envelope_schema_digest,
+                self.envelope,
+                self.profile,
+                self.raw_content_exclusion,
+                self.attestation_limits_present,
+                self.signature_valid,
+                self.issuer_key_resolved,
+                self.issuer_key_trusted,
+            )
+        )
 
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
         data["passed"] = self.passed
         data["profile_identity"] = PROFILE
         data["profile_source_head"] = PROFILE_SOURCE_HEAD
+        data["profile_source_blob_sha1"] = PROFILE_SOURCE_BLOB_SHA1
         return data
 
 
-def _dedupe(report: AdmissionEventVerificationReport) -> AdmissionEventVerificationReport:
+def _dedupe(
+    report: AdmissionEventVerificationReport,
+) -> AdmissionEventVerificationReport:
     report.failure_codes = list(dict.fromkeys(report.failure_codes))
     report.details = list(dict.fromkeys(report.details))
     return report
@@ -138,7 +230,7 @@ def _b64url_decode(value: object, *, code: str) -> bytes:
 
 
 def _walk(value: Any) -> Iterable[tuple[str | None, Any]]:
-    if isinstance(value, dict):
+    if isinstance(value, Mapping):
         for key, item in value.items():
             yield str(key), item
             yield from _walk(item)
@@ -146,6 +238,25 @@ def _walk(value: Any) -> Iterable[tuple[str | None, Any]]:
         for item in value:
             yield None, item
             yield from _walk(item)
+
+
+def _normalize_key(value: str) -> str:
+    snake = re.sub(r"(?<!^)(?=[A-Z])", "_", value)
+    return snake.replace("-", "_").lower()
+
+
+def _reference_or_digest(value: object) -> bool:
+    return (
+        isinstance(value, str)
+        and (
+            SHA256_REF.fullmatch(value) is not None
+            or OPAQUE_REF.fullmatch(value) is not None
+        )
+    )
+
+
+def _stable_identifier(value: object) -> bool:
+    return isinstance(value, str) and bool(value) and STABLE_IDENTIFIER.fullmatch(value) is not None
 
 
 def _basis_ref(value: object) -> bool:
@@ -158,6 +269,47 @@ def _basis_ref(value: object) -> bool:
             or OPAQUE_REF.fullmatch(value) is not None
         )
     )
+
+
+def _raw_key_failure(key: str, value: Any) -> str | None:
+    normalized = _normalize_key(key)
+    if RAW_KEY_RE.search(normalized) is None:
+        return None
+
+    if normalized.endswith(("_digest", "_hash")):
+        if isinstance(value, str) and SHA256_REF.fullmatch(value) is not None:
+            return None
+        return f"raw_content.invalid_digest_evidence:{key}"
+
+    if normalized.endswith("_ref"):
+        if _reference_or_digest(value):
+            return None
+        return f"raw_content.invalid_reference_evidence:{key}"
+
+    if normalized.endswith("_refs"):
+        if (
+            isinstance(value, list)
+            and bool(value)
+            and all(_reference_or_digest(item) for item in value)
+        ):
+            return None
+        return f"raw_content.invalid_reference_evidence:{key}"
+
+    if normalized.endswith("_id"):
+        if _stable_identifier(value) or _reference_or_digest(value):
+            return None
+        return f"raw_content.invalid_identifier_evidence:{key}"
+
+    if normalized.endswith("_ids"):
+        if (
+            isinstance(value, list)
+            and bool(value)
+            and all(_stable_identifier(item) or _reference_or_digest(item) for item in value)
+        ):
+            return None
+        return f"raw_content.invalid_identifier_evidence:{key}"
+
+    return f"raw_content.forbidden_key:{key}"
 
 
 def _profile_errors(receipt: Mapping[str, Any]) -> list[str]:
@@ -179,10 +331,19 @@ def _profile_errors(receipt: Mapping[str, Any]) -> list[str]:
             errors.append(f"admission_event.invalid_{key}")
 
     for key in (
-        "receipt_id", "protocol_binding", "subject_ref", "issuer_id",
-        "runtime_instance_id", "boundary_id", "issued_at", "namespace_authority_ref",
-        "subject_record_ref", "subject_edition_ref", "governed_result_ref",
-        "policy_profile_ref", "disposition_id",
+        "receipt_id",
+        "protocol_binding",
+        "subject_ref",
+        "issuer_id",
+        "runtime_instance_id",
+        "boundary_id",
+        "issued_at",
+        "namespace_authority_ref",
+        "subject_record_ref",
+        "subject_edition_ref",
+        "governed_result_ref",
+        "policy_profile_ref",
+        "disposition_id",
     ):
         value = receipt.get(key)
         if not isinstance(value, str) or not value or value.strip() != value:
@@ -201,7 +362,11 @@ def _profile_errors(receipt: Mapping[str, Any]) -> list[str]:
             errors.append(f"admission_event.invalid_digest:{key}")
 
     basis = receipt.get("basis_refs")
-    basis_strings = [item for item in basis if isinstance(item, str)] if isinstance(basis, list) else []
+    basis_strings = (
+        [item for item in basis if isinstance(item, str)]
+        if isinstance(basis, list)
+        else []
+    )
     if (
         not isinstance(basis, list)
         or not basis
@@ -211,26 +376,39 @@ def _profile_errors(receipt: Mapping[str, Any]) -> list[str]:
         errors.append("admission_event.invalid_basis_refs")
 
     covered = receipt.get("artifact_classes_covered")
-    covered_set = set(covered) if isinstance(covered, list) and all(isinstance(x, str) for x in covered) else set()
+    covered_set = (
+        set(covered)
+        if isinstance(covered, list) and all(isinstance(x, str) for x in covered)
+        else set()
+    )
     if not COVERED.issubset(covered_set):
         errors.append("admission_event.missing_required_covered_classes")
+
     excluded = receipt.get("artifact_classes_excluded")
-    excluded_set = set(excluded) if isinstance(excluded, list) and all(isinstance(x, str) for x in excluded) else set()
+    excluded_set = (
+        set(excluded)
+        if isinstance(excluded, list) and all(isinstance(x, str) for x in excluded)
+        else set()
+    )
     if not EXCLUDED.issubset(excluded_set):
         errors.append("admission_event.missing_required_excluded_classes")
 
     limitations = receipt.get("machine_limitations")
-    codes = {
-        item.get("code")
-        for item in limitations
-        if isinstance(item, dict) and isinstance(item.get("code"), str)
-    } if isinstance(limitations, list) else set()
+    codes = (
+        {
+            item.get("code")
+            for item in limitations
+            if isinstance(item, Mapping) and isinstance(item.get("code"), str)
+        }
+        if isinstance(limitations, list)
+        else set()
+    )
     if "CONTENT_NOT_VERIFIED" not in codes:
         errors.append("admission_event.missing_content_not_verified")
 
     if any(key in receipt for key in AGGREGATE_KEYS):
         errors.append("admission_event.aggregate_field_present")
-    if not isinstance(receipt.get("extensions"), dict):
+    if not isinstance(receipt.get("extensions"), Mapping):
         errors.append("admission_event.extensions_not_object")
     return errors
 
@@ -238,13 +416,16 @@ def _profile_errors(receipt: Mapping[str, Any]) -> list[str]:
 def _raw_content_errors(receipt: Mapping[str, Any]) -> list[str]:
     errors: list[str] = []
     for key, value in _walk(receipt):
-        if key in RAW_CONTENT_KEYS:
-            errors.append(f"raw_content.forbidden_key:{key}")
+        if key is not None:
+            failure = _raw_key_failure(key, value)
+            if failure is not None:
+                errors.append(failure)
         if isinstance(value, str) and (
-            "/Users/" in value or "/home/" in value or "/private/var" in value
+            any(marker in value for marker in PRIVATE_MARKERS)
+            or PROHIBITED_VALUE_RE.search(value) is not None
         ):
-            errors.append("raw_content.private_path")
-    return errors
+            errors.append("raw_content.prohibited_value")
+    return list(dict.fromkeys(errors))
 
 
 def verify_admission_event_receipt(
@@ -294,7 +475,7 @@ def verify_admission_event_receipt(
 
     signature = receipt.get("receipt_signature")
     if (
-        not isinstance(signature, dict)
+        not isinstance(signature, Mapping)
         or set(signature) != SIGNATURE_MEMBERS
         or signature.get("algorithm") != "Ed25519"
         or signature.get("canonicalization") != "RFC8785-JCS"
@@ -306,8 +487,9 @@ def verify_admission_event_receipt(
     entries = keyring.get("issuers", []) if isinstance(keyring, Mapping) else []
     entry = next(
         (
-            item for item in entries
-            if isinstance(item, dict) and item.get("key_id") == key_id
+            item
+            for item in entries
+            if isinstance(item, Mapping) and item.get("key_id") == key_id
         ),
         None,
     )
@@ -352,7 +534,10 @@ def verify_admission_event_receipt(
         report.issuer_key_trusted = bool(
             entry.get("trusted") is True
             and entry.get("issuer_id") == receipt.get("issuer_id")
-            and _parse_time(entry["not_before"]) <= issued_at <= _parse_time(entry["not_after"])
+            and entry.get("algorithm") in (None, "Ed25519")
+            and _parse_time(entry["not_before"])
+            <= issued_at
+            <= _parse_time(entry["not_after"])
         )
     except Exception:
         report.issuer_key_trusted = False
@@ -380,14 +565,20 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"source error: {exc}")
         return 2
+
     report = verify_admission_event_receipt(receipt, keyring)
     if args.as_json:
         print(json.dumps(report.to_dict(), indent=2, sort_keys=True))
     else:
         for key in (
-            "envelope_schema_digest", "envelope", "profile",
-            "raw_content_exclusion", "attestation_limits_present",
-            "signature_valid", "issuer_key_resolved", "issuer_key_trusted",
+            "envelope_schema_digest",
+            "envelope",
+            "profile",
+            "raw_content_exclusion",
+            "attestation_limits_present",
+            "signature_valid",
+            "issuer_key_resolved",
+            "issuer_key_trusted",
         ):
             print(f"{key}: {'PASS' if getattr(report, key) else 'FAIL'}")
         for code in report.failure_codes:
