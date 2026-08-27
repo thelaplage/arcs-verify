@@ -28,6 +28,8 @@ _EXAMPLE = (
     "  arcs-verify acquisition-grounding ...   verify a grounded content proposal against captured source bytes\n"
     "  arcs-verify c2pa-native ASSET           recompute a native C2PA validation hermetically\n"
     "  arcs-verify portable-pack ...            create/verify a portable offline receipt package\n"
+    "  arcs-verify okf-attested-computation DECLARATION --bundle-root DIR --run RUN.json\n"
+    "                                           bind an OKF Attested Computation declaration to its resources\n"
     "\n"
     "exit codes: 0 all results passed; 1 verification failed; 2 usage or\n"
     "source-integrity error (not a verification verdict)."
@@ -232,6 +234,10 @@ def main(argv: list[str] | None = None) -> int:
         from .portable_pack import main as portable_pack_main
 
         return portable_pack_main(args[1:])
+    if args and args[0] == "okf-attested-computation":
+        from .okf_attested_computation import main as okf_attested_computation_main
+
+        return okf_attested_computation_main(args[1:])
     return _verify_srs(args)
 
 

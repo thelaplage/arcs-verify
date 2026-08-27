@@ -9,6 +9,28 @@ The versioning policy is described in [docs/VERSIONING.md](docs/VERSIONING.md).
 ## [Unreleased]
 
 ### Added
+- OKF-ARCS-BRIDGE0: first verifier-side interoperability bridge to Open
+  Knowledge Format (OKF) v0.2 "Attested Computation" declarations.
+  - `arcs_verify/okf_attested_computation.py` and the `okf-attested-computation`
+    subcommand: independently binds a declaration's `executor.resource` /
+    `attester.resource` (safe-path-resolved under `--bundle-root`, no network
+    fetch, no execution) and checks `executor.receipt` field-name presence in
+    separately supplied run evidence (`--run`).
+  - Explicitly **not** an execution engine: the referenced executor/attester
+    resources are never run. `execution_verified`, `attester_verdict_verified`,
+    and `truth_verified` are permanent reserved conclusions (`not_evaluated`);
+    `authority_conferred` is a permanent reserved constant (`false`). A
+    structural PASS (`declaration_valid`, `resource_bindings_valid`,
+    `receipt_shape_satisfied`) never promotes any of the four.
+  - Ships a small, intentionally restricted block-YAML-subset frontmatter
+    parser scoped to exactly the declared surface, rather than adding a
+    general-purpose YAML dependency (none exists in this repository); see
+    `docs/OKF_ARCS_BRIDGE0.md` for the dependency-decision rationale, the full
+    interoperability layering, and the deferred
+    `OKF-ARCS-EXECUTION-ADAPTER0` execution-side lane (owned by a
+    runtime/emitter repository, not this one).
+  - New failure-code family: `okf_attested_computation.*` (see
+    `docs/FAILURE_CODES.md`).
 - ARCSV-C2PA0: hermetic native C2PA recomputation and comparison v0.1.
   - `arcs_verify/contracts/c2pa-native-finding/v0.1/`: the C2PA independent
     verification report and comparison contract. `contract.manifest.json` pins
