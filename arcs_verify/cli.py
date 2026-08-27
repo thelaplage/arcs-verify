@@ -27,6 +27,7 @@ _EXAMPLE = (
     "  arcs-verify ingest-run-sequence ...     verify a dagr.ingest_run.v0.1 receipt sequence\n"
     "  arcs-verify acquisition-grounding ...   verify a grounded content proposal against captured source bytes\n"
     "  arcs-verify c2pa-native ASSET           recompute a native C2PA validation hermetically\n"
+    "  arcs-verify portable-pack ...            create/verify a portable offline receipt package\n"
     "\n"
     "exit codes: 0 all results passed; 1 verification failed; 2 usage or\n"
     "source-integrity error (not a verification verdict)."
@@ -227,6 +228,10 @@ def main(argv: list[str] | None = None) -> int:
         from .acquisition_grounding import main as acquisition_grounding_main
 
         return acquisition_grounding_main(args[1:])
+    if args and args[0] == "portable-pack":
+        from .portable_pack import main as portable_pack_main
+
+        return portable_pack_main(args[1:])
     return _verify_srs(args)
 
 
