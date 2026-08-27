@@ -10,7 +10,10 @@
   "description": "Additive successor to v0.1. Preserves admission-event semantics and requires exact immutable event-core, same-record successor, and semantic-owner binding whenever standing_act is SUPERSEDED. Retirement is not represented by SUPERSEDED.",
   "type": "object",
   "$defs": {
-    "sha256_ref": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "sha256_ref": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
     "basis_ref": {
       "type": "string",
       "minLength": 1,
@@ -36,10 +39,15 @@
         "semantic_owner_binding_digest": {"$ref": "#/$defs/sha256_ref"}
       },
       "required": [
-        "kind", "predecessor_event_ref", "predecessor_event_core_digest",
-        "successor_event_ref", "successor_event_core_digest",
-        "successor_subject_record_ref", "successor_subject_edition_ref",
-        "semantic_owner_binding_ref", "semantic_owner_binding_digest"
+        "kind",
+        "predecessor_event_ref",
+        "predecessor_event_core_digest",
+        "successor_event_ref",
+        "successor_event_core_digest",
+        "successor_subject_record_ref",
+        "successor_subject_edition_ref",
+        "semantic_owner_binding_ref",
+        "semantic_owner_binding_digest"
       ]
     }
   },
@@ -68,9 +76,15 @@
     "policy_digest": {"$ref": "#/$defs/sha256_ref"},
     "disposition_id": {"type": "string", "minLength": 1},
     "disposition_digest": {"$ref": "#/$defs/sha256_ref"},
-    "basis_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/basis_ref"}},
+    "basis_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/basis_ref"}
+    },
     "artifact_classes_covered": {
-      "type": "array", "items": {"type": "string"},
+      "type": "array",
+      "items": {"type": "string"},
       "allOf": [
         {"contains": {"const": "admission_event_record"}},
         {"contains": {"const": "subject_edition_identity"}},
@@ -79,7 +93,8 @@
       ]
     },
     "artifact_classes_excluded": {
-      "type": "array", "items": {"type": "string"},
+      "type": "array",
+      "items": {"type": "string"},
       "allOf": [
         {"contains": {"const": "subject_content_bytes"}},
         {"contains": {"const": "evidence_content_bytes"}},
@@ -88,26 +103,41 @@
       ]
     },
     "attestation_limits": {
-      "type": "array", "items": {"type": "string"}, "minItems": 1,
-      "contains": {"const": "This receipt records that the named authority performed the declared standing act for the exact subject edition and binds that event to the referenced governed result and policy basis. It does not establish factual truth, publication, universal standing, current validity, downstream reliance, or that the governed result itself was correctly decided."}
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "contains": {
+        "const": "This receipt records that the named authority performed the declared standing act for the exact subject edition and binds that event to the referenced governed result and policy basis. It does not establish factual truth, publication, universal standing, current validity, downstream reliance, or that the governed result itself was correctly decided."
+      }
     },
     "machine_limitations": {
       "type": "array",
-      "items": {"type": "object", "properties": {"code": {"type": "string"}}, "required": ["code"]},
-      "contains": {"type": "object", "properties": {"code": {"const": "CONTENT_NOT_VERIFIED"}}, "required": ["code"]}
+      "items": {
+        "type": "object",
+        "properties": {"code": {"type": "string"}},
+        "required": ["code"]
+      },
+      "contains": {
+        "type": "object",
+        "properties": {"code": {"const": "CONTENT_NOT_VERIFIED"}},
+        "required": ["code"]
+      }
     },
     "extensions": {
       "type": "object",
-      "properties": {"supersession": {"$ref": "#/$defs/supersession"}},
+      "properties": {
+        "supersession": {"$ref": "#/$defs/supersession"}
+      },
       "additionalProperties": false
     }
   },
   "required": [
-    "receipt_version", "profile_id", "profile_version", "receipt_id", "receipt_type", "receipt_kind",
-    "boundary_type", "protocol_binding", "subject_ref", "issuer_id", "runtime_instance_id", "boundary_id",
-    "issued_at", "visibility", "namespace_authority_ref", "subject_record_ref", "subject_edition_ref",
-    "standing_act", "governed_result_ref", "governed_result_digest", "policy_profile_ref", "policy_digest",
-    "disposition_id", "disposition_digest", "basis_refs", "artifact_classes_covered", "artifact_classes_excluded",
+    "receipt_version", "profile_id", "profile_version", "receipt_id", "receipt_type",
+    "receipt_kind", "boundary_type", "protocol_binding", "subject_ref", "issuer_id",
+    "runtime_instance_id", "boundary_id", "issued_at", "visibility", "namespace_authority_ref",
+    "subject_record_ref", "subject_edition_ref", "standing_act", "governed_result_ref",
+    "governed_result_digest", "policy_profile_ref", "policy_digest", "disposition_id",
+    "disposition_digest", "basis_refs", "artifact_classes_covered", "artifact_classes_excluded",
     "attestation_limits", "machine_limitations", "extensions"
   ],
   "allOf": [
@@ -117,25 +147,49 @@
       "properties": {"subject_ref": {"$comment": "bound to subject_edition_ref by profile rule"}}
     },
     {
-      "if": {"properties": {"standing_act": {"const": "SUPERSEDED"}}, "required": ["standing_act"]},
+      "if": {
+        "properties": {"standing_act": {"const": "SUPERSEDED"}},
+        "required": ["standing_act"]
+      },
       "then": {
         "properties": {
           "extensions": {"required": ["supersession"]},
-          "attestation_limits": {"contains": {"const": "A SUPERSEDED admission-event receipt records replacement by the named successor admission event. It does not establish that the predecessor was false, invalid, deleted, or retired; terminal withdrawal without a replacement is outside this profile."}}
+          "attestation_limits": {
+            "contains": {
+              "const": "A SUPERSEDED admission-event receipt records replacement by the named successor admission event. It does not establish that the predecessor was false, invalid, deleted, or retired; terminal withdrawal without a replacement is outside this profile."
+            }
+          }
         }
       },
-      "else": {"properties": {"extensions": {"not": {"required": ["supersession"]}}}}
+      "else": {
+        "properties": {
+          "extensions": {
+            "not": {"required": ["supersession"]}
+          }
+        }
+      }
     }
   ],
   "not": {
     "description": "C6/authority membrane: authority-shaped aggregate, verdict, truth, and effect fields are structurally absent at receipt root.",
     "anyOf": [
-      {"required": ["aggregate_verdict"]}, {"required": ["aggregate_activity_verdict"]},
-      {"required": ["trust_score"]}, {"required": ["reputation"]}, {"required": ["reputation_score"]},
-      {"required": ["activity_score"]}, {"required": ["reliance_score"]}, {"required": ["standing_score"]},
-      {"required": ["truth"]}, {"required": ["verified"]}, {"required": ["authority_effect"]},
-      {"required": ["authority_movement"]}, {"required": ["admission_effect"]}, {"required": ["standing_effect"]},
-      {"required": ["truth_effect"]}, {"required": ["evidentiary_weight"]}, {"required": ["verdict_weight"]},
+      {"required": ["aggregate_verdict"]},
+      {"required": ["aggregate_activity_verdict"]},
+      {"required": ["trust_score"]},
+      {"required": ["reputation"]},
+      {"required": ["reputation_score"]},
+      {"required": ["activity_score"]},
+      {"required": ["reliance_score"]},
+      {"required": ["standing_score"]},
+      {"required": ["truth"]},
+      {"required": ["verified"]},
+      {"required": ["authority_effect"]},
+      {"required": ["authority_movement"]},
+      {"required": ["admission_effect"]},
+      {"required": ["standing_effect"]},
+      {"required": ["truth_effect"]},
+      {"required": ["evidentiary_weight"]},
+      {"required": ["verdict_weight"]},
       {"required": ["corroboration_weight"]}
     ]
   },
