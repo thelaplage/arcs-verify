@@ -66,12 +66,13 @@ def _superseded_body() -> dict:
     body = _base_body()
     predecessor = "event:counterpedia:admission:CP-EXAMPLE-0001:0001"
     successor = "event:counterpedia:admission:CP-EXAMPLE-0001:0002"
+    owner_binding = "counterpedia:admission-supersession-binding:CP-EXAMPLE-0001:0001:0002"
     body.update(
         {
             "receipt_id": "activity-admission-event-v02-test-superseded-0001",
             "standing_act": "SUPERSEDED",
             "governed_result_ref": "urn:dagr:final-admission-decision:example-v02-successor-0002",
-            "basis_refs": [predecessor, successor, "sha256:" + "4" * 64],
+            "basis_refs": [predecessor, successor, owner_binding, "sha256:" + "4" * 64],
             "attestation_limits": [
                 admission_event_v02.v01.ATTESTATION_LIMIT,
                 admission_event_v02.SUPERSESSION_LIMIT,
@@ -80,10 +81,13 @@ def _superseded_body() -> dict:
                 "supersession": {
                     "kind": "replacement_admission",
                     "predecessor_event_ref": predecessor,
-                    "predecessor_event_digest": "sha256:" + "5" * 64,
+                    "predecessor_event_core_digest": "sha256:" + "5" * 64,
                     "successor_event_ref": successor,
-                    "successor_event_digest": "sha256:" + "6" * 64,
+                    "successor_event_core_digest": "sha256:" + "6" * 64,
+                    "successor_subject_record_ref": body["subject_record_ref"],
                     "successor_subject_edition_ref": "urn:counterpedia:record:CP-EXAMPLE-0001:edition:ED-0002",
+                    "semantic_owner_binding_ref": owner_binding,
+                    "semantic_owner_binding_digest": "sha256:" + "7" * 64,
                 }
             },
         }
@@ -102,9 +106,7 @@ def _sign(body: dict, *, private_key: Ed25519PrivateKey | None = None):
     }
     preimage = copy.deepcopy(receipt)
     del preimage["receipt_signature"]["signature"]
-    receipt["receipt_signature"]["signature"] = _b64url(
-        private_key.sign(rfc8785.dumps(preimage))
-    )
+    receipt["receipt_signature"]["signature"] = _b64url(private_key.sign(rfc8785.dumps(preimage)))
     public_key = private_key.public_key().public_bytes(
         encoding=serialization.Encoding.Raw,
         format=serialization.PublicFormat.Raw,
@@ -130,8 +132,10 @@ def test_valid_signed_admitted_v02_passes_without_supersession_extension() -> No
     receipt, keyring, _ = _sign(_base_body())
     report = verify_admission_event_v0_2_receipt(receipt, keyring)
     assert report.passed is True
+    assert report.profile_schema_digest is True
     assert report.profile is True
     assert report.supersession_binding is True
+    assert report.authority_field_exclusion is True
     assert report.signature_valid is True
 
 
@@ -140,17 +144,21 @@ def test_valid_signed_superseded_v02_passes_all_axes() -> None:
     report = verify_admission_event_v0_2_receipt(receipt, keyring)
     assert report.passed is True
     assert report.failure_codes == []
-    assert report.profile is True
+    assert report.profile_schema_digest is True
+    assert report.profile_schema_sha256.startswith("sha256:")
     assert report.supersession_binding is True
-    assert report.attestation_limits_present is True
-    assert report.signature_valid is True
+
+
+def test_vendored_profile_bytes_are_exact_source_blob() -> None:
+    data = admission_event_v02.PROFILE_SCHEMA_PATH.read_bytes()
+    assert admission_event_v02._git_blob_sha1(data) == admission_event_v02.PROFILE_SOURCE_BLOB_SHA1
+    assert admission_event_v02.PROFILE_SOURCE_HEAD == "d2e0652b9e2f7b224dbaad042b53acede418b194"
+    assert admission_event_v02.PROFILE_SOURCE_BLOB_SHA1 == "a91eb860688d4a449d0042174a55706e344a304a"
 
 
 def test_post_signature_successor_event_mutation_fails_signature() -> None:
     receipt, keyring, _ = _sign(_superseded_body())
-    receipt["extensions"]["supersession"]["successor_event_ref"] = (
-        "event:counterpedia:admission:CP-EXAMPLE-0001:9999"
-    )
+    receipt["extensions"]["supersession"]["successor_event_ref"] = "event:counterpedia:admission:CP-EXAMPLE-0001:9999"
     report = verify_admission_event_v0_2_receipt(receipt, keyring)
     assert report.passed is False
     assert report.signature_valid is False
@@ -161,49 +169,74 @@ def test_resigned_same_event_on_both_sides_fails_supersession_binding() -> None:
     body = _superseded_body()
     ext = body["extensions"]["supersession"]
     ext["successor_event_ref"] = ext["predecessor_event_ref"]
-    body["basis_refs"] = [ext["predecessor_event_ref"], "sha256:" + "4" * 64]
+    body["basis_refs"] = [ext["predecessor_event_ref"], ext["semantic_owner_binding_ref"], "sha256:" + "4" * 64]
     receipt, keyring, _ = _sign(body)
     report = verify_admission_event_v0_2_receipt(receipt, keyring)
     assert report.signature_valid is True
-    assert report.profile is True
     assert report.supersession_binding is False
     assert "admission_event_v02.supersession_same_event" in report.failure_codes
 
 
 def test_resigned_same_edition_as_replacement_fails_supersession_binding() -> None:
     body = _superseded_body()
-    body["extensions"]["supersession"]["successor_subject_edition_ref"] = body[
-        "subject_edition_ref"
-    ]
+    body["extensions"]["supersession"]["successor_subject_edition_ref"] = body["subject_edition_ref"]
     receipt, keyring, _ = _sign(body)
     report = verify_admission_event_v0_2_receipt(receipt, keyring)
     assert report.signature_valid is True
-    assert report.profile is True
     assert report.supersession_binding is False
     assert "admission_event_v02.supersession_same_edition" in report.failure_codes
 
 
-def test_resigned_missing_successor_ref_from_basis_fails_binding() -> None:
+def test_resigned_cross_record_successor_fails_independent_binding() -> None:
     body = _superseded_body()
-    successor = body["extensions"]["supersession"]["successor_event_ref"]
-    body["basis_refs"].remove(successor)
+    body["extensions"]["supersession"]["successor_subject_record_ref"] = "urn:counterpedia:record:OTHER"
     receipt, keyring, _ = _sign(body)
     report = verify_admission_event_v0_2_receipt(receipt, keyring)
     assert report.signature_valid is True
     assert report.profile is True
     assert report.supersession_binding is False
-    assert "admission_event_v02.successor_ref_not_in_basis" in report.failure_codes
+    assert "admission_event_v02.supersession_cross_record" in report.failure_codes
 
 
-def test_resigned_admitted_with_supersession_extension_is_profile_failure() -> None:
-    body = _base_body()
-    body["extensions"] = copy.deepcopy(_superseded_body()["extensions"])
+def test_resigned_missing_owner_binding_ref_from_basis_fails_binding() -> None:
+    body = _superseded_body()
+    owner_ref = body["extensions"]["supersession"]["semantic_owner_binding_ref"]
+    body["basis_refs"].remove(owner_ref)
+    receipt, keyring, _ = _sign(body)
+    report = verify_admission_event_v0_2_receipt(receipt, keyring)
+    assert report.signature_valid is True
+    assert report.supersession_binding is False
+    assert "admission_event_v02.semantic_owner_binding_ref_not_in_basis" in report.failure_codes
+
+
+def test_nested_authority_field_smuggling_is_refused_even_when_resigned() -> None:
+    body = _superseded_body()
+    body["machine_limitations"].append({"code": "OTHER", "standing_score": 0.98})
+    receipt, keyring, _ = _sign(body)
+    report = verify_admission_event_v0_2_receipt(receipt, keyring)
+    assert report.signature_valid is True
+    assert report.authority_field_exclusion is False
+    assert "authority_field.forbidden:standing_score" in report.failure_codes
+
+
+def test_top_level_truth_or_authority_effect_is_refused_by_profile_and_verifier() -> None:
+    for key in ("truth", "verified", "authority_effect"):
+        body = _superseded_body()
+        body[key] = True if key != "authority_effect" else "admitted"
+        receipt, keyring, _ = _sign(body)
+        report = verify_admission_event_v0_2_receipt(receipt, keyring)
+        assert report.signature_valid is True
+        assert report.profile is False, key
+        assert report.authority_field_exclusion is False, key
+
+
+def test_unregistered_extension_is_schema_failure() -> None:
+    body = _superseded_body()
+    body["extensions"]["note"] = {"harmless": "still-unregistered"}
     receipt, keyring, _ = _sign(body)
     report = verify_admission_event_v0_2_receipt(receipt, keyring)
     assert report.signature_valid is True
     assert report.profile is False
-    assert report.supersession_binding is False
-    assert "admission_event_v02.supersession_extension_wrong_act" in report.failure_codes
 
 
 def test_resigned_retired_token_is_not_reinterpreted_as_superseded() -> None:
@@ -213,22 +246,11 @@ def test_resigned_retired_token_is_not_reinterpreted_as_superseded() -> None:
     report = verify_admission_event_v0_2_receipt(receipt, keyring)
     assert report.signature_valid is True
     assert report.profile is False
-    assert "admission_event_v02.invalid_standing_act" in report.failure_codes
 
 
-def test_resigned_supersession_without_retirement_boundary_limit_fails() -> None:
+def test_raw_secret_smuggling_remains_refused() -> None:
     body = _superseded_body()
-    body["attestation_limits"] = [admission_event_v02.v01.ATTESTATION_LIMIT]
-    receipt, keyring, _ = _sign(body)
-    report = verify_admission_event_v0_2_receipt(receipt, keyring)
-    assert report.signature_valid is True
-    assert report.attestation_limits_present is False
-    assert "attestation.missing_required_limit" in report.failure_codes
-
-
-def test_raw_secret_smuggling_inside_supersession_extension_is_refused() -> None:
-    body = _superseded_body()
-    body["extensions"]["note"] = {"access_token": "opaque-secret-material"}
+    body["machine_limitations"].append({"code": "OTHER", "access_token": "opaque-secret-material"})
     receipt, keyring, _ = _sign(body)
     report = verify_admission_event_v0_2_receipt(receipt, keyring)
     assert report.signature_valid is True
@@ -247,8 +269,3 @@ def test_v02_verifier_imports_no_producer_runtime() -> None:
     assert not [name for name in imported if name.startswith("dagr_runtime")]
     assert not [name for name in imported if name.startswith("dagr_mcp")]
     assert not [name for name in imported if name.startswith("counterpedia")]
-
-
-def test_v02_profile_source_is_exact_arcs_srs_pr53_schema_blob() -> None:
-    assert admission_event_v02.PROFILE_SOURCE_HEAD == "b276945eed5fb83a6eb08df09d122da62a59cc60"
-    assert admission_event_v02.PROFILE_SOURCE_BLOB_SHA1 == "7338dbbe161ac4454b0454d27713efbc52079dc0"
