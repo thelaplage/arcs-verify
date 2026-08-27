@@ -34,4 +34,7 @@ jobs:
       - run: pytest -q
         env:
           ARCS_ECOSYSTEM_KIT_PATH: ${{ github.workspace }}/.ecosystem-kit-pinned
-      - run: python3 tools/check_public_release.py .
+      # Public/demo release posture must reject the acknowledged-empty brand
+      # waiver. Population remains a separate naming closure item, but a
+      # vacuous green release gate is no longer permitted.
+      - run: python3 tools/check_public_release.py --require-denylist .
