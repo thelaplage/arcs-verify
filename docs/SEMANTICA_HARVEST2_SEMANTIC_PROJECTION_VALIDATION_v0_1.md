@@ -19,7 +19,9 @@ A conforming projection may describe a record that is unadmitted, unpublished, u
 
 ## Validated contract
 
-The verifier targets the `counterpedia.semantic_projection.v0.1` contract emitted by the Counterpedia JSON-LD exporter over `GarpediaRenderedRecord`. It pins `@context`, `@type`, `schema`, `source_schema_family`/`source_schema_version`, and `authority_posture` **by value**, not merely by presence, and requires `@id` to be a stable non-blank governed identifier.
+The verifier targets the `counterpedia.semantic_projection.v0.1` contract emitted by the Counterpedia JSON-LD exporter over `GarpediaRenderedRecord`. It pins `@context`, `@type`, `schema`, and `source_schema_family`/`source_schema_version` **by value**, not merely by presence, and requires `@id` to be a stable non-blank governed identifier.
+
+`authority_posture` is deliberately *not* pinned by value: NE-11 requires that a non-authority projection carry no authority-shaped field at all, so the verifier requires the key to be structurally absent. A projection that carries `authority_posture` with any value -- including a value that once looked "safe", like `projection_only` -- fails conformance.
 
 Its forbidden-authority-key set is deliberately aligned with the producer's own guard, including `authority`. A projection the exporter would refuse to emit must not return PASS here.
 
