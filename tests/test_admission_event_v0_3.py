@@ -412,6 +412,152 @@ def test_malformed_digest_report_via_full_verify_is_not_evaluated_not_match() ->
 
 
 # ---------------------------------------------------------------------------
+# Owner AMEND -- structural-absence discipline: a digest key that is PRESENT
+# but wrong-typed/null/empty is MALFORMED, never ABSENT. Absence is reserved
+# for a genuinely missing key.
+# ---------------------------------------------------------------------------
+
+
+def test_digest_present_as_integer_is_malformed_not_absent() -> None:
+    body = _superseded_body(
+        supersession_extra={
+            "predecessor_captured_bytes_digest": 123,
+            "successor_captured_bytes_digest": SUCC_DIGEST_DIFFERENT,
+        }
+    )
+    comparison, reason = compare_content_digests(body)
+    assert comparison == admission_event_v03.NOT_EVALUATED
+    assert reason == admission_event_v03.CONTENT_DIGEST_MALFORMED
+    assert reason != admission_event_v03.CONTENT_DIGEST_ABSENT
+
+
+def test_digest_present_as_null_is_malformed_not_absent() -> None:
+    body = _superseded_body(
+        supersession_extra={
+            # Key is PRESENT with value None -- this must never be conflated
+            # with a genuinely missing key.
+            "predecessor_captured_bytes_digest": None,
+            "successor_captured_bytes_digest": SUCC_DIGEST_DIFFERENT,
+        }
+    )
+    comparison, reason = compare_content_digests(body)
+    assert comparison == admission_event_v03.NOT_EVALUATED
+    assert reason == admission_event_v03.CONTENT_DIGEST_MALFORMED
+    assert reason != admission_event_v03.CONTENT_DIGEST_ABSENT
+
+
+def test_digest_present_as_empty_string_is_malformed_not_absent() -> None:
+    body = _superseded_body(
+        supersession_extra={
+            "predecessor_captured_bytes_digest": "",
+            "successor_captured_bytes_digest": SUCC_DIGEST_DIFFERENT,
+        }
+    )
+    comparison, reason = compare_content_digests(body)
+    assert comparison == admission_event_v03.NOT_EVALUATED
+    assert reason == admission_event_v03.CONTENT_DIGEST_MALFORMED
+    assert reason != admission_event_v03.CONTENT_DIGEST_ABSENT
+
+
+def test_digest_present_as_object_is_malformed_not_absent() -> None:
+    body = _superseded_body(
+        supersession_extra={
+            "predecessor_captured_bytes_digest": {"nested": "object"},
+            "successor_captured_bytes_digest": SUCC_DIGEST_DIFFERENT,
+        }
+    )
+    comparison, reason = compare_content_digests(body)
+    assert comparison == admission_event_v03.NOT_EVALUATED
+    assert reason == admission_event_v03.CONTENT_DIGEST_MALFORMED
+    assert reason != admission_event_v03.CONTENT_DIGEST_ABSENT
+
+
+def test_digest_key_truly_missing_is_still_absent() -> None:
+    # Contrast case: the key is genuinely absent (never set at all), so this
+    # must remain CONTENT_DIGEST_ABSENT, not MALFORMED.
+    body = _superseded_body(
+        supersession_extra={"successor_captured_bytes_digest": SUCC_DIGEST_DIFFERENT}
+    )
+    comparison, reason = compare_content_digests(body)
+    assert comparison == admission_event_v03.NOT_EVALUATED
+    assert reason == admission_event_v03.CONTENT_DIGEST_ABSENT
+    assert reason != admission_event_v03.CONTENT_DIGEST_MALFORMED
+
+
+# ---------------------------------------------------------------------------
+# Owner AMEND -- provenance source must be a recognized enum value, not
+# merely nonempty. A present-but-unrecognized source is
+# CONTENT_DIGEST_PROVENANCE_INVALID, never conflated with
+# CONTENT_DIGEST_PROVENANCE_ABSENT.
+# ---------------------------------------------------------------------------
+
+
+def test_source_present_but_unrecognized_value_is_provenance_invalid() -> None:
+    body = _superseded_body(
+        supersession_extra={
+            "predecessor_captured_bytes_digest": PRED_DIGEST,
+            "successor_captured_bytes_digest": SUCC_DIGEST_DIFFERENT,
+            "predecessor_captured_bytes_digest_source": "whatever",
+            "successor_captured_bytes_digest_source": "LIVE_CAPTURE",
+        }
+    )
+    comparison, reason = compare_content_digests(body)
+    assert comparison == admission_event_v03.NOT_EVALUATED
+    assert reason == admission_event_v03.CONTENT_DIGEST_PROVENANCE_INVALID
+    assert reason != admission_event_v03.CONTENT_DIGEST_PROVENANCE_ABSENT
+
+
+def test_source_missing_is_provenance_absent_not_invalid() -> None:
+    # Contrast case: a genuinely missing source key must remain
+    # CONTENT_DIGEST_PROVENANCE_ABSENT, not INVALID.
+    body = _superseded_body(
+        supersession_extra={
+            "predecessor_captured_bytes_digest": PRED_DIGEST,
+            "successor_captured_bytes_digest": SUCC_DIGEST_DIFFERENT,
+            "successor_captured_bytes_digest_source": "LIVE_CAPTURE",
+            # predecessor source key deliberately never set
+        }
+    )
+    comparison, reason = compare_content_digests(body)
+    assert comparison == admission_event_v03.NOT_EVALUATED
+    assert reason == admission_event_v03.CONTENT_DIGEST_PROVENANCE_ABSENT
+    assert reason != admission_event_v03.CONTENT_DIGEST_PROVENANCE_INVALID
+
+
+def test_source_present_as_wrong_type_is_provenance_invalid() -> None:
+    body = _superseded_body(
+        supersession_extra={
+            "predecessor_captured_bytes_digest": PRED_DIGEST,
+            "successor_captured_bytes_digest": SUCC_DIGEST_DIFFERENT,
+            "predecessor_captured_bytes_digest_source": "LIVE_CAPTURE",
+            "successor_captured_bytes_digest_source": 42,
+        }
+    )
+    comparison, reason = compare_content_digests(body)
+    assert comparison == admission_event_v03.NOT_EVALUATED
+    assert reason == admission_event_v03.CONTENT_DIGEST_PROVENANCE_INVALID
+
+
+def test_source_invalid_via_full_verify_is_not_evaluated_not_match_not_diverged() -> None:
+    body = _superseded_body(
+        supersession_extra={
+            "predecessor_captured_bytes_digest": PRED_DIGEST,
+            "successor_captured_bytes_digest": SUCC_DIGEST_DIFFERENT,
+            "predecessor_captured_bytes_digest_source": "whatever",
+            "successor_captured_bytes_digest_source": "LIVE_CAPTURE",
+        }
+    )
+    receipt, keyring, _ = _sign(body)
+    report = verify_admission_event_v0_3_receipt(receipt, keyring)
+    assert report.content_digest_comparison == admission_event_v03.NOT_EVALUATED
+    assert report.content_digest_comparison_reason == admission_event_v03.CONTENT_DIGEST_PROVENANCE_INVALID
+    assert report.content_digest_comparison not in (admission_event_v03.MATCH, admission_event_v03.DIVERGED)
+    # The raw (invalid) source value is still surfaced verbatim -- disclosure
+    # of what's on the wire, not silently dropped.
+    assert report.predecessor_captured_bytes_digest_source == "whatever"
+
+
+# ---------------------------------------------------------------------------
 # Honest-B shape: historical capture, bytes no longer retrievable, digests
 # diverge. Must disclose DIVERGED plus the evidence qualifiers, verbatim --
 # never upgraded to any authenticity/re-hash claim.
@@ -506,6 +652,21 @@ def test_divergence_does_not_alter_standing_act_or_supersession_binding_fields()
 # ---------------------------------------------------------------------------
 # v0.1 / v0.2 verifiers remain green and untouched by this addition.
 # ---------------------------------------------------------------------------
+
+
+def test_reason_vocabulary_is_exactly_five_values() -> None:
+    assert {
+        admission_event_v03.CONTENT_DIGEST_ABSENT,
+        admission_event_v03.CONTENT_DIGEST_MALFORMED,
+        admission_event_v03.CONTENT_DIGEST_PROVENANCE_ABSENT,
+        admission_event_v03.CONTENT_DIGEST_PROVENANCE_INVALID,
+    } == {
+        "CONTENT_DIGEST_ABSENT",
+        "CONTENT_DIGEST_MALFORMED",
+        "CONTENT_DIGEST_PROVENANCE_ABSENT",
+        "CONTENT_DIGEST_PROVENANCE_INVALID",
+    }
+    # Plus `null` (None) for MATCH/DIVERGED -- five total reason states.
 
 
 def test_v01_v02_modules_are_unmodified_siblings() -> None:

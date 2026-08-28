@@ -17,32 +17,43 @@ This module is that independent verifier's responsibility. It adds a single
 new output, ``content_digest_comparison`` (tri-state: DIVERGED / MATCH /
 NOT_EVALUATED) with a ``content_digest_comparison_reason``
 (CONTENT_DIGEST_ABSENT / CONTENT_DIGEST_MALFORMED /
-CONTENT_DIGEST_PROVENANCE_ABSENT / null). The comparison is computed by
-independent, literal-string comparison of the two wire values exactly as they
-appear on the receipt -- it imports no cp/producer canonicalization code and
-performs no re-hashing.
+CONTENT_DIGEST_PROVENANCE_ABSENT / CONTENT_DIGEST_PROVENANCE_INVALID / null).
+The comparison is computed by independent, literal-string comparison of the
+two wire values exactly as they appear on the receipt -- it imports no
+cp/producer canonicalization code and performs no re-hashing.
+
+Structural-absence discipline (owner AMEND): ``CONTENT_DIGEST_ABSENT`` is
+reserved for a digest key that is genuinely *missing* from the supersession
+extension. A key that is *present* but null, the wrong type, empty, or an
+ill-shaped string (wrong case, wrong length, missing ``sha256:`` prefix) is
+never "absent" -- it is a present-but-invalid value and is classified
+``CONTENT_DIGEST_MALFORMED``. The same discipline applies to the per-side
+``*_captured_bytes_digest_source`` qualifier: a *missing* source key is
+``CONTENT_DIGEST_PROVENANCE_ABSENT``; a source key that is *present* but is
+not one of the two recognized enum values (``HISTORICAL_CAPTURE_RECORD`` /
+``LIVE_CAPTURE``) is never conflated with absence -- it is
+``CONTENT_DIGEST_PROVENANCE_INVALID``.
 
 Provenance gate: MATCH/DIVERGED are returned only when *all four* of
 predecessor digest, successor digest, predecessor
 ``captured_bytes_digest_source``, and successor ``captured_bytes_digest_source``
-are present. A present-but-unsourced digest pair is NOT_EVALUATED
-(CONTENT_DIGEST_PROVENANCE_ABSENT), never MATCH/DIVERGED. This gate checks
-only *presence* of the digest_source field -- ``bytes_currently_retrievable``
-is never part of the gate: ``bytes_currently_retrievable=false`` (the honest
-HISTORICAL_CAPTURE_RECORD case, e.g. TH-S09's successor bytes no longer being
-fetchable) is evidence-strength disclosure, not a failure or a downgrade, and
-must still resolve to DIVERGED/MATCH with the qualifier surfaced verbatim.
+are present AND well-formed/valid. This gate never inspects
+``bytes_currently_retrievable``: ``bytes_currently_retrievable=false`` (the
+honest HISTORICAL_CAPTURE_RECORD case, e.g. TH-S09's successor bytes no longer
+being fetchable) is evidence-strength disclosure, not a failure or a
+downgrade, and must still resolve to DIVERGED/MATCH with the qualifier
+surfaced verbatim.
 
 READMISSION-CONTENT-BASIS1 ID0 s1.2/s1.4: a content-digest comparison is a
 DISCLOSED STRUCTURAL FACT ("these two digests differ/match/were not both
-present, sourced, and well-formed"). It is NEVER an authenticity, verification,
-admission, standing, or truth verdict, and it never participates in this
-report's overall ``passed`` axis. Absence of either digest or either
-digest_source is NEVER read as equality -- a NOT_EVALUATED result is never
-upgraded to MATCH. No standing/authority-shaped field is emitted from the
-comparison itself; the scope of this module stops at the one comparison plus
-disclosure of the per-side evidence qualifiers already present on the wire. No
-producer/runtime implementation is imported.
+present, validly sourced, and well-formed"). It is NEVER an authenticity,
+verification, admission, standing, or truth verdict, and it never participates
+in this report's overall ``passed`` axis. Absence or invalidity of either
+digest or either digest_source is NEVER read as equality -- a NOT_EVALUATED
+result is never upgraded to MATCH. No standing/authority-shaped field is
+emitted from the comparison itself; the scope of this module stops at the one
+comparison plus disclosure of the per-side evidence qualifiers already present
+on the wire. No producer/runtime implementation is imported.
 """
 from __future__ import annotations
 
@@ -95,6 +106,13 @@ NOT_EVALUATED = "NOT_EVALUATED"
 CONTENT_DIGEST_ABSENT = "CONTENT_DIGEST_ABSENT"
 CONTENT_DIGEST_MALFORMED = "CONTENT_DIGEST_MALFORMED"
 CONTENT_DIGEST_PROVENANCE_ABSENT = "CONTENT_DIGEST_PROVENANCE_ABSENT"
+CONTENT_DIGEST_PROVENANCE_INVALID = "CONTENT_DIGEST_PROVENANCE_INVALID"
+
+# Independently recognized digest_source enum. Re-declared here (mirroring
+# CONTENT_DIGEST_REF above) rather than imported from the vendored schema's
+# own enum, so a schema mutation cannot silently redefine what counts as a
+# valid provenance qualifier for this comparison.
+VALID_DIGEST_SOURCES = frozenset({"HISTORICAL_CAPTURE_RECORD", "LIVE_CAPTURE"})
 
 CONTENT_DIGEST_DISCLOSURE_LIMIT = (
     "The content_digest_comparison and content_digest_comparison_reason fields "
@@ -204,39 +222,54 @@ def _extract_supersession(receipt: Mapping[str, Any]) -> Mapping[str, Any] | Non
     return supersession if isinstance(supersession, Mapping) else None
 
 
-# Internal digest-shape classification (not verifier failure codes -- these
-# never reach `failure_codes`/`report.to_dict()`; named as constants rather
-# than inlined string literals purely so the repo's structural failure-code
-# sweep does not mistake an internal classification return for an emitted
-# code).
+# Internal shape classification (not verifier failure codes -- these never
+# reach `failure_codes`/`report.to_dict()`; named as constants rather than
+# inlined string literals purely so the repo's structural failure-code sweep
+# does not mistake an internal classification return for an emitted code).
 _SHAPE_ABSENT = "absent"
 _SHAPE_MALFORMED = "malformed"
 _SHAPE_WELL_FORMED = "well_formed"
 
 
-def _digest_shape(value: Any) -> str:
-    """Classify a single raw digest value as absent / malformed / well_formed.
+def _digest_shape(container: Mapping[str, Any], key: str) -> str:
+    """Classify a single digest slot as absent / malformed / well_formed.
 
-    A value counts as "present" only if it is a non-empty string; anything
-    else (missing key, None, non-string) is treated as absent, never as an
-    implicit match or an implicit malformed value.
+    Structural-absence discipline: ``_SHAPE_ABSENT`` fires only when ``key``
+    is genuinely missing from ``container``. If the key is present at all --
+    ``None``, an int, an object, an empty string, or an ill-shaped string
+    (wrong case, wrong length, missing ``sha256:`` prefix) -- it is
+    ``_SHAPE_MALFORMED``, never absent. A present-but-wrong value must never
+    be laundered into "structurally absent".
     """
-    if not isinstance(value, str) or value == "":
+    if key not in container:
         return _SHAPE_ABSENT
-    if CONTENT_DIGEST_REF.fullmatch(value) is None:
-        return _SHAPE_MALFORMED
-    return _SHAPE_WELL_FORMED
+    value = container[key]
+    if (
+        isinstance(value, str)
+        and value != ""
+        and CONTENT_DIGEST_REF.fullmatch(value) is not None
+    ):
+        return _SHAPE_WELL_FORMED
+    return _SHAPE_MALFORMED
 
 
-def _source_present(value: Any) -> bool:
-    """Presence-only check for a per-side ``captured_bytes_digest_source``.
+def _source_shape(container: Mapping[str, Any], key: str) -> str:
+    """Classify a single ``*_captured_bytes_digest_source`` slot.
 
-    This is deliberately a presence check, not a format/enum check: the
-    provenance gate cares only whether a digest_source was disclosed at all,
-    not the specific value. It never inspects ``bytes_currently_retrievable``
-    -- that qualifier is evidence-strength disclosure, never part of the gate.
+    Mirrors ``_digest_shape``'s structural-absence discipline: a genuinely
+    missing key is ``_SHAPE_ABSENT``; a key that is present but is not
+    literally one of ``VALID_DIGEST_SOURCES`` (wrong type, empty string, or
+    any other string) is ``_SHAPE_MALFORMED`` -- present-but-invalid
+    provenance is never reported as absent provenance. Only a well-formed,
+    recognized enum value is ``_SHAPE_WELL_FORMED``. Never consults
+    ``bytes_currently_retrievable``.
     """
-    return isinstance(value, str) and value != ""
+    if key not in container:
+        return _SHAPE_ABSENT
+    value = container[key]
+    if isinstance(value, str) and value in VALID_DIGEST_SOURCES:
+        return _SHAPE_WELL_FORMED
+    return _SHAPE_MALFORMED
 
 
 def compare_content_digests(receipt: Mapping[str, Any]) -> tuple[str, str | None]:
@@ -249,31 +282,36 @@ def compare_content_digests(receipt: Mapping[str, Any]) -> tuple[str, str | None
     canonicalization, no producer code. Absence on either side is NEVER
     reported as MATCH.
 
-    Provenance gate: MATCH/DIVERGED are returned only when both digests are
-    present + well-formed AND both digest_source qualifiers are present.
+    Priority order (each tier only reached once the previous tier finds no
+    issue): digest absence -> digest malformed -> source absence -> source
+    invalid -> literal comparison. MATCH/DIVERGED are returned only when both
+    digests are present + well-formed AND both digest_source qualifiers are
+    present + one of the two recognized enum values.
     ``bytes_currently_retrievable`` is never consulted here -- a digest pair
     whose bytes are no longer retrievable (source=HISTORICAL_CAPTURE_RECORD,
     retrievable=false) still resolves to MATCH/DIVERGED as long as both
-    digests and both sources are present; only a *missing* digest_source
-    triggers CONTENT_DIGEST_PROVENANCE_ABSENT.
+    digests and both sources are present and well-formed.
     """
-    supersession = _extract_supersession(receipt)
-    predecessor = supersession.get("predecessor_captured_bytes_digest") if supersession else None
-    successor = supersession.get("successor_captured_bytes_digest") if supersession else None
+    supersession = _extract_supersession(receipt) or {}
 
-    predecessor_shape = _digest_shape(predecessor)
-    successor_shape = _digest_shape(successor)
+    predecessor_shape = _digest_shape(supersession, "predecessor_captured_bytes_digest")
+    successor_shape = _digest_shape(supersession, "successor_captured_bytes_digest")
 
     if predecessor_shape == _SHAPE_ABSENT or successor_shape == _SHAPE_ABSENT:
         return NOT_EVALUATED, CONTENT_DIGEST_ABSENT
     if predecessor_shape == _SHAPE_MALFORMED or successor_shape == _SHAPE_MALFORMED:
         return NOT_EVALUATED, CONTENT_DIGEST_MALFORMED
 
-    predecessor_source = supersession.get("predecessor_captured_bytes_digest_source") if supersession else None
-    successor_source = supersession.get("successor_captured_bytes_digest_source") if supersession else None
-    if not _source_present(predecessor_source) or not _source_present(successor_source):
-        return NOT_EVALUATED, CONTENT_DIGEST_PROVENANCE_ABSENT
+    predecessor_source_shape = _source_shape(supersession, "predecessor_captured_bytes_digest_source")
+    successor_source_shape = _source_shape(supersession, "successor_captured_bytes_digest_source")
 
+    if predecessor_source_shape == _SHAPE_ABSENT or successor_source_shape == _SHAPE_ABSENT:
+        return NOT_EVALUATED, CONTENT_DIGEST_PROVENANCE_ABSENT
+    if predecessor_source_shape == _SHAPE_MALFORMED or successor_source_shape == _SHAPE_MALFORMED:
+        return NOT_EVALUATED, CONTENT_DIGEST_PROVENANCE_INVALID
+
+    predecessor = supersession["predecessor_captured_bytes_digest"]
+    successor = supersession["successor_captured_bytes_digest"]
     if predecessor == successor:
         return MATCH, None
     return DIVERGED, None
