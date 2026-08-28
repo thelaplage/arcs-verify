@@ -40,6 +40,9 @@ MODULES = [
     # ADMISSION-EVENT-VERIFY1 — admission-event supersession verifiers
     "arcs_verify/admission_event.py",
     "arcs_verify/admission_event_v0_2.py",
+    # READMISSION-CONTENT-DIVERGENCE0 Lane 5 — tri-state content-digest
+    # comparison verifier
+    "arcs_verify/admission_event_v0_3.py",
     # OKF-ARCS-BRIDGE0 — OKF Attested Computation verifier-side bindings
     "arcs_verify/okf_attested_computation.py",
 ]
