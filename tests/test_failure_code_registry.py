@@ -7,9 +7,10 @@ returns, ``code=`` keyword arguments, and ``ValueError(...)`` constant
 arguments. There is no recognition allowlist: a newly emitted code is
 collected because of where it is emitted, not because a regex already knows
 its shape. The single structural filter is that codes never contain spaces,
-which excludes detail-message strings by shape rather than by name. Each static code and
-each dynamic-family prefix must appear verbatim in docs/FAILURE_CODES.md, so
-the registry is an interface that cannot silently fall behind the code.
+which excludes detail-message strings by shape rather than by name. Each static
+code and each dynamic-family prefix must appear verbatim in the combined
+failure-code registry text, so the registry is an interface that cannot
+silently fall behind the code.
 """
 
 from __future__ import annotations
@@ -18,7 +19,11 @@ import ast
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REGISTRY = (ROOT / "docs" / "FAILURE_CODES.md").read_text(encoding="utf-8")
+REGISTRY_FILES = (
+    ROOT / "docs" / "FAILURE_CODES.md",
+    ROOT / "docs" / "FAILURE_CODES_EXTERNAL_PROFILE.md",
+)
+REGISTRY = "\n".join(path.read_text(encoding="utf-8") for path in REGISTRY_FILES)
 
 MODULES = [
     "arcs_verify/verifier.py",
@@ -45,6 +50,8 @@ MODULES = [
     "arcs_verify/admission_event_v0_3.py",
     # OKF-ARCS-BRIDGE0 — OKF Attested Computation verifier-side bindings
     "arcs_verify/okf_attested_computation.py",
+    # SRS-VNEXT-VERIFY0 — independent vNext external-profile verification
+    "arcs_verify/external_profile.py",
 ]
 
 # Signatures that mark a module as one that emits verifier failure codes. The
@@ -121,7 +128,8 @@ def test_every_emitted_code_is_in_the_registry() -> None:
             if f"`{code}`" not in REGISTRY:
                 missing.append(f"{module}: {code}")
     assert not missing, (
-        "codes emitted but absent from docs/FAILURE_CODES.md:\n" + "\n".join(missing)
+        "codes emitted but absent from the failure-code registries:\n"
+        + "\n".join(missing)
     )
 
 
@@ -133,7 +141,7 @@ def test_every_dynamic_family_prefix_is_in_the_registry() -> None:
             if prefix not in REGISTRY:
                 missing.append(f"{module}: {prefix}<...>")
     assert not missing, (
-        "dynamic code families emitted but absent from docs/FAILURE_CODES.md:\n"
+        "dynamic code families emitted but absent from the failure-code registries:\n"
         + "\n".join(missing)
     )
 
@@ -181,7 +189,7 @@ def test_no_emitting_module_is_unregistered() -> None:
     missing = sorted(set(discovered) - registered)
     assert not missing, (
         "modules emit failure codes but are absent from MODULES in this test, "
-        "so their codes are never checked against docs/FAILURE_CODES.md:\n"
+        "so their codes are never checked against the failure-code registries:\n"
         + "\n".join(missing)
     )
 
@@ -196,6 +204,6 @@ def test_every_signature_failure_code_is_in_the_registry() -> None:
         code for code in SIGNATURE_FAILURE_CODES if f"`{code}`" not in REGISTRY
     )
     assert not missing, (
-        "SIGNATURE_FAILURE_CODES members absent from docs/FAILURE_CODES.md:\n"
+        "SIGNATURE_FAILURE_CODES members absent from the failure-code registries:\n"
         + "\n".join(missing)
     )
