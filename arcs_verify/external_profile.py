@@ -1,17 +1,17 @@
 """Independent verification for SRS vNext external-profile receipts.
 
 The verifier consumes serialized receipt/profile/schema bytes plus an
-independently supplied keyring.  It imports no producer/runtime package and
+independently supplied keyring. It imports no producer/runtime package and
 never asks an emitter how a receipt should verify.
 
 This first lane pins the reviewed candidate SRS vNext and external-profile
-schema byte identities from arcs-srs #57 (head e22fd692...).  The schema bytes
+schema byte identities from arcs-srs #57 (head e22fd692...). The schema bytes
 are caller-supplied and must hash to these independent pins before they can
-participate in a PASS.  A caller cannot substitute a permissive schema merely
+participate in a PASS. A caller cannot substitute a permissive schema merely
 by pointing the verifier at it.
 
 A PASS is structural/profile/cryptographic conformance to the pinned candidate
-contracts and supplied trust context.  It is not truth, authorization, DAGR
+contracts and supplied trust context. It is not truth, authorization, DAGR
 standing, evidence standing, publication, or certification.
 """
 
@@ -41,9 +41,15 @@ SRS_VNEXT_SOURCE_REPO = "thelaplage/arcs-srs"
 SRS_VNEXT_SOURCE_PR = 57
 SRS_VNEXT_SOURCE_HEAD = "e22fd69218451a86cf639bcce4691f7e1d6975c9"
 SRS_VNEXT_ENVELOPE_SOURCE_BLOB = "39beaeaa65ab97e6e81d32057b52ac20c3f8a1ea"
-SRS_VNEXT_ENVELOPE_SHA256 = "71a9b365eb7c3d320d173772f6b823bb2bc3c15174eef30f6038ea7b84bde967"
+SRS_VNEXT_ENVELOPE_SHA256 = (
+    "71a9b365eb7c3d320d173772f6b823bb2bc3c15174eef30f6038ea7b84bde967"
+)
+SRS_VNEXT_ENVELOPE_ID = "srs-envelope-v0-next"
+SRS_VNEXT_ENVELOPE_VERSION = "v0-next"
 EXTERNAL_PROFILE_SCHEMA_SOURCE_BLOB = "4832c73870820575362ccd98868de990c51b74c1"
-EXTERNAL_PROFILE_SCHEMA_SHA256 = "342642f4b2f120541f2094a8aadc5d6de9b0ea4548a12363b05333c92f524eaf"
+EXTERNAL_PROFILE_SCHEMA_SHA256 = (
+    "342642f4b2f120541f2094a8aadc5d6de9b0ea4548a12363b05333c92f524eaf"
+)
 
 FROZEN_V0_2_1_RECEIPT_TYPES = frozenset(
     {"sdk_enforcement", "grace_session", "connection", "provenance"}
@@ -60,6 +66,7 @@ class ExternalProfileVerificationReport:
     envelope: bool = False
     profile_declaration: bool = False
     profile_cross_field: bool = False
+    profile_envelope_compatibility: bool = False
     receipt_profile_binding: bool = False
     contract_refs: bool = False
     raw_content_exclusion: bool = False
@@ -80,6 +87,7 @@ class ExternalProfileVerificationReport:
                 self.envelope,
                 self.profile_declaration,
                 self.profile_cross_field,
+                self.profile_envelope_compatibility,
                 self.receipt_profile_binding,
                 self.contract_refs,
                 self.raw_content_exclusion,
@@ -106,13 +114,14 @@ def _schema_validate(instance: Any, schema_bytes: bytes) -> list[str]:
     except Exception:
         return ["schema_bytes_not_json"]
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
-    return [error.message for error in sorted(validator.iter_errors(instance), key=lambda e: list(e.path))]
+    errors = sorted(validator.iter_errors(instance), key=lambda error: list(error.path))
+    return [error.message for error in errors]
 
 
 def external_profile_cross_field_findings(declaration: Any) -> list[str]:
     """Independently enforce #57's cross-array profile-conformance rules.
 
-    Per-field grammar is enforced by the pinned JSON Schema first.  This helper
+    Per-field grammar is enforced by the pinned JSON Schema first. This helper
     owns only the set relationships JSON Schema does not express.
     """
 
@@ -121,7 +130,11 @@ def external_profile_cross_field_findings(declaration: Any) -> list[str]:
     permitted = declaration.get("permitted_receipt_types")
     classifications = declaration.get("receipt_type_classifications")
     envelopes = declaration.get("compatible_envelopes")
-    if not isinstance(permitted, list) or not isinstance(classifications, list) or not isinstance(envelopes, list):
+    if (
+        not isinstance(permitted, list)
+        or not isinstance(classifications, list)
+        or not isinstance(envelopes, list)
+    ):
         return ["profile.cross_field_inputs_invalid"]
 
     findings: list[str] = []
@@ -174,7 +187,9 @@ def external_profile_cross_field_findings(declaration: Any) -> list[str]:
     return list(dict.fromkeys(findings))
 
 
-def _selected_class(receipt: dict[str, Any], profile: dict[str, Any]) -> tuple[str | None, list[str]]:
+def _selected_class(
+    receipt: dict[str, Any], profile: dict[str, Any]
+) -> tuple[str | None, list[str]]:
     receipt_type = receipt.get("receipt_type")
     receipt_kind = receipt.get("receipt_kind")
     candidates: set[str] = set()
@@ -191,6 +206,18 @@ def _selected_class(receipt: dict[str, Any], profile: dict[str, Any]) -> tuple[s
     return next(iter(candidates)), []
 
 
+def _profile_allows_pinned_vnext(profile: dict[str, Any]) -> bool:
+    compatible = profile.get("compatible_envelopes")
+    if not isinstance(compatible, list):
+        return False
+    return any(
+        isinstance(item, dict)
+        and item.get("published_version") == SRS_VNEXT_ENVELOPE_ID
+        and item.get("sha256") == SRS_VNEXT_ENVELOPE_SHA256
+        for item in compatible
+    )
+
+
 def verify_external_profile_receipt(
     receipt_bytes: bytes,
     profile_declaration_bytes: bytes,
@@ -201,10 +228,14 @@ def verify_external_profile_receipt(
 ) -> ExternalProfileVerificationReport:
     report = ExternalProfileVerificationReport()
 
-    report.envelope_schema_digest = _sha256(envelope_schema_bytes) == SRS_VNEXT_ENVELOPE_SHA256
+    report.envelope_schema_digest = (
+        _sha256(envelope_schema_bytes) == SRS_VNEXT_ENVELOPE_SHA256
+    )
     if not report.envelope_schema_digest:
         report.failure_codes.append("envelope_schema.digest_mismatch")
-    report.profile_schema_digest = _sha256(profile_schema_bytes) == EXTERNAL_PROFILE_SCHEMA_SHA256
+    report.profile_schema_digest = (
+        _sha256(profile_schema_bytes) == EXTERNAL_PROFILE_SCHEMA_SHA256
+    )
     if not report.profile_schema_digest:
         report.failure_codes.append("profile_schema.digest_mismatch")
 
@@ -229,7 +260,9 @@ def verify_external_profile_receipt(
         report.details.extend(envelope_errors)
 
     profile_schema_errors = _schema_validate(profile, profile_schema_bytes)
-    report.profile_declaration = not profile_schema_errors and report.profile_schema_digest
+    report.profile_declaration = (
+        not profile_schema_errors and report.profile_schema_digest
+    )
     if profile_schema_errors:
         report.failure_codes.append("profile.schema_invalid")
         report.details.extend(profile_schema_errors)
@@ -237,6 +270,10 @@ def verify_external_profile_receipt(
     cross_findings = external_profile_cross_field_findings(profile)
     report.profile_cross_field = not cross_findings
     report.failure_codes.extend(cross_findings)
+
+    report.profile_envelope_compatibility = _profile_allows_pinned_vnext(profile)
+    if not report.profile_envelope_compatibility:
+        report.failure_codes.append("profile.vnext_envelope_not_compatible")
 
     binding_errors: list[str] = []
     if receipt.get("profile_id") != profile.get("profile_id"):
@@ -254,12 +291,13 @@ def verify_external_profile_receipt(
     refs = receipt.get("contract_refs")
     expected_envelope_digest = "sha256:" + _sha256(envelope_schema_bytes)
     expected_profile_digest = "sha256:" + _sha256(profile_declaration_bytes)
-    refs_ok = isinstance(refs, dict)
     envelope_ref = refs.get("envelope_contract") if isinstance(refs, dict) else None
     profile_ref = refs.get("profile_contract") if isinstance(refs, dict) else None
     refs_ok = bool(
-        refs_ok
+        isinstance(refs, dict)
         and isinstance(envelope_ref, dict)
+        and envelope_ref.get("id") == SRS_VNEXT_ENVELOPE_ID
+        and envelope_ref.get("version") == SRS_VNEXT_ENVELOPE_VERSION
         and envelope_ref.get("digest") == expected_envelope_digest
         and isinstance(profile_ref, dict)
         and profile_ref.get("id") == profile.get("profile_id")
@@ -329,7 +367,9 @@ def verify_external_profile_receipt(
         preimage = copy.deepcopy(receipt)
         del preimage["receipt_signature"]["signature"]
         canonical = rfc8785.dumps(preimage)
-        Ed25519PublicKey.from_public_bytes(public_key_bytes).verify(signature_bytes, canonical)
+        Ed25519PublicKey.from_public_bytes(public_key_bytes).verify(
+            signature_bytes, canonical
+        )
         report.signature_valid = True
     except InvalidSignature:
         report.failure_codes.append("signature_invalid")
@@ -343,7 +383,9 @@ def verify_external_profile_receipt(
         trusted = (
             entry.get("trusted") is True
             and entry.get("issuer_id") == receipt.get("issuer_id")
-            and _parse_time(entry["not_before"]) <= issued_at <= _parse_time(entry["not_after"])
+            and _parse_time(entry["not_before"])
+            <= issued_at
+            <= _parse_time(entry["not_after"])
         )
     except Exception:
         trusted = False
@@ -357,7 +399,9 @@ def verify_external_profile_receipt(
     return _dedupe(report)
 
 
-def _dedupe(report: ExternalProfileVerificationReport) -> ExternalProfileVerificationReport:
+def _dedupe(
+    report: ExternalProfileVerificationReport,
+) -> ExternalProfileVerificationReport:
     report.failure_codes = list(dict.fromkeys(report.failure_codes))
     report.details = list(dict.fromkeys(report.details))
     return report
