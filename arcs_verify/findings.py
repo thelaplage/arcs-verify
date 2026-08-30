@@ -16,7 +16,11 @@ from arcs_verify import admission_event as v01
 from arcs_verify import admission_event_v0_2 as v02
 from arcs_verify.admission_event_v0_3 import (
     AdmissionEventV03VerificationReport,
+    CONTENT_DIGEST_ABSENT,
     CONTENT_DIGEST_DISCLOSURE_LIMIT,
+    CONTENT_DIGEST_MALFORMED,
+    CONTENT_DIGEST_PROVENANCE_ABSENT,
+    CONTENT_DIGEST_PROVENANCE_INVALID,
     DIVERGED,
     MATCH,
     NOT_EVALUATED,
@@ -38,8 +42,17 @@ _V03_CHECK_FIELDS: tuple[str, ...] = (
     "issuer_key_trusted",
 )
 
+_V03_NOT_EVALUATED_REASONS = frozenset(
+    {
+        CONTENT_DIGEST_ABSENT,
+        CONTENT_DIGEST_MALFORMED,
+        CONTENT_DIGEST_PROVENANCE_ABSENT,
+        CONTENT_DIGEST_PROVENANCE_INVALID,
+    }
+)
+
 # Exact non-parameterized failure identities emitted by the v0.3 verifier and
-# the v0.1/v0.2 verifier-owned helpers it explicitly calls.  The parameterized
+# the v0.1/v0.2 verifier-owned helpers it explicitly calls. The parameterized
 # authority/raw-content families are validated structurally below against the
 # same verifier-owned key vocabularies; arbitrary future strings never become
 # reassuring generic findings by accident.
@@ -145,6 +158,21 @@ def _is_owned_v03_failure_code(code: str) -> bool:
     return code in _V03_FIXED_FAILURE_CODES or _is_owned_dynamic_failure_code(code)
 
 
+def _validate_disclosure(comparison: str, reason: str | None) -> None:
+    if comparison not in {MATCH, DIVERGED, NOT_EVALUATED}:
+        raise ValueError(f"unknown content_digest_comparison state: {comparison!r}")
+    if comparison in {MATCH, DIVERGED}:
+        if reason is not None:
+            raise ValueError(
+                "MATCH/DIVERGED content_digest_comparison must carry reason=None"
+            )
+        return
+    if reason not in _V03_NOT_EVALUATED_REASONS:
+        raise ValueError(
+            f"unregistered NOT_EVALUATED content_digest_comparison_reason: {reason!r}"
+        )
+
+
 def project_admission_event_v03_findings(
     report: AdmissionEventV03VerificationReport,
 ) -> VerificationFindingsProjection:
@@ -152,6 +180,15 @@ def project_admission_event_v03_findings(
 
     if not isinstance(report, AdmissionEventV03VerificationReport):
         raise TypeError("expected AdmissionEventV03VerificationReport")
+
+    check_values: dict[str, bool] = {}
+    for field_name in _V03_CHECK_FIELDS:
+        value = getattr(report, field_name)
+        if type(value) is not bool:
+            raise ValueError(
+                f"v0.3 verifier check {field_name!r} must be an exact bool, got {type(value).__name__}"
+            )
+        check_values[field_name] = value
 
     failure_codes: list[str] = []
     for code in report.failure_codes:
@@ -162,13 +199,13 @@ def project_admission_event_v03_findings(
         failure_codes.append(code)
 
     comparison = report.content_digest_comparison
-    if comparison not in {MATCH, DIVERGED, NOT_EVALUATED}:
-        raise ValueError(f"unknown content_digest_comparison state: {comparison!r}")
+    reason = report.content_digest_comparison_reason
+    _validate_disclosure(comparison, reason)
 
     findings = tuple(
         VerificationFinding(
             check_id=field_name,
-            status="PASS" if getattr(report, field_name) is True else "FAIL",
+            status="PASS" if check_values[field_name] else "FAIL",
         )
         for field_name in _V03_CHECK_FIELDS
     )
@@ -182,7 +219,7 @@ def project_admission_event_v03_findings(
         VerificationDisclosure(
             disclosure_id="content_digest_comparison",
             state=comparison,
-            reason=report.content_digest_comparison_reason,
+            reason=reason,
         ),
     )
 
