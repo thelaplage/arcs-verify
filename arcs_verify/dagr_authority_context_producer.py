@@ -57,20 +57,42 @@ PRODUCER_IMPLEMENTATION_REF = (
     "github:thelaplage/dagr-runtime@14ed91604506b015f34c39e6dffb25ccdfc0b10c"
 )
 
-_REQUIRED_COVERED = {CONTEXT_SCHEMA_ID}
-_REQUIRED_EXCLUDED = {
+_EXACT_TOP_LEVEL_FIELDS = frozenset(
+    {
+        "receipt_version",
+        "profile_id",
+        "profile_version",
+        "receipt_id",
+        "receipt_type",
+        "receipt_kind",
+        "boundary_type",
+        "protocol_binding",
+        "subject_ref",
+        "subject_ref_origin",
+        "issuer_id",
+        "runtime_instance_id",
+        "issued_at",
+        "artifact_classes_covered",
+        "artifact_classes_excluded",
+        "attestation_limits",
+        "extensions",
+        "receipt_signature",
+    }
+)
+_EXACT_COVERED = [CONTEXT_SCHEMA_ID]
+_EXACT_EXCLUDED = [
     "governed_genesis_raw_bytes",
     "countervail_authorization",
     "execution_result",
     "receiver_custody",
-}
-_REQUIRED_LIMITS = {
+]
+_EXACT_LIMITS = [
     "attests producer claim over exact artifact bytes and declared DAGR identities only",
     "does not independently establish same-genesis binding",
     "does not establish action permission or Countervail authorization",
     "does not establish execution or receiver custody",
     "signature validity alone does not establish signer trust",
-}
+]
 _PROHIBITED_CLAIM_KEYS = {
     "allow",
     "allowed",
@@ -80,6 +102,7 @@ _PROHIBITED_CLAIM_KEYS = {
     "permission",
     "countervail_authorization",
     "countervail_decision",
+    "decision",
     "invocation_authority",
     "execution_authorization",
     "execution_result",
@@ -182,7 +205,10 @@ def _schema_errors(instance: Any, schema: Any) -> list[str]:
         return ["schema.not_object"]
     try:
         validator = Draft202012Validator(schema, format_checker=FormatChecker())
-        errors = sorted(validator.iter_errors(instance), key=lambda error: list(error.absolute_path))
+        errors = sorted(
+            validator.iter_errors(instance),
+            key=lambda error: list(error.absolute_path),
+        )
     except Exception as exc:
         return [f"schema.validator_error:{type(exc).__name__}"]
     return [error.message for error in errors]
@@ -195,12 +221,11 @@ def _profile_cross_field_findings(profile: Any) -> list[str]:
         return ["profile.id_mismatch"]
     if profile.get("profile_version") != PROFILE_VERSION:
         return ["profile.version_mismatch"]
-    compatible = profile.get("compatible_envelopes")
     expected_compat = {
         "published_version": SRS_ENVELOPE_PUBLICATION,
         "sha256": SRS_ENVELOPE_SHA256,
     }
-    if compatible != [expected_compat]:
+    if profile.get("compatible_envelopes") != [expected_compat]:
         return ["profile.envelope_pin_mismatch"]
     if profile.get("permitted_receipt_types") != [RECEIPT_TYPE]:
         return ["profile.receipt_type_set_mismatch"]
@@ -273,21 +298,39 @@ def verify_dagr_authority_context_producer_receipt(
     report = DagrAuthorityContextProducerVerificationReport()
     package = files("arcs_verify").joinpath("data")
     if envelope_schema_bytes is None:
-        envelope_schema_bytes = package.joinpath("srs-envelope-v0.2.1-e487.schema.json").read_bytes()
+        envelope_schema_bytes = package.joinpath(
+            "srs-envelope-v0.2.1-e487.schema.json"
+        ).read_bytes()
     if profile_schema_bytes is None:
-        profile_schema_bytes = package.joinpath("srs-external-profile-declaration-e487.schema.json").read_bytes()
+        profile_schema_bytes = package.joinpath(
+            "srs-external-profile-declaration-e487.schema.json"
+        ).read_bytes()
     if profile_declaration_bytes is None:
-        profile_declaration_bytes = package.joinpath("dagr-authority-context-producer-cb2760.profile.json").read_bytes()
+        profile_declaration_bytes = package.joinpath(
+            "dagr-authority-context-producer-cb2760.profile.json"
+        ).read_bytes()
     if extension_schema_bytes is None:
-        extension_schema_bytes = package.joinpath("dagr-authority-context-producer-cb2760.extensions.schema.json").read_bytes()
+        extension_schema_bytes = package.joinpath(
+            "dagr-authority-context-producer-cb2760.extensions.schema.json"
+        ).read_bytes()
     if context_schema_bytes is None:
-        context_schema_bytes = package.joinpath("dagr-resolved-authority-context-1a12726f.schema.json").read_bytes()
+        context_schema_bytes = package.joinpath(
+            "dagr-resolved-authority-context-1a12726f.schema.json"
+        ).read_bytes()
 
     report.envelope_schema_digest = _sha256(envelope_schema_bytes) == SRS_ENVELOPE_SHA256
-    report.profile_schema_digest = _sha256(profile_schema_bytes) == EXTERNAL_PROFILE_SCHEMA_SHA256
-    report.profile_declaration_digest = _sha256(profile_declaration_bytes) == DAGR_PROFILE_DECLARATION_SHA256
-    report.extension_schema_digest = _sha256(extension_schema_bytes) == DAGR_EXTENSION_SCHEMA_SHA256
-    report.context_schema_digest = _sha256(context_schema_bytes) == DAGR_CONTEXT_SCHEMA_SHA256
+    report.profile_schema_digest = (
+        _sha256(profile_schema_bytes) == EXTERNAL_PROFILE_SCHEMA_SHA256
+    )
+    report.profile_declaration_digest = (
+        _sha256(profile_declaration_bytes) == DAGR_PROFILE_DECLARATION_SHA256
+    )
+    report.extension_schema_digest = (
+        _sha256(extension_schema_bytes) == DAGR_EXTENSION_SCHEMA_SHA256
+    )
+    report.context_schema_digest = (
+        _sha256(context_schema_bytes) == DAGR_CONTEXT_SCHEMA_SHA256
+    )
     for ok, code in (
         (report.envelope_schema_digest, "envelope_schema.digest_mismatch"),
         (report.profile_schema_digest, "profile_schema.digest_mismatch"),
@@ -301,11 +344,19 @@ def verify_dagr_authority_context_producer_receipt(
     try:
         receipt = _strict_json_loads(receipt_bytes, label="receipt")
         context = _strict_json_loads(context_artifact_bytes, label="context")
-        envelope_schema = _strict_json_loads(envelope_schema_bytes, label="envelope_schema")
-        profile_schema = _strict_json_loads(profile_schema_bytes, label="profile_schema")
+        envelope_schema = _strict_json_loads(
+            envelope_schema_bytes, label="envelope_schema"
+        )
+        profile_schema = _strict_json_loads(
+            profile_schema_bytes, label="profile_schema"
+        )
         profile = _strict_json_loads(profile_declaration_bytes, label="profile")
-        extension_schema = _strict_json_loads(extension_schema_bytes, label="extension_schema")
-        context_schema = _strict_json_loads(context_schema_bytes, label="context_schema")
+        extension_schema = _strict_json_loads(
+            extension_schema_bytes, label="extension_schema"
+        )
+        context_schema = _strict_json_loads(
+            context_schema_bytes, label="context_schema"
+        )
     except ValueError as exc:
         report.failure_codes.append(str(exc))
         return _dedupe(report)
@@ -320,7 +371,11 @@ def verify_dagr_authority_context_producer_receipt(
         report.details.extend(envelope_errors)
 
     profile_errors = _schema_errors(profile, profile_schema)
-    report.profile_declaration = not profile_errors and report.profile_schema_digest and report.profile_declaration_digest
+    report.profile_declaration = bool(
+        not profile_errors
+        and report.profile_schema_digest
+        and report.profile_declaration_digest
+    )
     if profile_errors:
         report.failure_codes.append("profile.schema_invalid")
         report.details.extend(profile_errors)
@@ -330,6 +385,8 @@ def verify_dagr_authority_context_producer_receipt(
     report.failure_codes.extend(cross_findings)
 
     binding_findings: list[str] = []
+    if set(receipt) != _EXACT_TOP_LEVEL_FIELDS:
+        binding_findings.append("profile.top_level_surface_mismatch")
     expected_receipt_fields = {
         "receipt_version": SRS_RECEIPT_VERSION,
         "profile_id": PROFILE_ID,
@@ -383,15 +440,31 @@ def verify_dagr_authority_context_producer_receipt(
         provenance = context.get("authority_provenance")
         expected_projection = {
             "dagr.authority_context_producer.context_schema": context.get("schema"),
-            "dagr.authority_context_producer.context_digest": context.get("authority_context_digest"),
-            "dagr.authority_context_producer.transaction_id": context.get("transaction_id"),
-            "dagr.authority_context_producer.transaction_digest": context.get("transaction_digest"),
-            "dagr.authority_context_producer.genesis_id": provenance.get("genesis_id") if isinstance(provenance, dict) else None,
-            "dagr.authority_context_producer.genesis_digest": provenance.get("genesis_digest") if isinstance(provenance, dict) else None,
-            "dagr.authority_context_producer.producer_implementation_ref": PRODUCER_IMPLEMENTATION_REF,
+            "dagr.authority_context_producer.context_digest": context.get(
+                "authority_context_digest"
+            ),
+            "dagr.authority_context_producer.transaction_id": context.get(
+                "transaction_id"
+            ),
+            "dagr.authority_context_producer.transaction_digest": context.get(
+                "transaction_digest"
+            ),
+            "dagr.authority_context_producer.genesis_id": (
+                provenance.get("genesis_id") if isinstance(provenance, dict) else None
+            ),
+            "dagr.authority_context_producer.genesis_digest": (
+                provenance.get("genesis_digest")
+                if isinstance(provenance, dict)
+                else None
+            ),
+            "dagr.authority_context_producer.producer_implementation_ref": (
+                PRODUCER_IMPLEMENTATION_REF
+            ),
             "dagr.authority_context_producer.artifact_media_type": "application/json",
         }
-        report.projection_binding = all(extensions.get(key) == value for key, value in expected_projection.items())
+        report.projection_binding = all(
+            extensions.get(key) == value for key, value in expected_projection.items()
+        )
     if not report.projection_binding:
         report.failure_codes.append("artifact.projection_mismatch")
 
@@ -399,15 +472,12 @@ def verify_dagr_authority_context_producer_receipt(
     excluded = receipt.get("artifact_classes_excluded")
     limits = receipt.get("attestation_limits")
     report.attestation_limits = bool(
-        isinstance(covered, list)
-        and _REQUIRED_COVERED.issubset(set(covered))
-        and isinstance(excluded, list)
-        and _REQUIRED_EXCLUDED.issubset(set(excluded))
-        and isinstance(limits, list)
-        and _REQUIRED_LIMITS.issubset(set(limits))
+        covered == _EXACT_COVERED
+        and excluded == _EXACT_EXCLUDED
+        and limits == _EXACT_LIMITS
     )
     if not report.attestation_limits:
-        report.failure_codes.append("attestation.required_limits_or_exclusions_missing")
+        report.failure_codes.append("attestation.exact_surface_mismatch")
 
     raw_findings: list[str] = []
     for key, value in _walk(receipt):
@@ -437,7 +507,11 @@ def verify_dagr_authority_context_producer_receipt(
     key_id = signature.get("key_id")
     entries = keyring.get("issuers", []) if isinstance(keyring, dict) else []
     entry = next(
-        (item for item in entries if isinstance(item, dict) and item.get("key_id") == key_id),
+        (
+            item
+            for item in entries
+            if isinstance(item, dict) and item.get("key_id") == key_id
+        ),
         None,
     )
     report.issuer_key_resolved = entry is not None
@@ -446,8 +520,12 @@ def verify_dagr_authority_context_producer_receipt(
         return _dedupe(report)
 
     try:
-        public_key_bytes = _b64url_decode(entry.get("public_key"), code="public_key_encoding_invalid")
-        signature_bytes = _b64url_decode(signature.get("signature"), code="signature_encoding_invalid")
+        public_key_bytes = _b64url_decode(
+            entry.get("public_key"), code="public_key_encoding_invalid"
+        )
+        signature_bytes = _b64url_decode(
+            signature.get("signature"), code="signature_encoding_invalid"
+        )
         if len(public_key_bytes) != 32:
             raise ValueError("public_key_encoding_invalid")
         if len(signature_bytes) != 64:
@@ -455,7 +533,9 @@ def verify_dagr_authority_context_producer_receipt(
         preimage = copy.deepcopy(receipt)
         del preimage["receipt_signature"]["signature"]
         canonical = rfc8785.dumps(preimage)
-        Ed25519PublicKey.from_public_bytes(public_key_bytes).verify(signature_bytes, canonical)
+        Ed25519PublicKey.from_public_bytes(public_key_bytes).verify(
+            signature_bytes, canonical
+        )
         report.signature_valid = True
     except InvalidSignature:
         report.failure_codes.append("signature_invalid")
@@ -469,7 +549,9 @@ def verify_dagr_authority_context_producer_receipt(
         trusted = (
             entry.get("trusted") is True
             and entry.get("issuer_id") == receipt.get("issuer_id")
-            and _parse_time(entry["not_before"]) <= issued_at <= _parse_time(entry["not_after"])
+            and _parse_time(entry["not_before"])
+            <= issued_at
+            <= _parse_time(entry["not_after"])
         )
     except Exception:
         trusted = False
