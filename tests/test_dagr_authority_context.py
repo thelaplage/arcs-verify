@@ -14,7 +14,7 @@ from arcs_verify.dagr_authority_context import (
 
 
 EXPECTED_CONTEXT_DIGEST = (
-    "sha256:97e7190380ad0bed99166b45845e47b76c0646e0e38513038010449a59bbf922"
+    "sha256:3c09cff6da82d296a07d2e748468ec33e552f1e75178ceebe1af6b563bfadc3e"
 )
 
 
@@ -24,10 +24,7 @@ def _json_bytes(value: object) -> bytes:
 
 def _stable_payload_hash(value: object) -> str:
     payload = json.dumps(
-        value,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=False,
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
     ).encode("utf-8")
     return "sha256:" + hashlib.sha256(payload).hexdigest()
 
@@ -35,7 +32,7 @@ def _stable_payload_hash(value: object) -> str:
 def _context_digest(value: dict) -> str:
     provenance = value["authority_provenance"]
     preimage = (
-        "DAGR-RESOLVED-AUTHORITY-CONTEXT-CANDIDATE-V0.1\n"
+        "DAGR-RESOLVED-AUTHORITY-CONTEXT-V0.1\n"
         f"schema={value['schema']}\n"
         f"domain={value['domain']}\n"
         f"transaction_id={value['transaction_id']}\n"
@@ -103,7 +100,7 @@ def _context() -> dict:
         "domain": "action",
         "operator_identity_ref": "operator:thelaplage",
         "review_roles": ["approver", "auditor"],
-        "schema": "dagr.resolved-authority-context-candidate/v0.1",
+        "schema": "dagr.resolved-authority-context/v0.1",
         "transaction_digest": (
             "sha256:2c307edb0f07dc837d9b845392d3247167ecf82a09ff611aeaea2d9ba55d6877"
         ),
@@ -118,7 +115,7 @@ def _verify(context: dict | None = None, genesis: dict | None = None):
     )
 
 
-def test_representative_candidate_and_governed_genesis_pass_narrowly() -> None:
+def test_representative_canonical_context_and_governed_genesis_pass_narrowly() -> None:
     assert _context_digest(_context()) == EXPECTED_CONTEXT_DIGEST
     assert _stable_payload_hash(
         {key: value for key, value in _genesis().items() if key != "genesis_digest"}
@@ -142,7 +139,7 @@ def test_representative_candidate_and_governed_genesis_pass_narrowly() -> None:
 
     projection = report.to_dict()
     assert projection["producer_authorship"] == "not_evaluated"
-    assert projection["ratification_status"] == "not_evaluated"
+    assert projection["ratification_status"] == "canonical_upstream"
     assert projection["action_permission"] == "not_evaluated"
     assert projection["countervail_authorization"] == "not_evaluated"
     assert projection["execution"] == "not_evaluated"
@@ -151,7 +148,6 @@ def test_representative_candidate_and_governed_genesis_pass_narrowly() -> None:
 def test_mutated_genesis_with_stale_digest_fails() -> None:
     genesis = _genesis()
     genesis["operator_identity_ref"] = "operator:attacker"
-
     report = _verify(genesis=genesis)
     assert report.passed is False
     assert report.genesis_digest is False
@@ -185,7 +181,6 @@ def test_context_operator_mismatch_fails_even_with_fresh_context_digest() -> Non
     context = _context()
     context["operator_identity_ref"] = "operator:other"
     context["authority_context_digest"] = _context_digest(context)
-
     report = _verify(context=context)
     assert report.context_digest is True
     assert report.genesis_pin is True
@@ -199,7 +194,6 @@ def test_context_profile_and_review_roles_cannot_switch_source() -> None:
     context["authority_profile_ref"] = "editor"
     context["review_roles"] = ["auditor"]
     context["authority_context_digest"] = _context_digest(context)
-
     report = _verify(context=context)
     assert report.context_schema is True
     assert report.context_digest is True
@@ -210,11 +204,8 @@ def test_context_profile_and_review_roles_cannot_switch_source() -> None:
 
 def test_schema_valid_provenance_ref_mutation_fails_relation() -> None:
     context = _context()
-    context["authority_provenance"]["supporting_review_ref"] = (
-        "github:thelaplage/dagr-runtime#999"
-    )
+    context["authority_provenance"]["supporting_review_ref"] = "github:thelaplage/dagr-runtime#999"
     context["authority_context_digest"] = _context_digest(context)
-
     report = _verify(context=context)
     assert report.context_schema is True
     assert report.context_digest is True
@@ -227,7 +218,6 @@ def test_context_review_role_drift_is_rejected_by_pinned_schema() -> None:
     context = _context()
     context["review_roles"] = ["auditor"]
     context["authority_context_digest"] = _context_digest(context)
-
     report = _verify(context=context)
     assert report.context_schema is False
     assert report.context_digest is False
@@ -252,10 +242,9 @@ def test_secret_or_unknown_fields_never_validate() -> None:
 
 def test_duplicate_json_keys_are_rejected_before_semantic_verification() -> None:
     context_bytes = _json_bytes(_context())
-    duplicated = context_bytes[:-1] + b',"schema":"dagr.resolved-authority-context-candidate/v0.1"}'
+    duplicated = context_bytes[:-1] + b',"schema":"dagr.resolved-authority-context/v0.1"}'
     report = verify_dagr_authority_context_same_genesis(
-        context_bytes=duplicated,
-        genesis_bytes=_json_bytes(_genesis()),
+        context_bytes=duplicated, genesis_bytes=_json_bytes(_genesis())
     )
     assert report.passed is False
     assert "context.duplicate_key:schema" in report.failure_codes
