@@ -1,15 +1,14 @@
 """Independent DAGR ResolvedAuthorityContext same-genesis verifier.
 
 This module consumes serialized bytes only. It deliberately imports no
-``dagr_runtime`` or ``dagr_sdk`` producer implementation. The candidate contract
+``dagr_runtime`` or ``dagr_sdk`` producer implementation. The canonical contract
 is pinned by exact bytes and the producer algorithms needed for independent
 recomputation are reimplemented here from reviewed public contract/source bytes.
 
-A PASS means only that the supplied candidate context is structurally/integrity
-valid and is independently shown to bind the same exact governed operator-
-authority genesis bytes. It does not establish producer authorship, DAGR
-ratification, action permission, Countervail authorization, execution, policy
-correctness, or truth.
+A PASS means only that the supplied canonical context is structurally/integrity
+valid and is independently shown to bind the same governed operator-authority
+genesis content. It does not establish producer authorship, action permission,
+Countervail authorization, execution, policy correctness, or truth.
 """
 
 from __future__ import annotations
@@ -23,12 +22,12 @@ from typing import Any, Mapping
 from jsonschema import Draft202012Validator, FormatChecker
 
 
-CONTEXT_SCHEMA_ID = "dagr.resolved-authority-context-candidate/v0.1"
-CONTEXT_SCHEMA_SOURCE_HEAD = "3af8c8231ff1135bb9837eb5ccf24cbc55ac65b5"
+CONTEXT_SCHEMA_ID = "dagr.resolved-authority-context/v0.1"
+CONTEXT_SCHEMA_SOURCE_HEAD = "1a12726fb203c1c332e66ed2a68a189fdcca36cf"
 CONTEXT_SCHEMA_SHA256 = (
-    "sha256:0467b3bef718fb386b0d30cce871f8b0c1e71342c012b688e9de0f6f04874892"
+    "sha256:d80ed87823fb32c9d1cd9bded11c4c76f8532700203662cef691cd2dbf6f2935"
 )
-RUNTIME_SOURCE_HEAD = "6d5f16e3fa3ac32cf4ecaa7856b9df46966e65d8"
+RUNTIME_SOURCE_HEAD = "ca654d74992c507cd4685e74e24064e879020c7d"
 DAGR_SDK_PIN = "90594775489645a08f6061ad066c761b75572235"
 GENESIS_SCHEMA = "dagr.operator-authority-genesis/v0.1"
 GENESIS_ID = "dagr-merit-operator-authority-v0.1"
@@ -99,7 +98,7 @@ class DagrAuthorityContextVerificationReport:
                 "runtime_source_head": RUNTIME_SOURCE_HEAD,
                 "dagr_sdk_pin": DAGR_SDK_PIN,
                 "pinned_genesis_digest": PINNED_GENESIS_DIGEST,
-                "ratification_status": "not_evaluated",
+                "ratification_status": "canonical_upstream",
                 "producer_authorship": "not_evaluated",
                 "action_permission": "not_evaluated",
                 "countervail_authorization": "not_evaluated",
@@ -141,13 +140,6 @@ def _strict_json_loads(value: bytes, *, label: str) -> Any:
 
 
 def _stable_payload_hash(payload: Any) -> str:
-    """Independent reimplementation of dagr-sdk stable_payload_hash for JSON data.
-
-    The reviewed runtime pin uses sorted keys, compact separators, UTF-8, and
-    ensure_ascii=False before SHA-256. Inputs here are parsed JSON values, so the
-    producer helper's non-JSON fallback path is intentionally irrelevant.
-    """
-
     payload_bytes = json.dumps(
         payload,
         sort_keys=True,
@@ -160,7 +152,7 @@ def _stable_payload_hash(payload: Any) -> str:
 def _compute_context_digest(context: Mapping[str, Any]) -> str:
     provenance = context["authority_provenance"]
     preimage = (
-        "DAGR-RESOLVED-AUTHORITY-CONTEXT-CANDIDATE-V0.1\n"
+        "DAGR-RESOLVED-AUTHORITY-CONTEXT-V0.1\n"
         f"schema={context['schema']}\n"
         f"domain={context['domain']}\n"
         f"transaction_id={context['transaction_id']}\n"
@@ -233,7 +225,7 @@ def verify_dagr_authority_context_same_genesis(
     genesis_bytes: bytes,
     context_schema_bytes: bytes | None = None,
 ) -> DagrAuthorityContextVerificationReport:
-    """Verify candidate context integrity and same-genesis binding from bytes.
+    """Verify canonical context integrity and same-genesis binding from bytes.
 
     ``producer_authorship`` is deliberately outside this function's claim surface.
     A signed SRS/trust path is a separate verification axis.
@@ -243,7 +235,7 @@ def verify_dagr_authority_context_same_genesis(
 
     if context_schema_bytes is None:
         context_schema_bytes = files("arcs_verify").joinpath(
-            "data/dagr-resolved-authority-context-candidate-3af8c823.schema.json"
+            "data/dagr-resolved-authority-context-1a12726f.schema.json"
         ).read_bytes()
 
     report.context_schema_digest = _sha256_bytes(context_schema_bytes) == CONTEXT_SCHEMA_SHA256
@@ -274,7 +266,7 @@ def verify_dagr_authority_context_same_genesis(
             Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(context),
             key=lambda error: list(error.absolute_path),
         )
-    except Exception as exc:  # invalid pinned schema is a verifier failure, never PASS
+    except Exception as exc:
         report.failure_codes.append("context_schema.validator_error")
         report.details.append(type(exc).__name__)
         return _dedupe(report)
