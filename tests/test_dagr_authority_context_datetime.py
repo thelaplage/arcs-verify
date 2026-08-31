@@ -41,7 +41,7 @@ def _genesis() -> dict:
 def _context(effective_from: str) -> dict:
     return {
         "authority_context_digest": (
-            "sha256:97e7190380ad0bed99166b45845e47b76c0646e0e38513038010449a59bbf922"
+            "sha256:3c09cff6da82d296a07d2e748468ec33e552f1e75178ceebe1af6b563bfadc3e"
         ),
         "authority_profile_ref": "approver",
         "authority_provenance": {
@@ -59,7 +59,7 @@ def _context(effective_from: str) -> dict:
         "domain": "action",
         "operator_identity_ref": "operator:thelaplage",
         "review_roles": ["approver", "auditor"],
-        "schema": "dagr.resolved-authority-context-candidate/v0.1",
+        "schema": "dagr.resolved-authority-context/v0.1",
         "transaction_digest": (
             "sha256:2c307edb0f07dc837d9b845392d3247167ecf82a09ff611aeaea2d9ba55d6877"
         ),
