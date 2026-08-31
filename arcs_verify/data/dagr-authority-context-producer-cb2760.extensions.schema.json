@@ -16,18 +16,44 @@
     "dagr.authority_context_producer.producer_implementation_ref"
   ],
   "properties": {
-    "dagr.authority_context_producer.context_schema": {"const": "dagr.resolved-authority-context/v0.1"},
-    "dagr.authority_context_producer.context_digest": {"$ref": "#/$defs/digest"},
-    "dagr.authority_context_producer.artifact_sha256": {"$ref": "#/$defs/digest"},
-    "dagr.authority_context_producer.artifact_media_type": {"const": "application/json"},
-    "dagr.authority_context_producer.transaction_id": {"$ref": "#/$defs/id"},
-    "dagr.authority_context_producer.transaction_digest": {"$ref": "#/$defs/digest"},
-    "dagr.authority_context_producer.genesis_id": {"const": "dagr-merit-operator-authority-v0.1"},
-    "dagr.authority_context_producer.genesis_digest": {"$ref": "#/$defs/digest"},
-    "dagr.authority_context_producer.producer_implementation_ref": {"const": "github:thelaplage/dagr-runtime@14ed91604506b015f34c39e6dffb25ccdfc0b10c"}
+    "dagr.authority_context_producer.context_schema": {
+      "const": "dagr.resolved-authority-context/v0.1"
+    },
+    "dagr.authority_context_producer.context_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "dagr.authority_context_producer.artifact_sha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "dagr.authority_context_producer.artifact_media_type": {
+      "const": "application/json"
+    },
+    "dagr.authority_context_producer.transaction_id": {
+      "$ref": "#/$defs/id"
+    },
+    "dagr.authority_context_producer.transaction_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "dagr.authority_context_producer.genesis_id": {
+      "const": "dagr-merit-operator-authority-v0.1"
+    },
+    "dagr.authority_context_producer.genesis_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "dagr.authority_context_producer.producer_implementation_ref": {
+      "const": "github:thelaplage/dagr-runtime@14ed91604506b015f34c39e6dffb25ccdfc0b10c"
+    }
   },
   "$defs": {
-    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
-    "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"}
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    }
   }
 }
