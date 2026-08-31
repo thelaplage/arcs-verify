@@ -1,0 +1,33 @@
+{
+  "schema": "srs.external-profile-declaration/v0.1",
+  "profile_id": "dagr.authority_context_producer.v1",
+  "profile_version": "v1.0",
+  "publisher_ref": "github:thelaplage/dagr-spec",
+  "compatible_envelopes": [
+    {
+      "published_version": "0.2.1",
+      "sha256": "2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+    }
+  ],
+  "permitted_receipt_types": [
+    "provenance"
+  ],
+  "receipt_type_classifications": [
+    {
+      "receipt_type": "provenance",
+      "receipt_class": "provenance",
+      "receipt_kind": "authority_context_producer"
+    }
+  ],
+  "extension_namespace": "dagr.authority_context_producer",
+  "raw_content_posture": "hash_only",
+  "signing_required": true,
+  "attestation_limits_required": true,
+  "external_contract_refs": [
+    "github:thelaplage/dagr-spec@1a12726fb203c1c332e66ed2a68a189fdcca36cf:spec/action/RESOLVED_AUTHORITY_CONTEXT_CONTRACT_v0_1.md",
+    "github:thelaplage/arcs-srs@e4878869226cbcfcc1f37bae54f52cb0ba0b72b2:docs/profiles/SRS_EXTERNAL_PROFILE_CONTRACT_v0_1.md"
+  ],
+  "unknown_profile_behavior": "preserve_identity_and_do_not_infer",
+  "conformance_vectors_ref": "vectors/authority-context-srs-profile0.v1.json",
+  "migration_ref": null
+}
