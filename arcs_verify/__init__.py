@@ -18,6 +18,9 @@ from .cg_execution_replay import (
     CGExecutionReplayReport,
     verify_cg_execution_packet,
 )
+from .dagr_authority_context_producer_landed import (
+    verify_dagr_authority_context_producer_receipt,
+)
 
 __all__ = [
     # Core verifier
@@ -37,5 +40,7 @@ __all__ = [
     # CG-REPLAY0 (EXECUTION-BINDING0 Lane 4)
     "CGExecutionReplayReport",
     "verify_cg_execution_packet",
+    # DAGR authority-context producer authorship (landed emitter surface)
+    "verify_dagr_authority_context_producer_receipt",
 ]
 __version__ = "0.1.1"
