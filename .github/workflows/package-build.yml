@@ -20,6 +20,10 @@ jobs:
           python-version: '3.11'
       - name: Install build tooling
         run: python -m pip install --upgrade pip build twine
+      - name: Full test suite for exact #81 code bytes
+        run: |
+          python -m pip install -e ".[dev]"
+          pytest -q
       - name: Build wheel and sdist
         run: python -m build --sdist --wheel --outdir dist
       - name: Check metadata
