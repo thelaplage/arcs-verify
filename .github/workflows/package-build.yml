@@ -20,6 +20,10 @@ jobs:
           python-version: '3.11'
       - name: Install build tooling
         run: python -m pip install --upgrade pip build twine
+      - name: Full test suite for baseline code bytes
+        run: |
+          python -m pip install -e ".[dev]"
+          pytest -q
       - name: Build wheel and sdist
         run: python -m build --sdist --wheel --outdir dist
       - name: Check metadata
@@ -34,12 +38,6 @@ jobs:
           /tmp/smoke/bin/arcs-verify --help
           /tmp/smoke/bin/python -c "import importlib.metadata as m; print('arcs-verify', m.version('arcs-verify'))"
       - name: Installed-package DAGR report contract smoke
-        # Regression guard: the DAGR report/execution-record contract files
-        # are runtime package data, not just sdist-grafted files. This
-        # exercises validate_verification_report/validate_verification_execution_record
-        # and the dagr-report CLI path from the wheel install alone (cwd is
-        # outside the checkout so nothing falls back to the source tree),
-        # using only the golden fixtures the wheel itself ships.
         working-directory: /tmp
         run: |
           RECEIPT=$(/tmp/smoke/bin/python -c "from arcs_verify import dagr_report as dr; print(dr._CONTRACT_ROOT / 'golden' / 'admission-receipt.json')")
