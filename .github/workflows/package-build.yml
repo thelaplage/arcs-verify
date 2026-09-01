@@ -1,9 +1,8 @@
 name: package-build
 
-# Non-publishing packaging guard: builds the wheel and sdist, validates the
-# metadata, installs the wheel in a clean environment, and runs the minimum
-# installed-command smoke. It never publishes: no index upload, no release, no
-# tag, and no OIDC (`id-token: write`) permission is requested.
+# VERIFY-ONLY child of DAGR-AUTHORSHIP-VERIFY1 exact code head.
+# This branch is never for landing; the only delta from the reviewed code head
+# is the two pytest steps below so hosted execution can exercise the full suite.
 
 on: [push, pull_request]
 
@@ -34,12 +33,6 @@ jobs:
           /tmp/smoke/bin/arcs-verify --help
           /tmp/smoke/bin/python -c "import importlib.metadata as m; print('arcs-verify', m.version('arcs-verify'))"
       - name: Installed-package DAGR report contract smoke
-        # Regression guard: the DAGR report/execution-record contract files
-        # are runtime package data, not just sdist-grafted files. This
-        # exercises validate_verification_report/validate_verification_execution_record
-        # and the dagr-report CLI path from the wheel install alone (cwd is
-        # outside the checkout so nothing falls back to the source tree),
-        # using only the golden fixtures the wheel itself ships.
         working-directory: /tmp
         run: |
           RECEIPT=$(/tmp/smoke/bin/python -c "from arcs_verify import dagr_report as dr; print(dr._CONTRACT_ROOT / 'golden' / 'admission-receipt.json')")
@@ -57,3 +50,7 @@ jobs:
             --verifier-commit "$GITHUB_SHA" \
             --execution-id exec:package-build-smoke:0001 \
             --executed-at "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      - name: Install repository dev/test dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: VERIFY ONLY — full pytest
+        run: pytest -q
