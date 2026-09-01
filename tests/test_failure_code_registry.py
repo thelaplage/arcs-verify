@@ -52,6 +52,8 @@ MODULES = [
     "arcs_verify/okf_attested_computation.py",
     # SRS-VNEXT-VERIFY0 — independent vNext external-profile verification
     "arcs_verify/external_profile.py",
+    # DAGR-AUTHORSHIP-VERIFY0 — trust-relative producer-authorship receipt verifier
+    "arcs_verify/dagr_authority_context_producer.py",
 ]
 
 # Signatures that mark a module as one that emits verifier failure codes. The
