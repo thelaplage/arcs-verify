@@ -58,3 +58,37 @@ established signed-SRS verifier and remain documented in `FAILURE_CODES.md`.
 | Code | Meaning |
 |---|---|
 | `profile.required_signature_invalid` | The profile declares `signing_required=true` and the receipt signature did not verify. |
+
+## DAGR authority-context producer-authorship verifier
+
+These codes belong to the independent `dagr_authority_context_producer` verifier.
+A failure means the narrow producer-authorship axis was not established. None of
+these codes establishes or denies same-genesis authority, action permission,
+Countervail authorization, execution, receiver custody, or truth.
+
+| Code | Meaning |
+|---|---|
+| `artifact.digest_mismatch` | The receipt's artifact SHA-256 does not match the exact supplied serialized authority-context bytes. |
+| `artifact.projection_mismatch` | One or more signed DAGR context/transaction/genesis projection fields do not exactly match the supplied canonical context artifact. |
+| `attestation.exact_surface_mismatch` | Covered classes, excluded classes, or attestation limits differ from the exact ratified producer profile surface. |
+| `context.digest_mismatch` | Recomputed canonical authority-context semantic digest differs from the digest carried by the artifact. |
+| `context.schema_invalid` | The supplied authority-context artifact fails the independently pinned canonical context schema. |
+| `extensions.schema_invalid` | The receipt's DAGR producer extension object fails the independently pinned ratified extension schema. |
+| `profile.attestation_limits_not_required` | The pinned profile does not require attestation limits as expected by this verifier. |
+| `profile.classification_mismatch` | The pinned profile's receipt type/class/kind classification differs from the ratified producer profile. |
+| `profile.envelope_pin_mismatch` | The pinned profile does not bind exactly the expected SRS envelope publication and digest. |
+| `profile.extension_namespace_mismatch` | The pinned profile extension namespace differs from `dagr.authority_context_producer`. |
+| `profile.id_mismatch` | The pinned profile id differs from `dagr.authority_context_producer.v1`. |
+| `profile.raw_content_posture_mismatch` | The pinned profile does not require the expected hash-only raw-content posture. |
+| `profile.receipt_type_set_mismatch` | The pinned profile's permitted receipt-type set differs from the exact ratified set. |
+| `profile.signing_not_required` | The pinned profile does not require signing. |
+| `profile.top_level_surface_mismatch` | The signed receipt contains a missing or extra top-level field relative to the exact producer profile surface. |
+| `profile.version_mismatch` | The pinned profile version differs from `v1.0`. |
+| `receipt.subject_ref_invalid` | Receipt `subject_ref` is missing, empty, or not a string. |
+| `schema.not_object` | A supplied schema object needed for independent validation parsed to a non-object value. |
+
+Dynamic families emitted by the same verifier are:
+
+- `context_digest_recompute:` followed by the exception type when semantic-digest recomputation cannot be completed;
+- `profile.prohibited_claim_key:` followed by the prohibited signed claim key found in the receipt;
+- `schema.validator_error:` followed by the validator exception type when independent schema validation itself cannot be completed.
