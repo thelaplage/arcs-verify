@@ -83,6 +83,12 @@ def _sha256(data: bytes) -> str:
     return "sha256:" + hashlib.sha256(data).hexdigest()
 
 
+def _receipt_leaf_hex(statement_bytes: bytes) -> str:
+    """RFC9162/SCITT leaf entry: SHA-256 of complete Signed Statement bytes."""
+
+    return hashlib.sha256(statement_bytes).hexdigest()
+
+
 def _failure_code_from_result(result: Any, default: str) -> str:
     for name in ("error", "reason", "failure_reason", "failure_code"):
         value = getattr(result, name, None)
@@ -111,10 +117,10 @@ def verify_scitt(
     separate surface until evaluated explicitly.
 
     The receipt path intentionally delegates COSE/VDS verification to the
-    neutral ``scitt-cose`` substrate. The leaf entry is the exact serialized
-    Signed Statement supplied to this function; callers presenting a
-    Transparent Statement must first supply the original registered Signed
-    Statement bytes.
+    neutral ``scitt-cose`` substrate. For the RFC9162_SHA256 profile used by
+    the supported corpus, the leaf entry is SHA-256 of the complete serialized
+    Signed Statement bytes. Callers presenting a Transparent Statement must
+    first supply the original registered Signed Statement bytes.
     """
 
     failures: list[str] = []
@@ -158,7 +164,7 @@ def verify_scitt(
             try:
                 result = verify_receipt(
                     receipt_bytes,
-                    leaf_entry_hex=statement_bytes.hex(),
+                    leaf_entry_hex=_receipt_leaf_hex(statement_bytes),
                     log_public_key_pem=transparency_service_public_key_pem,
                 )
                 receipt_valid = bool(result.ok)
