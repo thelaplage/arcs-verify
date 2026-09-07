@@ -39,7 +39,7 @@ def test_valid_statement_without_receipt_keeps_receipt_not_evaluated() -> None:
     report = verify_scitt(statement, statement_public_key_pem=issuer_public)
 
     assert report.statement_signature_valid is True
-    assert report.statement_required_headers_valid is True
+    assert report.statement_required_cwt_claims_valid is True
     assert report.receipt_evaluated is False
     assert report.receipt_verification_valid == NOT_EVALUATED
     assert report.passed is True
@@ -65,6 +65,7 @@ def test_valid_statement_and_receipt_pass_the_in_scope_checks() -> None:
     )
 
     assert report.statement_signature_valid is True
+    assert report.statement_required_cwt_claims_valid is True
     assert report.receipt_evaluated is True
     assert report.receipt_verification_valid is True
     assert report.passed is True
@@ -151,5 +152,6 @@ def test_reserved_conclusions_never_promote_from_valid_transparency() -> None:
     ).to_dict()
 
     assert data["passed"] is True
+    assert data["statement"]["required_cwt_claims_valid"] is True
     assert set(data["reserved_conclusions"].values()) == {"not_evaluated"}
     assert "verified" not in data
