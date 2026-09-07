@@ -19,7 +19,7 @@ class ScittVerificationReport:
     """Independent SCITT verification findings over serialized artifacts.
 
     This report deliberately does not collapse transparency verification into
-    truth, admission, support, execution, or corpus standing.  ``passed`` is
+    truth, admission, support, execution, or corpus standing. ``passed`` is
     only the conjunction of the verification checks that were actually in
     scope for this invocation.
     """
@@ -27,7 +27,7 @@ class ScittVerificationReport:
     statement_digest: str
     receipt_digest: str | None
     statement_signature_valid: bool
-    statement_required_headers_valid: bool
+    statement_required_cwt_claims_valid: bool
     receipt_evaluated: bool
     receipt_verification_valid: bool | Literal["not_evaluated"]
     statement_issuer: str | None
@@ -40,7 +40,7 @@ class ScittVerificationReport:
     def passed(self) -> bool:
         return (
             self.statement_signature_valid
-            and self.statement_required_headers_valid
+            and self.statement_required_cwt_claims_valid
             and (
                 self.receipt_verification_valid is True
                 if self.receipt_evaluated
@@ -57,7 +57,7 @@ class ScittVerificationReport:
             },
             "statement": {
                 "signature_valid": self.statement_signature_valid,
-                "required_headers_valid": self.statement_required_headers_valid,
+                "required_cwt_claims_valid": self.statement_required_cwt_claims_valid,
                 "issuer": self.statement_issuer,
                 "subject": self.statement_subject,
                 "content_type": self.statement_content_type,
@@ -100,16 +100,21 @@ def verify_scitt(
 ) -> ScittVerificationReport:
     """Verify a SCITT Signed Statement and, optionally, its COSE Receipt.
 
-    Verification is hermetic: every byte and key is caller-supplied.  No key
+    Verification is hermetic: every byte and key is caller-supplied. No key
     discovery, network access, registration, policy evaluation, or producer
     import occurs here.
 
+    The statement path checks the signature and the authenticated presence of
+    the SCITT-required CWT ``iss`` and ``sub`` claims exposed by the neutral
+    substrate. It deliberately does not call that a complete protected-header
+    conformance check: key-identification/header-policy requirements are a
+    separate surface until evaluated explicitly.
+
     The receipt path intentionally delegates COSE/VDS verification to the
-    neutral ``scitt-cose`` substrate.  The leaf entry is the exact serialized
+    neutral ``scitt-cose`` substrate. The leaf entry is the exact serialized
     Signed Statement supplied to this function; callers presenting a
     Transparent Statement must first supply the original registered Signed
-    Statement bytes (SCITT registration requires an empty unprotected header
-    before insertion into the statement sequence).
+    Statement bytes.
     """
 
     failures: list[str] = []
@@ -131,15 +136,15 @@ def verify_scitt(
     subject = parsed.get("subject") if signature_valid else None
     content_type = parsed.get("content_type") if signature_valid else None
     alg = parsed.get("alg") if signature_valid else None
-    required_headers_valid = (
+    required_cwt_claims_valid = (
         signature_valid
         and isinstance(issuer, str)
         and bool(issuer)
         and isinstance(subject, str)
         and bool(subject)
     )
-    if signature_valid and not required_headers_valid:
-        failures.append("statement.required_headers_invalid")
+    if signature_valid and not required_cwt_claims_valid:
+        failures.append("statement.required_cwt_claims_invalid")
 
     receipt_evaluated = receipt_bytes is not None
     receipt_digest = _sha256(receipt_bytes) if receipt_bytes is not None else None
@@ -169,7 +174,7 @@ def verify_scitt(
         statement_digest=_sha256(statement_bytes),
         receipt_digest=receipt_digest,
         statement_signature_valid=signature_valid,
-        statement_required_headers_valid=required_headers_valid,
+        statement_required_cwt_claims_valid=required_cwt_claims_valid,
         receipt_evaluated=receipt_evaluated,
         receipt_verification_valid=receipt_valid,
         statement_issuer=issuer,
@@ -265,8 +270,8 @@ def main(argv: list[str] | None = None) -> int:
             + ("PASS" if report.statement_signature_valid else "FAIL")
         )
         print(
-            "statement_required_headers_valid: "
-            + ("PASS" if report.statement_required_headers_valid else "FAIL")
+            "statement_required_cwt_claims_valid: "
+            + ("PASS" if report.statement_required_cwt_claims_valid else "FAIL")
         )
         if report.receipt_evaluated:
             print(
