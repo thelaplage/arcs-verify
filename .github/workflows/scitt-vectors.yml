@@ -1,0 +1,33 @@
+name: scitt-vectors
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  cross-implementation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ARCS Verify vector lane
+        uses: actions/checkout@v4
+        with:
+          path: arcs-verify
+      - name: Checkout exact IETF SCITT examples vector commit
+        uses: actions/checkout@v4
+        with:
+          repository: ietf-wg-scitt/examples
+          ref: 727ee03d86fa2c2ca8c534584b870235a1b252df
+          path: scitt-examples
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Assert exact external checkout pin
+        run: |
+          test "$(git -C scitt-examples rev-parse HEAD)" = "727ee03d86fa2c2ca8c534584b870235a1b252df"
+      - name: Install verifier lane
+        run: python -m pip install --upgrade pip && python -m pip install -e './arcs-verify[dev]'
+      - name: Run checksum-pinned cross-implementation vectors
+        run: |
+          cd arcs-verify
+          python tools/check_scitt_external_vectors.py ../scitt-examples/test-vectors/scitt-cose
