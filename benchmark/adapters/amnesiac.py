@@ -35,7 +35,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from runner import BenchmarkCase, EpistemicSUTAdapter, SUTResponse
+from runner import BenchmarkCase, EpistemicSUTAdapter, SUTResponse, normalize_disposition
 
 
 class AmnesiacAdapter(EpistemicSUTAdapter):
@@ -169,9 +169,11 @@ class AmnesiacAdapter(EpistemicSUTAdapter):
           - memory_receipt (dict | null): Amnesiac's SRS receipt for this query
         """
         stated = raw.get("stated_conclusion", "")
-        disposition = raw.get("disposition", "admitted")
-        if disposition not in ("admitted", "refused", "deferred_for_review"):
-            disposition = "admitted"
+        # A missing/unknown/non-string disposition is INVALID for scoring —
+        # it must never be coerced into "admitted" (or any other valid
+        # state). See runner.normalize_disposition for the single source of
+        # truth on disposition validity.
+        disposition = normalize_disposition(raw.get("disposition"))
         uncertainty = raw.get("uncertainty_declared", False)
 
         # Amnesiac-specific: if staleness detected, force uncertainty

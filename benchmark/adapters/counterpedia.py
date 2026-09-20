@@ -38,7 +38,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from runner import BenchmarkCase, EpistemicSUTAdapter, SUTResponse
+from runner import BenchmarkCase, EpistemicSUTAdapter, SUTResponse, normalize_disposition
 
 
 class CounterpediaAdapter(EpistemicSUTAdapter):
@@ -143,9 +143,12 @@ class CounterpediaAdapter(EpistemicSUTAdapter):
         try:
             return json.loads(proc.stdout)
         except json.JSONDecodeError:
+            # Malformed (non-JSON) CLI output carries no disposition at all —
+            # do NOT invent one. Omit the key so _parse_response's
+            # normalize_disposition call reports it as invalid rather than
+            # silently treating unparseable output as "admitted".
             return {
                 "stated_conclusion": proc.stdout,
-                "disposition": "admitted",
                 "uncertainty_declared": False,
             }
 
@@ -180,9 +183,11 @@ class CounterpediaAdapter(EpistemicSUTAdapter):
           - srs_receipt (dict | null): the ARCS SRS receipt if available
         """
         stated = raw.get("stated_conclusion", "")
-        disposition = raw.get("disposition", "admitted")
-        if disposition not in ("admitted", "refused", "deferred_for_review"):
-            disposition = "admitted"
+        # A missing/unknown/non-string disposition is INVALID for scoring —
+        # it must never be coerced into "admitted" (or any other valid
+        # state). See runner.normalize_disposition for the single source of
+        # truth on disposition validity.
+        disposition = normalize_disposition(raw.get("disposition"))
         uncertainty = raw.get("uncertainty_declared", False)
         trace = raw.get("reasoning_trace", None)
         receipt = raw.get("srs_receipt", None)
