@@ -55,7 +55,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from runner import BenchmarkCase, EpistemicSUTAdapter, SUTResponse
+from runner import BenchmarkCase, EpistemicSUTAdapter, SUTResponse, normalize_disposition
 
 
 # ---------------------------------------------------------------------------
@@ -191,18 +191,20 @@ class RAGSystemAdapter(EpistemicSUTAdapter):
         text: str = raw.get("text", "")
         lines = [line.strip() for line in text.strip().splitlines() if line.strip()]
 
-        disposition = "admitted"
+        # A missing/unknown/malformed DISPOSITION line is INVALID for
+        # scoring — it must never be coerced into "admitted" (or any other
+        # valid state). See runner.normalize_disposition for the single
+        # source of truth on disposition validity. `raw_disposition` stays
+        # None if the model never emits a DISPOSITION line at all, which
+        # normalize_disposition also treats as invalid.
+        raw_disposition: Any = None
         uncertainty_declared = False
         conclusion_lines: list[str] = []
 
         for line in lines:
             lower = line.lower()
             if lower.startswith("disposition:"):
-                val = lower.split(":", 1)[1].strip()
-                if val in ("refused", "deferred_for_review"):
-                    disposition = val
-                else:
-                    disposition = "admitted"
+                raw_disposition = lower.split(":", 1)[1].strip()
             elif lower.startswith("uncertainty:"):
                 val = lower.split(":", 1)[1].strip()
                 uncertainty_declared = val in ("yes", "true", "1")
@@ -210,6 +212,7 @@ class RAGSystemAdapter(EpistemicSUTAdapter):
                 conclusion_lines.append(line)
 
         stated_conclusion = " ".join(conclusion_lines).strip() or text.strip()
+        disposition = normalize_disposition(raw_disposition)
 
         return SUTResponse(
             case_id=case_id,

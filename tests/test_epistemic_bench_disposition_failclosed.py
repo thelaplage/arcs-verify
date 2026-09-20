@@ -2,7 +2,7 @@
 EPISTEMIC-BENCH-DISPOSITION-FAILCLOSED0
 ========================================
 Hostile regression tests for the disposition-scoring fail-open defect in
-benchmark/adapters/{amnesiac,counterpedia}.py and benchmark/runner.py.
+benchmark/adapters/{amnesiac,counterpedia,rag_system}.py and benchmark/runner.py.
 
 Contract under test (owner ruling):
     missing disposition / unknown disposition / non-string disposition
@@ -39,6 +39,26 @@ from runner import (  # noqa: E402
 sys.path.insert(0, str(BENCHMARK_ROOT / "adapters"))
 from amnesiac import AmnesiacAdapter  # noqa: E402
 from counterpedia import CounterpediaAdapter  # noqa: E402
+from rag_system import RAGSystemAdapter  # noqa: E402
+
+
+class _ConcreteRAGAdapter(RAGSystemAdapter):
+    """Minimal concrete subclass — only implements the two abstractmethods
+    required to instantiate; tests below call _parse_generation directly."""
+
+    @property
+    def name(self) -> str:
+        return "TestRAG"
+
+    @property
+    def version(self) -> str:
+        return "0.0.1"
+
+    def _retrieve(self, query: str, top_k: int = 5) -> list[str]:
+        return []
+
+    def _generate(self, prompt: str) -> dict:
+        return {"text": ""}
 
 
 def _case(disposition_expected: str) -> BenchmarkCase:
@@ -275,3 +295,55 @@ def test_counterpedia_call_cli_malformed_json_stdout_end_to_end(monkeypatch):
     response = adapter._parse_response("eb-999", raw)
     assert response.disposition != "admitted"
     assert response.disposition == INVALID_DISPOSITION
+
+
+def test_rag_adapter_missing_disposition_line_is_invalid_not_admitted():
+    """No DISPOSITION line at all in the generation text — the pre-fix
+    behavior defaulted this to "admitted"."""
+    adapter = _ConcreteRAGAdapter()
+    raw = {"text": "The evidence does not clearly support the claim."}
+    response = adapter._parse_generation("eb-999", raw, retrieved_chunks=[])
+    assert response.disposition != "admitted"
+    assert response.disposition == INVALID_DISPOSITION
+
+
+def test_rag_adapter_malformed_disposition_value_is_invalid_not_admitted():
+    """DISPOSITION: banana — the pre-fix behavior also defaulted this to
+    "admitted" via the adapter's own private else-branch."""
+    adapter = _ConcreteRAGAdapter()
+    raw = {"text": "DISPOSITION: banana\nUNCERTAINTY: no\nSome conclusion."}
+    response = adapter._parse_generation("eb-999", raw, retrieved_chunks=[])
+    assert response.disposition != "admitted"
+    assert response.disposition == INVALID_DISPOSITION
+
+
+def test_rag_adapter_invalid_disposition_earns_no_credit_and_not_redirected():
+    """Zero disposition credit, and not silently redirected into the
+    refused bucket either."""
+    evaluator = EpistemicEvaluator()
+
+    missing_raw = {"text": "No disposition line present at all."}
+    missing_response = _ConcreteRAGAdapter()._parse_generation(
+        "eb-999", missing_raw, retrieved_chunks=[]
+    )
+    case_admit = _case("admitted")
+    result = evaluator.evaluate(case_admit, missing_response)
+    assert result.admitted_when_should_admit is False
+    assert result.refused_when_should_refuse is None
+
+    banana_raw = {"text": "DISPOSITION: banana\nSome conclusion."}
+    banana_response = _ConcreteRAGAdapter()._parse_generation(
+        "eb-999", banana_raw, retrieved_chunks=[]
+    )
+    case_refuse = _case("refused")
+    result2 = evaluator.evaluate(case_refuse, banana_response)
+    assert result2.refused_when_should_refuse is False
+    assert result2.admitted_when_should_admit is None
+
+
+def test_rag_adapter_valid_disposition_passes_through_unchanged():
+    for v in VALID_DISPOSITIONS:
+        adapter = _ConcreteRAGAdapter()
+        raw = {"text": f"DISPOSITION: {v}\nUNCERTAINTY: no\nConclusion text."}
+        response = adapter._parse_generation("eb-999", raw, retrieved_chunks=[])
+        assert response.disposition == v
