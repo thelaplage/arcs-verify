@@ -47,6 +47,41 @@ CATEGORIES = {
     "conflicting_sources",
 }
 
+# Disposition closed set — the ONLY valid governed-lifecycle states a SUT
+# response may claim. This is the single source of truth for disposition
+# validity across the benchmark: adapters MUST call `normalize_disposition`
+# below instead of independently deciding what a missing/unknown/malformed
+# disposition means. A disposition that is missing, unknown, or not a string
+# is NEVER coerced into one of these three states (in particular never into
+# "admitted") — see `normalize_disposition` and EpistemicEvaluator.evaluate.
+VALID_DISPOSITIONS = frozenset({"admitted", "refused", "deferred_for_review"})
+
+# Sentinel returned by `normalize_disposition` for any disposition value that
+# is not a member of VALID_DISPOSITIONS. It is deliberately NOT itself a
+# member of VALID_DISPOSITIONS, so it can never accidentally satisfy an
+# `== "admitted"` / `== "refused"` comparison and can never be assembled into
+# a schema-conformant leaderboard submission (leaderboard_schema.json's
+# `results[].disposition` enum is exactly VALID_DISPOSITIONS) without that
+# submission step making an explicit, visible decision about what to do with
+# an invalid case.
+INVALID_DISPOSITION = "invalid"
+
+
+def normalize_disposition(value: Any) -> str:
+    """
+    Normalize a raw disposition value taken from an SUT response.
+
+    Returns the value unchanged if it is a valid disposition string;
+    otherwise returns INVALID_DISPOSITION. This is the ONLY place adapters
+    should decide whether a disposition is well-formed — centralizing the
+    closed-set check here means an adapter cannot independently recreate the
+    "unknown disposition silently becomes admitted" bug, and any future
+    adapter gets fail-closed behavior for free.
+    """
+    if isinstance(value, str) and value in VALID_DISPOSITIONS:
+        return value
+    return INVALID_DISPOSITION
+
 
 @dataclass
 class EpistemicInput:
@@ -165,11 +200,28 @@ class EpistemicEvaluator:
         )
 
         # 4. Disposition match
+        #
+        # Fail-closed disposition validity: a disposition is only meaningful
+        # for scoring if it is a member of the closed set VALID_DISPOSITIONS.
+        # A missing, unknown, or non-string disposition (response.disposition
+        # == INVALID_DISPOSITION, produced by normalize_disposition in every
+        # adapter) is INVALID for disposition scoring — it must never earn
+        # `refused_when_should_refuse is True` / `admitted_when_should_admit
+        # is True`, and it must never be silently redirected into partial
+        # ("not explicitly evaluated") credit either. This check is
+        # centralized here, once, rather than left to each adapter.
+        disposition_valid = response.disposition in VALID_DISPOSITIONS
+        if not disposition_valid:
+            result.notes.append(
+                f"invalid disposition on SUT response (case {case.id!r}): "
+                f"{response.disposition!r} — zero disposition credit, no state assumed"
+            )
+
         expected_disposition = case.expected.receipt_shape.get("disposition", "")
         if expected_disposition == "refused":
-            result.refused_when_should_refuse = (response.disposition == "refused")
+            result.refused_when_should_refuse = disposition_valid and (response.disposition == "refused")
         elif expected_disposition == "admitted":
-            result.admitted_when_should_admit = (response.disposition == "admitted")
+            result.admitted_when_should_admit = disposition_valid and (response.disposition == "admitted")
 
         # Score computation
         score = 0.0
@@ -185,9 +237,14 @@ class EpistemicEvaluator:
             score += self.DISPOSITION_WEIGHT
         elif result.refused_when_should_refuse is False or result.admitted_when_should_admit is False:
             score += 0.0
-        else:
-            # Not explicitly evaluated — partial credit
+        elif disposition_valid:
+            # Disposition was well-formed but not applicable to this case's
+            # expected receipt shape (e.g. expected == "deferred_for_review",
+            # which has no dedicated verdict field) — partial credit.
             score += self.DISPOSITION_WEIGHT * 0.5
+        # else: disposition was invalid (missing/unknown/non-string) AND not
+        # applicable to expected_disposition's True/False branches above —
+        # zero disposition credit, never partial credit, never redirected.
 
         result.score = round(score, 4)
         # Pass requires not stating forbidden AND score >= 0.60
