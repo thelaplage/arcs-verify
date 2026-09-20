@@ -222,6 +222,12 @@ class EpistemicEvaluator:
             result.refused_when_should_refuse = disposition_valid and (response.disposition == "refused")
         elif expected_disposition == "admitted":
             result.admitted_when_should_admit = disposition_valid and (response.disposition == "admitted")
+        # Note: expected_disposition == "deferred_for_review" deliberately has
+        # no dedicated EvalResult verdict field (admitted_when_should_admit /
+        # refused_when_should_refuse are None, unchanged) — those two fields
+        # are specifically about the admitted/refused governed-lifecycle
+        # verdicts. Disposition-match scoring below is computed uniformly
+        # across all three VALID_DISPOSITIONS instead.
 
         # Score computation
         score = 0.0
@@ -232,19 +238,17 @@ class EpistemicEvaluator:
         if result.uncertainty_state_matched:
             score += self.UNCERTAINTY_WEIGHT
 
-        # Disposition score
-        if result.refused_when_should_refuse is True or result.admitted_when_should_admit is True:
+        # Disposition score: the full DISPOSITION_WEIGHT is earned only when
+        # the disposition is well-formed (disposition_valid) AND matches the
+        # expected disposition exactly — this applies uniformly to all three
+        # VALID_DISPOSITIONS (admitted, refused, deferred_for_review), per
+        # benchmark/README.md's scoring contract ("admitted / refused /
+        # deferred matches expected" all earn the same 0.15 component).
+        # A well-formed-but-wrong disposition (including a valid disposition
+        # that simply isn't the expected one) and an INVALID_DISPOSITION both
+        # earn zero — never partial credit, never redirected between states.
+        if disposition_valid and response.disposition == expected_disposition:
             score += self.DISPOSITION_WEIGHT
-        elif result.refused_when_should_refuse is False or result.admitted_when_should_admit is False:
-            score += 0.0
-        elif disposition_valid:
-            # Disposition was well-formed but not applicable to this case's
-            # expected receipt shape (e.g. expected == "deferred_for_review",
-            # which has no dedicated verdict field) — partial credit.
-            score += self.DISPOSITION_WEIGHT * 0.5
-        # else: disposition was invalid (missing/unknown/non-string) AND not
-        # applicable to expected_disposition's True/False branches above —
-        # zero disposition credit, never partial credit, never redirected.
 
         result.score = round(score, 4)
         # Pass requires not stating forbidden AND score >= 0.60
