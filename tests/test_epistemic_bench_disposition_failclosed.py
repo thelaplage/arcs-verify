@@ -171,8 +171,9 @@ def test_invalid_disposition_does_not_earn_refused_credit_either():
 
 def test_invalid_disposition_with_no_applicable_expected_state_earns_zero_not_partial():
     """When expected_disposition isn't 'admitted'/'refused' (e.g. deferred),
-    a VALID disposition gets 0.5x partial credit for the disposition weight,
-    but an INVALID disposition must get zero, never partial credit."""
+    a CORRECT VALID disposition earns the full disposition weight (see
+    test_correct_deferred_for_review_earns_full_disposition_credit below),
+    but an INVALID disposition must still get zero, never partial credit."""
     evaluator = EpistemicEvaluator()
     case = _case("deferred_for_review")
 
@@ -180,7 +181,7 @@ def test_invalid_disposition_with_no_applicable_expected_state_earns_zero_not_pa
     invalid_result = evaluator.evaluate(case, _response(INVALID_DISPOSITION))
 
     assert invalid_result.score == round(
-        valid_result.score - (EpistemicEvaluator.DISPOSITION_WEIGHT * 0.5), 4
+        valid_result.score - EpistemicEvaluator.DISPOSITION_WEIGHT, 4
     )
 
 
@@ -347,3 +348,108 @@ def test_rag_adapter_valid_disposition_passes_through_unchanged():
         raw = {"text": f"DISPOSITION: {v}\nUNCERTAINTY: no\nConclusion text."}
         response = adapter._parse_generation("eb-999", raw, retrieved_chunks=[])
         assert response.disposition == v
+
+
+# ---------------------------------------------------------------------------
+# EPISTEMIC-BENCH-DEFERRED-SCORING0 — full disposition credit for a correctly
+# returned deferred_for_review (benchmark/README.md's scoring contract names
+# all three valid states as earning the 0.15 disposition component; the
+# pre-fix evaluator only had dedicated credit branches for admitted/refused,
+# so a correct deferred_for_review earned only half credit via the generic
+# "valid but not applicable" 0.5x fallback).
+# ---------------------------------------------------------------------------
+
+def test_correct_deferred_for_review_earns_full_disposition_credit():
+    """The bug: expected == deferred_for_review, SUT correctly returns
+    deferred_for_review -> must earn the FULL 0.15 disposition weight, not
+    half of it. This is the case the pre-fix evaluator gets wrong."""
+    evaluator = EpistemicEvaluator()
+    case = _case("deferred_for_review")
+    correct_response = _response("deferred_for_review")
+    result = evaluator.evaluate(case, correct_response)
+
+    # Full-credit baseline: an admitted/refused exact match earns the full
+    # DISPOSITION_WEIGHT on top of the other three components. Build an
+    # equivalent all-else-equal comparison by checking the disposition
+    # component in isolation via score delta against a wrong-but-valid
+    # deferred-expected response (which must earn zero disposition credit).
+    wrong_response = _response("admitted")
+    wrong_result = evaluator.evaluate(case, wrong_response)
+
+    assert round(result.score - wrong_result.score, 4) == EpistemicEvaluator.DISPOSITION_WEIGHT, (
+        f"correct deferred_for_review should earn the full "
+        f"{EpistemicEvaluator.DISPOSITION_WEIGHT} disposition credit over an "
+        f"incorrect-but-valid disposition; got delta "
+        f"{result.score - wrong_result.score}"
+    )
+
+
+def test_deferred_expected_sut_returns_admitted_earns_no_disposition_credit():
+    evaluator = EpistemicEvaluator()
+    case = _case("deferred_for_review")
+    result = evaluator.evaluate(case, _response("admitted"))
+    correct_result = evaluator.evaluate(case, _response("deferred_for_review"))
+    assert result.score == round(correct_result.score - EpistemicEvaluator.DISPOSITION_WEIGHT, 4)
+
+
+def test_deferred_expected_sut_returns_refused_earns_no_disposition_credit():
+    evaluator = EpistemicEvaluator()
+    case = _case("deferred_for_review")
+    result = evaluator.evaluate(case, _response("refused"))
+    correct_result = evaluator.evaluate(case, _response("deferred_for_review"))
+    assert result.score == round(correct_result.score - EpistemicEvaluator.DISPOSITION_WEIGHT, 4)
+
+
+def test_admitted_expected_scoring_unchanged_correct():
+    evaluator = EpistemicEvaluator()
+    case = _case("admitted")
+    result = evaluator.evaluate(case, _response("admitted"))
+    assert result.admitted_when_should_admit is True
+    assert result.refused_when_should_refuse is None
+
+
+def test_admitted_expected_scoring_unchanged_incorrect():
+    evaluator = EpistemicEvaluator()
+    case = _case("admitted")
+    result = evaluator.evaluate(case, _response("refused"))
+    assert result.admitted_when_should_admit is False
+
+
+def test_refused_expected_scoring_unchanged_correct():
+    evaluator = EpistemicEvaluator()
+    case = _case("refused")
+    result = evaluator.evaluate(case, _response("refused"))
+    assert result.refused_when_should_refuse is True
+    assert result.admitted_when_should_admit is None
+
+
+def test_refused_expected_scoring_unchanged_incorrect():
+    evaluator = EpistemicEvaluator()
+    case = _case("refused")
+    result = evaluator.evaluate(case, _response("admitted"))
+    assert result.refused_when_should_refuse is False
+
+
+def test_invalid_disposition_against_deferred_expected_earns_zero_not_partial():
+    """Regression guard: INVALID_DISPOSITION must never earn partial credit
+    even against a deferred_for_review-expected case, both before and after
+    the full-credit fix for correct deferred_for_review."""
+    evaluator = EpistemicEvaluator()
+    case = _case("deferred_for_review")
+    correct_result = evaluator.evaluate(case, _response("deferred_for_review"))
+    invalid_result = evaluator.evaluate(case, _response(INVALID_DISPOSITION))
+    assert invalid_result.score == round(correct_result.score - EpistemicEvaluator.DISPOSITION_WEIGHT, 4)
+
+
+def test_invalid_disposition_against_admitted_expected_earns_zero():
+    evaluator = EpistemicEvaluator()
+    case = _case("admitted")
+    result = evaluator.evaluate(case, _response(INVALID_DISPOSITION))
+    assert result.admitted_when_should_admit is False
+
+
+def test_invalid_disposition_against_refused_expected_earns_zero():
+    evaluator = EpistemicEvaluator()
+    case = _case("refused")
+    result = evaluator.evaluate(case, _response(INVALID_DISPOSITION))
+    assert result.refused_when_should_refuse is False
