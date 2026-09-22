@@ -350,6 +350,32 @@ def test_substantive_domain_values_only():
         assert getattr(r, name) in SUBSTANTIVE_DOMAIN
 
 
+def test_report_schema_is_closed_and_golden_conforms():
+    import jsonschema
+
+    contract_dir = (
+        Path(__file__).resolve().parent.parent
+        / "arcs_verify"
+        / "contracts"
+        / "exit-o-origin-authentication-report-v0-1"
+    )
+    schema = json.loads((contract_dir / "verification-report.schema.json").read_text())
+    golden = json.loads(
+        (contract_dir / "golden" / "partial-honest-report.json").read_text()
+    )
+
+    jsonschema.Draft202012Validator(schema).validate(golden)
+    assert schema["additionalProperties"] is False
+    assert "profile_schema_sha256" in schema["required"]
+    assert "profile_document_sha256" in schema["required"]
+    assert "chain_status" not in schema["properties"]
+
+    hostile = copy.deepcopy(golden)
+    hostile["chain_status"] = "not_applicable"
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.Draft202012Validator(schema).validate(hostile)
+
+
 def test_golden_report_is_reproduced():
     """The committed golden report must equal the verifier's actual output on the
     literal producer fixture — the report contract cannot drift from the code."""
