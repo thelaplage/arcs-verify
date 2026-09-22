@@ -36,15 +36,26 @@ a finding.
 `historical_scope_authorization_finding`, `temporal_consistency_finding`.
 
 The controlling rule: **`artifact bytes present != digest matches != semantic
-layer verified`.** A layer whose evidence bytes are absent is `unavailable`; a
-layer whose evidence digest matches (integrity) but for which no governed
-verifier contract exists is `not_evaluated`. Neither is a pass, and a producer
-posture is never promoted to a finding.
+layer verified`.** The verifier accepts literal evidence bytes and recomputes their
+sha256 itself; it never accepts a caller-asserted digest as evidence. A layer whose
+evidence bytes are absent is `unavailable`; a layer whose independently recomputed
+digest matches (integrity) but for which no governed verifier contract exists is
+`not_evaluated`. Neither is a pass, and a producer posture is never promoted to a
+finding.
+
+Cross-field scope equality that JSON Schema cannot express is also recomputed:
+`semantic_authority` must match the top-level issuer/profile/domain, and
+`historical_scope_authorization` must match the top-level present attester,
+historical actor, issuer/profile/domain. O5 time ordering is parsed as instants,
+not lexicographic strings; open-ended `effective_not_after` is supported.
 
 ## Fail-closed aggregation
 
-`exit_o_chain_satisfied` is `true` only when **every** required substantive finding
-is `pass`. `fail` / `not_evaluated` / `unavailable` fail closed. In the current
+`exit_o_chain_satisfied` is `true` only when **all structural prerequisites**
+(`profile_schema_pinned`, `proof_receipt_conformance`, exact semantic-disposition
+binding) are true **and** every required substantive finding is `pass`.
+`fail` / `not_evaluated` / `unavailable`, schema drift, non-conformance, or exact-act
+substitution all fail closed. In the current
 estate — no governed upstream evidence verifiers, no provisioned signing key — a
 well-formed, correctly-bound, honestly-partial proof therefore yields
 `exit_o_chain_satisfied = false`. See `golden/partial-honest-report.json`: the
