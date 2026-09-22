@@ -777,15 +777,18 @@ digest matches != semantic layer verified`.
 | `exit_o.conformance_failed:<json_path>` | Dynamic. The receipt does not validate against the pinned profile schema at `<json_path>`. |
 | `exit_o.exact_act_binding_mismatch` | `semantic_act.binding_ref`/`binding_digest` do not equal `semantic_disposition_ref`/`semantic_disposition_digest` (exact-act binding, not lineage). |
 | `exit_o.semantic_act_absent` | The `semantic_act` layer is absent or not an object. |
-| `exit_o.temporal_fields_absent` | One of `historical_act_time` / `present_attestation_time` / `issued_at` is absent or not a string. |
+| `exit_o.temporal_fields_invalid` | One of `historical_act_time` / `present_attestation_time` / `issued_at` is absent, malformed, or not offset-aware ISO-8601. |
 | `exit_o.attestation_time_mismatch` | `present_attestation_time` does not equal `issued_at`. |
 | `exit_o.historical_not_before_present` | `historical_act_time` is not strictly before `present_attestation_time` (O5 temporal order). |
 | `exit_o.historical_scope_authorization_absent` | `historical_scope_authorization` is absent or not an object. |
-| `exit_o.historical_scope_interval_excludes_attestation` | The `historical_scope_authorization` effective interval does not cover the attestation time. |
+| `exit_o.historical_scope_mismatch` | One or more copied scope fields in `historical_scope_authorization` (`present_attester_ref`, `historical_actor_ref`, semantic issuer/profile/domain) differ from the top-level proof scope. |
+| `exit_o.historical_scope_interval_excludes_attestation` | The `historical_scope_authorization` effective interval does not cover the attestation instant; an omitted `effective_not_after` is treated as open-ended, matching the producer contract. |
 | `exit_o.historical_scope_same_string_as_actor` | The `historical_scope_authorization.binding_ref` merely echoes `historical_actor_ref`; same-string identity is not governed continuity. |
 | `exit_o.signature_absent` | `receipt_signature` is absent or not an object. |
+| `exit_o.semantic_authority_scope_mismatch` | `semantic_authority` repeats a semantic issuer/profile/domain that differs from the top-level proof scope; schema shape alone cannot prove this equality. |
 | `exit_o.layer_absent:<layer>` | Dynamic. The named EXIT-O evidence layer (`key_authentication` \| `act_principal` \| `semantic_authority` \| `semantic_act`) is absent or not an object. |
 | `exit_o.layer_digest_malformed:<layer>` | Dynamic. The named layer's `binding_digest` is not `sha256:` + 64 lowercase hex. |
+| `exit_o.layer_evidence_bytes_invalid:<layer>` | Dynamic. Evidence supplied for the named layer is not literal bytes; caller-asserted digest strings are not accepted as evidence. |
 | `exit_o.layer_evidence_digest_mismatch:<layer>` | Dynamic. The evidence bytes supplied for the named layer hash to a value other than the layer's `binding_digest`. |
 
 Non-code observation outputs: the substantive findings `proof_receipt_signature`,
