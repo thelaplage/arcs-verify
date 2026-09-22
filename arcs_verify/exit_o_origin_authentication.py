@@ -174,6 +174,21 @@ _REQUIRED_SUBSTANTIVE = (
 )
 
 
+def _compute_exit_o_chain_satisfied(
+    report: ExitOOriginAuthenticationVerificationReport,
+) -> bool:
+    """Fail closed across BOTH structural and substantive prerequisites."""
+    structural_ok = (
+        report.profile_schema_pinned
+        and report.proof_receipt_conformance
+        and report.exact_semantic_disposition_binding
+    )
+    substantive_ok = all(
+        getattr(report, name) == VERDICT_PASS for name in _REQUIRED_SUBSTANTIVE
+    )
+    return structural_ok and substantive_ok
+
+
 def _load_pinned_schema(report: ExitOOriginAuthenticationVerificationReport) -> dict[str, Any] | None:
     try:
         raw = _VENDORED_SCHEMA_PATH.read_bytes()
@@ -442,15 +457,7 @@ def verify_exit_o_origin_authentication_receipt(
     # A future verifier must never satisfy EXIT-O on a schema-invalid,
     # unpinned, or cross-act-substituted proof even if every semantic verifier
     # happens to return pass.
-    structural_ok = (
-        report.profile_schema_pinned
-        and report.proof_receipt_conformance
-        and report.exact_semantic_disposition_binding
-    )
-    substantive_ok = all(
-        getattr(report, name) == VERDICT_PASS for name in _REQUIRED_SUBSTANTIVE
-    )
-    report.exit_o_chain_satisfied = structural_ok and substantive_ok
+    report.exit_o_chain_satisfied = _compute_exit_o_chain_satisfied(report)
     return report
 
 
