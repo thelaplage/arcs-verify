@@ -1,0 +1,27 @@
+{
+  "act_principal_finding": "unavailable",
+  "exact_semantic_disposition_binding": true,
+  "exit_o_chain_satisfied": false,
+  "failure_codes": [],
+  "historical_scope_authorization_finding": "not_evaluated",
+  "key_authentication_finding": "unavailable",
+  "notes": [
+    "historical_scope_authorization is structurally present and covers the attestation time, but no governed authority verifier exists to confirm it is active; not upgraded to pass.",
+    "no verifier-selected trust bundle supplied; signature not cryptographically verified (not a pass).",
+    "key_authentication: referenced evidence bytes not supplied; unavailable.",
+    "act_principal: referenced evidence bytes not supplied; unavailable.",
+    "semantic_authority: referenced evidence bytes not supplied; unavailable.",
+    "semantic_act: referenced evidence bytes not supplied; unavailable."
+  ],
+  "profile": "srs.activity.semantic_issuer_origin_authentication.v0.1",
+  "profile_document_sha256": "85dd6a9b3ae0fb084a6a932f880adb5bbbce3c5924a78954548281e597ad82ea",
+  "profile_schema_pinned": true,
+  "profile_schema_sha256": "c03733f92e5bb05f4087c8fcc944528f013bf3043940478f6ea7a087da0c5531",
+  "profile_source_head": "11db54bbb3143c13b0db148efece68b5a2f3766b",
+  "proof_receipt_conformance": true,
+  "proof_receipt_signature": "not_evaluated",
+  "report_contract": "arcs.verify.exit-o-origin-authentication-report/v0.1",
+  "semantic_act_finding": "unavailable",
+  "semantic_authority_finding": "unavailable",
+  "temporal_consistency_finding": "pass"
+}

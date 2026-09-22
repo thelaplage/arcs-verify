@@ -1,0 +1,664 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcs.example/schemas/activity-profiles/v0.1/srs.activity.semantic_issuer_origin_authentication.v0.1.schema.json",
+  "title": "SRS Activity Semantic Issuer Origin Authentication Profile v0.1 — field schema",
+  "x-status": "provisional",
+  "x-profile-id": "srs.activity.semantic_issuer_origin_authentication",
+  "x-profile-version": "v0.1",
+  "x-specializes-envelope": "srs.signed_receipt.v0.1 / srs-envelope@0.2.1",
+  "description": "Field-level schema for one semantic-issuer origin-authentication proof: binds four independent EXIT-O evidence layers (credential/key authentication, act-principal attribution, semantic-authority authorization, exact semantic-act authentication) to a named semantic disposition by ref+digest, and records the separate historical-act and present-attestation times (O5). A BINDING record, not a verdict. No aggregate cross-layer chain claim may appear; whether the bindings satisfy the chain is decided by a separate independent verifier. Specializes the SRS signed-receipt envelope; does not fork it. PROVISIONAL. All sha256 references are 'sha256:' + 64 lowercase hex. The profile-level top-level field set is closed; inherited receipt_signature is admitted explicitly while its shape remains envelope-owned.",
+  "type": "object",
+  "$defs": {
+    "sha256_ref": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "sha256: followed by exactly 64 lowercase hex chars."
+    },
+    "effective_interval": {
+      "type": "object",
+      "description": "Effective interval of an identity/authority binding relied upon by this proof (O5). effective_not_before is mandatory; effective_not_after may be omitted for an open-ended current binding.",
+      "properties": {
+        "effective_not_before": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effective_not_after": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "effective_not_before"
+      ]
+    },
+    "layer_binding": {
+      "type": "object",
+      "description": "One EXIT-O evidence layer, bound separately by ref + digest, with a per-layer producer-disclosed posture. Not a chain verdict.",
+      "properties": {
+        "binding_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_digest": {
+          "$ref": "#/$defs/sha256_ref"
+        },
+        "posture": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effective_interval": {
+          "$ref": "#/$defs/effective_interval"
+        }
+      },
+      "required": [
+        "binding_ref",
+        "binding_digest",
+        "posture"
+      ],
+      "additionalProperties": false
+    },
+    "temporal_support_binding": {
+      "type": "object",
+      "description": "Independent governed support binding with an explicit effective interval; used for present-attester authority over a historical issuer scope and kept separate from the four EXIT-O layers.",
+      "properties": {
+        "binding_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_digest": {
+          "$ref": "#/$defs/sha256_ref"
+        },
+        "effective_interval": {
+          "$ref": "#/$defs/effective_interval"
+        },
+        "present_attester_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "historical_actor_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "semantic_issuer_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "semantic_authority_profile_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority_domain": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "binding_ref",
+        "binding_digest",
+        "effective_interval",
+        "present_attester_ref",
+        "historical_actor_ref",
+        "semantic_issuer_ref",
+        "semantic_authority_profile_ref",
+        "authority_domain"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_authority_binding": {
+      "type": "object",
+      "description": "Semantic-authority evidence binding scoped explicitly to one semantic issuer/profile/domain.",
+      "properties": {
+        "binding_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_digest": {
+          "$ref": "#/$defs/sha256_ref"
+        },
+        "posture": {
+          "enum": [
+            "authorized",
+            "not_authorized"
+          ]
+        },
+        "semantic_issuer_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "semantic_authority_profile_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority_domain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effective_interval": {
+          "$ref": "#/$defs/effective_interval"
+        }
+      },
+      "required": [
+        "binding_ref",
+        "binding_digest",
+        "posture",
+        "semantic_issuer_ref",
+        "semantic_authority_profile_ref",
+        "authority_domain"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "receipt_version": {
+      "const": "srs.core.v5.1"
+    },
+    "profile_id": {
+      "const": "srs.activity.semantic_issuer_origin_authentication"
+    },
+    "profile_version": {
+      "const": "v0.1"
+    },
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "receipt_type": {
+      "const": "provenance"
+    },
+    "receipt_kind": {
+      "const": "semantic_issuer_origin_authentication"
+    },
+    "boundary_type": {
+      "const": "semantic_issuer_origin_authentication_boundary"
+    },
+    "protocol_binding": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "MUST equal semantic_disposition_ref (subject binding)."
+    },
+    "issuer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_instance_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "boundary_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "issued_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "visibility": {
+      "enum": [
+        "LOCAL",
+        "PRIVATE_ORG",
+        "SHARED",
+        "PUBLIC_CANDIDATE",
+        "PUBLIC"
+      ],
+      "description": "Mandatory C8 closed-set visibility posture."
+    },
+    "semantic_disposition_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The semantic disposition whose origin this proof authenticates."
+    },
+    "semantic_disposition_digest": {
+      "$ref": "#/$defs/sha256_ref",
+      "description": "sha256 of the exact disposition bytes."
+    },
+    "key_authentication": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/layer_binding"
+        },
+        {
+          "properties": {
+            "posture": {
+              "enum": [
+                "authenticated",
+                "unauthenticated"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "posture": {
+                "const": "authenticated"
+              }
+            },
+            "required": [
+              "posture"
+            ]
+          },
+          "then": {
+            "required": [
+              "effective_interval"
+            ]
+          }
+        }
+      ],
+      "description": "Layer 1: credential/key authentication binding. Positive posture requires an effective interval."
+    },
+    "act_principal": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/layer_binding"
+        },
+        {
+          "properties": {
+            "posture": {
+              "enum": [
+                "attributed",
+                "not_attributed",
+                "blocked"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "posture": {
+                "const": "attributed"
+              }
+            },
+            "required": [
+              "posture"
+            ]
+          },
+          "then": {
+            "required": [
+              "effective_interval"
+            ]
+          }
+        }
+      ],
+      "description": "Layer 2: request-local act-principal attribution binding. Positive posture requires an effective interval."
+    },
+    "semantic_authority": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/semantic_authority_binding"
+        },
+        {
+          "if": {
+            "properties": {
+              "posture": {
+                "const": "authorized"
+              }
+            },
+            "required": [
+              "posture"
+            ]
+          },
+          "then": {
+            "required": [
+              "effective_interval"
+            ]
+          }
+        }
+      ],
+      "description": "Layer 3: semantic-authority authorization binding. Scope fields must match the top-level semantic issuer/profile/domain. Positive posture requires an effective interval."
+    },
+    "semantic_act": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/layer_binding"
+        },
+        {
+          "properties": {
+            "posture": {
+              "enum": [
+                "bound",
+                "unbound"
+              ]
+            }
+          }
+        }
+      ],
+      "description": "Layer 4: exact semantic-act authentication binding. Checker additionally requires binding_ref/digest to equal semantic_disposition_ref/digest."
+    },
+    "historical_act_time": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Event time of the original semantic disposition. Distinct from present_attestation_time."
+    },
+    "historical_actor_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Actor/issuer that performed the historical semantic act."
+    },
+    "present_attestation_time": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Event time of this attestation. Distinct from historical_act_time."
+    },
+    "present_attester_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Present governed Participant attesting now."
+    },
+    "artifact_classes_covered": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "const": "semantic_issuer_origin_authentication_record"
+          }
+        },
+        {
+          "contains": {
+            "const": "semantic_disposition_identity"
+          }
+        },
+        {
+          "contains": {
+            "const": "four_layer_evidence_binding"
+          }
+        }
+      ]
+    },
+    "artifact_classes_excluded": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "const": "chain_satisfaction_verdict"
+          }
+        },
+        {
+          "contains": {
+            "const": "aggregate_authentication_claim"
+          }
+        },
+        {
+          "contains": {
+            "const": "exit_o_satisfaction"
+          }
+        },
+        {
+          "contains": {
+            "const": "semantic_disposition_content_bytes"
+          }
+        }
+      ]
+    },
+    "attestation_limits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "contains": {
+        "const": "This receipt binds four independent evidence layers (credential/key authentication, act-principal attribution, semantic-authority authorization, exact semantic-act authentication) to a named semantic disposition by reference and digest, and records the separate historical-act and present-attestation times. It does not assert that the layers together satisfy the EXIT-O authentication chain, that the origin is authenticated, that any refusal is admissible, or that any live proof exists. Whether the bindings substantively satisfy the chain is decided by a separate independent verifier, never by this receipt."
+      }
+    },
+    "machine_limitations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "contains": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "const": "CONTENT_NOT_VERIFIED"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 0,
+      "description": "Closed in v0.1: no extension fields permitted (no authority escape hatch)."
+    },
+    "semantic_issuer_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Named semantic issuer whose exact origin act is being authenticated."
+    },
+    "semantic_authority_profile_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Governed semantic-authority profile claimed for the named semantic issuer."
+    },
+    "authority_domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Authority domain under which the original semantic disposition was issued."
+    },
+    "historical_scope_authorization": {
+      "$ref": "#/$defs/temporal_support_binding",
+      "description": "Independent present-time governed basis authorizing present_attester_ref to authenticate the historical semantic-issuer scope. This is not a fifth EXIT-O layer and does not back-project present identity/authority to the historical act time."
+    },
+    "receipt_signature": {
+      "type": "object",
+      "description": "Inherited SRS signed-receipt envelope signature block. Shape/crypto semantics are defined by the envelope, not redefined by this field schema."
+    }
+  },
+  "required": [
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "subject_ref",
+    "issuer_id",
+    "runtime_instance_id",
+    "boundary_id",
+    "issued_at",
+    "visibility",
+    "semantic_disposition_ref",
+    "semantic_disposition_digest",
+    "key_authentication",
+    "act_principal",
+    "semantic_authority",
+    "semantic_act",
+    "historical_act_time",
+    "historical_actor_ref",
+    "present_attestation_time",
+    "present_attester_ref",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "machine_limitations",
+    "extensions",
+    "semantic_issuer_ref",
+    "semantic_authority_profile_ref",
+    "authority_domain",
+    "historical_scope_authorization"
+  ],
+  "allOf": [
+    {
+      "description": "subject_ref MUST equal semantic_disposition_ref.",
+      "required": [
+        "subject_ref",
+        "semantic_disposition_ref"
+      ]
+    }
+  ],
+  "not": {
+    "description": "No aggregate cross-layer verdict and no truth/admission/standing/publication/reopening/refusal-merits authority-effect claim may appear. Chain satisfaction and downstream authority effects belong elsewhere.",
+    "anyOf": [
+      {
+        "required": [
+          "authenticated"
+        ]
+      },
+      {
+        "required": [
+          "chain_satisfied"
+        ]
+      },
+      {
+        "required": [
+          "chain_status"
+        ]
+      },
+      {
+        "required": [
+          "origin_verified"
+        ]
+      },
+      {
+        "required": [
+          "origin_authenticated"
+        ]
+      },
+      {
+        "required": [
+          "exit_o_satisfied"
+        ]
+      },
+      {
+        "required": [
+          "chain_verdict"
+        ]
+      },
+      {
+        "required": [
+          "overall_posture"
+        ]
+      },
+      {
+        "required": [
+          "satisfied"
+        ]
+      },
+      {
+        "required": [
+          "aggregate_verdict"
+        ]
+      },
+      {
+        "required": [
+          "trust_score"
+        ]
+      },
+      {
+        "required": [
+          "reputation"
+        ]
+      },
+      {
+        "required": [
+          "reputation_score"
+        ]
+      },
+      {
+        "required": [
+          "standing_score"
+        ]
+      },
+      {
+        "required": [
+          "reliance_score"
+        ]
+      },
+      {
+        "required": [
+          "truth"
+        ]
+      },
+      {
+        "required": [
+          "is_true"
+        ]
+      },
+      {
+        "required": [
+          "standing_act"
+        ]
+      },
+      {
+        "required": [
+          "admission_state"
+        ]
+      },
+      {
+        "required": [
+          "admitted"
+        ]
+      },
+      {
+        "required": [
+          "verified"
+        ]
+      },
+      {
+        "required": [
+          "verification_verdict"
+        ]
+      },
+      {
+        "required": [
+          "public_catalogue_eligibility"
+        ]
+      },
+      {
+        "required": [
+          "catalogue_eligible"
+        ]
+      },
+      {
+        "required": [
+          "release_eligible"
+        ]
+      },
+      {
+        "required": [
+          "publication_state"
+        ]
+      },
+      {
+        "required": [
+          "reopening_permitted"
+        ]
+      },
+      {
+        "required": [
+          "reopening_authority"
+        ]
+      },
+      {
+        "required": [
+          "refusal_merits"
+        ]
+      }
+    ]
+  },
+  "additionalProperties": false
+}

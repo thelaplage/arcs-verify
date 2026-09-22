@@ -1,0 +1,91 @@
+{
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.activity.semantic_issuer_origin_authentication",
+  "profile_version": "v0.1",
+  "receipt_id": "activity-semantic-issuer-origin-auth-valid-partial-0001",
+  "receipt_type": "provenance",
+  "receipt_kind": "semantic_issuer_origin_authentication",
+  "boundary_type": "semantic_issuer_origin_authentication_boundary",
+  "protocol_binding": "semantic-issuer-origin-auth-pipeline",
+  "subject_ref": "urn:amnesiac.disposition:reject/candidate-alpha-0007",
+  "issuer_id": "issuer.test/semantic-issuer-origin-auth/2026-01",
+  "runtime_instance_id": "runtime-origin-auth-test-0001",
+  "boundary_id": "boundary-origin-auth-0001",
+  "issued_at": "2026-09-22T00:10:00Z",
+  "visibility": "PRIVATE_ORG",
+  "semantic_disposition_ref": "urn:amnesiac.disposition:reject/candidate-alpha-0007",
+  "semantic_disposition_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "key_authentication": {
+    "binding_ref": "urn:keyauth:origin/test",
+    "binding_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "posture": "authenticated",
+    "effective_interval": {
+      "effective_not_before": "2026-09-01T00:00:00Z",
+      "effective_not_after": "2027-09-01T00:00:00Z"
+    }
+  },
+  "act_principal": {
+    "binding_ref": "urn:actprincipal:origin/test",
+    "binding_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "posture": "blocked"
+  },
+  "semantic_authority": {
+    "binding_ref": "urn:semauth:origin/test",
+    "binding_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+    "posture": "not_authorized",
+    "semantic_issuer_ref": "urn:actor:memory-admission/historical",
+    "semantic_authority_profile_ref": "urn:authority-profile:test/memory-admission/v0.1",
+    "authority_domain": "memory_admission"
+  },
+  "semantic_act": {
+    "binding_ref": "urn:amnesiac.disposition:reject/candidate-alpha-0007",
+    "binding_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "posture": "bound"
+  },
+  "historical_act_time": "2026-07-11T21:00:00Z",
+  "historical_actor_ref": "urn:actor:memory-admission/historical",
+  "present_attestation_time": "2026-09-22T00:10:00Z",
+  "present_attester_ref": "urn:participant:present/attester-1",
+  "artifact_classes_covered": [
+    "semantic_issuer_origin_authentication_record",
+    "semantic_disposition_identity",
+    "four_layer_evidence_binding"
+  ],
+  "artifact_classes_excluded": [
+    "chain_satisfaction_verdict",
+    "aggregate_authentication_claim",
+    "exit_o_satisfaction",
+    "semantic_disposition_content_bytes"
+  ],
+  "attestation_limits": [
+    "This receipt binds four independent evidence layers (credential/key authentication, act-principal attribution, semantic-authority authorization, exact semantic-act authentication) to a named semantic disposition by reference and digest, and records the separate historical-act and present-attestation times. It does not assert that the layers together satisfy the EXIT-O authentication chain, that the origin is authenticated, that any refusal is admissible, or that any live proof exists. Whether the bindings substantively satisfy the chain is decided by a separate independent verifier, never by this receipt."
+  ],
+  "machine_limitations": [
+    {
+      "code": "CONTENT_NOT_VERIFIED"
+    }
+  ],
+  "extensions": {},
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.test/semantic-issuer-origin-auth/2026-01",
+    "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  "semantic_issuer_ref": "urn:actor:memory-admission/historical",
+  "semantic_authority_profile_ref": "urn:authority-profile:test/memory-admission/v0.1",
+  "authority_domain": "memory_admission",
+  "historical_scope_authorization": {
+    "binding_ref": "urn:historical-scope-auth:test/present-attester-1",
+    "binding_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+    "effective_interval": {
+      "effective_not_before": "2026-09-01T00:00:00Z",
+      "effective_not_after": "2027-09-01T00:00:00Z"
+    },
+    "present_attester_ref": "urn:participant:present/attester-1",
+    "historical_actor_ref": "urn:actor:memory-admission/historical",
+    "semantic_issuer_ref": "urn:actor:memory-admission/historical",
+    "semantic_authority_profile_ref": "urn:authority-profile:test/memory-admission/v0.1",
+    "authority_domain": "memory_admission"
+  }
+}

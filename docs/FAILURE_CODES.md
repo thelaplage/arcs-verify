@@ -753,3 +753,46 @@ the declared receipt field name.
 | `okf_attested_computation.resource_binding_mismatch:<role>` | Dynamic (concrete completions in current bytes: `okf_attested_computation.resource_binding_mismatch:executor`, `okf_attested_computation.resource_binding_mismatch:attester`). The supplied run evidence carries an `<role>_resource_digest` claim that is malformed or does not match the independently recomputed digest of the referenced resource bytes. |
 | `okf_attested_computation.receipt_field_absent:<field>` | Dynamic. A field name listed in `executor.receipt` is absent from the supplied run evidence object. |
 | `okf_attested_computation.run_evidence_malformed` | The run evidence could not be read, was not valid JSON, or its top-level JSON value is not an object. |
+
+## EXIT-O semantic-issuer origin-authentication verifier (`exit-o-origin-authentication` subcommand)
+
+`arcs_verify/exit_o_origin_authentication.py` (ARCS-VERIFY-EXIT-O0) independently
+recomputes findings for the `srs.activity.semantic_issuer_origin_authentication.v0.1`
+proof artifact (arcs-srs@11db54bb) from the receipt bytes and the pinned profile
+authority. It imports no producer code and accepts no producer posture as a
+finding. Structural facts (schema pin, conformance, exact-act binding, temporal
+consistency) can fail with a code; the substantive semantic layers report
+`not_evaluated` / `unavailable` (never a code, never a pass) until a governed
+verifier for each upstream evidence type exists — `artifact bytes present !=
+digest matches != semantic layer verified`.
+
+| Code | Meaning |
+|---|---|
+| `exit_o.profile_schema_unreadable` | The vendored pinned profile schema could not be read. |
+| `exit_o.profile_schema_pin_mismatch` | The vendored schema's git-blob-sha1 or raw sha256 does not match the pinned source; the verifier refuses to run against a drifted schema. |
+| `exit_o.profile_schema_invalid` | The vendored schema is not valid JSON. |
+| `exit_o.receipt_not_object` | The supplied receipt is not a JSON object. |
+| `exit_o.wrong_profile_or_version` | `profile_id` / `profile_version` are not this profile; conformance is not evaluated against a foreign receipt. |
+| `exit_o.conformance_error` | The pinned-schema validation raised an unexpected error. |
+| `exit_o.conformance_failed:<json_path>` | Dynamic. The receipt does not validate against the pinned profile schema at `<json_path>`. |
+| `exit_o.exact_act_binding_mismatch` | `semantic_act.binding_ref`/`binding_digest` do not equal `semantic_disposition_ref`/`semantic_disposition_digest` (exact-act binding, not lineage). |
+| `exit_o.semantic_act_absent` | The `semantic_act` layer is absent or not an object. |
+| `exit_o.temporal_fields_absent` | One of `historical_act_time` / `present_attestation_time` / `issued_at` is absent or not a string. |
+| `exit_o.attestation_time_mismatch` | `present_attestation_time` does not equal `issued_at`. |
+| `exit_o.historical_not_before_present` | `historical_act_time` is not strictly before `present_attestation_time` (O5 temporal order). |
+| `exit_o.historical_scope_authorization_absent` | `historical_scope_authorization` is absent or not an object. |
+| `exit_o.historical_scope_interval_excludes_attestation` | The `historical_scope_authorization` effective interval does not cover the attestation time. |
+| `exit_o.historical_scope_same_string_as_actor` | The `historical_scope_authorization.binding_ref` merely echoes `historical_actor_ref`; same-string identity is not governed continuity. |
+| `exit_o.signature_absent` | `receipt_signature` is absent or not an object. |
+| `exit_o.layer_absent:<layer>` | Dynamic. The named EXIT-O evidence layer (`key_authentication` \| `act_principal` \| `semantic_authority` \| `semantic_act`) is absent or not an object. |
+| `exit_o.layer_digest_malformed:<layer>` | Dynamic. The named layer's `binding_digest` is not `sha256:` + 64 lowercase hex. |
+| `exit_o.layer_evidence_digest_mismatch:<layer>` | Dynamic. The evidence bytes supplied for the named layer hash to a value other than the layer's `binding_digest`. |
+
+Non-code observation outputs: the substantive findings `proof_receipt_signature`,
+`key_authentication_finding`, `act_principal_finding`, `semantic_authority_finding`,
+`semantic_act_finding`, `historical_scope_authorization_finding`,
+`temporal_consistency_finding` take the values `pass` / `fail` / `not_evaluated` /
+`unavailable`. A `not_evaluated` or `unavailable` layer is never a pass, and
+`exit_o_chain_satisfied` is true only when every required substantive finding is
+`pass` — so a well-formed, correctly-bound proof still fails closed until governed
+upstream verifiers and a provisioned key exist.
