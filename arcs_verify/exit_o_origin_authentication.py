@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import datetime
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
@@ -108,6 +109,19 @@ def _git_blob_sha1(data: bytes) -> str:
     h.update(b"blob %d\0" % len(data))
     h.update(data)
     return h.hexdigest()
+
+
+def _parse_offset_aware_iso8601(value: object) -> datetime | None:
+    """Parse an offset-aware ISO-8601 timestamp, accepting terminal Z."""
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed
 
 
 @dataclass
@@ -183,24 +197,26 @@ def _load_pinned_schema(report: ExitOOriginAuthenticationVerificationReport) -> 
 def verify_exit_o_origin_authentication_receipt(
     receipt: Mapping[str, Any],
     *,
-    supplied_evidence_digests: Mapping[str, str] | None = None,
+    supplied_evidence_bytes: Mapping[str, bytes] | None = None,
     trust_bundle: Mapping[str, Any] | None = None,
 ) -> ExitOOriginAuthenticationVerificationReport:
     """Recompute EXIT-O origin-authentication findings from receipt bytes.
 
-    ``supplied_evidence_digests`` maps a layer key to the sha256 of the evidence
-    bytes actually handed to the verifier for that layer. Absence of a layer's
-    entry makes that layer's substantive finding ``unavailable`` (evidence not
-    supplied), never a pass. Even when evidence IS supplied and its digest
-    matches, the substantive finding stays ``not_evaluated`` until a governed
-    verifier contract for that upstream evidence type exists — digest match is
-    integrity, not semantic authentication.
+    ``supplied_evidence_bytes`` maps a layer key to the literal evidence bytes
+    handed to the verifier for that layer. The verifier recomputes sha256 itself;
+    it never accepts a caller-asserted evidence digest as proof of integrity.
+    Absence of a layer's entry makes that layer's substantive finding
+    ``unavailable`` (evidence not supplied), never a pass. Even when evidence
+    IS supplied and its independently recomputed digest matches, the substantive
+    finding stays ``not_evaluated`` until a governed verifier contract for that
+    upstream evidence type exists — digest match is integrity, not semantic
+    authentication.
 
     ``trust_bundle`` is reserved: without a verifier-selected trust bundle the
     signature finding is ``not_evaluated`` (never a pass).
     """
     report = ExitOOriginAuthenticationVerificationReport()
-    supplied = dict(supplied_evidence_digests or {})
+    supplied = dict(supplied_evidence_bytes or {})
 
     schema = _load_pinned_schema(report)
     if not isinstance(receipt, Mapping):
@@ -249,44 +265,69 @@ def verify_exit_o_origin_authentication_receipt(
 
     # --- temporal_consistency_finding (structural recompute) -----------------
     # O5: historical_act_time < present_attestation_time == issued_at.
+    # The equality to issued_at is literal per the producer contract; ordering
+    # is by parsed instants, not lexicographic string order.
     hist = receipt.get("historical_act_time")
     pres = receipt.get("present_attestation_time")
     issued = receipt.get("issued_at")
-    if not (isinstance(hist, str) and isinstance(pres, str) and isinstance(issued, str)):
+    hist_dt = _parse_offset_aware_iso8601(hist)
+    pres_dt = _parse_offset_aware_iso8601(pres)
+    issued_dt = _parse_offset_aware_iso8601(issued)
+    if hist_dt is None or pres_dt is None or issued_dt is None:
         report.temporal_consistency_finding = VERDICT_FAIL
-        report.failure_codes.append("exit_o.temporal_fields_absent")
+        report.failure_codes.append("exit_o.temporal_fields_invalid")
     elif pres != issued:
         report.temporal_consistency_finding = VERDICT_FAIL
         report.failure_codes.append("exit_o.attestation_time_mismatch")
-    elif not (hist < pres):
+    elif not (hist_dt < pres_dt):
         report.temporal_consistency_finding = VERDICT_FAIL
         report.failure_codes.append("exit_o.historical_not_before_present")
     else:
         report.temporal_consistency_finding = VERDICT_PASS
 
     # --- historical_scope_authorization_finding ------------------------------
-    # Structural: present, references a scope, and its effective interval covers
-    # the attestation time. Substantive activation requires a governed authority
-    # verifier that does not exist yet -> not_evaluated (never pass on structure).
+    # Structural: the copied scope must equal the top-level proof scope, and the
+    # authorization's effective interval must cover the attestation instant.
+    # Substantive activation still requires a governed authority verifier that
+    # does not exist yet -> not_evaluated (never pass on structure).
     hsa = receipt.get("historical_scope_authorization")
     if not isinstance(hsa, Mapping):
         report.historical_scope_authorization_finding = VERDICT_FAIL
         report.failure_codes.append("exit_o.historical_scope_authorization_absent")
     else:
+        scope_pairs = (
+            ("present_attester_ref", receipt.get("present_attester_ref")),
+            ("historical_actor_ref", receipt.get("historical_actor_ref")),
+            ("semantic_issuer_ref", receipt.get("semantic_issuer_ref")),
+            (
+                "semantic_authority_profile_ref",
+                receipt.get("semantic_authority_profile_ref"),
+            ),
+            ("authority_domain", receipt.get("authority_domain")),
+        )
+        scope_mismatch = any(hsa.get(name) != top for name, top in scope_pairs)
+
         interval = hsa.get("effective_interval")
         covers = False
-        if isinstance(interval, Mapping) and isinstance(pres, str):
-            nb = interval.get("effective_not_before")
-            na = interval.get("effective_not_after")
-            covers = (
-                isinstance(nb, str)
-                and isinstance(na, str)
-                and nb <= pres <= na
+        if isinstance(interval, Mapping) and pres_dt is not None:
+            nb_dt = _parse_offset_aware_iso8601(interval.get("effective_not_before"))
+            na_raw = interval.get("effective_not_after")
+            na_dt = (
+                _parse_offset_aware_iso8601(na_raw)
+                if na_raw is not None
+                else None
             )
-        # same-string identity is not continuity: the authorization must not
-        # merely echo historical_actor_ref as if that proved present authority.
+            if nb_dt is not None and (na_raw is None or na_dt is not None):
+                covers = nb_dt <= pres_dt and (na_dt is None or pres_dt <= na_dt)
+
+        # same-string identity is not continuity: an authorization object cannot
+        # be substituted by merely echoing the historical actor reference.
         echoes_actor = hsa.get("binding_ref") == receipt.get("historical_actor_ref")
-        if not covers:
+
+        if scope_mismatch:
+            report.historical_scope_authorization_finding = VERDICT_FAIL
+            report.failure_codes.append("exit_o.historical_scope_mismatch")
+        elif not covers:
             report.historical_scope_authorization_finding = VERDICT_FAIL
             report.failure_codes.append(
                 "exit_o.historical_scope_interval_excludes_attestation"
@@ -297,14 +338,29 @@ def verify_exit_o_origin_authentication_receipt(
                 "exit_o.historical_scope_same_string_as_actor"
             )
         else:
-            # structurally sound, but no governed authority verifier to confirm
-            # the authorization is genuinely active.
             report.historical_scope_authorization_finding = VERDICT_NOT_EVALUATED
             report.notes.append(
-                "historical_scope_authorization is structurally present and covers "
-                "the attestation time, but no governed authority verifier exists to "
-                "confirm it is active; not upgraded to pass."
+                "historical_scope_authorization is structurally scoped to this "
+                "proof and effective at the attestation time, but no governed "
+                "authority verifier exists to confirm it is active; not upgraded "
+                "to pass."
             )
+
+    # Independently recompute the semantic-authority scope copy. JSON Schema
+    # requires the fields but cannot express equality to the top-level issuer /
+    # profile / domain.
+    sem_auth = receipt.get("semantic_authority")
+    if isinstance(sem_auth, Mapping):
+        if any(
+            sem_auth.get(name) != receipt.get(name)
+            for name in (
+                "semantic_issuer_ref",
+                "semantic_authority_profile_ref",
+                "authority_domain",
+            )
+        ):
+            report.semantic_authority_finding = VERDICT_FAIL
+            report.failure_codes.append("exit_o.semantic_authority_scope_mismatch")
 
     # --- proof_receipt_signature ---------------------------------------------
     sig = receipt.get("receipt_signature")
@@ -346,31 +402,47 @@ def verify_exit_o_origin_authentication_receipt(
             setattr(report, finding_attr, VERDICT_FAIL)
             report.failure_codes.append(f"exit_o.layer_digest_malformed:{key}")
             continue
-        supplied_digest = supplied.get(key)
-        if supplied_digest is None:
-            # evidence bytes for this layer not supplied to the verifier.
+        evidence = supplied.get(key)
+        if evidence is None:
             setattr(report, finding_attr, VERDICT_UNAVAILABLE)
             report.notes.append(
                 f"{key}: referenced evidence bytes not supplied; unavailable."
             )
             continue
+        if not isinstance(evidence, (bytes, bytearray, memoryview)):
+            setattr(report, finding_attr, VERDICT_FAIL)
+            report.failure_codes.append(f"exit_o.layer_evidence_bytes_invalid:{key}")
+            continue
+        supplied_digest = "sha256:" + hashlib.sha256(bytes(evidence)).hexdigest()
         if supplied_digest != bdig:
             setattr(report, finding_attr, VERDICT_FAIL)
             report.failure_codes.append(f"exit_o.layer_evidence_digest_mismatch:{key}")
             continue
-        # bytes present AND digest matches -> integrity holds, but semantic
-        # authentication of this layer needs a governed verifier that does not
-        # exist yet. NOT a pass.
-        setattr(report, finding_attr, VERDICT_NOT_EVALUATED)
+        # bytes present AND independently recomputed digest matches -> integrity
+        # holds, but semantic authentication of this layer needs a governed
+        # verifier that does not exist yet. NOT a pass. Preserve any earlier
+        # structural scope failure on semantic_authority.
+        if getattr(report, finding_attr) != VERDICT_FAIL:
+            setattr(report, finding_attr, VERDICT_NOT_EVALUATED)
         report.notes.append(
             f"{key}: evidence digest matches (integrity), but no governed verifier "
             f"contract exists for this layer; semantic authentication not_evaluated."
         )
 
-    # --- overall EXIT-O: pass iff every required substantive finding is pass --
-    report.exit_o_chain_satisfied = all(
+    # --- overall EXIT-O -------------------------------------------------------
+    # Structural validity is a prerequisite, not merely diagnostic metadata.
+    # A future verifier must never satisfy EXIT-O on a schema-invalid,
+    # unpinned, or cross-act-substituted proof even if every semantic verifier
+    # happens to return pass.
+    structural_ok = (
+        report.profile_schema_pinned
+        and report.proof_receipt_conformance
+        and report.exact_semantic_disposition_binding
+    )
+    substantive_ok = all(
         getattr(report, name) == VERDICT_PASS for name in _REQUIRED_SUBSTANTIVE
     )
+    report.exit_o_chain_satisfied = structural_ok and substantive_ok
     return report
 
 
