@@ -98,15 +98,34 @@ def test_all_positive_producer_postures_never_become_passes():
         assert getattr(r, f) != VERDICT_PASS
 
 
-def test_supplied_evidence_digest_match_is_integrity_not_authentication():
+def test_supplied_evidence_bytes_are_hashed_independently_not_trusted():
     r = _partial()
-    key_digest = r["key_authentication"]["binding_digest"]
-    report = verify_exit_o_origin_authentication_receipt(
-        r, supplied_evidence_digests={"key_authentication": key_digest}
+    evidence = b"literal key-authentication evidence bytes"
+    r["key_authentication"]["binding_digest"] = (
+        "sha256:" + hashlib.sha256(evidence).hexdigest()
     )
-    # digest matches -> integrity holds, but semantic finding stays not_evaluated
+    report = verify_exit_o_origin_authentication_receipt(
+        r, supplied_evidence_bytes={"key_authentication": evidence}
+    )
+    # independently recomputed digest matches -> integrity only; semantic
+    # authentication still requires a governed upstream verifier.
     assert report.key_authentication_finding == VERDICT_NOT_EVALUATED
     assert report.key_authentication_finding != VERDICT_PASS
+
+
+def test_caller_asserted_digest_string_is_not_accepted_as_evidence_bytes():
+    r = _partial()
+    report = verify_exit_o_origin_authentication_receipt(
+        r,
+        supplied_evidence_bytes={
+            "key_authentication": r["key_authentication"]["binding_digest"]  # type: ignore[dict-item]
+        },
+    )
+    assert report.key_authentication_finding == VERDICT_FAIL
+    assert any(
+        "layer_evidence_bytes_invalid:key_authentication" in c
+        for c in report.failure_codes
+    )
 
 
 def test_missing_evidence_becomes_unavailable_not_pass():
@@ -119,11 +138,19 @@ def test_missing_evidence_becomes_unavailable_not_pass():
 
 def test_binding_byte_substitution_fails():
     r = _partial()
-    r["key_authentication"]["binding_digest"] = "sha256:" + "9" * 64
+    expected = b"expected evidence bytes"
+    supplied = b"substituted evidence bytes"
+    r["key_authentication"]["binding_digest"] = (
+        "sha256:" + hashlib.sha256(expected).hexdigest()
+    )
     report = verify_exit_o_origin_authentication_receipt(
-        r, supplied_evidence_digests={"key_authentication": "sha256:" + "1" * 64}
+        r, supplied_evidence_bytes={"key_authentication": supplied}
     )
     assert report.key_authentication_finding == VERDICT_FAIL
+    assert any(
+        "layer_evidence_digest_mismatch:key_authentication" in c
+        for c in report.failure_codes
+    )
 
 
 def test_wrong_profile_or_version_refused():
@@ -156,6 +183,25 @@ def test_historical_not_before_present_fails():
     r["historical_act_time"] = r["present_attestation_time"]
     report = verify_exit_o_origin_authentication_receipt(r)
     assert report.temporal_consistency_finding == VERDICT_FAIL
+
+
+def test_temporal_order_uses_instants_not_lexicographic_strings():
+    r = _partial()
+    # 01:00+01:00 == 00:00Z, which is before the 00:10Z attestation.
+    # Lexicographic comparison would get this wrong.
+    r["historical_act_time"] = "2026-09-22T01:00:00+01:00"
+    report = verify_exit_o_origin_authentication_receipt(r)
+    assert report.temporal_consistency_finding == VERDICT_PASS
+
+
+def test_temporal_order_refuses_later_instant_hidden_by_offset():
+    r = _partial()
+    # 00:05-01:00 == 01:05Z, which is AFTER 00:10Z even though its
+    # literal clock string sorts before "00:10".
+    r["historical_act_time"] = "2026-09-22T00:05:00-01:00"
+    report = verify_exit_o_origin_authentication_receipt(r)
+    assert report.temporal_consistency_finding == VERDICT_FAIL
+    assert any("historical_not_before_present" in c for c in report.failure_codes)
 
 
 def test_historical_scope_interval_excluding_attestation_fails():
@@ -197,6 +243,38 @@ def test_historical_scope_structural_ok_is_not_evaluated_not_pass():
     assert report.historical_scope_authorization_finding != VERDICT_PASS
 
 
+def test_historical_scope_open_ended_interval_is_valid_shape():
+    r = _partial()
+    hsa = r["historical_scope_authorization"]
+    hsa["binding_ref"] = "urn:governed:historical-scope-auth/open-ended"
+    hsa["effective_interval"] = {
+        "effective_not_before": "2026-09-01T00:00:00Z"
+    }
+    report = verify_exit_o_origin_authentication_receipt(r)
+    assert report.proof_receipt_conformance is True
+    assert report.historical_scope_authorization_finding == VERDICT_NOT_EVALUATED
+
+
+def test_historical_scope_copied_scope_mismatch_fails_independently():
+    r = _partial()
+    # Shape remains schema-valid; equality to top-level is a checker/verifier
+    # invariant that JSON Schema cannot express.
+    r["historical_scope_authorization"]["authority_domain"] = "different_domain"
+    report = verify_exit_o_origin_authentication_receipt(r)
+    assert report.proof_receipt_conformance is True
+    assert report.historical_scope_authorization_finding == VERDICT_FAIL
+    assert any("historical_scope_mismatch" in c for c in report.failure_codes)
+
+
+def test_semantic_authority_scope_replay_fails_independently():
+    r = _partial()
+    r["semantic_authority"]["semantic_issuer_ref"] = "urn:actor:different-issuer"
+    report = verify_exit_o_origin_authentication_receipt(r)
+    assert report.proof_receipt_conformance is True
+    assert report.semantic_authority_finding == VERDICT_FAIL
+    assert any("semantic_authority_scope_mismatch" in c for c in report.failure_codes)
+
+
 def test_signature_absent_fails_present_shape_is_not_evaluated():
     r = _partial()
     r.pop("receipt_signature", None)
@@ -208,25 +286,33 @@ def test_signature_absent_fails_present_shape_is_not_evaluated():
     assert report2.proof_receipt_signature != VERDICT_PASS
 
 
-def test_overall_passes_only_if_every_required_substantive_is_pass():
-    # Construct a report by hand and confirm the fail-closed aggregation rule:
-    # any non-pass required substantive finding => chain not satisfied.
+def test_overall_requires_structural_and_substantive_gates():
     from arcs_verify import exit_o_origin_authentication as mod
 
-    rep = ExitOOriginAuthenticationVerificationReport()
+    rep = ExitOOriginAuthenticationVerificationReport(
+        profile_schema_pinned=True,
+        proof_receipt_conformance=True,
+        exact_semantic_disposition_binding=True,
+    )
     for name in mod._REQUIRED_SUBSTANTIVE:
         setattr(rep, name, VERDICT_PASS)
-    # emulate the final aggregation
-    rep.exit_o_chain_satisfied = all(
-        getattr(rep, n) == VERDICT_PASS for n in mod._REQUIRED_SUBSTANTIVE
-    )
-    assert rep.exit_o_chain_satisfied is True
-    # flip one to not_evaluated -> fail closed
+
+    assert mod._compute_exit_o_chain_satisfied(rep) is True
+
     rep.key_authentication_finding = VERDICT_NOT_EVALUATED
-    rep.exit_o_chain_satisfied = all(
-        getattr(rep, n) == VERDICT_PASS for n in mod._REQUIRED_SUBSTANTIVE
-    )
-    assert rep.exit_o_chain_satisfied is False
+    assert mod._compute_exit_o_chain_satisfied(rep) is False
+    rep.key_authentication_finding = VERDICT_PASS
+
+    rep.proof_receipt_conformance = False
+    assert mod._compute_exit_o_chain_satisfied(rep) is False
+    rep.proof_receipt_conformance = True
+
+    rep.exact_semantic_disposition_binding = False
+    assert mod._compute_exit_o_chain_satisfied(rep) is False
+    rep.exact_semantic_disposition_binding = True
+
+    rep.profile_schema_pinned = False
+    assert mod._compute_exit_o_chain_satisfied(rep) is False
 
 
 def test_no_producer_import():
