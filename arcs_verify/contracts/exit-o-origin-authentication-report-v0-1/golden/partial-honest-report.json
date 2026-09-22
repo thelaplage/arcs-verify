@@ -6,7 +6,7 @@
   "historical_scope_authorization_finding": "not_evaluated",
   "key_authentication_finding": "unavailable",
   "notes": [
-    "historical_scope_authorization is structurally present and covers the attestation time, but no governed authority verifier exists to confirm it is active; not upgraded to pass.",
+    "historical_scope_authorization is structurally scoped to this proof and effective at the attestation time, but no governed authority verifier exists to confirm it is active; not upgraded to pass.",
     "no verifier-selected trust bundle supplied; signature not cryptographically verified (not a pass).",
     "key_authentication: referenced evidence bytes not supplied; unavailable.",
     "act_principal: referenced evidence bytes not supplied; unavailable.",
