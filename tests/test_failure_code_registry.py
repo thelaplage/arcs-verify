@@ -54,6 +54,8 @@ MODULES = [
     "arcs_verify/external_profile.py",
     # DAGR-AUTHORSHIP-VERIFY0 — trust-relative producer-authorship receipt verifier
     "arcs_verify/dagr_authority_context_producer.py",
+    # ARCS-VERIFY-EXIT-O0 — EXIT-O semantic-issuer origin-authentication verifier
+    "arcs_verify/exit_o_origin_authentication.py",
 ]
 
 # Signatures that mark a module as one that emits verifier failure codes. The
