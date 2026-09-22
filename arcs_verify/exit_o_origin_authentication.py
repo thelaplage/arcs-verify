@@ -235,7 +235,9 @@ def verify_exit_o_origin_authentication_receipt(
             try:
                 import jsonschema
 
-                jsonschema.Draft202012Validator(schema).validate(dict(receipt))
+                jsonschema.Draft202012Validator(
+                    schema, format_checker=jsonschema.FormatChecker()
+                ).validate(dict(receipt))
                 report.proof_receipt_conformance = True
             except jsonschema.ValidationError as exc:  # type: ignore[attr-defined]
                 report.failure_codes.append(
@@ -402,6 +404,12 @@ def verify_exit_o_origin_authentication_receipt(
             setattr(report, finding_attr, VERDICT_FAIL)
             report.failure_codes.append(f"exit_o.layer_digest_malformed:{key}")
             continue
+
+        # A cross-field structural failure found earlier is terminal for this
+        # layer. Missing bytes must not downgrade fail to unavailable.
+        if getattr(report, finding_attr) == VERDICT_FAIL:
+            continue
+
         evidence = supplied.get(key)
         if evidence is None:
             setattr(report, finding_attr, VERDICT_UNAVAILABLE)
