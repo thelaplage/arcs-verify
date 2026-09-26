@@ -420,6 +420,12 @@ def _signed_receipt_and_pem():
     in-test with a freshly generated ephemeral Ed25519 key. Returns
     (receipt, public_key_pem_str, private_key)."""
     receipt = _load("origin-auth-all-positive-no-aggregate.json")
+    # The upstream producer fixture predates the production relation scope.
+    # Normalize only this in-test copy so a positive key binding must name
+    # the exact attester/profile/domain the signed receipt names.
+    receipt["authority_domain"] = "institutional_admission"
+    receipt["semantic_authority"]["authority_domain"] = "institutional_admission"
+    receipt["historical_scope_authorization"]["authority_domain"] = "institutional_admission"
     private_key = Ed25519PrivateKey.generate()
     public_key = private_key.public_key()
     pem = public_key.public_bytes(
@@ -502,7 +508,7 @@ def _key_principal_binding(
     fingerprint: str | None = None,
     authority_domain: str = "institutional_admission",
     relation_purpose: str = "semantic-origin-authentication",
-    actor_ref: str = "urn:actor:memory-admission/historical",
+    actor_ref: str = "urn:participant:present/attester-1",
     semantic_authority_profile_ref: str = "urn:authority-profile:test/memory-admission/v0.1",
     genesis_ref: str = "urn:genesis:test/0001",
     genesis_digest: str = "sha256:" + "9" * 64,
@@ -529,7 +535,7 @@ def _key_principal_binding(
 
 def _genesis_evidence(
     *,
-    actor_ref: str = "urn:actor:memory-admission/historical",
+    actor_ref: str = "urn:participant:present/attester-1",
     semantic_authority_profile_ref: str = "urn:authority-profile:test/memory-admission/v0.1",
     genesis_ref: str = "urn:genesis:test/0001",
     genesis_digest: str = "sha256:" + "9" * 64,
@@ -775,6 +781,64 @@ def test_binding_relation_purpose_mismatch_fails():
     assert report.key_authentication_finding == VERDICT_FAIL
     assert any(
         "key_authentication_binding_purpose_mismatch" in c
+        for c in report.failure_codes
+    )
+
+
+def test_binding_actor_must_equal_receipt_present_attester():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem)
+    binding = _key_principal_binding(pem, actor_ref="urn:actor:someone-else")
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle, key_principal_binding=binding
+    )
+    assert report.proof_receipt_signature == VERDICT_PASS
+    assert report.key_authentication_finding == VERDICT_FAIL
+    assert any(
+        "key_authentication_binding_attester_mismatch" in c
+        for c in report.failure_codes
+    )
+
+
+def test_binding_profile_must_equal_receipt_semantic_authority_profile():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem)
+    binding = _key_principal_binding(
+        pem, semantic_authority_profile_ref="urn:authority-profile:wrong/v9"
+    )
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle, key_principal_binding=binding
+    )
+    assert report.proof_receipt_signature == VERDICT_PASS
+    assert report.key_authentication_finding == VERDICT_FAIL
+    assert any(
+        "key_authentication_binding_profile_mismatch" in c
+        for c in report.failure_codes
+    )
+
+
+def test_binding_domain_must_equal_receipt_authority_domain():
+    receipt, pem, private_key = _signed_receipt_and_pem()
+    # Keep the binding on the fixed production relation constant but change
+    # only the signed receipt's scope. Re-sign so failure is the scope join,
+    # not signature validity.
+    receipt["authority_domain"] = "different_receipt_domain"
+    receipt["semantic_authority"]["authority_domain"] = "different_receipt_domain"
+    receipt["historical_scope_authorization"]["authority_domain"] = "different_receipt_domain"
+    preimage = copy.deepcopy(receipt)
+    del preimage["receipt_signature"]["signature"]
+    receipt["receipt_signature"]["signature"] = _b64url_encode(
+        private_key.sign(rfc8785.dumps(preimage))
+    )
+    bundle = _trust_bundle(pem)
+    binding = _key_principal_binding(pem)
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle, key_principal_binding=binding
+    )
+    assert report.proof_receipt_signature == VERDICT_PASS
+    assert report.key_authentication_finding == VERDICT_FAIL
+    assert any(
+        "key_authentication_binding_receipt_domain_mismatch" in c
         for c in report.failure_codes
     )
 
