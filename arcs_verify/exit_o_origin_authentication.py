@@ -393,8 +393,11 @@ def verify_exit_o_origin_authentication_receipt(
     fingerprint (inline, from the WIRE0 spec) and requiring it equal the
     binding's asserted ``key_fingerprint``, plus binding scope consistency
     (``key_id``, the fixed ``authority_domain``/``relation_purpose``
-    constants, and — if ``genesis_evidence`` is also supplied — the bound
-    actor/profile/genesis reference). Without binding evidence,
+    constants, and the receipt-named present attester/profile/domain), plus —
+    if ``genesis_evidence`` is also supplied — the bound actor/profile/genesis
+    reference. A key bound to *some* principal is never enough: the binding's
+    ``actor_ref`` must equal ``receipt.present_attester_ref`` exactly, and its
+    profile/domain must equal the receipt scope. Without binding evidence,
     ``key_authentication_finding`` stays ``not_evaluated`` even if the
     signature passes: this verifier never authenticates a key from a valid
     signature alone.
@@ -740,6 +743,24 @@ def verify_exit_o_origin_authentication_receipt(
                     report.key_authentication_finding = VERDICT_FAIL
                     report.failure_codes.append(
                         "exit_o.key_authentication_binding_purpose_mismatch"
+                    )
+                elif binding.get("actor_ref") != receipt.get("present_attester_ref"):
+                    report.key_authentication_finding = VERDICT_FAIL
+                    report.failure_codes.append(
+                        "exit_o.key_authentication_binding_attester_mismatch"
+                    )
+                elif (
+                    binding.get("semantic_authority_profile_ref")
+                    != receipt.get("semantic_authority_profile_ref")
+                ):
+                    report.key_authentication_finding = VERDICT_FAIL
+                    report.failure_codes.append(
+                        "exit_o.key_authentication_binding_profile_mismatch"
+                    )
+                elif binding.get("authority_domain") != receipt.get("authority_domain"):
+                    report.key_authentication_finding = VERDICT_FAIL
+                    report.failure_codes.append(
+                        "exit_o.key_authentication_binding_receipt_domain_mismatch"
                     )
                 elif genesis_evidence is not None and (
                     not isinstance(genesis_evidence, Mapping)
