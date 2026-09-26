@@ -70,6 +70,10 @@ def test_d3_input_spec_is_bounded_and_nonpublishing():
 
     assert spec["license"]["spdx"] == "Apache-2.0"
     assert len(spec["authority_inputs"]["profile_documents"]) == 2
+    assert spec["release_candidate"] == {
+        "dataset_manifest_sha256": "483234cd14eb4ae0a4e5e016f59cf7d926b0a4f756f2db6ea8f07472cc2b6c31",
+        "sha256sums_sha256": "0bb8d188f513cf7005e29235707dfffd0431c45d050cf72fcdcc581585dc10fd",
+    }
     assert "no epistemic truth, no authority, and no trust policy" in spec[
         "bounded_statement"
     ]
@@ -89,6 +93,8 @@ def test_materializes_exact_twelve_case_candidate_from_historical_pin(tmp_path):
     assert result["case_count"] == 12
     assert result["valid_count"] == 5
     assert result["mutation_count"] == 7
+    assert result["dataset_manifest_sha256"] == "483234cd14eb4ae0a4e5e016f59cf7d926b0a4f756f2db6ea8f07472cc2b6c31"
+    assert result["sha256sums_sha256"] == "0bb8d188f513cf7005e29235707dfffd0431c45d050cf72fcdcc581585dc10fd"
 
     manifest_path = out / "DATASET_MANIFEST.json"
     sums_path = out / "SHA256SUMS.txt"
