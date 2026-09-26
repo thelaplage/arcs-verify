@@ -1,0 +1,65 @@
+name: d3-dataset
+
+on:
+  push:
+    branches:
+      - feat/hf-public-surface0-d3-v0-1
+    paths:
+      - public_artifacts/hf-public-surface/d3-v0.1/input-spec.json
+      - tools/materialize_hf_d3_v0_1.py
+      - tests/test_hf_public_surface_d3.py
+      - .github/workflows/d3-dataset.yml
+  pull_request:
+    paths:
+      - public_artifacts/hf-public-surface/d3-v0.1/input-spec.json
+      - tools/materialize_hf_d3_v0_1.py
+      - tests/test_hf_public_surface_d3.py
+      - .github/workflows/d3-dataset.yml
+
+permissions:
+  contents: read
+
+jobs:
+  d3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test runner
+        run: python -m pip install pytest
+
+      - name: Run D3 contract tests
+        run: python -m pytest -q tests/test_hf_public_surface_d3.py
+
+      - name: Materialize exact candidate
+        run: |
+          python tools/materialize_hf_d3_v0_1.py \
+            --out "$RUNNER_TEMP/hf-public-surface-d3-v0.1"
+
+      - name: Inspect generated boundary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["RUNNER_TEMP"]) / "hf-public-surface-d3-v0.1"
+          manifest = json.loads((root / "DATASET_MANIFEST.json").read_text())
+          assert manifest["counts"] == {"valid": 5, "mutations": 7, "total": 12}
+          assert manifest["publication_boundary"]["hf_publication_authorized"] is False
+          assert manifest["publication_boundary"]["hf_jobs_authorized"] is False
+          assert manifest["publication_boundary"]["webmcp_included"] is False
+          assert manifest["publication_boundary"]["synthetic_cases_included"] is False
+          print("D3_GENERATED_MANIFEST=" + str(root / "DATASET_MANIFEST.json"))
+          print("D3_GENERATED_CASES=12")
+          print("D3_HF_EGRESS=0")
+          PY
