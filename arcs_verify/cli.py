@@ -27,6 +27,7 @@ _EXAMPLE = (
     "  arcs-verify ingest-run-sequence ...     verify a dagr.ingest_run.v0.1 receipt sequence\n"
     "  arcs-verify acquisition-grounding ...   verify a grounded content proposal against captured source bytes\n"
     "  arcs-verify c2pa-native ASSET           recompute a native C2PA validation hermetically\n"
+    "  arcs-verify scitt STATEMENT             verify a SCITT Signed Statement and optional Receipt\n"
     "  arcs-verify portable-pack ...            create/verify a portable offline receipt package\n"
     "  arcs-verify okf-attested-computation DECLARATION --bundle-root DIR --run RUN.json\n"
     "                                           bind an OKF Attested Computation declaration to its resources\n"
@@ -230,6 +231,10 @@ def main(argv: list[str] | None = None) -> int:
         from .acquisition_grounding import main as acquisition_grounding_main
 
         return acquisition_grounding_main(args[1:])
+    if args and args[0] == "scitt":
+        from .scitt import main as scitt_main
+
+        return scitt_main(args[1:])
     if args and args[0] == "portable-pack":
         from .portable_pack import main as portable_pack_main
 

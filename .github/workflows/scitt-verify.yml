@@ -1,0 +1,21 @@
+name: scitt-verify
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package test surface
+        run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
+      - name: Compile SCITT verifier
+        run: python -m py_compile arcs_verify/scitt.py
+      - name: Run SCITT hostile tests
+        run: pytest -q tests/test_scitt.py
