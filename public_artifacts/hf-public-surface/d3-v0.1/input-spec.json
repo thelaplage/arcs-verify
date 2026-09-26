@@ -58,5 +58,9 @@
     "This candidate does not make Hugging Face part of the trust base.",
     "This candidate does not add or ratify synthetic act-tuple terminology.",
     "This candidate does not include the WebMCP fixture pack."
-  ]
+  ],
+  "release_candidate": {
+    "dataset_manifest_sha256": "483234cd14eb4ae0a4e5e016f59cf7d926b0a4f756f2db6ea8f07472cc2b6c31",
+    "sha256sums_sha256": "0bb8d188f513cf7005e29235707dfffd0431c45d050cf72fcdcc581585dc10fd"
+  }
 }
