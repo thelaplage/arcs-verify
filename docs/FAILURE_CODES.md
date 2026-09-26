@@ -820,6 +820,9 @@ WIRE0 spec, never imported from producer code).
 | `exit_o.key_authentication_binding_key_id_mismatch` | The binding's `key_id` does not equal the receipt's `receipt_signature.key_id`. |
 | `exit_o.key_authentication_binding_domain_mismatch` | The binding's `authority_domain` does not equal the fixed `institutional_admission` relation constant. |
 | `exit_o.key_authentication_binding_purpose_mismatch` | The binding's `relation_purpose` does not equal the fixed `semantic-origin-authentication` relation constant. |
+| `exit_o.key_authentication_binding_attester_mismatch` | The binding's `actor_ref` does not equal the receipt's exact `present_attester_ref`; a key bound to some other principal cannot authenticate the named attester. |
+| `exit_o.key_authentication_binding_profile_mismatch` | The binding's `semantic_authority_profile_ref` does not equal the receipt's exact `semantic_authority_profile_ref`. |
+| `exit_o.key_authentication_binding_receipt_domain_mismatch` | The binding's `authority_domain` satisfies the fixed relation constant but does not equal the receipt's exact `authority_domain`; relation scope cannot substitute for proof scope. |
 | `exit_o.key_authentication_genesis_mismatch` | Genesis evidence was supplied but the binding's `actor_ref` / `semantic_authority_profile_ref` / `genesis_ref` / `genesis_digest` do not match it. |
 
 Non-code observation outputs: the substantive findings `proof_receipt_signature`,
