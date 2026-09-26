@@ -766,6 +766,16 @@ consistency) can fail with a code; the substantive semantic layers report
 verifier for each upstream evidence type exists — `artifact bytes present !=
 digest matches != semantic layer verified`.
 
+When a caller supplies a verifier-selected arcs-srs trust-bundle v0.2 mapping,
+`proof_receipt_signature` and `key_authentication_finding` (EXIT-O SUBSTANTIVE
+ADAPTER, #94 step 10) are recomputed from the trust bundle, the receipt's
+`receipt_signature`, and — for key authentication — an optional #74
+key<->principal binding wire dict and optional genesis evidence. Without a
+trust bundle both stay `not_evaluated`; `key_authentication_finding` never
+becomes `pass` on a valid signature alone, only when binding evidence is also
+supplied and independently verified (fingerprint recomputed inline from the
+WIRE0 spec, never imported from producer code).
+
 | Code | Meaning |
 |---|---|
 | `exit_o.profile_schema_unreadable` | The vendored pinned profile schema could not be read. |
@@ -790,6 +800,27 @@ digest matches != semantic layer verified`.
 | `exit_o.layer_digest_malformed:<layer>` | Dynamic. The named layer's `binding_digest` is not `sha256:` + 64 lowercase hex. |
 | `exit_o.layer_evidence_bytes_invalid:<layer>` | Dynamic. Evidence supplied for the named layer is not literal bytes; caller-asserted digest strings are not accepted as evidence. |
 | `exit_o.layer_evidence_digest_mismatch:<layer>` | Dynamic. The evidence bytes supplied for the named layer hash to a value other than the layer's `binding_digest`. |
+| `exit_o.signature_object_invalid` | A trust bundle was supplied but `receipt_signature` does not have the required `{algorithm, canonicalization, key_id, signature}` shape with `algorithm=Ed25519`, `canonicalization=RFC8785-JCS`. |
+| `exit_o.trust_bundle_malformed` | The supplied `trust_bundle` is not a mapping. |
+| `exit_o.signature_key_id_unresolved` | `receipt_signature.key_id` does not resolve to any entry in the trust bundle's `keys` list. |
+| `exit_o.trust_bundle_entry_malformed` | The resolved trust-bundle key entry is missing or has a malformed `revocation`/`not_before`/`not_after` shape. |
+| `exit_o.signature_key_revoked` | The resolved trust-bundle key entry has `revocation.revoked = true`. |
+| `exit_o.signature_key_compromised` | The resolved trust-bundle key entry has `revocation.compromise = true`. |
+| `exit_o.signature_issued_at_invalid` | The receipt's `issued_at` could not be parsed, so the key entry's validity window cannot be checked. |
+| `exit_o.signature_key_outside_validity_window` | The receipt's `issued_at` is not within `[not_before, not_after)` of the resolved trust-bundle key entry. |
+| `exit_o.signature_key_profile_not_allowed` | The resolved trust-bundle key entry's `allowed_profiles` does not include this proof's profile. |
+| `exit_o.signature_encoding_invalid` | `receipt_signature.signature` is not a canonical b64url string. |
+| `exit_o.trust_bundle_public_key_invalid` | The resolved trust-bundle key entry's `public_key_pem` does not decode to an Ed25519 public key. |
+| `exit_o.preimage_canonicalization_failed` | RFC8785-JCS canonicalization of the signature preimage raised an error. |
+| `exit_o.signature_invalid` | Ed25519 signature verification of the canonical preimage against the resolved trust-bundle key failed. |
+| `exit_o.key_authentication_signature_failed` | `proof_receipt_signature` failed, so key authentication cannot be established either. |
+| `exit_o.key_authentication_binding_malformed` | The supplied `key_principal_binding` evidence is not a mapping. |
+| `exit_o.key_authentication_fingerprint_unrecomputable` | The resolved trust-bundle key's public key could not be used to independently recompute a fingerprint. |
+| `exit_o.key_authentication_fingerprint_mismatch` | The independently recomputed key fingerprint does not equal the binding's asserted `key_fingerprint`. |
+| `exit_o.key_authentication_binding_key_id_mismatch` | The binding's `key_id` does not equal the receipt's `receipt_signature.key_id`. |
+| `exit_o.key_authentication_binding_domain_mismatch` | The binding's `authority_domain` does not equal the fixed `institutional_admission` relation constant. |
+| `exit_o.key_authentication_binding_purpose_mismatch` | The binding's `relation_purpose` does not equal the fixed `semantic-origin-authentication` relation constant. |
+| `exit_o.key_authentication_genesis_mismatch` | Genesis evidence was supplied but the binding's `actor_ref` / `semantic_authority_profile_ref` / `genesis_ref` / `genesis_digest` do not match it. |
 
 Non-code observation outputs: the substantive findings `proof_receipt_signature`,
 `key_authentication_finding`, `act_principal_finding`, `semantic_authority_finding`,

@@ -7,12 +7,21 @@ The verifier imports no producer code.
 
 from __future__ import annotations
 
+import base64
 import copy
 import hashlib
 import json
 from pathlib import Path
 
 import pytest
+import rfc8785
+from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+    Ed25519PrivateKey,
+)
+from cryptography.hazmat.primitives.serialization import (
+    Encoding,
+    PublicFormat,
+)
 
 from arcs_verify.exit_o_origin_authentication import (
     PROFILE_DOCUMENT_SHA256,
@@ -392,3 +401,392 @@ def test_golden_report_is_reproduced():
     got = verify_exit_o_origin_authentication_receipt(_partial()).to_dict()
     assert got == golden
     assert "chain_status" not in got  # never reuse VerificationReport's field
+
+
+# --- EXIT-O SUBSTANTIVE ADAPTER (#94 step 10): trust-bundle signature +
+# key-authentication recomputation. All keys here are ephemeral fixture
+# Ed25519 keys generated in-test with `cryptography`; no dagr-runtime
+# producer code is imported anywhere in this file.
+
+_FIXTURE_KEY_ID = "issuer.test/semantic-issuer-origin-auth/2026-01"
+
+
+def _b64url_encode(raw: bytes) -> str:
+    return base64.urlsafe_b64encode(raw).rstrip(b"=").decode("ascii")
+
+
+def _signed_receipt_and_pem():
+    """A literal-shaped positive-fixture receipt, deep-copied and re-signed
+    in-test with a freshly generated ephemeral Ed25519 key. Returns
+    (receipt, public_key_pem_str, private_key)."""
+    receipt = _load("origin-auth-all-positive-no-aggregate.json")
+    private_key = Ed25519PrivateKey.generate()
+    public_key = private_key.public_key()
+    pem = public_key.public_bytes(
+        Encoding.PEM, PublicFormat.SubjectPublicKeyInfo
+    ).decode("ascii")
+
+    preimage = copy.deepcopy(receipt)
+    del preimage["receipt_signature"]["signature"]
+    canonical = rfc8785.dumps(preimage)
+    signature = private_key.sign(canonical)
+    receipt["receipt_signature"]["signature"] = _b64url_encode(signature)
+    return receipt, pem, private_key
+
+
+def _fixture_fingerprint(pem: str) -> str:
+    """Independent in-test recomputation of the WIRE0 key fingerprint, built
+    separately from (and not calling into) the verifier module's own
+    recompute helper, so the test fixture and the code under test are not
+    circularly defined."""
+    from cryptography.hazmat.primitives.serialization import load_pem_public_key
+
+    key = load_pem_public_key(pem.encode("ascii"))
+    raw = key.public_bytes(Encoding.Raw, PublicFormat.Raw)
+    digest = hashlib.sha256(
+        b"dagr.institutional_key_binding.fingerprint.v0.1:" + raw
+    ).hexdigest()
+    return f"keyfp:sha256:{digest}"
+
+
+def _trust_bundle(
+    pem: str,
+    *,
+    key_id: str = _FIXTURE_KEY_ID,
+    allowed_profiles=None,
+    not_before: str | None = "2026-01-01T00:00:00Z",
+    not_after: str | None = "2027-01-01T00:00:00Z",
+    revoked: bool = False,
+    compromise: bool = False,
+) -> dict:
+    return {
+        "bundle_version": "0.2",
+        "bundle_id": "test-bundle-exit-o-0001",
+        "bundle_digest": "sha256:" + "0" * 64,
+        "issued_at": "2026-01-01T00:00:00Z",
+        "keys": [
+            {
+                "key_id": key_id,
+                "public_key_pem": pem,
+                "purpose": ["signing"],
+                "allowed_profiles": (
+                    allowed_profiles
+                    if allowed_profiles is not None
+                    else [
+                        "srs.activity.semantic_issuer_origin_authentication.v0.1"
+                    ]
+                ),
+                "allowed_receipt_classes": ["provenance"],
+                "not_before": not_before,
+                "not_after": not_after,
+                "institutional_authorization": {
+                    "authorized_by": "test-owner",
+                    "authorization_date": "2026-01-01T00:00:00Z",
+                    "authorization_ref": None,
+                },
+                "revocation": {
+                    "revoked": revoked,
+                    "revoked_at": "2026-06-01T00:00:00Z" if revoked else None,
+                    "revocation_reason": "test-revocation" if revoked else None,
+                    "compromise": compromise,
+                },
+            }
+        ],
+    }
+
+
+def _key_principal_binding(
+    pem: str,
+    *,
+    key_id: str = _FIXTURE_KEY_ID,
+    fingerprint: str | None = None,
+    authority_domain: str = "institutional_admission",
+    relation_purpose: str = "semantic-origin-authentication",
+    actor_ref: str = "urn:actor:memory-admission/historical",
+    semantic_authority_profile_ref: str = "urn:authority-profile:test/memory-admission/v0.1",
+    genesis_ref: str = "urn:genesis:test/0001",
+    genesis_digest: str = "sha256:" + "9" * 64,
+) -> dict:
+    return {
+        "schema": "dagr.institutional_key_principal_binding.v0.1",
+        "binding_id": "binding-test-0001",
+        "key_fingerprint": (
+            fingerprint if fingerprint is not None else _fixture_fingerprint(pem)
+        ),
+        "key_id": key_id,
+        "actor_ref": actor_ref,
+        "semantic_authority_profile_ref": semantic_authority_profile_ref,
+        "authority_domain": authority_domain,
+        "relation_purpose": relation_purpose,
+        "genesis_ref": genesis_ref,
+        "genesis_digest": genesis_digest,
+        "not_before": "2026-01-01T00:00:00Z",
+        "not_after": None,
+        "producer_ref": "test-producer",
+        "binding_digest": "sha256:" + "8" * 64,
+    }
+
+
+def _genesis_evidence(
+    *,
+    actor_ref: str = "urn:actor:memory-admission/historical",
+    semantic_authority_profile_ref: str = "urn:authority-profile:test/memory-admission/v0.1",
+    genesis_ref: str = "urn:genesis:test/0001",
+    genesis_digest: str = "sha256:" + "9" * 64,
+) -> dict:
+    return {
+        "actor_ref": actor_ref,
+        "semantic_authority_profile_ref": semantic_authority_profile_ref,
+        "genesis_ref": genesis_ref,
+        "genesis_digest": genesis_digest,
+    }
+
+
+def test_valid_trust_bundle_and_binding_yield_passes():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem)
+    binding = _key_principal_binding(pem)
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle, key_principal_binding=binding
+    )
+    assert report.proof_receipt_signature == VERDICT_PASS
+    assert report.key_authentication_finding == VERDICT_PASS
+    assert report.failure_codes == []
+
+
+def test_valid_trust_bundle_binding_and_genesis_evidence_yield_passes():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem)
+    binding = _key_principal_binding(pem)
+    genesis = _genesis_evidence()
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt,
+        trust_bundle=bundle,
+        key_principal_binding=binding,
+        genesis_evidence=genesis,
+    )
+    assert report.proof_receipt_signature == VERDICT_PASS
+    assert report.key_authentication_finding == VERDICT_PASS
+
+
+def test_genesis_evidence_mismatch_fails_key_authentication():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem)
+    binding = _key_principal_binding(pem)
+    genesis = _genesis_evidence(actor_ref="urn:actor:different/actor")
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt,
+        trust_bundle=bundle,
+        key_principal_binding=binding,
+        genesis_evidence=genesis,
+    )
+    assert report.proof_receipt_signature == VERDICT_PASS
+    assert report.key_authentication_finding == VERDICT_FAIL
+    assert any(
+        "key_authentication_genesis_mismatch" in c for c in report.failure_codes
+    )
+
+
+def test_tampered_signature_fails():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    # Flip one byte of the (decoded) signature.
+    raw_sig = base64.urlsafe_b64decode(
+        receipt["receipt_signature"]["signature"]
+        + "=" * (-len(receipt["receipt_signature"]["signature"]) % 4)
+    )
+    tampered = bytes([raw_sig[0] ^ 0xFF]) + raw_sig[1:]
+    receipt["receipt_signature"]["signature"] = _b64url_encode(tampered)
+    bundle = _trust_bundle(pem)
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle
+    )
+    assert report.proof_receipt_signature == VERDICT_FAIL
+    assert any("signature_invalid" in c for c in report.failure_codes)
+    assert report.key_authentication_finding == VERDICT_FAIL
+
+
+def test_tampered_receipt_body_fails_signature():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    receipt["subject_ref"] = "urn:amnesiac.disposition:reject/candidate-tampered-0099"
+    bundle = _trust_bundle(pem)
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle
+    )
+    assert report.proof_receipt_signature == VERDICT_FAIL
+    assert any("signature_invalid" in c for c in report.failure_codes)
+
+
+def test_fingerprint_mismatch_binding_fails_key_authentication():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem)
+    # Binding asserts a fingerprint belonging to a DIFFERENT key.
+    other_pem = (
+        Ed25519PrivateKey.generate()
+        .public_key()
+        .public_bytes(Encoding.PEM, PublicFormat.SubjectPublicKeyInfo)
+        .decode("ascii")
+    )
+    binding = _key_principal_binding(pem, fingerprint=_fixture_fingerprint(other_pem))
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle, key_principal_binding=binding
+    )
+    assert report.proof_receipt_signature == VERDICT_PASS
+    assert report.key_authentication_finding == VERDICT_FAIL
+    assert any(
+        "key_authentication_fingerprint_mismatch" in c for c in report.failure_codes
+    )
+
+
+def test_key_id_absent_from_bundle_fails():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem, key_id="some-other-key-id")
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle
+    )
+    assert report.proof_receipt_signature == VERDICT_FAIL
+    assert any("signature_key_id_unresolved" in c for c in report.failure_codes)
+    assert report.key_authentication_finding == VERDICT_FAIL
+
+
+def test_revoked_entry_fails():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem, revoked=True)
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle
+    )
+    assert report.proof_receipt_signature == VERDICT_FAIL
+    assert any("signature_key_revoked" in c for c in report.failure_codes)
+
+
+def test_compromised_entry_fails():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem, compromise=True)
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle
+    )
+    assert report.proof_receipt_signature == VERDICT_FAIL
+    assert any("signature_key_compromised" in c for c in report.failure_codes)
+
+
+def test_issued_at_outside_validity_window_fails():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    # The fixture's issued_at is 2026-09-22; shrink the window to exclude it.
+    bundle = _trust_bundle(
+        pem,
+        not_before="2020-01-01T00:00:00Z",
+        not_after="2021-01-01T00:00:00Z",
+    )
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle
+    )
+    assert report.proof_receipt_signature == VERDICT_FAIL
+    assert any(
+        "signature_key_outside_validity_window" in c for c in report.failure_codes
+    )
+
+
+def test_not_after_is_exclusive_boundary():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    # not_after exactly equal to issued_at: the window is [not_before, not_after)
+    # so issued_at == not_after must fail.
+    bundle = _trust_bundle(pem, not_after=receipt["issued_at"])
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle
+    )
+    assert report.proof_receipt_signature == VERDICT_FAIL
+    assert any(
+        "signature_key_outside_validity_window" in c for c in report.failure_codes
+    )
+
+
+def test_profile_not_in_allowed_profiles_fails():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem, allowed_profiles=["some.other.profile.v9.9"])
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle
+    )
+    assert report.proof_receipt_signature == VERDICT_FAIL
+    assert any(
+        "signature_key_profile_not_allowed" in c for c in report.failure_codes
+    )
+
+
+def test_no_trust_bundle_stays_not_evaluated():
+    receipt, _pem, _ = _signed_receipt_and_pem()
+    report = verify_exit_o_origin_authentication_receipt(receipt)
+    assert report.proof_receipt_signature == VERDICT_NOT_EVALUATED
+    # key_authentication is UNAVAILABLE here because no
+    # supplied_evidence_bytes["key_authentication"] was given either -- this
+    # is the pre-existing generic-layer baseline, unrelated to the new seam.
+    assert report.key_authentication_finding == VERDICT_UNAVAILABLE
+    assert report.key_authentication_finding != VERDICT_PASS
+
+
+def test_binding_evidence_absent_key_authentication_never_upgraded_to_pass():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem)
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle
+    )
+    # signature genuinely passes, but with no binding evidence at all,
+    # key_authentication must never be upgraded to pass -- it stays at
+    # whatever the generic evidence-layer baseline already was (unavailable,
+    # since no supplied_evidence_bytes["key_authentication"] was given).
+    assert report.proof_receipt_signature == VERDICT_PASS
+    assert report.key_authentication_finding == VERDICT_UNAVAILABLE
+    assert report.key_authentication_finding != VERDICT_PASS
+
+
+def test_binding_key_id_mismatch_fails():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem)
+    binding = _key_principal_binding(pem, key_id="a-different-key-id")
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle, key_principal_binding=binding
+    )
+    assert report.key_authentication_finding == VERDICT_FAIL
+    assert any(
+        "key_authentication_binding_key_id_mismatch" in c
+        for c in report.failure_codes
+    )
+
+
+def test_binding_authority_domain_mismatch_fails():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem)
+    binding = _key_principal_binding(pem, authority_domain="wrong_domain")
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle, key_principal_binding=binding
+    )
+    assert report.key_authentication_finding == VERDICT_FAIL
+    assert any(
+        "key_authentication_binding_domain_mismatch" in c
+        for c in report.failure_codes
+    )
+
+
+def test_binding_relation_purpose_mismatch_fails():
+    receipt, pem, _ = _signed_receipt_and_pem()
+    bundle = _trust_bundle(pem)
+    binding = _key_principal_binding(pem, relation_purpose="wrong-purpose")
+    report = verify_exit_o_origin_authentication_receipt(
+        receipt, trust_bundle=bundle, key_principal_binding=binding
+    )
+    assert report.key_authentication_finding == VERDICT_FAIL
+    assert any(
+        "key_authentication_binding_purpose_mismatch" in c
+        for c in report.failure_codes
+    )
+
+
+def test_the_two_existing_exit_o_fixtures_are_unaffected_by_the_new_seam():
+    """No trust_bundle/binding supplied -> byte-identical behavior to before
+    the substantive adapter existed."""
+    for name in (
+        "origin-auth-all-positive-no-aggregate.json",
+        "origin-auth-partial-honest.json",
+    ):
+        report = verify_exit_o_origin_authentication_receipt(_load(name))
+        assert report.proof_receipt_signature == VERDICT_NOT_EVALUATED
+        assert report.key_authentication_finding != VERDICT_PASS
+        assert report.exit_o_chain_satisfied is False
