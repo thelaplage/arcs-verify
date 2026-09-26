@@ -1,0 +1,66 @@
+{
+  "schema": "arcs.hf_public_surface.d3_input.v0.1",
+  "status": "candidate_not_published",
+  "source": {
+    "repository": "thelaplage/arcs-verify",
+    "commit": "87ee2d7f223a645a54acda805a22361036102eb4",
+    "pack_root": "packs/srs.mcp.sdk_enforcement/v0.1"
+  },
+  "doctrine": {
+    "repository": "thelaplage/garp-doctrine",
+    "ratification_commit": "48b08000feeeb5ce5f6f7e46d14dd534c99fea0a",
+    "directive_path": "docs/internal/IN___GARP_HF_Public_Surface_Reconnaissance_Directive_v0_3_SEP26.md",
+    "candidate": "D3"
+  },
+  "case_set": {
+    "valid_count": 5,
+    "mutation_count": 7,
+    "total_count": 12,
+    "normative_manifest": "packs/srs.mcp.sdk_enforcement/v0.1/normative/manifest.json",
+    "expectations": "packs/srs.mcp.sdk_enforcement/v0.1/expected/expectations.json"
+  },
+  "authority_inputs": {
+    "trust": {
+      "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5"
+    },
+    "envelope_schema": {
+      "path": "arcs_verify/data/srs-envelope-v0.2.0.schema.json",
+      "sha256": "d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333"
+    },
+    "profile_archive": "vendor/arcs-srs/frozen-standard-docs.zip",
+    "profile_documents": [
+      {
+        "archive_path": "docs/profiles/SRS_SIGNED_RECEIPT_PROFILE_v0_1.md",
+        "sha256": "827cdbbe9a4a836ed70ee4422db0d6ee361568949c5e87cc8c2abcc408d99df1"
+      },
+      {
+        "archive_path": "docs/profiles/SRS_MCP_SDK_ENFORCEMENT_PROFILE_v0_1.md",
+        "sha256": "3043993d6297a1c493ee7b2e8ab2627267054ae2de5f8f83d55cd80e1a52f9ce"
+      }
+    ]
+  },
+  "license": {
+    "path": "LICENSE",
+    "spdx": "Apache-2.0"
+  },
+  "publication_boundary": {
+    "hf_publication_authorized": false,
+    "hf_jobs_authorized": false,
+    "hf_namespace_assumed": false,
+    "webmcp_included": false,
+    "synthetic_cases_included": false
+  },
+  "bounded_statement": "This artifact, taken together with its governed record and verification material, lets a verifier independently recompute the record's integrity, provenance bindings, admission state, and history. It establishes no epistemic truth, no authority, and no trust policy.",
+  "non_claims": [
+    "This candidate is evaluation material, not a governed record merely because it is reproducible.",
+    "This candidate does not authorize publication to Hugging Face.",
+    "This candidate does not make Hugging Face part of the trust base.",
+    "This candidate does not add or ratify synthetic act-tuple terminology.",
+    "This candidate does not include the WebMCP fixture pack."
+  ],
+  "release_candidate": {
+    "dataset_manifest_sha256": "483234cd14eb4ae0a4e5e016f59cf7d926b0a4f756f2db6ea8f07472cc2b6c31",
+    "sha256sums_sha256": "0bb8d188f513cf7005e29235707dfffd0431c45d050cf72fcdcc581585dc10fd"
+  }
+}
