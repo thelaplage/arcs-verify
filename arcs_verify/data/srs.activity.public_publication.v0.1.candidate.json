@@ -1,0 +1,132 @@
+{
+  "profile_slug": "srs.activity.public_publication.v0.1",
+  "status": "proposed",
+  "ratification_status": "unratified",
+  "supported": false,
+  "profile_id": "srs.activity.public_publication",
+  "profile_version": "v0.1",
+  "compatible_envelope_published_version": "0.2.1",
+  "requires_signing": true,
+  "fixed_values": {
+    "receipt_version": "srs.core.v5.1",
+    "profile_id": "srs.activity.public_publication",
+    "profile_version": "v0.1",
+    "receipt_type": "provenance",
+    "receipt_kind": "public_publication",
+    "boundary_type": "public_publication_boundary",
+    "egress_class": "public_publication"
+  },
+  "chain_bindings": {
+    "actor": "actor_ref",
+    "proposal": "proposal_ref",
+    "authority": "authority_basis_ref",
+    "decision": "decision_ref",
+    "execution": "execution_ref",
+    "outcome": "outcome_ref"
+  },
+  "destination_classes": [
+    "public_repository",
+    "public_dataset",
+    "public_object_store",
+    "public_web_surface",
+    "other_public_destination"
+  ],
+  "publication_dispositions": [
+    "published",
+    "refused",
+    "failed"
+  ],
+  "failure_codes": [
+    "authority_basis_missing",
+    "authority_basis_refused",
+    "actor_attribution_missing",
+    "artifact_identity_invalid",
+    "artifact_digest_mismatch",
+    "destination_invalid",
+    "destination_rejected",
+    "transport_error",
+    "remote_result_unbound",
+    "rights_gate_refused",
+    "policy_refused",
+    "publisher_internal_error"
+  ],
+  "required_attestation_limit": "The receipt records a public-publication attempt and its declared outcome for the exact artifact and destination bound by this receipt. It binds separate proposal, authority-basis, decision, execution, and outcome references where applicable. It does not independently establish factual truth, legal or contractual rights to publish, the validity of the referenced authority basis or decision, institutional trust, destination persistence, or continued public availability.",
+  "required_covered_classes": [
+    "public_publication_event",
+    "publication_artifact_identity",
+    "publication_destination_binding",
+    "publication_disposition"
+  ],
+  "required_excluded_classes": [
+    "raw_publication_bytes",
+    "raw_credentials",
+    "raw_secret_material",
+    "raw_session_trace",
+    "raw_private_source_content"
+  ],
+  "forbidden_top_level_fields": [
+    "raw_publication_bytes",
+    "credentials",
+    "access_token",
+    "bearer_token",
+    "secret",
+    "session_trace",
+    "private_source_content",
+    "authorization_ref",
+    "publication_request_ref"
+  ],
+  "rules": [
+    "subject_ref must equal artifact_ref",
+    "egress_class must equal public_publication",
+    "artifact_digest and artifact_manifest_digest must be sha256 references",
+    "proposal_ref, decision_ref, outcome_ref, artifact_manifest_ref, and destination_ref must be reference-shaped",
+    "authority_basis_ref field must be present; null only for refused+authority_basis_missing",
+    "actor_ref must be present and reference-shaped except that it may be absent only for refused+actor_attribution_missing; actor_ref=null is never conforming",
+    "execution_ref field must be present; null exactly when publication_disposition=refused",
+    "decision_ref and outcome_ref are required for every disposition",
+    "non-null actor_ref, proposal_ref, non-null authority_basis_ref, decision_ref, non-null execution_ref, and outcome_ref must be pairwise distinct",
+    "published requires non-null authority_basis_ref, actor_ref, execution_ref, published_revision_ref, and failure_code=null",
+    "refused requires execution_ref=null, published_revision_ref=null, and failure_code in refusal_failure_codes",
+    "failed requires non-null authority_basis_ref, actor_ref, execution_ref, published_revision_ref=null, and failure_code in execution_failure_codes",
+    "destination_class must be in the closed destination_classes set",
+    "failure_code must be null or in the closed failure_codes set",
+    "required covered and excluded artifact classes must be present",
+    "attestation_limits must be an array of strings containing required_attestation_limit verbatim",
+    "forbidden raw/credential/session/legacy-collapsed fields must not appear"
+  ],
+  "non_equivalences": [
+    "actor != proposal",
+    "proposal != authority_basis",
+    "authority_basis != decision",
+    "decision != execution",
+    "execution != outcome",
+    "publication_receipt != publication_authority",
+    "published != truth",
+    "published != rights_cleared",
+    "published != admitted",
+    "published != trusted",
+    "published != permanently_available",
+    "destination_response != durable_custody",
+    "signature_valid != issuer_trusted",
+    "issuer_trusted != actor_authorized",
+    "artifact_digest != artifact_meaning",
+    "public_locator != canonical_source_identity",
+    "receipt_existence != platform_endorsement"
+  ],
+  "refusal_failure_codes": [
+    "authority_basis_missing",
+    "authority_basis_refused",
+    "actor_attribution_missing",
+    "artifact_identity_invalid",
+    "artifact_digest_mismatch",
+    "destination_invalid",
+    "rights_gate_refused",
+    "policy_refused"
+  ],
+  "execution_failure_codes": [
+    "destination_rejected",
+    "transport_error",
+    "remote_result_unbound",
+    "publisher_internal_error"
+  ]
+}

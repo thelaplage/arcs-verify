@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcs.example/contracts/exit-o-origin-authentication-report-v0-1/verification-report.schema.json",
+  "title": "EXIT-O Origin-Authentication Verification Report v0.1",
+  "type": "object",
+  "$defs": {
+    "substantive": {
+      "enum": [
+        "pass",
+        "fail",
+        "not_evaluated",
+        "unavailable"
+      ],
+      "description": "A substantive finding value. not_evaluated / unavailable are never a pass."
+    }
+  },
+  "properties": {
+    "report_contract": {
+      "const": "arcs.verify.exit-o-origin-authentication-report/v0.1"
+    },
+    "profile": {
+      "const": "srs.activity.semantic_issuer_origin_authentication.v0.1"
+    },
+    "profile_source_head": {
+      "const": "11db54bbb3143c13b0db148efece68b5a2f3766b"
+    },
+    "profile_schema_sha256": {
+      "const": "c03733f92e5bb05f4087c8fcc944528f013bf3043940478f6ea7a087da0c5531"
+    },
+    "profile_document_sha256": {
+      "const": "85dd6a9b3ae0fb084a6a932f880adb5bbbce3c5924a78954548281e597ad82ea"
+    },
+    "profile_schema_pinned": {
+      "type": "boolean"
+    },
+    "proof_receipt_conformance": {
+      "type": "boolean"
+    },
+    "exact_semantic_disposition_binding": {
+      "type": "boolean"
+    },
+    "proof_receipt_signature": {
+      "$ref": "#/$defs/substantive"
+    },
+    "key_authentication_finding": {
+      "$ref": "#/$defs/substantive"
+    },
+    "act_principal_finding": {
+      "$ref": "#/$defs/substantive"
+    },
+    "semantic_authority_finding": {
+      "$ref": "#/$defs/substantive"
+    },
+    "semantic_act_finding": {
+      "$ref": "#/$defs/substantive"
+    },
+    "historical_scope_authorization_finding": {
+      "$ref": "#/$defs/substantive"
+    },
+    "temporal_consistency_finding": {
+      "$ref": "#/$defs/substantive"
+    },
+    "exit_o_chain_satisfied": {
+      "type": "boolean"
+    },
+    "failure_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "report_contract",
+    "profile",
+    "profile_source_head",
+    "profile_document_sha256",
+    "profile_schema_sha256",
+    "profile_schema_pinned",
+    "proof_receipt_conformance",
+    "exact_semantic_disposition_binding",
+    "proof_receipt_signature",
+    "key_authentication_finding",
+    "act_principal_finding",
+    "semantic_authority_finding",
+    "semantic_act_finding",
+    "historical_scope_authorization_finding",
+    "temporal_consistency_finding",
+    "exit_o_chain_satisfied",
+    "failure_codes",
+    "notes"
+  ],
+  "additionalProperties": false,
+  "$comment": "Closed, independent EXIT-O report contract. chain_status is deliberately NOT a field here: this report does not reuse or extend VerificationReport."
+}

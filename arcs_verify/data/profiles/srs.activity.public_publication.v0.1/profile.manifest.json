@@ -1,0 +1,97 @@
+{
+  "profile_id": "srs.activity.public_publication",
+  "profile_version": "v0.1",
+  "profile_slug": "srs.activity.public_publication.v0.1",
+  "release_stage": "provisional",
+  "document_path": "docs/profiles/SRS_ACTIVITY_PUBLIC_PUBLICATION_PROFILE_v0_1.md",
+  "document_sha256": "2d83e9354783f4a8ac41c109662278dc76501701a4519c67c82f1d1ee2e34d8a",
+  "field_schema_path": "schemas/activity-profiles/v0.1/srs.activity.public_publication.v0.1.schema.json",
+  "conformance_rules_path": "conformance/profiles/srs.activity.public_publication.v0.1/conformance.rules.json",
+  "compatible_envelope_identities": [
+    {
+      "published_version": "0.2.1",
+      "identity": "srs-envelope@0.2.1+sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+    }
+  ],
+  "default_envelope_version": "0.2.1",
+  "requires_signing": true,
+  "signature_algorithm": "Ed25519",
+  "signature_canonicalization": "RFC8785-JCS",
+  "extends": "srs.signed_receipt.v0.1",
+  "fixed_values": {
+    "receipt_version": "srs.core.v5.1",
+    "profile_id": "srs.activity.public_publication",
+    "profile_version": "v0.1",
+    "receipt_type": "provenance",
+    "receipt_kind": "public_publication",
+    "boundary_type": "public_publication_boundary",
+    "egress_class": "public_publication"
+  },
+  "required_fields": [
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "subject_ref",
+    "issuer_id",
+    "issued_at",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "extensions",
+    "receipt_signature",
+    "egress_class",
+    "proposal_ref",
+    "authority_basis_ref",
+    "decision_ref",
+    "execution_ref",
+    "outcome_ref",
+    "artifact_ref",
+    "artifact_digest",
+    "artifact_manifest_ref",
+    "artifact_manifest_digest",
+    "destination_class",
+    "destination_ref",
+    "publication_disposition",
+    "published_revision_ref",
+    "failure_code"
+  ],
+  "receipt_kinds": [
+    "public_publication"
+  ],
+  "artifact_classes_covered_required": [
+    "public_publication_event",
+    "publication_artifact_identity",
+    "publication_destination_binding",
+    "publication_disposition"
+  ],
+  "artifact_classes_excluded_required": [
+    "raw_publication_bytes",
+    "raw_credentials",
+    "raw_secret_material",
+    "raw_session_trace",
+    "raw_private_source_content"
+  ],
+  "required_attestation_limits": {
+    "base": "The receipt records a public-publication attempt and its declared outcome for the exact artifact and destination bound by this receipt. It binds separate proposal, authority-basis, decision, execution, and outcome references where applicable. It does not independently establish factual truth, legal or contractual rights to publish, the validity of the referenced authority basis or decision, institutional trust, destination persistence, or continued public availability."
+  },
+  "separate_findings": [
+    "envelope_shape",
+    "profile_conformance",
+    "signature_shape",
+    "key_resolved",
+    "key_trusted"
+  ],
+  "notes": [
+    "PROVISIONAL supported profile implementing PUBLIC-PUBLICATION-ACT0 ratified in garp-doctrine merge 077b7329d3cd174b80e6c20e44ec4102c86af42c.",
+    "Generic SRS support covers envelope shape, profile conformance, and signature shape. Independent cryptographic/trust verification remains a separate ARCS Verify act.",
+    "The supported v0.1 surface closes extensions to an empty object. The proposal-only candidate_fixture extension is not supported wire.",
+    "The publication artifact is manifest-defined: artifact_digest and artifact_manifest_digest bind the same exact manifest bytes and must be equal.",
+    "published records destination acceptance plus a version-specific result; it does not independently establish remote-byte equivalence.",
+    "Profile registration authorizes no publisher, namespace, production key, public publication side effect, Hugging Face action, or authority movement."
+  ]
+}

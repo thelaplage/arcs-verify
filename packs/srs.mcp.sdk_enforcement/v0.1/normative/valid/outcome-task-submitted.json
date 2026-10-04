@@ -1,0 +1,50 @@
+{
+  "actor_ref": "actor:sha256:5e884898da28047151d0e56f8dc62927",
+  "admission_receipt_ref": "urn:srs:receipt:admission:0004",
+  "argument_digest": "sha256:83b7f8e6a1a2d366f0b3d6e87f6dbe78f67c9df6f6e52f4344d881cde935b27d",
+  "artifact_classes_covered": [
+    "task_submission"
+  ],
+  "artifact_classes_excluded": [
+    "raw_prompt",
+    "raw_output",
+    "raw_tool_arguments",
+    "raw_tool_result"
+  ],
+  "attestation_limits": [
+    "The receipt attests only to governance conditions at the named admission boundary.",
+    "The receipt establishes admission and submission to the configured task backend. It does not establish execution or completion."
+  ],
+  "boundary_id": "boundary:test:fastmcp",
+  "boundary_type": "mcp_tool_call",
+  "extensions": {
+    "mcp": {
+      "binding_version": "fastmcp.tool_result.v1",
+      "task_ref": "task:0004"
+    }
+  },
+  "issued_at": "2026-07-11T20:03:01Z",
+  "issuer_id": "issuer:vcp:test",
+  "logical_call_id": "call-0004",
+  "outcome": "task_submitted",
+  "policy_pack_id": "policy:test:mcp",
+  "policy_pack_version": "2026.07.11",
+  "profile_id": "srs.mcp.sdk_enforcement",
+  "profile_version": "v0.1",
+  "protocol_binding": "mcp",
+  "receipt_id": "urn:srs:receipt:outcome:0004",
+  "receipt_kind": "outcome",
+  "receipt_signature": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "key_id": "issuer.vcp.test/receipt-signing/2026-01",
+    "signature": "UtAotP2bA0xkLK2iNCrJaBm1ApbCi9FQ50dN7Ox-DBI80LyAUZDOTpv2gRTIsuNeC_QlQoXDlh3hcHBORTzYBw"
+  },
+  "receipt_type": "sdk_enforcement",
+  "receipt_version": "srs.core.v5.1",
+  "requested_tool_name": "records.lookup",
+  "retention_class_applied": "hash_only",
+  "runtime_instance_id": "runtime:test:001",
+  "subject_ref": "tool-call:call-0004",
+  "tool_resolution_status": "not_observed"
+}

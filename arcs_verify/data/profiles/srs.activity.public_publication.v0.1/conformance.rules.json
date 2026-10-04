@@ -1,0 +1,119 @@
+{
+  "schema": "srs.activity.public_publication.conformance-rules/v0.1",
+  "profile_slug": "srs.activity.public_publication.v0.1",
+  "doctrine_ref": "garp-doctrine:PUBLIC-PUBLICATION-ACT0@077b7329d3cd174b80e6c20e44ec4102c86af42c",
+  "reference_pattern": "^[A-Za-z][A-Za-z0-9._-]*:[A-Za-z0-9._~:/-]+$",
+  "reference_max_length": 512,
+  "protocol_binding_pattern": "^[A-Za-z][A-Za-z0-9._:-]{0,127}$",
+  "allowed_top_level_fields": [
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "subject_ref",
+    "issuer_id",
+    "actor_ref",
+    "issued_at",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "extensions",
+    "receipt_signature",
+    "egress_class",
+    "proposal_ref",
+    "authority_basis_ref",
+    "decision_ref",
+    "execution_ref",
+    "outcome_ref",
+    "artifact_ref",
+    "artifact_digest",
+    "artifact_manifest_ref",
+    "artifact_manifest_digest",
+    "destination_class",
+    "destination_ref",
+    "publication_disposition",
+    "published_revision_ref",
+    "failure_code"
+  ],
+  "destination_classes": [
+    "public_repository",
+    "public_dataset",
+    "public_object_store",
+    "public_web_surface",
+    "other_public_destination"
+  ],
+  "publication_dispositions": [
+    "published",
+    "refused",
+    "failed"
+  ],
+  "refusal_failure_codes": [
+    "authority_basis_missing",
+    "authority_basis_refused",
+    "actor_attribution_missing",
+    "artifact_identity_invalid",
+    "artifact_digest_mismatch",
+    "destination_invalid",
+    "rights_gate_refused",
+    "policy_refused"
+  ],
+  "execution_failure_codes": [
+    "destination_rejected",
+    "transport_error",
+    "remote_result_unbound",
+    "publisher_internal_error"
+  ],
+  "exact_covered_classes": [
+    "public_publication_event",
+    "publication_artifact_identity",
+    "publication_destination_binding",
+    "publication_disposition"
+  ],
+  "exact_excluded_classes": [
+    "raw_publication_bytes",
+    "raw_credentials",
+    "raw_secret_material",
+    "raw_session_trace",
+    "raw_private_source_content"
+  ],
+  "exact_attestation_limits": [
+    "The receipt records a public-publication attempt and its declared outcome for the exact artifact and destination bound by this receipt. It binds separate proposal, authority-basis, decision, execution, and outcome references where applicable. It does not independently establish factual truth, legal or contractual rights to publish, the validity of the referenced authority basis or decision, institutional trust, destination persistence, or continued public availability."
+  ],
+  "artifact_identity": {
+    "mode": "manifest_defined",
+    "digest_rule": "artifact_digest == artifact_manifest_digest == sha256(exact manifest bytes)"
+  },
+  "extensions_policy": "empty_only",
+  "non_equivalences": [
+    "actor != proposal",
+    "proposal != authority",
+    "authority != decision",
+    "decision != execution",
+    "execution != outcome",
+    "publication_receipt != publication_authority",
+    "published != truth",
+    "published != rights_cleared",
+    "published != admitted",
+    "published != trusted",
+    "published != permanently_available",
+    "published != remote_byte_equivalence",
+    "destination_response != durable_custody",
+    "signature_valid != issuer_trusted",
+    "issuer_trusted != actor_authorized",
+    "artifact_digest != artifact_meaning",
+    "public_locator != canonical_source_identity",
+    "receipt_existence != platform_endorsement",
+    "hosting_platform != authority_source",
+    "hosting_platform != canonical_custody"
+  ],
+  "signature_shape": {
+    "algorithm": "Ed25519",
+    "canonicalization": "RFC8785-JCS",
+    "signature_bytes": 64,
+    "encoding": "unpadded_base64url"
+  }
+}

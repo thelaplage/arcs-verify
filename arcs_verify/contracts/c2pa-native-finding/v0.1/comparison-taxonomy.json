@@ -1,0 +1,247 @@
+{
+  "taxonomy_id": "arcs.c2pa_native_finding.comparison_taxonomy.v0.1",
+  "status": "PROVISIONAL",
+  "authority_note": "arcs-verify owns the C2PA independent-verification report and comparison contract. It does not own generic provenance-signal semantics (arcs-standard) and does not own the native observation receipt serialization (arcs-srs). Nothing here ratifies a C2PA conclusion; it fixes the vocabulary in which arcs-verify reports one.",
+  "prohibited_constructs": {
+    "aggregate_match_boolean": {
+      "forbidden_names": [
+        "native_observation_matches_recomputation",
+        "observation_matches_recomputation",
+        "provenance_valid",
+        "c2pa_verified",
+        "verified"
+      ],
+      "rationale": "Ratified doctrine section 13 prohibits the word 'verified' without an axis in conforming verifier output. A single aggregate match Boolean also collapses causally distinct divergences: a certificate that aged out between observation and recomputation would report the same value as a substantive disagreement."
+    },
+    "synthetic_absent_comparison": {
+      "rule": "When 'observed' is absent, 'comparison' MUST be absent. Emitting an array of not_evaluated comparisons in place of an absent comparison is prohibited: it manufactures the appearance of an evaluation that was never possible.",
+      "rationale": "not_evaluated is a finding about an evaluation that was in scope. No comparison was in scope when there is nothing to compare against."
+    },
+    "exit_status_semantics": {
+      "rule": "The semantic status of a native invocation MUST be determined from the machine report. Process exit status MUST NOT be used to decide valid versus invalid.",
+      "evidence": "The pinned native validator exits 0 for validation_state Valid AND for validation_state Invalid, and exits non-zero only when a required input is unavailable. Exit status separates 'could not evaluate' from 'evaluated'; it does not separate valid from invalid."
+    },
+    "legacy_flattened_status": {
+      "rule": "Parsers MUST read the scoped 'validation_results' object (activeManifest / ingredientDeltas). The legacy top-level 'validation_status' array MUST NOT be used as the source of findings.",
+      "evidence": "The legacy array is a flattened view in which active-manifest and ingredient findings collapse together with no scope marker, producing duplicate entries."
+    },
+    "revocation_silence": {
+      "rule": "Revocation MUST be reported as not_evaluated under hermetic settings. Absence of a revocation failure MUST NOT be represented as non-revocation.",
+      "evidence": "Native revocation checking occurs only via OCSP, is default-off, requires network I/O, and offers no mechanism to inject captured OCSP responses for offline replay."
+    }
+  },
+  "axes": {
+    "manifest_structure": {
+      "description": "Internal integrity of the manifest store: assertion hashed-URI bindings resolve and match.",
+      "reproducibility_class": "byte_deterministic",
+      "contributing_reproducibility_classes": ["byte_deterministic"],
+      "native_codes": {
+        "assertion.hashedURI.match": "satisfied",
+        "assertion.hashedURI.mismatch": "failed",
+        "assertion.missing": "failed",
+        "assertion.multipleHardBindings": "failed",
+        "manifest.multipleParents": "failed"
+      }
+    },
+    "asset_binding": {
+      "description": "Binding of the manifest to the asset bytes (hard binding / data hash).",
+      "reproducibility_class": "byte_deterministic",
+      "contributing_reproducibility_classes": ["byte_deterministic"],
+      "native_codes": {
+        "assertion.dataHash.match": "satisfied",
+        "assertion.dataHash.mismatch": "failed",
+        "assertion.dataHash.missing": "failed",
+        "assertion.bmffHash.match": "satisfied",
+        "assertion.bmffHash.mismatch": "failed",
+        "assertion.boxHash.match": "satisfied",
+        "assertion.boxHash.mismatch": "failed"
+      }
+    },
+    "claim_signature": {
+      "description": "Cryptographic validity of the claim signature over the claim, and whether the signature was made inside the signing certificate's validity window.",
+      "reproducibility_class": "byte_deterministic",
+      "contributing_reproducibility_classes": ["byte_deterministic"],
+      "native_codes": {
+        "claimSignature.validated": "satisfied",
+        "claimSignature.insideValidity": "satisfied",
+        "claimSignature.mismatch": "failed",
+        "claimSignature.outsideValidity": "failed",
+        "claimSignature.missing": "failed"
+      }
+    },
+    "signer_trust": {
+      "description": "Whether the signing credential chains to trust material the caller supplied. This is a property of caller-supplied inputs, not of the asset.",
+      "reproducibility_class": "policy_dependent",
+      "contributing_reproducibility_classes": ["policy_dependent"],
+      "native_codes": {
+        "signingCredential.trusted": "satisfied",
+        "signingCredential.untrusted": "failed"
+      }
+    },
+    "signer_validity": {
+      "description": "Whether the signing certificate is within its validity window at the validation instant. Held separate from signer_trust: 'we do not trust this issuer' and 'this was fine and aged out' are different facts.",
+      "reproducibility_class": "time_dependent",
+      "contributing_reproducibility_classes": ["time_dependent"],
+      "clock_mitigation": "A trusted timestamp on the same manifest (timeStamp.trusted) anchors the validation instant and mitigates wall-clock drift for this axis. Without one, this axis is not reproducible across wall-clock passage.",
+      "native_codes": {
+        "signingCredential.expired": "failed",
+        "signingCredential.invalid": "failed",
+        "signingCredential.notValidYet": "failed"
+      }
+    },
+    "timestamp": {
+      "description": "Presence, integrity, and trust of an RFC 3161 style trusted timestamp over the claim signature.",
+      "reproducibility_class": "time_dependent",
+      "contributing_reproducibility_classes": ["policy_dependent", "time_dependent"],
+      "native_codes": {
+        "timeStamp.validated": "satisfied",
+        "timeStamp.trusted": "satisfied",
+        "timeStamp.untrusted": "indeterminate",
+        "timeStamp.mismatch": "indeterminate",
+        "timeStamp.outsideValidity": "indeterminate",
+        "timeStamp.missing": "not_evaluated"
+      }
+    },
+    "revocation": {
+      "description": "Revocation status of the signing credential.",
+      "reproducibility_class": "resource_dependent",
+      "contributing_reproducibility_classes": ["resource_dependent"],
+      "hermetic_status": "not_evaluated",
+      "hermetic_status_is_forced": true,
+      "native_codes": {
+        "signingCredential.revoked": "failed"
+      }
+    },
+    "ingredient": {
+      "description": "Findings scoped to ingredient manifests, carried in validation_results.ingredientDeltas. Inherits the reproducibility class of whichever codes actually appear.",
+      "reproducibility_class": "byte_deterministic",
+      "contributing_reproducibility_classes": ["byte_deterministic"],
+      "inherits_class_from_codes": true,
+      "native_codes": {
+        "ingredient.manifest.validated": "satisfied",
+        "ingredient.manifest.missing": "failed",
+        "ingredient.hashedURI.match": "satisfied",
+        "ingredient.hashedURI.mismatch": "failed",
+        "ingredient.unknownProvenance": "indeterminate",
+        "ingredient.claimSignature.missing": "failed"
+      }
+    }
+  },
+  "axis_status_values": {
+    "satisfied": "The native validator produced a success finding for this axis and no failure finding.",
+    "failed": "The native validator produced at least one failure finding for this axis.",
+    "indeterminate": "The native validator produced only informational findings for this axis; it declined to resolve the axis either way.",
+    "not_evaluated": "The axis was in scope but the native validator produced no finding for it, or hermetic settings forced it out of evaluation.",
+    "not_applicable": "The axis cannot apply to this artifact class."
+  },
+  "reproducibility_classes": {
+    "byte_deterministic": "Reproducible from the frozen input bytes alone.",
+    "policy_dependent": "Depends on caller-supplied policy material (trust anchors, allowed lists, EKU configuration). Reproducible only against a digest-identical policy basis.",
+    "time_dependent": "Depends on the validation instant. The pinned native validator exposes no validation-clock control, so this class is not caller-pinnable.",
+    "resource_dependent": "Depends on an external resource that cannot be frozen and replayed (network revocation responses).",
+    "validator_version_dependent": "Depends on the native validator build. Applied at report level, not per axis: any axis can flip on a validator version change."
+  },
+  "global_reproducibility_hazards": ["validator_version_dependent", "time_dependent"],
+  "comparison_states": {
+    "match": "Both sides resolved the axis and resolved it identically, on a comparable basis.",
+    "mismatch": "Both sides resolved the axis on a comparable basis and resolved it differently.",
+    "not_comparable": "The two sides were produced on bases that are not comparable for this axis; no divergence claim can be made either way.",
+    "not_evaluated": "The comparison itself was not performed, because one side carries no finding for the axis."
+  },
+  "comparison_reasons": {
+    "same_inputs_same_semantics": "Same frozen inputs, same validator identity and version, same policy basis, and a reproducibility class that permits substantive comparison.",
+    "validator_implementation_delta": "The two sides were produced by different native implementations.",
+    "validator_version_delta": "The two sides were produced by different versions of the same native implementation.",
+    "trust_basis_delta": "The two sides used different trust material or trust mode.",
+    "revocation_basis_delta": "The two sides used different revocation evidence or revocation posture.",
+    "timestamp_basis_delta": "The two sides used different timestamp-authority trust material or timestamp posture.",
+    "validation_clock_delta": "The two sides were evaluated at different validation instants, on an axis whose result depends on the validation instant, without a trusted timestamp to anchor it.",
+    "input_delta": "The two sides were evaluated over different asset or manifest-store bytes.",
+    "policy_delta": "The two sides applied different validator policy settings other than trust, revocation, or timestamp basis.",
+    "unsupported_native_feature": "The axis exercises a native feature the pinned validator does not expose.",
+    "insufficient_evidence": "The observation does not carry enough information to compare this axis."
+  },
+  "integrity_postures": {
+    "no_integrity_inference": "This comparison supports no inference about the integrity or honesty of either side.",
+    "possible_substantive_divergence": "The two sides disagreed on a comparable basis, so a substantive disagreement is possible. This is a prompt to investigate, not a finding of tampering, bad faith, or falsity.",
+    "not_assessable": "Integrity cannot be assessed from this comparison at all."
+  },
+  "reason_posture_matrix": {
+    "_note": "Enforced by the bundle conformance checker, not by JSON Schema alone. Each entry maps a comparison state to the reasons legal in that state and, per reason, the single legal integrity posture.",
+    "match": {
+      "same_inputs_same_semantics": "no_integrity_inference"
+    },
+    "mismatch": {
+      "same_inputs_same_semantics": "possible_substantive_divergence",
+      "validator_implementation_delta": "no_integrity_inference",
+      "validator_version_delta": "no_integrity_inference",
+      "trust_basis_delta": "no_integrity_inference",
+      "revocation_basis_delta": "no_integrity_inference",
+      "timestamp_basis_delta": "no_integrity_inference",
+      "validation_clock_delta": "no_integrity_inference",
+      "input_delta": "no_integrity_inference",
+      "policy_delta": "no_integrity_inference",
+      "unsupported_native_feature": "not_assessable",
+      "insufficient_evidence": "not_assessable"
+    },
+    "not_comparable": {
+      "validator_implementation_delta": "no_integrity_inference",
+      "validator_version_delta": "no_integrity_inference",
+      "trust_basis_delta": "no_integrity_inference",
+      "revocation_basis_delta": "no_integrity_inference",
+      "timestamp_basis_delta": "no_integrity_inference",
+      "validation_clock_delta": "no_integrity_inference",
+      "input_delta": "no_integrity_inference",
+      "policy_delta": "no_integrity_inference",
+      "unsupported_native_feature": "not_assessable",
+      "insufficient_evidence": "not_assessable"
+    },
+    "not_evaluated": {
+      "insufficient_evidence": "not_assessable"
+    }
+  },
+  "comparability_predicates": {
+    "_note": "Report-level facts the comparison engine consumes. Each is recomputed from the two sides' recorded inputs; none is accepted as an assertion.",
+    "validator_identity_match": "Both sides name the same native implementation.",
+    "validator_version_match": "Both sides name the same native implementation version.",
+    "asset_digest_match": "Both sides record the same asset bytes digest.",
+    "manifest_store_digest_match": "Both sides record the same manifest-store bytes digest.",
+    "trust_basis_match": "Both sides record the same trust mode and the same trust-material digest.",
+    "settings_match": "Both sides record the same applied validator settings digest.",
+    "validation_clock_comparable": "Both sides evaluated at a comparable validation instant. False by default: the pinned validator exposes no validation-clock control, so this is true for a time_dependent axis only when a trusted timestamp anchors it."
+  },
+  "hermeticity_facts": {
+    "_note": "Facts arcs-verify can establish about its own invocation. Establishing them does NOT make a time_dependent axis reproducible: hermetic is not timeless.",
+    "network_access_permitted": "core.allowed_network_hosts was empty and no network-enabled option was set.",
+    "remote_resource_fetch_attempted": "verify.remote_manifest_fetch was false, so no remote manifest dereference was attempted.",
+    "trust_list_uri_dereferenced": "Trust material was supplied as local digest-pinned bytes; no trust-list URI was dereferenced.",
+    "ocsp_fetch_permitted": "verify.ocsp_fetch was false."
+  },
+  "manifest_acquisition_modes": {
+    "embedded": "Manifest store was embedded in the asset.",
+    "remote_reference": "Asset referenced a remote manifest store; the referenced bytes were captured out of band and supplied locally.",
+    "external_supplied": "Manifest store bytes were supplied as a separate file.",
+    "sidecar": "Manifest store was supplied as a sidecar alongside the asset. UNEXERCISED by this contract's fixtures.",
+    "durable_recovery": "Manifest store was recovered by soft binding. UNEXERCISED by this contract's fixtures."
+  },
+  "unexercised_paths": {
+    "_note": "Recorded deliberately. No input was manufactured to create coverage of these; a contract that claimed them would be claiming beyond its evidence.",
+    "codes": [
+      "signingCredential.revoked",
+      "manifest.inaccessible",
+      "assertion.bmffHash.match",
+      "assertion.bmffHash.mismatch",
+      "assertion.boxHash.match",
+      "assertion.boxHash.mismatch"
+    ],
+    "features": [
+      "sidecar manifest acquisition",
+      "durable / soft-binding recovery",
+      "fragmented BMFF",
+      "redacted assertions",
+      "gathered assertions (structurally available, empirically empty)",
+      "separate CAWG trust material",
+      "a signer chaining to the official public C2PA trust list"
+    ]
+  }
+}

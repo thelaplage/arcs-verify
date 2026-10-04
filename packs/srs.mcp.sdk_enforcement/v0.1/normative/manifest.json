@@ -1,0 +1,95 @@
+{
+  "dependencies": {
+    "cryptography": "46.0.4",
+    "rfc8785": "0.1.4"
+  },
+  "entries": [
+    {
+      "canonical_preimage_sha256": "e9a5549c8d09fba28b78302e5b5af15607480699427dbae17953b3a40aadb9fa",
+      "expected_signature_valid": false,
+      "path": "mutations/key-id-fail.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "3b77969fea7d96eae2dd31e7260581f7111e1caf57b5ac54857b463ef126c168"
+    },
+    {
+      "canonical_preimage_sha256": "cfa2915fef8badbd6abc675f955f31b1b16064d26b848f2c559848c6aa4ef167",
+      "expected_signature_valid": true,
+      "path": "mutations/reordered-keys-pass.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "d9e8b2682ec5a8e5c11169d0f5b375d407c01862a237f8a337171e10b2a7929b"
+    },
+    {
+      "canonical_preimage_sha256": "90fa94f2e1316688785dcb747fe0f762fb028bcec8196ebf27e85f99bdff3fa8",
+      "expected_signature_valid": false,
+      "path": "mutations/semantic-field-change-fail.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "f4e7a806a8fde7bb93ac05c7e0eeda75370420ae2d4b530ddebb757810f88582"
+    },
+    {
+      "canonical_preimage_sha256": "cfa2915fef8badbd6abc675f955f31b1b16064d26b848f2c559848c6aa4ef167",
+      "expected_signature_valid": false,
+      "path": "mutations/signature-bytes-fail.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "c640a1a78ccac0116ff8cb398395e5a7e259cd864dcecc8841414193b237f0f4"
+    },
+    {
+      "canonical_preimage_sha256": "40b584cdc514d8881bcc9e0c4eb6ae1a1bc6da69e06e3d1ae67abb32b8a8f29c",
+      "expected_signature_valid": false,
+      "path": "mutations/unknown-extension-added-fail.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "d8f8f2308ac438d077deded23d98861ffbfe42b9f8d08069293f56e6b9947523"
+    },
+    {
+      "canonical_preimage_sha256": "f9c1f3df48c1ce07f9eec5d8aed5d7f7d0069f22e62dc28dfdf26848a2491413",
+      "expected_signature_valid": false,
+      "path": "mutations/version-binding-fail.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "a026ba68ab63333f00cfea712f7460c2f1ce3e1c9f890f05f460325f6222646d"
+    },
+    {
+      "canonical_preimage_sha256": "cfa2915fef8badbd6abc675f955f31b1b16064d26b848f2c559848c6aa4ef167",
+      "expected_signature_valid": true,
+      "path": "mutations/whitespace-reserialization-pass.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "70cc7912957fb276ea43efd84f6fe5b41a8efba67e8f329a85323f731ff9f539"
+    },
+    {
+      "canonical_preimage_sha256": "cfa2915fef8badbd6abc675f955f31b1b16064d26b848f2c559848c6aa4ef167",
+      "expected_signature_valid": true,
+      "path": "valid/admission-admitted.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    {
+      "canonical_preimage_sha256": "88359287d73bcf583588250713346c2be13dad13ca90caa29cc5247fbbc113e3",
+      "expected_signature_valid": true,
+      "path": "valid/admission-deferred.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "e1476642ee443709c350131e5461a02d390cb3e0f89d8ba2fdbdde31836c40d6"
+    },
+    {
+      "canonical_preimage_sha256": "124005511a050fe0cd8c66aea6e6a033be09e0fc52a332fa04d02e4176409717",
+      "expected_signature_valid": true,
+      "path": "valid/admission-refused.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "067170f21c5f5e253557460f19c8eead4b6b06e205ddd37cc3c9996ac1835a6e"
+    },
+    {
+      "canonical_preimage_sha256": "425b673a9a8df01d37932c6eb4728d7685dbe932a02949f3317fa82b17a64d2c",
+      "expected_signature_valid": true,
+      "path": "valid/outcome-result-returned.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "24e897203377bff1ca124a51a5669590d434f31c8e5941bfd8df25af3b318c66"
+    },
+    {
+      "canonical_preimage_sha256": "ba5691048853f8e0b60ce987a44d092505bcbfaa755feabc05348171f4827223",
+      "expected_signature_valid": true,
+      "path": "valid/outcome-task-submitted.json",
+      "public_key_sha256": "56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "receipt_file_sha256": "6101b2bfcdbb2adc5188d65a3030aa3767b7b1839fdfd49f2457d634b2ca5d51"
+    }
+  ],
+  "generator_commit": "c7854e89e1764332ef80cb03404ce84ebc346188",
+  "key_id": "issuer.vcp.test/receipt-signing/2026-01",
+  "vector_set": "srs.signed_receipt.v0.1"
+}

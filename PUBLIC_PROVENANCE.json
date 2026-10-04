@@ -1,0 +1,24 @@
+{
+  "excluded_surfaces": [
+    ".ecosystem/",
+    ".garp/",
+    "developer branches and prior Git history",
+    "GitHub issues and pull requests",
+    "benchmark/",
+    "pilots/",
+    "public_artifacts/",
+    "tests/",
+    "tools/",
+    "vendor/",
+    "non-normative implementation packs",
+    "launch/governance documentation"
+  ],
+  "github_publication_performed": false,
+  "history_model": "fresh_snapshot",
+  "package_publication_performed": false,
+  "schema": "arcs.verify.public_scrub_candidate.v0.1",
+  "source_commit": "db94b7391f6fd26feff1c384bd5ea6c522643af8",
+  "source_repository": "thelaplage/arcs-verify",
+  "source_repository_visibility_changed": false,
+  "verifier_source_modified": false
+}
