@@ -47,8 +47,22 @@ include = ["arcs_verify*"]
 arcs_verify = [
   "data/*.json",
   "data/profiles/srs.activity.public_publication.v0.1/*.json",
-  "contracts/dagr-srs-verification-report-v0-1/*.json",
-  "contracts/dagr-srs-verification-report-v0-1/golden/*.json",
+  # Ship only runtime contract inputs.  execution-contract.json is source
+  # governance metadata whose historical regeneration note is not needed by
+  # an installed verifier.
+  "contracts/dagr-srs-verification-report-v0-1/receipt-hash-contract.json",
+  "contracts/dagr-srs-verification-report-v0-1/supported-receipt-contract.json",
+  "contracts/dagr-srs-verification-report-v0-1/verification-execution-record.schema.json",
+  "contracts/dagr-srs-verification-report-v0-1/verification-report.schema.json",
+  # Concrete fixtures are used by the installed DAGR smoke; expectations.json
+  # remains source evidence but is not an installed runtime input.
+  "contracts/dagr-srs-verification-report-v0-1/golden/admission-execution-record.json",
+  "contracts/dagr-srs-verification-report-v0-1/golden/admission-receipt.json",
+  "contracts/dagr-srs-verification-report-v0-1/golden/admission-report.json",
+  "contracts/dagr-srs-verification-report-v0-1/golden/outcome-execution-record.json",
+  "contracts/dagr-srs-verification-report-v0-1/golden/outcome-receipt.json",
+  "contracts/dagr-srs-verification-report-v0-1/golden/outcome-report.json",
+  "contracts/dagr-srs-verification-report-v0-1/golden/trust-bundle.json",
   "contracts/dagr-srs-verification-report-v0-2/*.json",
   "contracts/dagr-srs-verification-report-v0-2/*.md",
   "contracts/dagr-srs-verification-report-v0-2/input-fixtures/*.json",
