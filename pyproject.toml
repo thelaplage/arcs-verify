@@ -48,7 +48,6 @@ arcs_verify = [
   "data/*.json",
   "data/profiles/srs.activity.public_publication.v0.1/*.json",
   "contracts/dagr-srs-verification-report-v0-1/*.json",
-  "contracts/dagr-srs-verification-report-v0-1/*.md",
   "contracts/dagr-srs-verification-report-v0-1/golden/*.json",
   "contracts/dagr-srs-verification-report-v0-2/*.json",
   "contracts/dagr-srs-verification-report-v0-2/*.md",
