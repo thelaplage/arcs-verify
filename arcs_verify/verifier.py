@@ -2681,7 +2681,18 @@ def verify_receipt(
 
     raw_errors: list[str] = []
 
-    for key, value in _walk(receipt):
+    # The Ed25519 signature is opaque cryptographic evidence.  It is verified
+    # separately below against the untouched receipt preimage and MUST NOT be
+    # interpreted as semantic/raw content.  Random base64url signature bytes
+    # can naturally contain token-shaped substrings such as "sk-...".
+    # Project only that one value out of the raw-content scan; every other
+    # receipt field remains subject to the existing key/value exclusions.
+    raw_scan_receipt = copy.deepcopy(receipt)
+    raw_signature = raw_scan_receipt.get("receipt_signature")
+    if isinstance(raw_signature, dict) and "signature" in raw_signature:
+        raw_signature["signature"] = "<opaque-ed25519-signature>"
+
+    for key, value in _walk(raw_scan_receipt):
         if key is not None:
             failure = _raw_content_failure(key, value)
             if failure is not None:
