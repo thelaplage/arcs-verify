@@ -633,6 +633,22 @@ def _contains_prohibited_value(value: str) -> bool:
     )
 
 
+def _raw_content_scan_view(receipt: dict[str, Any]) -> dict[str, Any]:
+    """Return a scan-only projection with opaque signature bytes redacted.
+
+    receipt_signature.signature is cryptographic evidence, not semantic
+    receipt content. Random base64url Ed25519 bytes can naturally contain
+    credential-shaped substrings such as sk-.... The original signed receipt
+    is left untouched and is still used for schema, profile, canonical digest,
+    signature verification, and trust checks.
+    """
+    projected = copy.deepcopy(receipt)
+    signature = projected.get("receipt_signature")
+    if isinstance(signature, dict) and "signature" in signature:
+        signature["signature"] = "<opaque-ed25519-signature-bytes>"
+    return projected
+
+
 def _mcp_profile_errors(receipt: dict[str, Any]) -> list[str]:
     errors = _missing_required(receipt, MCP_REQUIRED)
 
@@ -2681,7 +2697,10 @@ def verify_receipt(
 
     raw_errors: list[str] = []
 
-    for key, value in _walk(receipt):
+    # Scan semantic receipt content, not opaque Ed25519 signature bytes. The
+    # unmodified receipt continues through every cryptographic check below.
+    raw_scan_receipt = _raw_content_scan_view(receipt)
+    for key, value in _walk(raw_scan_receipt):
         if key is not None:
             failure = _raw_content_failure(key, value)
             if failure is not None:
