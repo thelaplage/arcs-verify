@@ -633,6 +633,31 @@ def _contains_prohibited_value(value: str) -> bool:
     )
 
 
+def _raw_content_errors(receipt: dict[str, Any]) -> list[str]:
+    """Recompute raw-content findings without interpreting signature bytes.
+
+    receipt_signature.signature is opaque Ed25519 material, verified on the
+    untouched receipt by the cryptographic verifier. It is not semantic content
+    and therefore cannot itself constitute a raw-content leak.
+    """
+    raw_errors: list[str] = []
+    raw_scan_receipt = copy.deepcopy(receipt)
+    raw_signature = raw_scan_receipt.get("receipt_signature")
+    if isinstance(raw_signature, dict) and "signature" in raw_signature:
+        raw_signature["signature"] = "<opaque-ed25519-signature>"
+
+    for key, value in _walk(raw_scan_receipt):
+        if key is not None:
+            failure = _raw_content_failure(key, value)
+            if failure is not None:
+                raw_errors.append(failure)
+
+        if isinstance(value, str) and _contains_prohibited_value(value):
+            raw_errors.append("raw_content.prohibited_value")
+
+    return raw_errors
+
+
 def _mcp_profile_errors(receipt: dict[str, Any]) -> list[str]:
     errors = _missing_required(receipt, MCP_REQUIRED)
 
@@ -2679,19 +2704,7 @@ def verify_receipt(
     if provisional_detail is not None:
         report.details.append(provisional_detail)
 
-    raw_errors: list[str] = []
-
-    for key, value in _walk(receipt):
-        if key is not None:
-            failure = _raw_content_failure(key, value)
-            if failure is not None:
-                raw_errors.append(failure)
-
-        if (
-            isinstance(value, str)
-            and _contains_prohibited_value(value)
-        ):
-            raw_errors.append("raw_content.prohibited_value")
+    raw_errors = _raw_content_errors(receipt)
 
     report.raw_content_exclusion = not raw_errors
     report.failure_codes.extend(raw_errors)
