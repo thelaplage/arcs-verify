@@ -1,0 +1,16 @@
+# Brand denylist — populated from ratified BRAND-DENY0 v0.1.
+# Source: garp.doctrine.brand-deny0.public-brand-token-policy.v0.1
+#   ratified at garp-doctrine#359, merge commit aa9a67e88e1b04bfb3adcadade8058112ef1701e
+#   (docs/candidates/BRAND_DENY0_PUBLIC_BRAND_TOKEN_POLICY_v0_1.json)
+# Membership = banned + reserved public_status (allowed forms are NOT listed).
+# One token per line. vendor/protocol names are OUT OF SCOPE for BRAND-DENY0 v0.1;
+# this denylist does not cover them. The acknowledged-empty waiver is removed:
+# real governed tokens are now present.
+DAGR Verify
+flight recorder
+black box
+Countervail
+Custody Wall
+Custody Wall for FSI
+Countervail Scanner
+Countervail Receipts

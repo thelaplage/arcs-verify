@@ -1,0 +1,19 @@
+{
+  "schema": "arcs-verify.brand-historical-exceptions/v0.1",
+  "source_policy_id": "garp.doctrine.brand-deny0.historical-immutable-exception.v0.1",
+  "source_policy_blob_sha1": "20bdf1236d159ce57e793a1843d778cd4d64f3e2",
+  "source_ratification_merge": "5007b1f92acd260e8553b7cec76f67c785f98628",
+  "repository": "thelaplage/arcs-verify",
+  "exceptions": [
+    {
+      "path": "arcs_verify/contracts/dagr-srs-verification-report-v0-1/README.md",
+      "token": "Countervail",
+      "git_blob_sha1": "19a20bcde49fbfad699a40e8dceb060668a9ac3f"
+    },
+    {
+      "path": "arcs_verify/data/dagr-resolved-authority-context-1a12726f.schema.json",
+      "token": "Countervail",
+      "git_blob_sha1": "1d1efd510f5d5786e260d9f95872b01220e622ca"
+    }
+  ]
+}
