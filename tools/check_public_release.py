@@ -40,6 +40,22 @@ PRIVATE_IMPORT_ROOTS = (
     # countergraph is a producer; arcs-verify must never import producer code
     "counter" + "graph",
 )
+# arcs-verify must import no DAGR/producer code (emit here, verify there).
+# Every DAGR runtime/producer distribution is a top-level module named "dagr"
+# or "dagr_<suffix>" (dagr_mcp, dagr_runtime, dagr_sdk, dagr_a2a, ...), so the
+# whole family is matched by prefix rather than an enumerated list that a new
+# producer module would silently escape.
+PRIVATE_IMPORT_PREFIXES = ("dagr" + "_",)
+PRIVATE_IMPORT_EXACT = ("dagr",)
+
+
+def is_private_import_root(root_name: str) -> bool:
+    return (
+        root_name in PRIVATE_IMPORT_ROOTS
+        or root_name in PRIVATE_IMPORT_EXACT
+        or root_name.startswith(PRIVATE_IMPORT_PREFIXES)
+    )
+
 WITHDRAWN_LANGUAGE = (
     "none is externally verifiable",
     "the record-governance layer is empty",
@@ -322,7 +338,7 @@ def check(
         if Path(rel).suffix.lower() == ".py":
             for match in IMPORT_RE.finditer(text):
                 root_name = match.group(1).split(".", 1)[0]
-                if root_name in PRIVATE_IMPORT_ROOTS:
+                if is_private_import_root(root_name):
                     findings.append(Finding("PR010", rel, f"private import root found: {root_name}"))
 
         if Path(rel).suffix.lower() in MARKDOWN_SUFFIXES:
