@@ -64,9 +64,11 @@
       "tests": [
         "test_T08_tampered_statement_signature_and_protected_header",
         "test_B12_T08_duplicate_or_malformed_statement",
-        "test_unknown_critical_receipt_header_fails"
+        "test_unknown_critical_receipt_header_fails",
+        "test_receipt_cwt_header_validation",
+        "test_critical_receipt_cwt_requires_supported_semantics"
       ],
-      "scope": "Tampering, duplicate/malformed maps, unknown critical semantics."
+      "scope": "Tampering, duplicate/malformed maps, unknown critical semantics. Malformed Receipt CWT maps and unsupported critical CWT Claims are also rejected."
     },
     {
       "id": "T09",

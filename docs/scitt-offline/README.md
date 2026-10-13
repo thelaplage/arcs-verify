@@ -134,8 +134,13 @@ hazards. The pinned backend can accept a signature over an attached payload even
 when the selected statement reconstructs a different root. The adapter's explicit
 root equality check prevents that false inclusion. Malformed nested `crit` labels
 can raise `TypeError` in the backend; the adapter validates their shape before
-invocation. Both are retained executable regressions. No upstream issue or
-message was sent as part of this work.
+invocation. Both are retained executable regressions. A subsequent technical
+review also reproduced inclusion PASS for malformed Receipt CWT Claims and for
+critical CWT semantics this adapter does not implement. Experimental verifier
+version 2 validates the claim-map structure in both header buckets and refuses
+critical CWT Claims. Well-formed noncritical claims remain uninterpreted metadata;
+this does not introduce a time policy. See the [technical review](TECHNICAL_REVIEW.md).
+No upstream issue or message was sent as part of this work.
 
 The backend's own builder is not used by the adapter or its constructed producer.
 Its generic published SCITT examples use statement-digest leaves; those examples
@@ -165,7 +170,7 @@ and exercises existing SRS verification and the DAGR CLI/contract goldens.
 Supported cryptographic selections are Ed25519, P-256/ES256 and P-384/ES384 with
 empty external AAD, tagged COSE_Sign1 and RFC9162_SHA256. Unsupported cases remain
 explicit: CCF and other data structures, certificate reference/profile validation
-or chain discovery, other algorithms/curves, untagged COSE, and backend-rejected
+or chain discovery, critical Receipt CWT semantics, other algorithms/curves, untagged COSE, and backend-rejected
 non-minimal/indefinite encodings. Unsupported data structures and valid encodings
 outside backend support do not become cryptographic passes. This bounded adapter
 accepts at most 128 registrations, 16 proofs per Receipt, and 10 MiB per COSE

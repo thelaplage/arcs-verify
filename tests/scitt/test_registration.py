@@ -470,3 +470,40 @@ def test_retained_constructed_replay_inputs_and_outputs():
         result = v.verify_registration(json.loads((fixtures / f'{order}-sidecar.json').read_bytes()),
                                        target=(fixtures / 'artifact.json').read_bytes(), selection=selected, entry_selections=entries)
         assert result == json.loads((fixtures / f'{order}-report.json').read_bytes())
+
+
+@pytest.mark.parametrize('claims', ['not-a-map', [], 123, {True: 'boolean-label'}, {b'iss': 'byte-label'}])
+@pytest.mark.parametrize('protected', [False, True])
+def test_receipt_cwt_header_validation(claims, protected):
+    s = statement()
+    kw = {'header': {1: -8, 395: 1, 15: claims}} if protected else {'unprotected': {15: claims}}
+    p = receipt(s, **kw)
+    r = run(s, p)
+    assert r['findings'][INC] == 'fail'
+    assert 'authenticated_service_identity' not in r
+    assert r['findings'][SIG] == r['findings'][SUBJECT] == 'pass'
+    assert r['findings'][TIME] == 'not_evaluated'
+
+
+@pytest.mark.parametrize('claims', ['not-a-map', {6: 1900000000}, {'unknown-app-claim': True}])
+def test_critical_receipt_cwt_requires_supported_semantics(claims):
+    s = statement(); p = receipt(s, header={1: -8, 395: 1, 2: [15], 15: claims})
+    # A mathematically valid signature/root cannot satisfy critical claim
+    # processing that this narrow RFC9162 adapter does not implement.
+    r = run(s, p)
+    assert r['findings'][INC] == 'fail'
+    assert r['findings'][TIME] == 'not_evaluated'
+    assert 'authenticated_service_identity' not in r
+
+
+@pytest.mark.parametrize('critical', [1, 395])
+def test_supported_critical_receipt_headers_still_verify(critical):
+    s = statement(); p = receipt(s, header={1: -8, 395: 1, 2: [critical]})
+    assert run(s, p)['findings'][INC] == 'pass'
+
+
+def test_well_formed_noncritical_receipt_cwt_remains_metadata():
+    s = statement(); p = receipt(s, header={1: -8, 395: 1, 15: {'application-note': 'uninterpreted', 6: 1900000000}})
+    r = run(s, p)
+    assert r['findings'][INC] == 'pass'
+    assert r['findings'][TIME] == 'not_evaluated'

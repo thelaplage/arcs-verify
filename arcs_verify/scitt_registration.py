@@ -24,7 +24,7 @@ from jsonschema import Draft202012Validator
 CONTRACT = Path(__file__).parent / "contracts/scitt-registration/v0.1"
 MAX_BYTES = 10 * 1024 * 1024
 MAX_ENTRIES = 128
-VERIFIER = "arcs-verify.scitt-registration/experimental-1"
+VERIFIER = "arcs-verify.scitt-registration/experimental-2"
 
 
 class InputError(ValueError):
@@ -369,8 +369,19 @@ def _evaluate(result, target, statement, receipt, statement_key, service_key, pr
         for proof in proofs:
             _decode(proof, cbor)  # Duplicate keys/trailing bytes checked before native interpretation.
             native.receipt._decode_inclusion_proof(proof)
+        # RFC9597 requires CWT Claims to be a map with int/text labels in
+        # either header bucket. The native backend otherwise ignores malformed
+        # values, which could turn a malformed Receipt into inclusion PASS.
+        for bucket in (proof_header, proof_parts[1]):
+            if 15 in bucket:
+                claims = bucket[15]
+                if not isinstance(claims, dict) or any(type(k) not in (int, str) for k in claims):
+                    raise ValueError("malformed Receipt CWT Claims")
         _critical_shape(proof_header)
-        native.cose_sign1._check_critical_headers(proof_header, {1, 2, 395, 15})
+        # This profile implements alg and vds processing, but no application
+        # semantics for critical CWT Claims. A map shape check is not enough to
+        # claim understanding of arbitrary claims or a registration-time policy.
+        native.cose_sign1._check_critical_headers(proof_header, {1, 2, 395})
         if 2 in proof_parts[1]:
             raise ValueError("crit must be protected")
         selected_proof = proofs[proof_index]
