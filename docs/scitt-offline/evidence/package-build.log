@@ -1,0 +1,611 @@
+# Local absolute checkout prefix replaced by <checkout>; command output otherwise retained.
+* Getting build dependencies for sdist...
+running egg_info
+writing arcs_verify.egg-info/PKG-INFO
+writing dependency_links to arcs_verify.egg-info/dependency_links.txt
+writing entry points to arcs_verify.egg-info/entry_points.txt
+writing requirements to arcs_verify.egg-info/requires.txt
+writing top-level names to arcs_verify.egg-info/top_level.txt
+reading manifest file 'arcs_verify.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+no previously-included directories found matching 'packs'
+no previously-included directories found matching 'vendor'
+no previously-included directories found matching 'docs'
+no previously-included directories found matching 'tools'
+no previously-included directories found matching '.github'
+adding license file 'LICENSE'
+writing manifest file 'arcs_verify.egg-info/SOURCES.txt'
+* Building sdist...
+running sdist
+running egg_info
+writing arcs_verify.egg-info/PKG-INFO
+writing dependency_links to arcs_verify.egg-info/dependency_links.txt
+writing entry points to arcs_verify.egg-info/entry_points.txt
+writing requirements to arcs_verify.egg-info/requires.txt
+writing top-level names to arcs_verify.egg-info/top_level.txt
+reading manifest file 'arcs_verify.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+no previously-included directories found matching 'packs'
+no previously-included directories found matching 'vendor'
+no previously-included directories found matching 'docs'
+no previously-included directories found matching 'tools'
+no previously-included directories found matching '.github'
+adding license file 'LICENSE'
+writing manifest file 'arcs_verify.egg-info/SOURCES.txt'
+running check
+creating arcs_verify-0.1.1
+creating arcs_verify-0.1.1/arcs_verify
+creating arcs_verify-0.1.1/arcs_verify.egg-info
+creating arcs_verify-0.1.1/arcs_verify/amnesiac
+creating arcs_verify-0.1.1/arcs_verify/contracts/c2pa-native-finding/v0.1
+creating arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+creating arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+creating arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+creating arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+creating arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+creating arcs_verify-0.1.1/arcs_verify/contracts/scitt-registration/v0.1
+creating arcs_verify-0.1.1/arcs_verify/data
+creating arcs_verify-0.1.1/arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+creating arcs_verify-0.1.1/arcs_verify/ebc_conformance
+copying files to arcs_verify-0.1.1...
+copying LICENSE -> arcs_verify-0.1.1
+copying MANIFEST.in -> arcs_verify-0.1.1
+copying README.md -> arcs_verify-0.1.1
+copying pyproject.toml -> arcs_verify-0.1.1
+copying arcs_verify/__init__.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/acquisition_grounding.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/admission_event.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/admission_event_v0_2.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/admission_event_v0_3.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/analytics_snapshot.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/c2pa_native.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/cg_execution_replay.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/cg_replay.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/cli.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/counterplayer_study.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/dagr_authority_context.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/dagr_authority_context_producer.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/dagr_authority_context_producer_landed.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/dagr_constitutional_consumer.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/dagr_report.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/dagr_report_v0_2.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/dagr_v02.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/deferred_sequence.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/exit_o_origin_authentication.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/exit_o_origin_cli.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/external_profile.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/external_profile_cli.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/findings.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/governed_memory_sequence.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/ingest_run_sequence.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/neq.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/okf_attested_computation.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/portable_pack.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/public_publication_candidate.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/public_publication_profile.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/receipt_set.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/schema.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/scitt_registration.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/semantic_projection.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/source_work_sequence.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/subject_ref_origin.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/universal.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/verdict_discipline.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify/verifier.py -> arcs_verify-0.1.1/arcs_verify
+copying arcs_verify.egg-info/PKG-INFO -> arcs_verify-0.1.1/arcs_verify.egg-info
+copying arcs_verify.egg-info/SOURCES.txt -> arcs_verify-0.1.1/arcs_verify.egg-info
+copying arcs_verify.egg-info/dependency_links.txt -> arcs_verify-0.1.1/arcs_verify.egg-info
+copying arcs_verify.egg-info/entry_points.txt -> arcs_verify-0.1.1/arcs_verify.egg-info
+copying arcs_verify.egg-info/requires.txt -> arcs_verify-0.1.1/arcs_verify.egg-info
+copying arcs_verify.egg-info/top_level.txt -> arcs_verify-0.1.1/arcs_verify.egg-info
+copying arcs_verify/amnesiac/__init__.py -> arcs_verify-0.1.1/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/adapters.py -> arcs_verify-0.1.1/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/canonical.py -> arcs_verify-0.1.1/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/cli.py -> arcs_verify-0.1.1/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/projection.py -> arcs_verify-0.1.1/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/public_proof.py -> arcs_verify-0.1.1/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/replay.py -> arcs_verify-0.1.1/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/verifier.py -> arcs_verify-0.1.1/arcs_verify/amnesiac
+copying arcs_verify/contracts/c2pa-native-finding/v0.1/README.md -> arcs_verify-0.1.1/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying arcs_verify/contracts/c2pa-native-finding/v0.1/canonical-native-finding.schema.json -> arcs_verify-0.1.1/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying arcs_verify/contracts/c2pa-native-finding/v0.1/comparison-taxonomy.json -> arcs_verify-0.1.1/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying arcs_verify/contracts/c2pa-native-finding/v0.1/contract.manifest.json -> arcs_verify-0.1.1/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying arcs_verify/contracts/c2pa-native-finding/v0.1/native-finding-report.schema.json -> arcs_verify-0.1.1/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/receipt-hash-contract.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/supported-receipt-contract.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/verification-execution-record.schema.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/verification-report.schema.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-execution-record.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-report.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-execution-record.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-report.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/trust-bundle.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/README.md -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/contract-status.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/envelope-schema-pin-contract.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden-digest-manifest.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/origin-disclosure-contract.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/verification-report.schema.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/expectations.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-binding-minted-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-binding-minted-report.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-request-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-request-report.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-session-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-session-report.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-supplied-correlation-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-supplied-correlation-report.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-not-declared-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-not-declared-report.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-supplied-subject-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-supplied-subject-report.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/trust-bundle.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/README.md -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-binding-minted-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-request-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-session-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-supplied-correlation-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-not-declared-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-supplied-subject-receipt.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/trust-bundle.json -> arcs_verify-0.1.1/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/scitt-registration/v0.1/binding-rules.json -> arcs_verify-0.1.1/arcs_verify/contracts/scitt-registration/v0.1
+copying arcs_verify/contracts/scitt-registration/v0.1/local-selection.schema.json -> arcs_verify-0.1.1/arcs_verify/contracts/scitt-registration/v0.1
+copying arcs_verify/contracts/scitt-registration/v0.1/sidecar.schema.json -> arcs_verify-0.1.1/arcs_verify/contracts/scitt-registration/v0.1
+copying arcs_verify/contracts/scitt-registration/v0.1/source-pin.json -> arcs_verify-0.1.1/arcs_verify/contracts/scitt-registration/v0.1
+copying arcs_verify/contracts/scitt-registration/v0.1/verifier-handoff.json -> arcs_verify-0.1.1/arcs_verify/contracts/scitt-registration/v0.1
+copying arcs_verify/data/dagr-authority-context-producer-65f2df.profile.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/dagr-authority-context-producer-cb2760.extensions.schema.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/dagr-authority-context-producer-cb2760.profile.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/dagr-resolved-authority-context-1a12726f.schema.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/srs-envelope-v0.2.0.schema.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/srs-envelope-v0.2.1-e487.schema.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/srs-envelope-v0.2.1.schema.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/srs-external-profile-declaration-e487.schema.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/srs.activity.admission_event.v0.2.schema.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/srs.activity.admission_event.v0.3.schema.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/srs.activity.governed_read.v0.1.schema.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/srs.activity.public_publication.v0.1.candidate.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/srs.activity.semantic_issuer_origin_authentication.v0.1.schema.json -> arcs_verify-0.1.1/arcs_verify/data
+copying arcs_verify/data/profiles/srs.activity.public_publication.v0.1/conformance.rules.json -> arcs_verify-0.1.1/arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+copying arcs_verify/data/profiles/srs.activity.public_publication.v0.1/field.schema.json -> arcs_verify-0.1.1/arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+copying arcs_verify/data/profiles/srs.activity.public_publication.v0.1/profile.manifest.json -> arcs_verify-0.1.1/arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+copying arcs_verify/ebc_conformance/__init__.py -> arcs_verify-0.1.1/arcs_verify/ebc_conformance
+copying arcs_verify/ebc_conformance/canonical.py -> arcs_verify-0.1.1/arcs_verify/ebc_conformance
+copying arcs_verify/ebc_conformance/harness.py -> arcs_verify-0.1.1/arcs_verify/ebc_conformance
+copying arcs_verify.egg-info/SOURCES.txt -> arcs_verify-0.1.1/arcs_verify.egg-info
+Writing arcs_verify-0.1.1/setup.cfg
+Creating tar archive
+removing 'arcs_verify-0.1.1' (and everything under it)
+* Building wheel from sdist
+* Getting build dependencies for wheel...
+running egg_info
+writing arcs_verify.egg-info/PKG-INFO
+writing dependency_links to arcs_verify.egg-info/dependency_links.txt
+writing entry points to arcs_verify.egg-info/entry_points.txt
+writing requirements to arcs_verify.egg-info/requires.txt
+writing top-level names to arcs_verify.egg-info/top_level.txt
+reading manifest file 'arcs_verify.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+no previously-included directories found matching 'tests'
+no previously-included directories found matching 'packs'
+no previously-included directories found matching 'vendor'
+no previously-included directories found matching 'docs'
+no previously-included directories found matching 'tools'
+no previously-included directories found matching '.github'
+adding license file 'LICENSE'
+writing manifest file 'arcs_verify.egg-info/SOURCES.txt'
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build/lib/arcs_verify
+copying arcs_verify/analytics_snapshot.py -> build/lib/arcs_verify
+copying arcs_verify/dagr_authority_context.py -> build/lib/arcs_verify
+copying arcs_verify/exit_o_origin_cli.py -> build/lib/arcs_verify
+copying arcs_verify/findings.py -> build/lib/arcs_verify
+copying arcs_verify/ingest_run_sequence.py -> build/lib/arcs_verify
+copying arcs_verify/portable_pack.py -> build/lib/arcs_verify
+copying arcs_verify/admission_event_v0_3.py -> build/lib/arcs_verify
+copying arcs_verify/dagr_report.py -> build/lib/arcs_verify
+copying arcs_verify/cg_execution_replay.py -> build/lib/arcs_verify
+copying arcs_verify/admission_event_v0_2.py -> build/lib/arcs_verify
+copying arcs_verify/dagr_constitutional_consumer.py -> build/lib/arcs_verify
+copying arcs_verify/scitt_registration.py -> build/lib/arcs_verify
+copying arcs_verify/subject_ref_origin.py -> build/lib/arcs_verify
+copying arcs_verify/deferred_sequence.py -> build/lib/arcs_verify
+copying arcs_verify/public_publication_candidate.py -> build/lib/arcs_verify
+copying arcs_verify/receipt_set.py -> build/lib/arcs_verify
+copying arcs_verify/external_profile.py -> build/lib/arcs_verify
+copying arcs_verify/dagr_authority_context_producer_landed.py -> build/lib/arcs_verify
+copying arcs_verify/external_profile_cli.py -> build/lib/arcs_verify
+copying arcs_verify/acquisition_grounding.py -> build/lib/arcs_verify
+copying arcs_verify/governed_memory_sequence.py -> build/lib/arcs_verify
+copying arcs_verify/__init__.py -> build/lib/arcs_verify
+copying arcs_verify/public_publication_profile.py -> build/lib/arcs_verify
+copying arcs_verify/neq.py -> build/lib/arcs_verify
+copying arcs_verify/dagr_report_v0_2.py -> build/lib/arcs_verify
+copying arcs_verify/cli.py -> build/lib/arcs_verify
+copying arcs_verify/cg_replay.py -> build/lib/arcs_verify
+copying arcs_verify/dagr_authority_context_producer.py -> build/lib/arcs_verify
+copying arcs_verify/admission_event.py -> build/lib/arcs_verify
+copying arcs_verify/semantic_projection.py -> build/lib/arcs_verify
+copying arcs_verify/counterplayer_study.py -> build/lib/arcs_verify
+copying arcs_verify/okf_attested_computation.py -> build/lib/arcs_verify
+copying arcs_verify/c2pa_native.py -> build/lib/arcs_verify
+copying arcs_verify/dagr_v02.py -> build/lib/arcs_verify
+copying arcs_verify/exit_o_origin_authentication.py -> build/lib/arcs_verify
+copying arcs_verify/verdict_discipline.py -> build/lib/arcs_verify
+copying arcs_verify/verifier.py -> build/lib/arcs_verify
+copying arcs_verify/universal.py -> build/lib/arcs_verify
+copying arcs_verify/source_work_sequence.py -> build/lib/arcs_verify
+copying arcs_verify/schema.py -> build/lib/arcs_verify
+creating build/lib/arcs_verify/ebc_conformance
+copying arcs_verify/ebc_conformance/harness.py -> build/lib/arcs_verify/ebc_conformance
+copying arcs_verify/ebc_conformance/__init__.py -> build/lib/arcs_verify/ebc_conformance
+copying arcs_verify/ebc_conformance/canonical.py -> build/lib/arcs_verify/ebc_conformance
+creating build/lib/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/public_proof.py -> build/lib/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/__init__.py -> build/lib/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/replay.py -> build/lib/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/cli.py -> build/lib/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/canonical.py -> build/lib/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/projection.py -> build/lib/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/verifier.py -> build/lib/arcs_verify/amnesiac
+copying arcs_verify/amnesiac/adapters.py -> build/lib/arcs_verify/amnesiac
+running egg_info
+writing arcs_verify.egg-info/PKG-INFO
+writing dependency_links to arcs_verify.egg-info/dependency_links.txt
+writing entry points to arcs_verify.egg-info/entry_points.txt
+writing requirements to arcs_verify.egg-info/requires.txt
+writing top-level names to arcs_verify.egg-info/top_level.txt
+reading manifest file 'arcs_verify.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+no previously-included directories found matching 'tests'
+no previously-included directories found matching 'packs'
+no previously-included directories found matching 'vendor'
+no previously-included directories found matching 'docs'
+no previously-included directories found matching 'tools'
+no previously-included directories found matching '.github'
+adding license file 'LICENSE'
+writing manifest file 'arcs_verify.egg-info/SOURCES.txt'
+creating build/lib/arcs_verify/data
+copying arcs_verify/data/dagr-authority-context-producer-cb2760.extensions.schema.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/srs-envelope-v0.2.1-e487.schema.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/dagr-authority-context-producer-65f2df.profile.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/srs-external-profile-declaration-e487.schema.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/srs-envelope-v0.2.1.schema.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/srs.activity.admission_event.v0.2.schema.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/dagr-resolved-authority-context-1a12726f.schema.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/srs.activity.governed_read.v0.1.schema.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/srs.activity.semantic_issuer_origin_authentication.v0.1.schema.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/srs.activity.admission_event.v0.3.schema.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/srs-envelope-v0.2.0.schema.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/dagr-authority-context-producer-cb2760.profile.json -> build/lib/arcs_verify/data
+copying arcs_verify/data/srs.activity.public_publication.v0.1.candidate.json -> build/lib/arcs_verify/data
+creating build/lib/arcs_verify/contracts/scitt-registration/v0.1
+copying arcs_verify/contracts/scitt-registration/v0.1/sidecar.schema.json -> build/lib/arcs_verify/contracts/scitt-registration/v0.1
+copying arcs_verify/contracts/scitt-registration/v0.1/local-selection.schema.json -> build/lib/arcs_verify/contracts/scitt-registration/v0.1
+copying arcs_verify/contracts/scitt-registration/v0.1/verifier-handoff.json -> build/lib/arcs_verify/contracts/scitt-registration/v0.1
+copying arcs_verify/contracts/scitt-registration/v0.1/source-pin.json -> build/lib/arcs_verify/contracts/scitt-registration/v0.1
+copying arcs_verify/contracts/scitt-registration/v0.1/binding-rules.json -> build/lib/arcs_verify/contracts/scitt-registration/v0.1
+creating build/lib/arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+copying arcs_verify/data/profiles/srs.activity.public_publication.v0.1/field.schema.json -> build/lib/arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+copying arcs_verify/data/profiles/srs.activity.public_publication.v0.1/profile.manifest.json -> build/lib/arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+copying arcs_verify/data/profiles/srs.activity.public_publication.v0.1/conformance.rules.json -> build/lib/arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+creating build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/receipt-hash-contract.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/supported-receipt-contract.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/verification-execution-record.schema.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/verification-report.schema.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+creating build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-execution-record.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-report.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-execution-record.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-report.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/trust-bundle.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+creating build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/verification-report.schema.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/envelope-schema-pin-contract.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/origin-disclosure-contract.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/contract-status.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden-digest-manifest.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/README.md -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+creating build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/trust-bundle.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-supplied-subject-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-request-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-session-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-binding-minted-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-not-declared-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-supplied-correlation-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/README.md -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+creating build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/expectations.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/trust-bundle.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-supplied-correlation-report.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-supplied-subject-report.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-supplied-subject-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-request-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-session-report.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-not-declared-report.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-session-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-binding-minted-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-request-report.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-not-declared-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-supplied-correlation-receipt.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-binding-minted-report.json -> build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+creating build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying arcs_verify/contracts/c2pa-native-finding/v0.1/comparison-taxonomy.json -> build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying arcs_verify/contracts/c2pa-native-finding/v0.1/canonical-native-finding.schema.json -> build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying arcs_verify/contracts/c2pa-native-finding/v0.1/native-finding-report.schema.json -> build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying arcs_verify/contracts/c2pa-native-finding/v0.1/contract.manifest.json -> build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying arcs_verify/contracts/c2pa-native-finding/v0.1/README.md -> build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1
+installing to build/bdist.macosx-14.0-arm64/wheel
+running install
+running install_lib
+creating build/bdist.macosx-14.0-arm64/wheel
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify
+copying build/lib/arcs_verify/analytics_snapshot.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/dagr_authority_context.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/exit_o_origin_cli.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/findings.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/ingest_run_sequence.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/portable_pack.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/admission_event_v0_3.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/ebc_conformance
+copying build/lib/arcs_verify/ebc_conformance/harness.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/ebc_conformance
+copying build/lib/arcs_verify/ebc_conformance/__init__.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/ebc_conformance
+copying build/lib/arcs_verify/ebc_conformance/canonical.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/ebc_conformance
+copying build/lib/arcs_verify/dagr_report.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/cg_execution_replay.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/admission_event_v0_2.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/dagr_constitutional_consumer.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/scitt_registration.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/subject_ref_origin.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/deferred_sequence.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/public_publication_candidate.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/receipt_set.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/external_profile.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/dagr_authority_context_producer_landed.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/external_profile_cli.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/acquisition_grounding.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/contracts
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/supported-receipt-contract.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/trust-bundle.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-execution-record.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-report.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-report.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-execution-record.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/verification-report.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/verification-execution-record.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-1/receipt-hash-contract.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-1
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/contracts/c2pa-native-finding
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/contracts/c2pa-native-finding/v0.1
+copying build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1/README.md -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/c2pa-native-finding/v0.1
+copying build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1/comparison-taxonomy.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/c2pa-native-finding/v0.1
+copying build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1/canonical-native-finding.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/c2pa-native-finding/v0.1
+copying build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1/native-finding-report.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/c2pa-native-finding/v0.1
+copying build/lib/arcs_verify/contracts/c2pa-native-finding/v0.1/contract.manifest.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/c2pa-native-finding/v0.1
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/contracts/dagr-srs-verification-report-v0-2
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/trust-bundle.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-supplied-subject-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-request-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/README.md -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-session-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-binding-minted-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-not-declared-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-supplied-correlation-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/expectations.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/trust-bundle.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-supplied-correlation-report.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-supplied-subject-report.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-supplied-subject-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-request-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-session-report.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-not-declared-report.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-session-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-binding-minted-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-request-report.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-not-declared-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-supplied-correlation-receipt.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-binding-minted-report.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/verification-report.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/envelope-schema-pin-contract.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/README.md -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/origin-disclosure-contract.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/contract-status.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2
+copying build/lib/arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden-digest-manifest.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/dagr-srs-verification-report-v0-2
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/contracts/scitt-registration
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/contracts/scitt-registration/v0.1
+copying build/lib/arcs_verify/contracts/scitt-registration/v0.1/sidecar.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/scitt-registration/v0.1
+copying build/lib/arcs_verify/contracts/scitt-registration/v0.1/local-selection.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/scitt-registration/v0.1
+copying build/lib/arcs_verify/contracts/scitt-registration/v0.1/verifier-handoff.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/scitt-registration/v0.1
+copying build/lib/arcs_verify/contracts/scitt-registration/v0.1/source-pin.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/scitt-registration/v0.1
+copying build/lib/arcs_verify/contracts/scitt-registration/v0.1/binding-rules.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/contracts/scitt-registration/v0.1
+copying build/lib/arcs_verify/governed_memory_sequence.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/__init__.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/public_publication_profile.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/neq.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/dagr_report_v0_2.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/cli.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/cg_replay.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/dagr_authority_context_producer.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/admission_event.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/semantic_projection.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/counterplayer_study.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/okf_attested_computation.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/c2pa_native.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/amnesiac
+copying build/lib/arcs_verify/amnesiac/public_proof.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/amnesiac
+copying build/lib/arcs_verify/amnesiac/__init__.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/amnesiac
+copying build/lib/arcs_verify/amnesiac/replay.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/amnesiac
+copying build/lib/arcs_verify/amnesiac/cli.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/amnesiac
+copying build/lib/arcs_verify/amnesiac/canonical.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/amnesiac
+copying build/lib/arcs_verify/amnesiac/projection.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/amnesiac
+copying build/lib/arcs_verify/amnesiac/verifier.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/amnesiac
+copying build/lib/arcs_verify/amnesiac/adapters.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/amnesiac
+copying build/lib/arcs_verify/dagr_v02.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/data
+copying build/lib/arcs_verify/data/dagr-authority-context-producer-cb2760.extensions.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/srs-envelope-v0.2.1-e487.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/dagr-authority-context-producer-65f2df.profile.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/srs-external-profile-declaration-e487.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/srs-envelope-v0.2.1.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/srs.activity.admission_event.v0.2.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/dagr-resolved-authority-context-1a12726f.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/srs.activity.governed_read.v0.1.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/srs.activity.semantic_issuer_origin_authentication.v0.1.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/srs.activity.admission_event.v0.3.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/srs-envelope-v0.2.0.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/data/profiles
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+copying build/lib/arcs_verify/data/profiles/srs.activity.public_publication.v0.1/field.schema.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+copying build/lib/arcs_verify/data/profiles/srs.activity.public_publication.v0.1/profile.manifest.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+copying build/lib/arcs_verify/data/profiles/srs.activity.public_publication.v0.1/conformance.rules.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data/profiles/srs.activity.public_publication.v0.1
+copying build/lib/arcs_verify/data/dagr-authority-context-producer-cb2760.profile.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/data/srs.activity.public_publication.v0.1.candidate.json -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify/data
+copying build/lib/arcs_verify/exit_o_origin_authentication.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/verdict_discipline.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/verifier.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/universal.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/source_work_sequence.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+copying build/lib/arcs_verify/schema.py -> build/bdist.macosx-14.0-arm64/wheel/./arcs_verify
+running install_egg_info
+Copying arcs_verify.egg-info to build/bdist.macosx-14.0-arm64/wheel/./arcs_verify-0.1.1-py3.14.egg-info
+running install_scripts
+creating build/bdist.macosx-14.0-arm64/wheel/arcs_verify-0.1.1.dist-info/WHEEL
+creating '<checkout>/dist/.tmp-8x22o5m6/arcs_verify-0.1.1-py3-none-any.whl' and adding 'build/bdist.macosx-14.0-arm64/wheel' to it
+adding 'arcs_verify/__init__.py'
+adding 'arcs_verify/acquisition_grounding.py'
+adding 'arcs_verify/admission_event.py'
+adding 'arcs_verify/admission_event_v0_2.py'
+adding 'arcs_verify/admission_event_v0_3.py'
+adding 'arcs_verify/analytics_snapshot.py'
+adding 'arcs_verify/c2pa_native.py'
+adding 'arcs_verify/cg_execution_replay.py'
+adding 'arcs_verify/cg_replay.py'
+adding 'arcs_verify/cli.py'
+adding 'arcs_verify/counterplayer_study.py'
+adding 'arcs_verify/dagr_authority_context.py'
+adding 'arcs_verify/dagr_authority_context_producer.py'
+adding 'arcs_verify/dagr_authority_context_producer_landed.py'
+adding 'arcs_verify/dagr_constitutional_consumer.py'
+adding 'arcs_verify/dagr_report.py'
+adding 'arcs_verify/dagr_report_v0_2.py'
+adding 'arcs_verify/dagr_v02.py'
+adding 'arcs_verify/deferred_sequence.py'
+adding 'arcs_verify/exit_o_origin_authentication.py'
+adding 'arcs_verify/exit_o_origin_cli.py'
+adding 'arcs_verify/external_profile.py'
+adding 'arcs_verify/external_profile_cli.py'
+adding 'arcs_verify/findings.py'
+adding 'arcs_verify/governed_memory_sequence.py'
+adding 'arcs_verify/ingest_run_sequence.py'
+adding 'arcs_verify/neq.py'
+adding 'arcs_verify/okf_attested_computation.py'
+adding 'arcs_verify/portable_pack.py'
+adding 'arcs_verify/public_publication_candidate.py'
+adding 'arcs_verify/public_publication_profile.py'
+adding 'arcs_verify/receipt_set.py'
+adding 'arcs_verify/schema.py'
+adding 'arcs_verify/scitt_registration.py'
+adding 'arcs_verify/semantic_projection.py'
+adding 'arcs_verify/source_work_sequence.py'
+adding 'arcs_verify/subject_ref_origin.py'
+adding 'arcs_verify/universal.py'
+adding 'arcs_verify/verdict_discipline.py'
+adding 'arcs_verify/verifier.py'
+adding 'arcs_verify/amnesiac/__init__.py'
+adding 'arcs_verify/amnesiac/adapters.py'
+adding 'arcs_verify/amnesiac/canonical.py'
+adding 'arcs_verify/amnesiac/cli.py'
+adding 'arcs_verify/amnesiac/projection.py'
+adding 'arcs_verify/amnesiac/public_proof.py'
+adding 'arcs_verify/amnesiac/replay.py'
+adding 'arcs_verify/amnesiac/verifier.py'
+adding 'arcs_verify/contracts/c2pa-native-finding/v0.1/README.md'
+adding 'arcs_verify/contracts/c2pa-native-finding/v0.1/canonical-native-finding.schema.json'
+adding 'arcs_verify/contracts/c2pa-native-finding/v0.1/comparison-taxonomy.json'
+adding 'arcs_verify/contracts/c2pa-native-finding/v0.1/contract.manifest.json'
+adding 'arcs_verify/contracts/c2pa-native-finding/v0.1/native-finding-report.schema.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/receipt-hash-contract.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/supported-receipt-contract.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/verification-execution-record.schema.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/verification-report.schema.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-execution-record.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/admission-report.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-execution-record.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/outcome-report.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-1/golden/trust-bundle.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/README.md'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/contract-status.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/envelope-schema-pin-contract.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden-digest-manifest.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/origin-disclosure-contract.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/verification-report.schema.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/expectations.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-binding-minted-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-binding-minted-report.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-request-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-request-report.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-session-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-session-report.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-supplied-correlation-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-derived-from-supplied-correlation-report.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-not-declared-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-not-declared-report.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-supplied-subject-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/origin-supplied-subject-report.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/golden/trust-bundle.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/README.md'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-binding-minted-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-request-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-session-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-derived-from-supplied-correlation-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-not-declared-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/origin-supplied-subject-receipt.json'
+adding 'arcs_verify/contracts/dagr-srs-verification-report-v0-2/input-fixtures/trust-bundle.json'
+adding 'arcs_verify/contracts/scitt-registration/v0.1/binding-rules.json'
+adding 'arcs_verify/contracts/scitt-registration/v0.1/local-selection.schema.json'
+adding 'arcs_verify/contracts/scitt-registration/v0.1/sidecar.schema.json'
+adding 'arcs_verify/contracts/scitt-registration/v0.1/source-pin.json'
+adding 'arcs_verify/contracts/scitt-registration/v0.1/verifier-handoff.json'
+adding 'arcs_verify/data/dagr-authority-context-producer-65f2df.profile.json'
+adding 'arcs_verify/data/dagr-authority-context-producer-cb2760.extensions.schema.json'
+adding 'arcs_verify/data/dagr-authority-context-producer-cb2760.profile.json'
+adding 'arcs_verify/data/dagr-resolved-authority-context-1a12726f.schema.json'
+adding 'arcs_verify/data/srs-envelope-v0.2.0.schema.json'
+adding 'arcs_verify/data/srs-envelope-v0.2.1-e487.schema.json'
+adding 'arcs_verify/data/srs-envelope-v0.2.1.schema.json'
+adding 'arcs_verify/data/srs-external-profile-declaration-e487.schema.json'
+adding 'arcs_verify/data/srs.activity.admission_event.v0.2.schema.json'
+adding 'arcs_verify/data/srs.activity.admission_event.v0.3.schema.json'
+adding 'arcs_verify/data/srs.activity.governed_read.v0.1.schema.json'
+adding 'arcs_verify/data/srs.activity.public_publication.v0.1.candidate.json'
+adding 'arcs_verify/data/srs.activity.semantic_issuer_origin_authentication.v0.1.schema.json'
+adding 'arcs_verify/data/profiles/srs.activity.public_publication.v0.1/conformance.rules.json'
+adding 'arcs_verify/data/profiles/srs.activity.public_publication.v0.1/field.schema.json'
+adding 'arcs_verify/data/profiles/srs.activity.public_publication.v0.1/profile.manifest.json'
+adding 'arcs_verify/ebc_conformance/__init__.py'
+adding 'arcs_verify/ebc_conformance/canonical.py'
+adding 'arcs_verify/ebc_conformance/harness.py'
+adding 'arcs_verify-0.1.1.dist-info/licenses/LICENSE'
+adding 'arcs_verify-0.1.1.dist-info/METADATA'
+adding 'arcs_verify-0.1.1.dist-info/WHEEL'
+adding 'arcs_verify-0.1.1.dist-info/entry_points.txt'
+adding 'arcs_verify-0.1.1.dist-info/top_level.txt'
+adding 'arcs_verify-0.1.1.dist-info/RECORD'
+removing build/bdist.macosx-14.0-arm64/wheel
+Successfully built arcs_verify-0.1.1.tar.gz and arcs_verify-0.1.1-py3-none-any.whl

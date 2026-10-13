@@ -1,0 +1,83 @@
+{
+  "status": "EXPERIMENTAL_NOT_OWNER_ACCEPTED",
+  "recorded_at": "2026-10-13T11:12:19.925418+00:00",
+  "arcs_verify_base_commit": "9e6daefca6e77306691fd288880448194bd28f75",
+  "python": "3.14.8",
+  "platform": "macOS-14.6.1-arm64-arm-64bit-Mach-O",
+  "dependency_lock": "../qualification-requirements.txt",
+  "network_policy": {
+    "mechanism": "macOS sandbox-exec",
+    "profile": "(version 1)(allow default)(deny network*)",
+    "control": "socket connect to 127.0.0.1:9 raised PermissionError EPERM; adapter tests also replace socket APIs with assertion failures"
+  },
+  "adapter_and_existing_tests": {
+    "command": "python -m pytest tests -q --basetemp=/tmp/arcs-scitt-review-tests --junitxml=docs/scitt-offline/evidence/pytest.xml",
+    "passed": 94,
+    "failed": 0,
+    "skipped": 0,
+    "new_scitt_tests": 91,
+    "existing_tests": 3
+  },
+  "native_subset": {
+    "repository": "https://github.com/action-state-group/scitt-cose",
+    "commit": "3d32059474b468f9cd851199a319d022aa38aef0",
+    "passed": 163,
+    "failed": 0,
+    "skipped": 0,
+    "full_suite_executed": false,
+    "modules": {
+      "tests/test_cose_sign1.py": "4c5f97bf4dc1115b35a5c5ee5b1969aeaa614e152f95a66f32a8c2c50ce6c683",
+      "tests/test_merkle.py": "6ab4ea12bffcd627df605e387ec28c265b1056ef82e5ba63c92d80ce5f2dd462",
+      "tests/test_receipt.py": "c2d601c71b3fe2654dcfc7ec1426ce4c2c282460bf1a14bb92b8f977b0cee69f",
+      "tests/test_hardening.py": "d498fe388597ca410f0e0a7b39536189fd7816d948fc7ad5e653876bfadc46ef",
+      "tests/test_negative_conformance.py": "1e8a43ae05929a6c40f58a1b548d6617169b08a4ff9e54f54c681a4f69e5fe9a",
+      "tests/test_rfc9162_vectors.py": "0cef49db912dbc833d609218879b3c0e34cbc0c844919a9310242fea584667a2",
+      "tests/test_cose_wg_vectors.py": "d882274bb60908c9892b0ce716338681604a48ee854394d9484637c0f1133776",
+      "tests/test_vectors.py": "17aac7669c2e0aecbc3e29f0de3a752eda7faa4aea55b0968be520e07c12b8ba",
+      "tests/test_envelope_unwrap.py": "8beed18c8811565b04cf8d75e16cc6b5ab81f91f819a7633ff210c6907a168b0"
+    },
+    "command": "python -m pytest scitt-cose/tests/test_cose_sign1.py scitt-cose/tests/test_merkle.py scitt-cose/tests/test_receipt.py scitt-cose/tests/test_hardening.py scitt-cose/tests/test_negative_conformance.py scitt-cose/tests/test_rfc9162_vectors.py scitt-cose/tests/test_cose_wg_vectors.py scitt-cose/tests/test_vectors.py scitt-cose/tests/test_envelope_unwrap.py -q --basetemp=/tmp/arcs-scitt-upstream-qualification"
+  },
+  "handoff_cases": {
+    "total": 35,
+    "constructed_coverage": 32,
+    "partial": [
+      "B03",
+      "T13"
+    ],
+    "not_executed": [
+      "T01"
+    ],
+    "owner_accepted": false
+  },
+  "package_build": {
+    "command": "python -m build --no-isolation",
+    "network_denied": true,
+    "artifacts": {
+      "arcs_verify-0.1.1-py3-none-any.whl": "783d1b2216ab3243cc9cc392c0e93151fb3578154ca93bb933066dcb3762a2ac",
+      "arcs_verify-0.1.1.tar.gz": "0e9b195f0f7fb121b31c18ab624c64058405aa5ff5a5152826a9b89e738663f8"
+    }
+  },
+  "installed_smoke": {
+    "command": "python <checkout>/tools/scitt_installed_smoke.py",
+    "network_denied": true,
+    "working_directory": "outside checkout",
+    "clean_wheel_environment": true,
+    "retained_reports_reproduced_exactly": true,
+    "legacy_srs_and_dagr_checks_passed": true
+  },
+  "qualified_source_files_sha256": {
+    "arcs_verify/scitt_registration.py": "3a84c4daa6a5049fc9914c765bd56d8c9c810026eb6d8592612c575c000cc7d5",
+    "arcs_verify/cli.py": "7f1fb2646bf4e7688f9c4272e93e8ccf85c3b645af42473b76440167cf1d5bab",
+    "pyproject.toml": "5d99a48932fbf94489fac6f2e6253b3a76bb27b96da3c4dc2557e5ef8321509a",
+    "tests/scitt/test_registration.py": "3267298a03774522dee5fb2d6404a109ff8d210b73d598891e22cc482b185c43",
+    "tests/scitt/material.py": "8131adc05e7b84652c697d38e8b97c413ac12351d61c2ea4dbd26d5cdc097d98",
+    "tools/scitt_constructed_replay.py": "d174c7572f991dca8afe400c3f0bcac4d407987f9d4d9baaa3cdf4c2e593266c",
+    "tools/scitt_installed_smoke.py": "b51c86ed2a3f666e8d1b2d63d87c02b18fe525d125b01978bea5a52f35155629"
+  },
+  "limitations": [
+    "No hosted Actions results claimed.",
+    "No real-service registration, production key use, portable trust standard, time-policy implementation, CCF adapter, or owner ratification.",
+    "Only listed native subset ran; native source inspection alone is not conformance evidence."
+  ]
+}

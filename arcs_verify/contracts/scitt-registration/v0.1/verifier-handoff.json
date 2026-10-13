@@ -1,0 +1,332 @@
+{
+  "schema": "srs.scitt-registration-verifier-handoff/v0.1",
+  "artifact_kind": "proposed_verifier_handoff",
+  "binding_id": "srs.scitt.registration.v0.1",
+  "owner": "arcs-verify",
+  "status": "CANDIDATE_NOT_ACCEPTED",
+  "authority_note": "Proposal only. ARCS Verify owns verifier output: finding names, states, routing and reason codes. arcs-srs ships no SCITT verifier; none of the required cases below has been executed against ARCS Verify.",
+  "finding_states": [
+    "pass",
+    "fail",
+    "not_evaluated"
+  ],
+  "evaluation_unit": "one finding set per exact target-artifact\u2013Signed Statement\u2013Receipt relationship, keyed by their SHA-256 digests within the selected evaluation context; the Receipt digest alone identifies only the proof artifact",
+  "evaluation_identity": {
+    "digest_fields": [
+      "target_artifact_digest",
+      "signed_statement_digest",
+      "receipt_digest"
+    ],
+    "digest_source": "SHA-256 recomputed from the actual exact bytes, not unvalidated carrier claims; R01/R02 precede deduplication. If target bytes are absent, preserve the entry and report subject binding not_evaluated without reusing a complete finding set.",
+    "context_fields": [
+      "selected_proof",
+      "proof_profile",
+      "verifier",
+      "trust_policy",
+      "time_policy"
+    ],
+    "context_scope": "Identify or scope the selected proof (including which proof within a Receipt), proof profile/version, verifier implementation/version/configuration, selected issuer/service keys and trust inputs/policy, and time policy/inputs to the evaluation. Changed context requires independent evaluation; absent context is explicit, never a wildcard. No global identifier or persisted schema is required.",
+    "complete_result_reuse": "only when all three digests and the complete evaluation context match",
+    "repeated_receipt_different_relation": "evaluate independently; do not skip a pairing or transfer an earlier PASS/FAIL when the statement or target artifact differs",
+    "evidence_counting": "repeated proof bytes are not an independent source; duplicate-count suppression must not suppress a failed relationship",
+    "cache_boundary": "Reuse only work invariant for the actual cache inputs. Inclusion and Receipt-signature checks depend on the root reconstructed from the selected statement and proof; statement, subject and trust findings must not escape their evaluation context."
+  },
+  "preconditions": {
+    "routes": [
+      "R01",
+      "R02"
+    ],
+    "rule": "R01 and R02 apply before any finding. When either applies, every finding for the entry is not_evaluated; each finding's not_evaluated_when lists only the conditions beyond these."
+  },
+  "findings": [
+    {
+      "id": "registration_subject_binding",
+      "question": "Is this statement about these exact receipt bytes?",
+      "pass_requires": [
+        "payload_hash_alg is -16 (SHA-256)",
+        "payload_preimage_content_type is application/json",
+        "the embedded payload equals the SHA-256 of the exact receipt bytes",
+        "sub equals the RFC 6920 ni URI of that digest"
+      ],
+      "not_evaluated_when": [
+        "the exact receipt bytes are not supplied"
+      ]
+    },
+    {
+      "id": "registration_statement_profile",
+      "question": "Does the statement stay inside this binding's statement profile?",
+      "pass_requires": [
+        "a well-formed COSE_Sign1 with no duplicate map keys",
+        "a protected header holding only allowlisted labels",
+        "alg present",
+        "kid, x5t or x5chain present",
+        "CWT Claims holding only iss and sub",
+        "label 3 absent from both headers",
+        "labels 258, 259 and 260 absent from the unprotected header",
+        "an empty unprotected header",
+        "an embedded payload"
+      ],
+      "not_evaluated_when": []
+    },
+    {
+      "id": "registration_statement_signature",
+      "question": "Did the named statement issuer sign it?",
+      "pass_requires": [
+        "the COSE_Sign1 signature verifies under a verifier-selected key for iss"
+      ],
+      "not_evaluated_when": [
+        "no verifier-selected key exists for iss"
+      ]
+    },
+    {
+      "id": "registration_receipt_inclusion",
+      "question": "Does this entry's Receipt prove inclusion of this exact statement?",
+      "pass_requires": [
+        "the Receipt is well formed for its proof profile",
+        "the verifier recomputes the inclusion root from the statement and the proof",
+        "the Receipt's signature verifies over that recomputed root under a verifier-selected service key"
+      ],
+      "not_evaluated_when": [
+        "the verifier does not support the Receipt's data structure",
+        "no verifier-selected service key exists"
+      ],
+      "reports": "the authenticated service identity"
+    },
+    {
+      "id": "registration_time_authenticated",
+      "question": "Is there an authenticated registration time?",
+      "pass_requires": [
+        "registration_receipt_inclusion passes",
+        "the selected proof profile defines a registration time covered by the Receipt's verified signature",
+        "the verifier's selected time policy accepts it"
+      ],
+      "not_evaluated_when": [
+        "registration_receipt_inclusion does not pass",
+        "the proof profile defines no authenticated registration time",
+        "no time policy is selected"
+      ]
+    },
+    {
+      "id": "statement_issuer_trusted",
+      "default": "not_evaluated",
+      "evaluated_only_with": "verifier-selected trust input"
+    },
+    {
+      "id": "transparency_service_trusted",
+      "default": "not_evaluated",
+      "evaluated_only_with": "verifier-selected trust input"
+    }
+  ],
+  "routing": [
+    {
+      "id": "R01",
+      "condition": "no registration is supplied for the receipt",
+      "effect": "every registration finding is not_evaluated",
+      "reason_code": "SCITT_REGISTRATION_NOT_SUPPLIED"
+    },
+    {
+      "id": "R02",
+      "condition": "a carried byte field fails base64url decoding, or its SHA-256 differs from the carried digest",
+      "effect": "every finding for that entry is not_evaluated, and no content is read",
+      "reason_code": "SCITT_CARRIER_BYTES_INVALID"
+    },
+    {
+      "id": "R03",
+      "condition": "after R01/R02, all three recomputed digests in evaluation_identity and the complete evaluation context match another entry",
+      "effect": "evaluate that complete relationship once; report SCITT_DUPLICATE_ENTRY and add no independent evidence. The same Receipt with a different statement or target artifact is evaluated independently, preserving failed pairings and order-independent results; a changed context is also evaluated independently. Per-entry hints and their disagreements remain reportable.",
+      "reason_code": "SCITT_DUPLICATE_ENTRY"
+    },
+    {
+      "id": "R04",
+      "condition": "the statement is not well-formed CBOR, is not a COSE_Sign1, or has duplicate map keys",
+      "effect": "registration_statement_profile, registration_subject_binding, registration_statement_signature and registration_receipt_inclusion fail"
+    },
+    {
+      "id": "R05",
+      "condition": "a protected label outside the allowlist, label 3 in either header, label 258, 259 or 260 in the unprotected header, a non-empty unprotected header, CWT claims beyond iss and sub, no alg, no key reference, or a detached payload",
+      "effect": "registration_statement_profile fails; the other findings are evaluated independently"
+    },
+    {
+      "id": "R06",
+      "condition": "the payload, sub, payload_hash_alg or payload_preimage_content_type does not match the exact receipt bytes",
+      "effect": "registration_subject_binding fails"
+    },
+    {
+      "id": "R07",
+      "condition": "the statement signature does not verify under the selected key for iss",
+      "effect": "registration_statement_signature fails"
+    },
+    {
+      "id": "R08",
+      "condition": "the Receipt is malformed, lacks headers its proof profile requires, or carries a critical header the verifier does not understand",
+      "effect": "registration_receipt_inclusion fails"
+    },
+    {
+      "id": "R09",
+      "condition": "the Receipt's signature verifies but the inclusion root was not recomputed from the statement",
+      "effect": "registration_receipt_inclusion does not pass"
+    },
+    {
+      "id": "R10",
+      "condition": "the recomputed inclusion proof does not match the statement",
+      "effect": "registration_receipt_inclusion fails"
+    },
+    {
+      "id": "R11",
+      "condition": "an authenticated time assertion fails verification or is rejected by the time policy",
+      "effect": "registration_time_authenticated fails; inclusion is unaffected"
+    },
+    {
+      "id": "R12",
+      "condition": "a time value appears only outside the Receipt's signature, or only in the sidecar",
+      "effect": "the value is reported as unauthenticated; registration_time_authenticated is not_evaluated unless an authenticated assertion also exists"
+    },
+    {
+      "id": "R13",
+      "condition": "a carrier hint disagrees with authenticated evidence",
+      "effect": "the disagreement is reported; no finding changes"
+    }
+  ],
+  "reported_values": [
+    {
+      "id": "registration_time_reported",
+      "kind": "observation",
+      "is_finding": false,
+      "provenance_values": [
+        "authenticated",
+        "unauthenticated",
+        "absent"
+      ]
+    },
+    {
+      "id": "authenticated_service_identity",
+      "kind": "observation",
+      "is_finding": false,
+      "source": "the verified Receipt and the matched trust material"
+    }
+  ],
+  "reason_codes": [
+    "SCITT_REGISTRATION_NOT_SUPPLIED",
+    "SCITT_CARRIER_BYTES_INVALID",
+    "SCITT_DUPLICATE_ENTRY"
+  ],
+  "required_cases": {
+    "executed_here": false,
+    "note": "Requirements for the verifier owner, not executed against a native binding verifier here. Local carrier-shape tests and a constructed cryptographic relation-key model probe this proposed contract only; they do not establish native conformance or acceptance of these cases.",
+    "from_reconciliation_acceptance_matrix": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12",
+      "T13",
+      "T17",
+      "T18",
+      "T19"
+    ],
+    "binding_specific": [
+      {
+        "id": "B01",
+        "case": "the statement carries a Receipt or any other value in its unprotected header",
+        "expected": "registration_statement_profile fails (R05)"
+      },
+      {
+        "id": "B02",
+        "case": "swap entry order for S1/P and S2/P about the same artifact, with valid statement signatures and P including S1 but not S2",
+        "expected": "every finding set is unchanged under the full relation and context key: registration_receipt_inclusion passes for S1/P and fails for S2/P in both orders; neither pairing is suppressed by R03"
+      },
+      {
+        "id": "B03",
+        "case": "repeat the same artifact/statement/Receipt relationship and context (including entries with differing hints); also vary the artifact, selected proof, proof profile, verifier, trust policy or time policy",
+        "expected": "identical relationships and context are evaluated once with SCITT_DUPLICATE_ENTRY (R03), never counted as an independent source; exact duplicate JSON entries fail schema uniqueItems. Changed relation or context is evaluated independently; duplicate-count suppression never hides a failed pairing; hint disagreements remain reportable (R13)"
+      },
+      {
+        "id": "B04",
+        "case": "the service hint names service A, but the Receipt verifies under service B's key",
+        "expected": "the findings name service B; the disagreement is reported (R13)"
+      },
+      {
+        "id": "B05",
+        "case": "a valid Receipt from service A beside an invalid Receipt from service B",
+        "expected": "inclusion passes for A and fails for B; neither result is attributed to the other"
+      },
+      {
+        "id": "B06",
+        "case": "a trusted service A beside an untrusted service B",
+        "expected": "transparency_service_trusted passes for A only"
+      },
+      {
+        "id": "B07",
+        "case": "a time value in the Receipt's unprotected header is altered",
+        "expected": "inclusion is unchanged; the value is reported as unauthenticated and supports no time bound (R12)"
+      },
+      {
+        "id": "B08",
+        "case": "an extra protected header carries receipt content",
+        "expected": "registration_statement_profile fails (R05)"
+      },
+      {
+        "id": "B09",
+        "case": "label 3 in the protected header",
+        "expected": "registration_statement_profile fails (R05)"
+      },
+      {
+        "id": "B10",
+        "case": "label 3 in the unprotected header",
+        "expected": "registration_statement_profile fails (R05)"
+      },
+      {
+        "id": "B11",
+        "case": "label 258, 259 or 260 in the unprotected header",
+        "expected": "registration_statement_profile fails (R05)"
+      },
+      {
+        "id": "B12",
+        "case": "duplicate keys in the protected header map",
+        "expected": "the statement is malformed (R04)"
+      },
+      {
+        "id": "B13",
+        "case": "a crit header (label 2) is present",
+        "expected": "registration_statement_profile fails (R05)"
+      },
+      {
+        "id": "B14",
+        "case": "CWT Claims carry a claim other than iss and sub",
+        "expected": "registration_statement_profile fails (R05)"
+      },
+      {
+        "id": "B15",
+        "case": "a carried digest differs from its carried bytes",
+        "expected": "SCITT_CARRIER_BYTES_INVALID; no content is read (R02)"
+      },
+      {
+        "id": "B16",
+        "case": "carried bytes are not valid base64url",
+        "expected": "SCITT_CARRIER_BYTES_INVALID; no content is read (R02)"
+      },
+      {
+        "id": "B17",
+        "case": "sub carries the receipt_id instead of the digest's ni URI",
+        "expected": "registration_subject_binding fails (R06)"
+      },
+      {
+        "id": "B18",
+        "case": "a detached payload",
+        "expected": "registration_statement_profile fails (R05)"
+      },
+      {
+        "id": "B19",
+        "case": "a Receipt with no authenticated registration time",
+        "expected": "registration_time_authenticated is not_evaluated; inclusion is unaffected"
+      }
+    ]
+  }
+}

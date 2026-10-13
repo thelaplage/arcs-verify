@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Experimental ARCS Verify local SCITT selection (not a portable trust standard)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format"
+  ],
+  "properties": {
+    "format": {
+      "const": "arcs-verify.scitt-local-selection/experimental-1"
+    },
+    "default": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "statement_issuer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "identity",
+            "public_key_pem"
+          ],
+          "properties": {
+            "identity": {
+              "type": "string",
+              "minLength": 1
+            },
+            "public_key_pem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "policy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "decision"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "decision": {
+                  "enum": [
+                    "accept",
+                    "reject"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "transparency_service": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "identity",
+            "public_key_pem"
+          ],
+          "properties": {
+            "identity": {
+              "type": "string",
+              "minLength": 1
+            },
+            "public_key_pem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "policy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "decision"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "decision": {
+                  "enum": [
+                    "accept",
+                    "reject"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "proof_index": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "entries": {
+      "type": "object",
+      "patternProperties": {
+        "^(0|[1-9][0-9]*)$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "statement_issuer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "identity",
+                "public_key_pem"
+              ],
+              "properties": {
+                "identity": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "public_key_pem": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "policy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "decision"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "decision": {
+                      "enum": [
+                        "accept",
+                        "reject"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "transparency_service": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "identity",
+                "public_key_pem"
+              ],
+              "properties": {
+                "identity": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "public_key_pem": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "policy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "decision"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "decision": {
+                      "enum": [
+                        "accept",
+                        "reject"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "proof_index": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

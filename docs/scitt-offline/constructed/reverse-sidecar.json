@@ -1,0 +1,44 @@
+{
+  "sidecar_version": "srs.scitt.registration_sidecar.v0.1",
+  "binding_id": "srs.scitt.registration.v0.1",
+  "srs_receipt": {
+    "receipt_id": "constructed:receipt:1",
+    "exact_artifact_digest": "sha256:2f5c73a07f827ddab27a799c67664f7dc6af693689cbd0a2908a7e4dc2d9a584"
+  },
+  "registrations": [
+    {
+      "signed_statement": {
+        "media_type": "application/scitt-statement+cose",
+        "encoding": "base64url",
+        "bytes": "0oRYj6UBJwRPb3RoZXItb3BhcXVlLWlkD6IBeCJodHRwczovL2lzc3Vlci5jb25zdHJ1Y3RlZC5pbnZhbGlkAng5bmk6Ly8vc2hhLTI1NjtMMXh6b0gtQ2ZkcXllbm1jWjJaUGZjYXZhVGFKeTlDaWtJcC1UY0xacFlRGQECLxkBA3BhcHBsaWNhdGlvbi9qc29uoFggL1xzoH-CfdqyenmcZ2ZPfcavaTaJy9CikIp-TcLZpYRYQAKSvhZtcGNoR8Nmy1ahJ4lbQw7-7QTLAt7svKtw0Zita14x9ijbp9DIHSgv_9gt6Sz8eoyHyETuw39S5ghXzg4",
+        "digest": "sha256:c602c4728e04bf643a39cf2c2782a89a8f9ceb904881d056f795a1e3dbf9332e"
+      },
+      "receipt": {
+        "media_type": "application/scitt-receipt+cose",
+        "encoding": "base64url",
+        "bytes": "0oRHogEnGQGLAaEZAYyhIIFEgwEAgPZYQNf7JubTK_O7zKSVTELibuKwlEbWQ9Gz99GPtS3oQVoI7XZ4CJBK1d8hofnnQ1VbWRvNT4DWE2mQAQ_faMO3rws",
+        "digest": "sha256:1f1339670bfc1786ea6c9f498a5870aa23d792a52a0a7eab674ffc8f74c3b2c6"
+      }
+    },
+    {
+      "signed_statement": {
+        "media_type": "application/scitt-statement+cose",
+        "encoding": "base64url",
+        "bytes": "0oRYkqUBJwRSY29uc3RydWN0ZWQtaXNzdWVyD6IBeCJodHRwczovL2lzc3Vlci5jb25zdHJ1Y3RlZC5pbnZhbGlkAng5bmk6Ly8vc2hhLTI1NjtMMXh6b0gtQ2ZkcXllbm1jWjJaUGZjYXZhVGFKeTlDaWtJcC1UY0xacFlRGQECLxkBA3BhcHBsaWNhdGlvbi9qc29uoFggL1xzoH-CfdqyenmcZ2ZPfcavaTaJy9CikIp-TcLZpYRYQM58K_38axNRTaCmefAuet8e0zS1iOJPsz61zDXFUp3cLj8_M90A42RzH_-lRJTG7MVPGZBC9UTm3BD7XGjQsQo",
+        "digest": "sha256:3fcd79dd201e3f1d079498abde40cbd7b1d507a64b9b5470d50cc38c80db75bf"
+      },
+      "receipt": {
+        "media_type": "application/scitt-receipt+cose",
+        "encoding": "base64url",
+        "bytes": "0oRHogEnGQGLAaEZAYyhIIFEgwEAgPZYQNf7JubTK_O7zKSVTELibuKwlEbWQ9Gz99GPtS3oQVoI7XZ4CJBK1d8hofnnQ1VbWRvNT4DWE2mQAQ_faMO3rws",
+        "digest": "sha256:1f1339670bfc1786ea6c9f498a5870aa23d792a52a0a7eab674ffc8f74c3b2c6"
+      }
+    }
+  ],
+  "attestation_limits": [
+    "SCITT_REGISTRATION_PROVES_ISSUER_STATEMENT_ONLY",
+    "SCITT_REGISTRATION_NOT_EVENT_TRUTH",
+    "SCITT_REGISTRATION_TIME_TS_RECORDED",
+    "SCITT_REGISTRATION_NOT_REQUIRED_FOR_VALIDITY"
+  ]
+}

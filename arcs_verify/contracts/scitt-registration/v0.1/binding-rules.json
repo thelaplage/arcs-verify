@@ -1,0 +1,409 @@
+{
+  "schema": "srs.scitt-registration-binding-rules/v0.1",
+  "artifact_kind": "binding_rules",
+  "binding_id": "srs.scitt.registration.v0.1",
+  "candidate_revision": 2,
+  "status": "provisional",
+  "authority_scope": "arcs-srs owns this binding's serialization contract: the registered identity, the outgoing statement profile, the carrier and the disclosure limits. Verification findings, their routing and their output names belong to ARCS Verify and are proposed separately in verifier-handoff.json.",
+  "relation_mode": {
+    "label": "transparency_registration",
+    "doctrine_s10_status": "candidate_unresolved",
+    "note": "Proposed label only. Governing doctrine s10 owns the relation-mode vocabulary; this file does not register the label there."
+  },
+  "relation_to_existing_work": {
+    "reconciliation_note": "docs/integrations/SRS_SCITT_REGISTRATION_RECONCILIATION_v0_1.md",
+    "acceptance_gaps": "docs/integrations/SRS_SCITT_REGISTRATION_ACCEPTANCE_GAPS_2026_10_13.md",
+    "this_binding_is": "the SRS-specific RFC 9995 construction that the reconciliation note recommends in section 4.2 for a separate owner decision, offered as a machine-backed candidate for that decision",
+    "capture_witness_construction": "unchanged, unwired and unrepaired: the capture-specific JSON statement signed downstream is neither an RFC 9995 hash envelope nor an SRS receipt (reconciliation note section 4.1)",
+    "acceptance_gaps_closed": [],
+    "sequencing": "the reconciliation note's recommendation to replay the existing capture path first is unaffected; the order is an owner decision"
+  },
+  "native_authority": [
+    {
+      "role": "architecture",
+      "spec": "RFC 9943",
+      "title": "An Architecture for Trustworthy and Transparent Digital Supply Chains",
+      "status": "Proposed Standard",
+      "published": "2026-06"
+    },
+    {
+      "role": "receipts",
+      "spec": "RFC 9942",
+      "title": "CBOR Object Signing and Encryption (COSE) Receipts",
+      "status": "Proposed Standard",
+      "published": "2026-06"
+    },
+    {
+      "role": "hashed_payload",
+      "spec": "RFC 9995",
+      "title": "COSE Hash Envelope",
+      "status": "Proposed Standard",
+      "published": "2026-07"
+    },
+    {
+      "role": "cwt_claims_in_protected_header",
+      "spec": "RFC 9597",
+      "title": "CBOR Web Token (CWT) Claims in COSE Headers"
+    },
+    {
+      "role": "cose_structures",
+      "spec": "RFC 9052",
+      "title": "CBOR Object Signing and Encryption (COSE): Structures and Process"
+    },
+    {
+      "role": "x509_header_parameters",
+      "spec": "RFC 9360",
+      "title": "CBOR Object Signing and Encryption (COSE): Header Parameters for Carrying and Referencing X.509 Certificates"
+    },
+    {
+      "role": "subject_naming",
+      "spec": "RFC 6920",
+      "title": "Naming Things with Hashes"
+    }
+  ],
+  "subject": {
+    "artifact": "srs_receipt",
+    "identity": "exact_artifact_digest",
+    "identity_authority": "docs/integrations/SRS_EXACT_ARTIFACT_TRANSPORT_CUSTODY_v0_1.md",
+    "digest_algorithm": "sha256",
+    "digest_input": "the complete exact receipt bytes as retained, including the receipt_signature object",
+    "digest_wire_form": "sha256:<64 lowercase hex>",
+    "reserialized_receipt": "a different artifact; it needs its own registration",
+    "envelope_basis": "srs-envelope@0.2.1",
+    "out_of_scope": "objects modeled on SRS that are not SRS receipts. Such an object need not become an SRS receipt to be registered; it can use its own outer construction, as the capture-witness path does. It is simply not a subject of this binding."
+  },
+  "identities_not_to_conflate": [
+    {
+      "id": "receipt_file_digest",
+      "object": "SHA-256 of the complete exact receipt bytes",
+      "role_here": "the registered identity"
+    },
+    {
+      "id": "srs_signed_preimage_digest",
+      "object": "SHA-256 of the RFC 8785 preimage the SRS signature covers",
+      "role_here": "not used; reserializations of one receipt share it"
+    },
+    {
+      "id": "receipt_id",
+      "object": "the SRS record identifier",
+      "role_here": "a local sidecar index; not copied into the statement payload or subject; permitted metadata values require deployment disclosure review"
+    },
+    {
+      "id": "signed_statement_digest",
+      "object": "SHA-256 of the exact Signed Statement bytes as submitted",
+      "role_here": "custody of the submitted statement; part of the proposed evaluation relationship"
+    },
+    {
+      "id": "receipt_digest",
+      "object": "SHA-256 of the exact native Receipt bytes as returned",
+      "role_here": "identifies the native proof artifact, not a complete finding set; the proposed handoff also binds the target-artifact and signed-statement digests and evaluation context"
+    },
+    {
+      "id": "transparent_statement_digest",
+      "object": "SHA-256 of a Signed Statement with Receipts attached under label 394",
+      "role_here": "not carried; a separate representation whose digest is not the signed statement digest"
+    },
+    {
+      "id": "proof_profile_leaf",
+      "object": "the leaf value the selected proof profile commits to",
+      "role_here": "computed by the verifier under that profile; never assumed equal to any digest above"
+    },
+    {
+      "id": "capture_binding_identity",
+      "object": "the capture-binding identifier of the existing capture-witness path",
+      "role_here": "not used by this binding; that path keeps its own identity law"
+    }
+  ],
+  "signed_statement": {
+    "native_rule": "RFC 9943 section 6; RFC 9995 sections 3 and 4",
+    "structure": "COSE_Sign1",
+    "payload": "embedded; exactly the 32-byte SHA-256 digest of the exact receipt bytes",
+    "detached_payload": "not permitted by this binding",
+    "protected_header_allowlist": [
+      {
+        "label": 1,
+        "name": "alg",
+        "authority": "RFC 9052",
+        "presence": "required",
+        "note": "RFC 9943 marks alg optional, but the unprotected header is empty, so the protected header is the only place the statement can carry its algorithm"
+      },
+      {
+        "label": 4,
+        "name": "kid",
+        "authority": "RFC 9052",
+        "presence": "required unless x5t (34) or x5chain (33) is present (RFC 9943 section 6)",
+        "discloses": "an opaque key identifier"
+      },
+      {
+        "label": 33,
+        "name": "x5chain",
+        "authority": "RFC 9360",
+        "presence": "optional",
+        "discloses": "complete certificate data, which can identify the signing organization or person"
+      },
+      {
+        "label": 34,
+        "name": "x5t",
+        "authority": "RFC 9360",
+        "presence": "optional",
+        "discloses": "a certificate thumbprint"
+      },
+      {
+        "label": 15,
+        "name": "CWT Claims",
+        "authority": "RFC 9597",
+        "presence": "required",
+        "claims_allowlist": [
+          {
+            "label": 1,
+            "name": "iss",
+            "rule": "identifier of the statement issuer: the party that signed this Signed Statement"
+          },
+          {
+            "label": 2,
+            "name": "sub",
+            "rule": "MUST equal the RFC 6920 ni URI of the exact-artifact digest: ni:///sha-256;<base64url digest without padding>"
+          }
+        ],
+        "other_claims": "not permitted"
+      },
+      {
+        "label": 258,
+        "name": "payload_hash_alg",
+        "authority": "RFC 9995",
+        "presence": "required",
+        "value": -16,
+        "value_name": "SHA-256"
+      },
+      {
+        "label": 259,
+        "name": "payload_preimage_content_type",
+        "authority": "RFC 9995",
+        "presence": "required by this binding; optional in RFC 9995",
+        "value": "application/json"
+      },
+      {
+        "label": 260,
+        "name": "payload_location",
+        "authority": "RFC 9995",
+        "presence": "optional; included only where a disclosure decision opts in",
+        "rule": "a locator hint; never an identity, and never dereferenced to establish identity"
+      }
+    ],
+    "labels_outside_allowlist": "not permitted, including crit (2) and private-use labels",
+    "forbidden": [
+      {
+        "labels": [
+          3
+        ],
+        "name": "content_type",
+        "where": "protected and unprotected headers",
+        "authority": "RFC 9995 section 4"
+      },
+      {
+        "labels": [
+          258,
+          259,
+          260
+        ],
+        "name": "hash envelope parameters",
+        "where": "unprotected header",
+        "authority": "RFC 9995 section 4"
+      }
+    ],
+    "unprotected_header_as_submitted": "empty map; nothing is carried outside the signature",
+    "cbor": "well formed; a map with duplicate keys is malformed",
+    "media_type": "application/scitt-statement+cose (RFC 9943 section 10.1)",
+    "statement_issuer": {
+      "is": "the party that signed the Signed Statement, named by CWT iss",
+      "is_not": [
+        "necessarily the SRS receipt's issuer or signing key",
+        "the submitting client: RFC 9943 lets a client register a statement on an issuer's behalf, and this binding records no submitter"
+      ],
+      "key": "verifier-selected trust input"
+    }
+  },
+  "receipt": {
+    "native_rule": "RFC 9942",
+    "per_entry": "exactly one native Receipt per sidecar entry, carried as its own bytes beside the Signed Statement it was issued for",
+    "media_type": "application/scitt-receipt+cose (RFC 9943 section 10.2)",
+    "service_identity": "taken from the authenticated Receipt and matched against verifier-selected trust material; never from the sidecar's service hints",
+    "receipt_header_requirements": "those of RFC 9942 and the selected proof profile; this binding adds none",
+    "proof_types_relied_on": [
+      {
+        "name": "inclusion",
+        "label": -1
+      }
+    ],
+    "proof_types_not_relied_on": [
+      {
+        "name": "consistency",
+        "label": -2,
+        "note": "an auditor concern; outside this binding"
+      }
+    ],
+    "verifiable_data_structures": [
+      {
+        "name": "RFC9162_SHA256",
+        "value": 1,
+        "authority": "RFC 9942",
+        "status": "specified",
+        "note": "Specified by this candidate. No verifier has replayed a real Receipt of this kind under this binding."
+      },
+      {
+        "name": "CCF_LEDGER_SHA256",
+        "value": null,
+        "requested_value": 2,
+        "authority": "draft-ietf-scitt-receipts-ccf-profile-05",
+        "status": "candidate_unpinned",
+        "note": "No registry value is assigned yet. A verifier that implements the draft may evaluate such a Receipt and must name the structure and draft it verified against. A CCF result says nothing about the RFC9162_SHA256 path."
+      }
+    ],
+    "unsupported_structure_result": "not_evaluated",
+    "transparent_statement": "not carried. A Transparent Statement (the Signed Statement with Receipts attached under label 394, RFC 9943 section 7) can be assembled from an entry when a tool needs one; it is a separate representation."
+  },
+  "carrier": {
+    "schema": "schemas/scitt-bindings/v0.1/srs.scitt.registration_sidecar.v0.1.schema.json",
+    "carries": "completed evidence only: for each registration, the exact submitted Signed Statement and the exact returned Receipt",
+    "not_carried": "pending, timed-out or refused submissions and transport responses. They are not registrations, and their absence from a sidecar proves nothing about the remote outcome.",
+    "byte_checks_first": "base64url decoding and digest equality are checked before any content is read; an entry that fails them is not evaluated",
+    "duplicates": "exact duplicate entries are rejected by the schema. Repeated Receipt bytes add no independent source, but do not make different statement/artifact relationships equivalent. The proposed handoff deduplicates complete findings only for the same three digests and evaluation context; no failed pairing may be suppressed.",
+    "separate_attempts": "registrations of one statement on one service produce different Receipts and stay separate entries",
+    "hints": {
+      "fields": [
+        "srs_receipt.receipt_id",
+        "registrations[].transparency_service",
+        "registrations[].verifiable_data_structure",
+        "registrations[].registration_time_hint"
+      ],
+      "status": "unauthenticated carrier hints; never a basis for a finding. A disagreement with authenticated evidence is reported, never resolved in the hint's favour."
+    },
+    "authenticated_evidence_rule": "a value counts only where a verified signature covers it; a value merely carried inside a COSE object, for example in an unprotected header, is not authenticated"
+  },
+  "registration_interface": {
+    "rule": "any interface the Transparency Service offers; this binding depends on none",
+    "candidate": "draft-ietf-scitt-scrapi-11"
+  },
+  "registration_time": {
+    "native_definition": "RFC 9943 section 7: the timestamp recorded when the Transparency Service added the Signed Statement to its Verifiable Data Structure",
+    "authenticated_assertion_required": true,
+    "authenticated_means": "covered by the Receipt's verified signature, defined as a registration time by the selected proof profile, and accepted by the verifier's selected time policy",
+    "receipt_profile_dependency": "this binding assumes no Receipt carries an authenticated registration time, and relies on one only where the selected proof profile defines it",
+    "meaning_when_authenticated": "the exact receipt bytes existed no later than that time, under three assumptions: the Transparency Service's trust, the accepted time policy, and SHA-256 preimage resistance",
+    "service_custody": "This registration construction does not transmit the original receipt bytes. Its proof establishes no custody of those bytes by the transparency service and does not prove the service never obtained them elsewhere.",
+    "unauthenticated_values": "a time in an unprotected header or in the sidecar is reported as an unauthenticated observation and never supports a time bound",
+    "effect_of_missing_time_on_inclusion": "none",
+    "equals_issued_at": false,
+    "independently_witnessed": false,
+    "establishes_issuance_or_capture_time": false,
+    "ordering_note": "Verifiable Data Structure order need not match issuance order unless the Registration Policy says so (RFC 9943 section 9.1)"
+  },
+  "disclosure": {
+    "constrained_by_this_binding": "the Signed Statement: its payload is the digest, its protected header is limited to the allowlist, and its unprotected header is empty",
+    "disclosed_by_a_conforming_statement": [
+      "the SHA-256 digest of the exact receipt bytes, as payload and as sub",
+      "the statement issuer identifier (iss)",
+      "the key reference: kid (an opaque identifier), x5t (a thumbprint) or x5chain (complete certificate data)",
+      "payload_location, only where a disclosure decision opts in"
+    ],
+    "not_constrained_by_this_binding": [
+      "the submission interface's metadata: client authentication, network addresses, request headers and timing",
+      "the Transparency Service's own records, logs and Registration Policy",
+      "anything outside the Signed Statement"
+    ],
+    "correlation": "the digest is a stable handle for these exact bytes across services and over time",
+    "retention_labels": "a receipt's own retention label, such as hash_only under the MCP SDK enforcement profile (section 3.1), neither authorizes registration nor establishes confidentiality",
+    "public_service_effect": "registration on a public Transparency Service publishes the disclosed values; a transparency log is append-only by design, so treat a registration as permanent",
+    "conformance_authorizes_submission": false,
+    "authorization_note": "Conformance to this binding never authorizes a submission, a disclosure, a choice of service, a retry on another service, or the use of a key. Each of those is a decision for whoever governs the deployment.",
+    "not_copied_into_payload_or_subject": [
+      "receipt content",
+      "receipt_id",
+      "subject_ref"
+    ],
+    "permitted_metadata": "Permitted metadata values (including payload_location, iss, kid and certificate data) remain disclosure-sensitive and can contain receipt identifiers or other sensitive content. They must satisfy the deployment's explicit approval and prohibited-content rules; the deployment governs that review. Header-label allowlists do not enforce value-level nondisclosure.",
+    "structural_profile_pass": "A structural profile PASS is not a nondisclosure finding and does not authorize disclosure or submission."
+  },
+  "limitation_codes": [
+    {
+      "id": "SCITT_REGISTRATION_PROVES_ISSUER_STATEMENT_ONLY",
+      "description": "Registration shows that a named statement issuer signed a commitment to these exact receipt bytes and that a named Transparency Service's proof includes that statement. It does not identify who submitted it.",
+      "renders_as": "Registration shows only that a named issuer signed a commitment to this receipt's exact bytes and that a named transparency service's proof includes it.",
+      "contradicts_claims": [
+        "receipt_verified_by_registration",
+        "receipt_profile_valid_by_registration",
+        "submitter_identified_by_registration"
+      ],
+      "parameters": []
+    },
+    {
+      "id": "SCITT_REGISTRATION_NOT_EVENT_TRUTH",
+      "description": "Registration does not establish that the attested event occurred, that the receipt's contents are true, or any admission, standing or publication state",
+      "renders_as": "Registration does not establish that the recorded event happened or that the receipt is true.",
+      "contradicts_claims": [
+        "event_occurred",
+        "content_true",
+        "admitted",
+        "publication_eligible"
+      ],
+      "parameters": []
+    },
+    {
+      "id": "SCITT_REGISTRATION_TIME_TS_RECORDED",
+      "description": "A registration time is the Transparency Service's assertion of when it recorded a commitment to this receipt's digest. It is not issued_at, it is not independently witnessed, and it supports a time bound only when authenticated.",
+      "renders_as": "A registration time is the transparency service's record of when it logged a commitment to this receipt, not when the receipt was issued.",
+      "contradicts_claims": [
+        "issued_at_verified",
+        "time_independently_witnessed",
+        "service_held_receipt"
+      ],
+      "parameters": []
+    },
+    {
+      "id": "SCITT_REGISTRATION_NOT_REQUIRED_FOR_VALIDITY",
+      "description": "A receipt without a registration is not invalid; registration is additive",
+      "renders_as": "An unregistered receipt is not invalid for that reason.",
+      "contradicts_claims": [
+        "unregistered_receipt_invalid"
+      ],
+      "parameters": []
+    }
+  ],
+  "limitation_codes_note": "Binding-local. These are candidate additions to schemas/limitation-codes/v0.1, deferred because that file is pinned by the C2PA binding's semantic digest.",
+  "forbidden_inferences": [
+    "registration implies admission",
+    "registration implies event truth",
+    "registration implies SRS profile conformance",
+    "registration implies a valid SRS receipt signature",
+    "registration time equals issued_at",
+    "registration time is independently witnessed",
+    "an unauthenticated time value supports a time bound",
+    "the Transparency Service held the receipt bytes",
+    "iss identifies who submitted the statement",
+    "a transport success response implies registration",
+    "absence of registration implies invalidity",
+    "absence of a sidecar entry implies the receipt was never registered",
+    "a single transparency service is authoritative",
+    "several registrations are independent sources, a quorum, or global consistency",
+    "conformance to this binding authorizes submission or disclosure",
+    "the Transparency Service never obtained the receipt bytes elsewhere"
+  ],
+  "presentation": {
+    "aggregate_field_permitted": false,
+    "registration_verified_label": "A consumer that shows one 'registration verified' label must define it as the subject binding, statement profile, statement signature, receipt inclusion, statement issuer trust and Transparency Service trust findings all passing under named trust input, and must show the SRS receipt's own findings, time evidence and log consistency separately.",
+    "transport_success": "never renders as registered"
+  },
+  "srs_core_effects": {
+    "envelope_modified": false,
+    "signed_preimage_modified": false,
+    "profiles_modified": false,
+    "receipt_bytes_modified": false,
+    "new_receipt_type": false,
+    "registration_required_for_receipt_validity": false
+  },
+  "srs_receipt_for_registration_events": {
+    "defined": false,
+    "reason": "A Receipt is verifiable offline (RFC 9943 section 4). An SRS receipt asserting a registration would be a weaker, emitter-asserted copy of a stronger native artifact."
+  },
+  "verifier_handoff": "conformance/bindings/srs.scitt.registration.v0.1/verifier-handoff.json"
+}

@@ -236,6 +236,10 @@ def _verify_srs(argv: list[str] | None = None) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
+    if args and args[0] == "scitt-registration":
+        from .scitt_registration import main as scitt_main
+
+        return scitt_main(args[1:])
     if args and args[0] == "exit-o-origin":
         from .exit_o_origin_cli import main as exit_o_origin_main
 

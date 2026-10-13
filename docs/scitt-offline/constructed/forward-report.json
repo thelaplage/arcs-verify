@@ -1,0 +1,178 @@
+{
+  "status": "EXPERIMENTAL_NOT_OWNER_ACCEPTED",
+  "default_context": {
+    "selected_proof": {
+      "header": 396,
+      "type": -1,
+      "index": 0
+    },
+    "proof_profile": "RFC9942/RFC9162_SHA256",
+    "verifier": "arcs-verify.scitt-registration/experimental-1",
+    "backend_commit": "3d32059474b468f9cd851199a319d022aa38aef0",
+    "cbor2": "6.1.4",
+    "cryptography": "46.0.7",
+    "trust_policy": {
+      "statement_issuer": {
+        "identity": "https://issuer.constructed.invalid",
+        "public_key_digest": "sha256:6026fd903262b22d250c6d45b89d51b818bcea8fdbe58bf45b1edb5faa99d19a",
+        "policy": {
+          "id": "constructed-local-policy/v1",
+          "decision": "accept"
+        }
+      },
+      "transparency_service": {
+        "identity": "https://service.constructed.invalid",
+        "public_key_digest": "sha256:36323f731f39dbfe54798f938e475e6dc9702d214cc3c283072c5ba5c568c2a0",
+        "policy": {
+          "id": "constructed-local-policy/v1",
+          "decision": "accept"
+        }
+      }
+    },
+    "time_policy": null,
+    "binding_semantic_digest": "sha256:2b969c9e588f653c71088d24bb324ad4b2691a21922d5133e97ae0da981915f7"
+  },
+  "relationships": [
+    {
+      "evaluation_identity": {
+        "target_artifact_digest": "sha256:2f5c73a07f827ddab27a799c67664f7dc6af693689cbd0a2908a7e4dc2d9a584",
+        "signed_statement_digest": "sha256:c602c4728e04bf643a39cf2c2782a89a8f9ceb904881d056f795a1e3dbf9332e",
+        "receipt_digest": "sha256:1f1339670bfc1786ea6c9f498a5870aa23d792a52a0a7eab674ffc8f74c3b2c6",
+        "context_digest": "sha256:42dc164cd81cdf14b69605596c0201f665247043fc28130af167f9a27460670e"
+      },
+      "evaluation_key": "sha256:9de24d3e08f9f46536f59abfa249bc4c40f48629f75d52ee611e6818288f3247",
+      "context": {
+        "selected_proof": {
+          "header": 396,
+          "type": -1,
+          "index": 0
+        },
+        "proof_profile": "RFC9942/RFC9162_SHA256",
+        "verifier": "arcs-verify.scitt-registration/experimental-1",
+        "backend_commit": "3d32059474b468f9cd851199a319d022aa38aef0",
+        "cbor2": "6.1.4",
+        "cryptography": "46.0.7",
+        "trust_policy": {
+          "statement_issuer": {
+            "identity": "https://issuer.constructed.invalid",
+            "public_key_digest": "sha256:6026fd903262b22d250c6d45b89d51b818bcea8fdbe58bf45b1edb5faa99d19a",
+            "policy": {
+              "id": "constructed-local-policy/v1",
+              "decision": "accept"
+            }
+          },
+          "transparency_service": {
+            "identity": "https://service.constructed.invalid",
+            "public_key_digest": "sha256:36323f731f39dbfe54798f938e475e6dc9702d214cc3c283072c5ba5c568c2a0",
+            "policy": {
+              "id": "constructed-local-policy/v1",
+              "decision": "accept"
+            }
+          }
+        },
+        "time_policy": null,
+        "binding_semantic_digest": "sha256:2b969c9e588f653c71088d24bb324ad4b2691a21922d5133e97ae0da981915f7"
+      },
+      "findings": {
+        "registration_subject_binding": "pass",
+        "registration_statement_profile": "pass",
+        "registration_statement_signature": "pass",
+        "registration_receipt_inclusion": "fail",
+        "registration_time_authenticated": "not_evaluated",
+        "statement_issuer_trusted": "pass",
+        "transparency_service_trusted": "pass"
+      },
+      "reason_codes": [],
+      "registration_time_reported": {
+        "provenance": "absent",
+        "source": "receipt_unprotected_cwt_iat",
+        "value": null
+      }
+    },
+    {
+      "evaluation_identity": {
+        "target_artifact_digest": "sha256:2f5c73a07f827ddab27a799c67664f7dc6af693689cbd0a2908a7e4dc2d9a584",
+        "signed_statement_digest": "sha256:3fcd79dd201e3f1d079498abde40cbd7b1d507a64b9b5470d50cc38c80db75bf",
+        "receipt_digest": "sha256:1f1339670bfc1786ea6c9f498a5870aa23d792a52a0a7eab674ffc8f74c3b2c6",
+        "context_digest": "sha256:42dc164cd81cdf14b69605596c0201f665247043fc28130af167f9a27460670e"
+      },
+      "evaluation_key": "sha256:f5a53a322c81fa5425df6f633c769730f5b3d2c60cb6d4a6968ae11a13d18227",
+      "context": {
+        "selected_proof": {
+          "header": 396,
+          "type": -1,
+          "index": 0
+        },
+        "proof_profile": "RFC9942/RFC9162_SHA256",
+        "verifier": "arcs-verify.scitt-registration/experimental-1",
+        "backend_commit": "3d32059474b468f9cd851199a319d022aa38aef0",
+        "cbor2": "6.1.4",
+        "cryptography": "46.0.7",
+        "trust_policy": {
+          "statement_issuer": {
+            "identity": "https://issuer.constructed.invalid",
+            "public_key_digest": "sha256:6026fd903262b22d250c6d45b89d51b818bcea8fdbe58bf45b1edb5faa99d19a",
+            "policy": {
+              "id": "constructed-local-policy/v1",
+              "decision": "accept"
+            }
+          },
+          "transparency_service": {
+            "identity": "https://service.constructed.invalid",
+            "public_key_digest": "sha256:36323f731f39dbfe54798f938e475e6dc9702d214cc3c283072c5ba5c568c2a0",
+            "policy": {
+              "id": "constructed-local-policy/v1",
+              "decision": "accept"
+            }
+          }
+        },
+        "time_policy": null,
+        "binding_semantic_digest": "sha256:2b969c9e588f653c71088d24bb324ad4b2691a21922d5133e97ae0da981915f7"
+      },
+      "findings": {
+        "registration_subject_binding": "pass",
+        "registration_statement_profile": "pass",
+        "registration_statement_signature": "pass",
+        "registration_receipt_inclusion": "pass",
+        "registration_time_authenticated": "not_evaluated",
+        "statement_issuer_trusted": "pass",
+        "transparency_service_trusted": "pass"
+      },
+      "reason_codes": [],
+      "registration_time_reported": {
+        "provenance": "absent",
+        "source": "receipt_unprotected_cwt_iat",
+        "value": null
+      },
+      "authenticated_service_identity": "https://service.constructed.invalid",
+      "selected_proof_digest": "sha256:c3b43ab34aaafcd9537e8143037b0472ac727cb59eedaa9e0d02ed31a6064373"
+    }
+  ],
+  "entry_observations": [
+    {
+      "entry_index": 0,
+      "reason_codes": [],
+      "evaluation_key": "sha256:f5a53a322c81fa5425df6f633c769730f5b3d2c60cb6d4a6968ae11a13d18227",
+      "registration_time_reported": {
+        "provenance": "absent",
+        "source": "sidecar",
+        "value": null
+      }
+    },
+    {
+      "entry_index": 1,
+      "reason_codes": [],
+      "evaluation_key": "sha256:9de24d3e08f9f46536f59abfa249bc4c40f48629f75d52ee611e6818288f3247",
+      "registration_time_reported": {
+        "provenance": "absent",
+        "source": "sidecar",
+        "value": null
+      }
+    }
+  ],
+  "limitations": [
+    "No SRS validity, event truth, custody, consistency or submission authorization finding.",
+    "No portable trust bundle, certificate discovery, CCF or registration-time profile support.",
+    "Tagged COSE with native-backend encoding support only; not full binding acceptance."
+  ]
+}

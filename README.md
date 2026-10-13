@@ -317,3 +317,10 @@ serialized artifact chains.
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE). Security reports: see [SECURITY.md](SECURITY.md).
+
+## Experimental offline SCITT candidate
+
+The separately selected `arcs-verify scitt-registration` command is an
+[experimental offline verifier candidate](docs/scitt-offline/README.md), with
+explicit local issuer/service key policies and a pinned RFC9162_SHA256 backend.
+It does not alter existing SRS verification or establish owner acceptance.

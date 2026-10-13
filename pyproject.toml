@@ -39,6 +39,12 @@ arcs-verify = "arcs_verify.cli:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=9,<10"]
+scitt = [
+  "cryptography==46.0.7",
+  "jsonschema==4.26.0",
+  "cbor2==6.1.4",
+  "scitt-cose @ git+https://github.com/action-state-group/scitt-cose.git@3d32059474b468f9cd851199a319d022aa38aef0",
+]
 
 [tool.setuptools.packages.find]
 include = ["arcs_verify*"]
@@ -46,6 +52,7 @@ include = ["arcs_verify*"]
 [tool.setuptools.package-data]
 arcs_verify = [
   "data/*.json",
+  "contracts/scitt-registration/v0.1/*.json",
   "data/profiles/srs.activity.public_publication.v0.1/*.json",
   # Ship only runtime contract inputs.  execution-contract.json is source
   # governance metadata whose historical regeneration note is not needed by

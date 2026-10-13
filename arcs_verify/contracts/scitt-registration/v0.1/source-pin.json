@@ -1,0 +1,36 @@
+{
+  "source_repository": "https://github.com/thelaplage/arcs-srs",
+  "source_commit": "36338d3e80f3ea8d9e70294abd97ed27f20b6ecf",
+  "landed_commit": "c91ee0e719fe7ccfd918ab16b4192e4bdeb216b6",
+  "semantic_digest": "sha256:2b969c9e588f653c71088d24bb324ad4b2691a21922d5133e97ae0da981915f7",
+  "files": {
+    "binding-rules.json": {
+      "source_path": "conformance/bindings/srs.scitt.registration.v0.1/binding-rules.json",
+      "sha256": "490b648a0d671c13821cc9e2ed936679d82cd5cac20eb10593d6e572af9fd8d5"
+    },
+    "verifier-handoff.json": {
+      "source_path": "conformance/bindings/srs.scitt.registration.v0.1/verifier-handoff.json",
+      "sha256": "d156da44a8ebb1d4430547a939153b9998c7faaa81e7301c8875faef7bb89cf5"
+    },
+    "sidecar.schema.json": {
+      "source_path": "schemas/scitt-bindings/v0.1/srs.scitt.registration_sidecar.v0.1.schema.json",
+      "sha256": "a95fbd5b87e01e3138f2dba36cba09e3e84a7b723e35ab4865fbf612b97e6c16"
+    }
+  },
+  "backend": {
+    "repository": "https://github.com/action-state-group/scitt-cose",
+    "commit": "3d32059474b468f9cd851199a319d022aa38aef0",
+    "version": "0.4.0",
+    "files": {
+      "vectors.py": "e5cab3eac0b08a63ec3d0e9f2d8881d44b296aa6e647f198a7adeaf83f410fb6",
+      "_status.py": "328c072b811035a2ecba76e14b662125e8f0ab26188ec766cb642d612ae1d1af",
+      "cose_sign1.py": "571c06566de7f5c944006093661fda8dbf58d5213eda060d03d14f1a7a9a7778",
+      "merkle.py": "483b929d284af946253a1eb3e8b27137851807f83ac3605750cd44db3cd573ee",
+      "statement.py": "66778db79cb9d0238f45d0da331aef26a829baa2477bd60f7ce8745470728b8e",
+      "__init__.py": "60d5e7edbc632509c87b98b773f43ce89d63061f7d0bfe101f4e5314d5ff1c64",
+      "cli.py": "73c89eee8294ba48a6e38555b1fa0011ffa6ba5be62a6f9e6f8f0cf33b89c315",
+      "cll.py": "f2ebd4efcf176c32f51e290a67d4526ff1c624b15208d9f7dcc72a23f2fbf289",
+      "receipt.py": "0dfced263cde2d2aa3b440521af88bc64131ff70f501abc12ed7ab4043dc7128"
+    }
+  }
+}

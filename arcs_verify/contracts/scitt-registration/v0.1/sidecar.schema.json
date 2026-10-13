@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcs.example/schemas/srs/scitt-bindings/srs.scitt.registration_sidecar.v0.1.schema.json",
+  "title": "SRS SCITT registration sidecar v0.1",
+  "description": "PROVISIONAL. Carrier that keeps one SRS receipt's completed SCITT registrations beside the receipt: for each, the exact submitted Signed Statement and the exact returned Receipt. It is not an SRS envelope, it is not signed, and it makes no claim of its own. Every security-relevant fact is recomputed from the carried COSE bytes; passing this schema is shape validation, not COSE or proof validation. Binding rules: conformance/bindings/srs.scitt.registration.v0.1/binding-rules.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sidecar_version",
+    "binding_id",
+    "srs_receipt",
+    "registrations",
+    "attestation_limits"
+  ],
+  "properties": {
+    "sidecar_version": {
+      "const": "srs.scitt.registration_sidecar.v0.1"
+    },
+    "binding_id": {
+      "const": "srs.scitt.registration.v0.1"
+    },
+    "srs_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_id",
+        "exact_artifact_digest"
+      ],
+      "properties": {
+        "receipt_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Local index only; not copied into the statement payload or subject. Permitted metadata values require deployment disclosure review. A verifier recomputes it from the receipt bytes and reports any disagreement."
+        },
+        "exact_artifact_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "SHA-256 of the complete exact receipt bytes, including the receipt_signature object (SRS Exact-Artifact Transport Custody v0.1). The Signed Statement's payload is these 32 bytes, and its sub is their RFC 6920 ni URI."
+        },
+        "byte_size": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "registrations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "One entry per completed registration, each with exactly one Receipt. Entries are independent: no entry speaks for another, and repeated attempts on one service stay separate entries.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "signed_statement",
+          "receipt"
+        ],
+        "properties": {
+          "signed_statement": {
+            "$ref": "#/$defs/signed_statement_bytes"
+          },
+          "receipt": {
+            "$ref": "#/$defs/receipt_bytes"
+          },
+          "transparency_service": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "service_id"
+            ],
+            "description": "Unauthenticated hint. The service identity in any finding comes from the verified Receipt and the verifier's trust material.",
+            "properties": {
+              "service_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "registration_policy_ref": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "verifiable_data_structure": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name"
+            ],
+            "description": "Unauthenticated hint. A verifier reads the data structure from the Receipt itself.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[A-Z0-9_]+$"
+              },
+              "value": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            }
+          },
+          "registration_time_hint": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unauthenticated hint, if the service conveyed a time at all. It is not issued_at, it is not independently witnessed, and it never supports a time bound."
+          }
+        }
+      }
+    },
+    "attestation_limits": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "SCITT_REGISTRATION_PROVES_ISSUER_STATEMENT_ONLY",
+          "SCITT_REGISTRATION_NOT_EVENT_TRUTH",
+          "SCITT_REGISTRATION_TIME_TS_RECORDED",
+          "SCITT_REGISTRATION_NOT_REQUIRED_FOR_VALIDITY"
+        ]
+      },
+      "allOf": [
+        {
+          "contains": {
+            "const": "SCITT_REGISTRATION_PROVES_ISSUER_STATEMENT_ONLY"
+          }
+        },
+        {
+          "contains": {
+            "const": "SCITT_REGISTRATION_NOT_EVENT_TRUTH"
+          }
+        },
+        {
+          "contains": {
+            "const": "SCITT_REGISTRATION_TIME_TS_RECORDED"
+          }
+        },
+        {
+          "contains": {
+            "const": "SCITT_REGISTRATION_NOT_REQUIRED_FOR_VALIDITY"
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "signed_statement_bytes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "media_type",
+        "encoding",
+        "bytes",
+        "digest"
+      ],
+      "description": "The exact Signed Statement as submitted, with an empty unprotected header. Retained so an offline verifier never has to regenerate it.",
+      "properties": {
+        "media_type": {
+          "enum": [
+            "application/scitt-statement+cose",
+            "application/cose"
+          ]
+        },
+        "encoding": {
+          "const": "base64url"
+        },
+        "bytes": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "SHA-256 of the decoded bytes. A verifier recomputes it before reading any content."
+        }
+      }
+    },
+    "receipt_bytes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "media_type",
+        "encoding",
+        "bytes",
+        "digest"
+      ],
+      "description": "The exact native Receipt as returned by the Transparency Service. Its digest identifies this proof artifact only. Complete findings bind the actual target-artifact digest, signed-statement digest and Receipt digest within the selected proof, proof-profile, verifier, trust-policy and time-policy context. Repeated Receipt bytes do not suppress a different or failed pairing.",
+      "properties": {
+        "media_type": {
+          "enum": [
+            "application/scitt-receipt+cose",
+            "application/cose"
+          ]
+        },
+        "encoding": {
+          "const": "base64url"
+        },
+        "bytes": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "SHA-256 of the decoded bytes. A verifier recomputes it before reading any content."
+        }
+      }
+    }
+  }
+}
