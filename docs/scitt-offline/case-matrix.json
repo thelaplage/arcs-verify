@@ -1,0 +1,299 @@
+{
+  "qualification": "Experimental constructed implementation evidence; not owner acceptance.",
+  "cases": [
+    {
+      "id": "T01",
+      "status": "NOT_EXECUTED",
+      "tests": [],
+      "scope": "No authorized real-service specimen; reserved fixture remains unpopulated."
+    },
+    {
+      "id": "T02",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T02_T18_exact_bytes_and_occurrence"
+      ],
+      "scope": "Changed exact artifact leaves signature/inclusion intact and subject binding fails."
+    },
+    {
+      "id": "T03",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T03_T04_T05_srs_validity_remains_independent"
+      ],
+      "scope": "Two existing valid SRS goldens; wrong artifact fails binding."
+    },
+    {
+      "id": "T04",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T03_T04_T05_srs_validity_remains_independent"
+      ],
+      "scope": "Actual SRS verifier rejects signature; correctly constructed registration still succeeds."
+    },
+    {
+      "id": "T05",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T03_T04_T05_srs_validity_remains_independent",
+        "test_T05_absent_registration",
+        "test_cli_selection_and_unchanged_srs_dispatch"
+      ],
+      "scope": "Existing SRS report unchanged; absent registration is unevaluated."
+    },
+    {
+      "id": "T06",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T06_arbitrary_response_is_not_inclusion"
+      ],
+      "scope": "Empty/arbitrary body; no transport or real HTTP exchange is performed."
+    },
+    {
+      "id": "T07",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T07_T11_native_attached_wrong_root_requires_adapter_guard",
+        "test_selected_proof_and_malformed_unselected_proof"
+      ],
+      "scope": "Valid service signature cannot rescue wrong selected statement/root/proof."
+    },
+    {
+      "id": "T08",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T08_tampered_statement_signature_and_protected_header",
+        "test_B12_T08_duplicate_or_malformed_statement",
+        "test_unknown_critical_receipt_header_fails",
+        "test_receipt_cwt_header_validation",
+        "test_critical_receipt_cwt_requires_supported_semantics"
+      ],
+      "scope": "Tampering, duplicate/malformed maps, unknown critical semantics. Malformed Receipt CWT maps and unsupported critical CWT Claims are also rejected."
+    },
+    {
+      "id": "T09",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_invalid_carrier_precedes_all_content_reading"
+      ],
+      "scope": "Missing Signed Statement prevents content evaluation; no regeneration."
+    },
+    {
+      "id": "T10",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T10_explicit_keys_do_not_establish_trust",
+        "test_private_key_is_not_a_public_selection"
+      ],
+      "scope": "Missing/wrong keys, wrong issuer, swapped roles, absent/reject policy."
+    },
+    {
+      "id": "T11",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T07_T11_native_attached_wrong_root_requires_adapter_guard"
+      ],
+      "scope": "Exact pinned native attached-payload false acceptance is reproduced and blocked by adapter."
+    },
+    {
+      "id": "T12",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_B07_B19_T12_unsigned_time_is_an_observation",
+        "test_constructed_success_and_separate_axes"
+      ],
+      "scope": "Inclusion passes without time or consistency claim."
+    },
+    {
+      "id": "T13",
+      "status": "PARTIAL_CONSTRUCTED",
+      "tests": [
+        "test_T13_signed_iat_does_not_supply_time_policy_or_authenticate_earlier_issuance"
+      ],
+      "scope": "Earlier artifact issuance is not authenticated by later signed iat; no trustworthy registration-time profile/policy is implemented, so the full premise is unexecuted."
+    },
+    {
+      "id": "T17",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_B05_B06_T17_service_outcomes_remain_separate"
+      ],
+      "scope": "Two explicit service selections in both orders; valid/invalid receipts retained separately."
+    },
+    {
+      "id": "T18",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T02_T18_exact_bytes_and_occurrence"
+      ],
+      "scope": "Receipt-id occurrence and exact serialization changes fail old binding."
+    },
+    {
+      "id": "T19",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_T19_original_submission_is_not_replaced_with_augmented_statement"
+      ],
+      "scope": "Adding outer unsigned proof preserves signature but changes selected statement bytes and invalidates old inclusion."
+    },
+    {
+      "id": "B01",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_profile_cases[B01]"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B02",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_B02_pairing_order_and_repeat_do_not_hide_failure",
+        "test_retained_constructed_replay_inputs_and_outputs"
+      ],
+      "scope": "Both signatures valid; S1/P pass, S2/P fail in both orders, repeated S1/P cannot suppress S2/P."
+    },
+    {
+      "id": "B03",
+      "status": "PARTIAL_CONSTRUCTED",
+      "tests": [
+        "test_B03_exact_duplicate_entries_rejected",
+        "test_B03_context_and_three_digests_prevent_reuse",
+        "test_B03_missing_target_never_reuses_complete_findings",
+        "test_B03_same_relation_with_different_per_entry_policy_not_reused"
+      ],
+      "scope": "Three digests, selected proof, verifier and role-key/policy contexts exercised; proof profile is fixed and time policy absent. Alternate supported proof/time contexts await their implementations."
+    },
+    {
+      "id": "B04",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_B04_service_and_target_hint_disagreement"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B05",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_B05_B06_T17_service_outcomes_remain_separate"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B06",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_B05_B06_T17_service_outcomes_remain_separate"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B07",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_B07_B19_T12_unsigned_time_is_an_observation"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B08",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_profile_cases[B08]"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B09",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_profile_cases[B09]"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B10",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_profile_cases[B10]"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B11",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_profile_cases[B11-258]",
+        "test_profile_cases[B11-259]",
+        "test_profile_cases[B11-260]"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B12",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_B12_T08_duplicate_or_malformed_statement"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B13",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_profile_cases[B13]",
+        "test_malformed_statement_crit_does_not_crash"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B14",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_profile_cases[B14]"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B15",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_invalid_carrier_precedes_all_content_reading[B15]"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B16",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_invalid_carrier_precedes_all_content_reading[B16]"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B17",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_B17_receipt_id_is_not_digest_subject"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B18",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_profile_cases[B18]"
+      ],
+      "scope": ""
+    },
+    {
+      "id": "B19",
+      "status": "EXECUTED_CONSTRUCTED",
+      "tests": [
+        "test_B07_B19_T12_unsigned_time_is_an_observation"
+      ],
+      "scope": ""
+    }
+  ]
+}

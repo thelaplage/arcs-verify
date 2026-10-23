@@ -1,0 +1,21 @@
+{
+  "format": "arcs-verify.scitt-local-selection/experimental-1",
+  "default": {
+    "statement_issuer": {
+      "identity": "https://issuer.constructed.invalid",
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAn1WhT9NP2fAYcMjlZEivy3X39Isgas1bmQyrYa79Bxs=\n-----END PUBLIC KEY-----\n",
+      "policy": {
+        "id": "constructed-local-policy/v1",
+        "decision": "accept"
+      }
+    },
+    "transparency_service": {
+      "identity": "https://service.constructed.invalid",
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA4edvTwaZVpJBcAEUTyRAHeQfopBSR5dVFkZG/P3oczg=\n-----END PUBLIC KEY-----\n",
+      "policy": {
+        "id": "constructed-local-policy/v1",
+        "decision": "accept"
+      }
+    }
+  }
+}

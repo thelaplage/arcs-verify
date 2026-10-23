@@ -1,0 +1,21 @@
+attrs==26.1.0
+build==1.6.1
+cbor2==6.1.4
+cffi==2.1.1
+cryptography==46.0.7
+iniconfig==2.3.1
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+packaging==26.3
+pluggy==1.6.0
+pycparser==3.11
+Pygments==2.21.0
+pyproject_hooks==1.3.3
+pytest==9.1.1
+referencing==0.37.0
+rfc3339-validator==0.1.4
+rfc8785==0.1.4
+rpds-py==2026.9.1
+scitt-cose @ git+https://github.com/action-state-group/scitt-cose.git@3d32059474b468f9cd851199a319d022aa38aef0
+setuptools==80.9.0
+six==1.17.0

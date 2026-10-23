@@ -1,0 +1,4 @@
+Installed SCITT CLI: both retained reports exactly reproduced.
+Installed legacy SRS verification and DAGR contract/CLI: passed.
+SCITT handoff: CANDIDATE_NOT_ACCEPTED
+Installed import came from wheel environment, outside source checkout.
