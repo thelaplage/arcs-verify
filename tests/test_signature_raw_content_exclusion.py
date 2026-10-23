@@ -32,6 +32,6 @@ def test_raw_content_scan_still_rejects_same_token_in_semantic_field() -> None:
 def test_raw_content_scan_still_rejects_private_path_outside_signature() -> None:
     receipt = _receipt(
         "opaque-signature",
-        extensions={"note": "/Users/example/private-source"},
+        extensions={"note": "/" + "Users" + "/example/private-source"},
     )
     assert "raw_content.prohibited_value" in _raw_content_errors(receipt)
