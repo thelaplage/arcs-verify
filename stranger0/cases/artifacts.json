@@ -1,0 +1,847 @@
+{
+  "artifacts": {
+    "cases/receipts/n-malformed-json.json": {
+      "kind": "hand_truncated_bytes",
+      "note": "Deliberately truncated JSON text; not derived from a pinned receipt.",
+      "sha256": "90e12a62447b8adcc7e86f0fde380c9683076d5a60da2eaf496375e3341a80a0"
+    },
+    "cases/receipts/n-tamper-refused-to-admitted.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "disposition"
+          ],
+          "value": "admitted"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": null,
+      "sha256": "abc1b58ea5e8f2155f45252067ad3ec8f74f40ee4f77f28c953d5f03c192baf7",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-refused.json",
+      "source_sha256": "067170f21c5f5e253557460f19c8eead4b6b06e205ddd37cc3c9996ac1835a6e"
+    },
+    "cases/receipts/s0-admitted-issuer-a.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:00Z"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "feae4efcf7ba69606bc0520bc43251fa9b0dbfb0dab6b01f2f1ce596cf4a0217",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    "cases/receipts/s0-claimed-key-trusted-issuer.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0003"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0003"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0003"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:03Z"
+        },
+        {
+          "op": "set",
+          "path": [
+            "extensions",
+            "stranger0_claimed_issuer_key"
+          ],
+          "value": {
+            "algorithm": "Ed25519",
+            "key_id": "issuer.stranger0.synthetic-a/receipt-signing/2026-10",
+            "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk"
+          }
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "6e5ea5b3ec5a43f522671d69ffad6fce2ccc78ac87de45f4c2e0758e4b01431f",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    "cases/receipts/s0-conflict-b.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:00Z"
+        },
+        {
+          "op": "set",
+          "path": [
+            "argument_digest"
+          ],
+          "value": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "015153eecbde963423d3d5d4e8fac3b21533acf2cc154ffc1239301b553a06e4",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    "cases/receipts/s0-outcome-issuer-a.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:outcome:0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:01Z"
+        },
+        {
+          "op": "set",
+          "path": [
+            "admission_receipt_ref"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0001"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "6a46d894d0191eb35f1cb6bcf22c3f5c0fdc2fdd207f62a8252a5ee98000bb21",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/outcome-result-returned.json",
+      "source_sha256": "24e897203377bff1ca124a51a5669590d434f31c8e5941bfd8df25af3b318c66"
+    },
+    "cases/receipts/s0-outcome-linkage-mismatch.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:outcome:0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:01Z"
+        },
+        {
+          "op": "set",
+          "path": [
+            "admission_receipt_ref"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-9999"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "32bfb1dff16fab90635c89715779c17374c99cdf6fa4e899ed55b3ca7d30d9bd",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/outcome-result-returned.json",
+      "source_sha256": "24e897203377bff1ca124a51a5669590d434f31c8e5941bfd8df25af3b318c66"
+    },
+    "cases/receipts/s0-raw-access-token.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0012"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0012"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0012"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:08Z"
+        },
+        {
+          "op": "set",
+          "path": [
+            "access_token"
+          ],
+          "value": "SYNTHETIC-PLACEHOLDER-NOT-A-CREDENTIAL"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "47d0f6010140502066c335199f3f63894ec59b2f7bb605d838c94cbb022803b8",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    "cases/receipts/s0-raw-result-body.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0011"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0011"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0011"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:07Z"
+        },
+        {
+          "op": "set",
+          "path": [
+            "result_body"
+          ],
+          "value": "SYNTHETIC-NON-SECRET-RESULT-TEXT"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "9feaf8414d4f54be1e6bd5e92169671ea3a97ba63534f7005ca511c6342f7197",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    "cases/receipts/s0-raw-tool-arguments.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0010"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0010"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0010"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:06Z"
+        },
+        {
+          "op": "set",
+          "path": [
+            "tool_arguments"
+          ],
+          "value": "SYNTHETIC-NON-SECRET-ARGUMENT-TEXT"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "69c69bdadd1e88cb9c7bfe77cf45d35f40aeaaa02f16fe632f3289c9381f0e32",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    "cases/receipts/s0-selfclaimed-key.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:self-claimed"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.self-claimed/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0002"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0002"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0002"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:02Z"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "extensions",
+            "stranger0_claimed_issuer_key"
+          ],
+          "value": {
+            "algorithm": "Ed25519",
+            "key_id": "issuer.stranger0.self-claimed/receipt-signing/2026-10",
+            "public_key": "sd2FDVuyx3FYkMORUst2CQeDa5YAnMtx6WIgiENXCwA"
+          }
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "sd2FDVuyx3FYkMORUst2CQeDa5YAnMtx6WIgiENXCwA",
+        "synthetic_key_label": "rogue-2"
+      },
+      "sha256": "3b0c07752fb35771e7df9d3b9716b5635767aaae4ac0f996493db7d18bf0ea45",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    "cases/receipts/s0-unknown-profile.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0005"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0005"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0005"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:05Z"
+        },
+        {
+          "op": "set",
+          "path": [
+            "profile_id"
+          ],
+          "value": "srs.example.unregistered"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "2e60f4e7bef41c64c1a7473eb11d5acab5f7b64a3c00ebe906fc42bbf5dc0a6a",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    "cases/receipts/s0-unknown-receipt-version.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0004"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0004"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0004"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:04Z"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_version"
+          ],
+          "value": "srs.core.v9.9"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "2b809133cc86e530f4d57940f8bae94c8670578ee3ff16d792b8b4e3ebd33040",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    "cases/receipts/s0-wrong-key-claims-issuer-a.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:00Z"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "resigned_with": {
+        "public_key": "wOMkewpBrccG2j3CYhCHQjis0lkjWpvGdNDyfP6BiFc",
+        "synthetic_key_label": "rogue-1"
+      },
+      "sha256": "4e8f4f2cc2130ce5d6a422cef24c6e86c663345cf6fd3b208b767a95b320fea6",
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
+    "cases/trust/receiver-counterfactual-selftrust.json": {
+      "kind": "receiver_trust_input",
+      "note": "COUNTERFACTUAL: the receiver chooses to add the key a receipt claimed for itself to its own trust input. Exists to isolate trust-input membership as the only variable.",
+      "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
+      "sha256": "2b4660e6cb8c326f08ac35ce1d9b376ee39fddca03d7f70a85c8c66438f0a744"
+    },
+    "cases/trust/receiver-default.json": {
+      "kind": "receiver_trust_input",
+      "note": "Pins the pinned test issuer and the stranger0 synthetic issuer-a; accepts the MCP profile only.",
+      "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
+      "sha256": "26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+    },
+    "cases/trust/receiver-key-revoked.json": {
+      "kind": "receiver_trust_input",
+      "note": "The receiver has marked the pinned test issuer key as not trusted.",
+      "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
+      "sha256": "5a6e819a8f4eb45ff6f8dad8cd2c9e46d121ca392b49988f4a7f38a5c3d61a05"
+    },
+    "cases/trust/receiver-ledger-has-admitted.json": {
+      "kind": "receiver_trust_input",
+      "note": "Prior-reliance ledger already holds the pinned admitted receipt.",
+      "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
+      "sha256": "aac9ab8e129cd30a3b8606a33b29a37fd893c79bf97429bedbc3aac197a7d338"
+    },
+    "cases/trust/receiver-ledger-other.json": {
+      "kind": "receiver_trust_input",
+      "note": "Prior-reliance ledger holds a different receipt (the pinned refused one).",
+      "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
+      "sha256": "2f714909ddee6b0faf5002ce1fa4741f0ed016263286d51463fd3f07fe340caf"
+    },
+    "cases/trust/receiver-no-anchors.json": {
+      "kind": "receiver_trust_input",
+      "note": "Identical policy, but the receiver holds NO issuer keys.",
+      "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
+      "sha256": "49c8d64873dac992b52e523576ae3c903e8f72989b1dfe6c2ec3b7c00dc52e3d"
+    },
+    "cases/trust/receiver-no-link-requirement.json": {
+      "kind": "receiver_trust_input",
+      "note": "Does not require an outcome to arrive with its admission receipt.",
+      "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
+      "sha256": "497c87b596a63b96b2d8787823cd90bf4d9ae29c6a5a31643eaeb0c03c1ab20c"
+    },
+    "cases/trust/receiver-strict-boundary.json": {
+      "kind": "receiver_trust_input",
+      "note": "Accepts only a boundary id that none of the test receipts use.",
+      "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
+      "sha256": "4e42ecc106107ddb09aa2ed8ab818353f392a41e5a2140812a8f1d5162171026"
+    },
+    "cases/trust/receiver-strict-issuer.json": {
+      "kind": "receiver_trust_input",
+      "note": "Accepts issuer-a only; key for the pinned test issuer is still trusted.",
+      "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
+      "sha256": "79dc858df63bf4083d887be4b4fe85b260287aad0e3c9ac7a59dc1425aa67af8"
+    }
+  },
+  "generator": "make_synthetic_cases.py (out-of-repo; lives in the lane evidence packet)",
+  "key_derivation": "Ed25519 seed = sha256(b'arcs-verify/stranger0/synthetic-test-key/v0.1/' + label); public by construction; authenticates nothing.",
+  "pinned_manifest_sha256": "811f76dca369dab0db24377651d129baede4501843487a5340f397ca5a0648c3",
+  "pinned_vector_set": "srs.signed_receipt.v0.1",
+  "schema": "arcs.verify.stranger0.artifacts.v0.1"
+}

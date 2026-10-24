@@ -1,0 +1,30 @@
+{
+  "accepted_profiles": [
+    "srs.mcp.sdk_enforcement.v0.1"
+  ],
+  "accepted_receipt_versions": [
+    "srs.core.v5.1"
+  ],
+  "default_profile": "srs.mcp.sdk_enforcement.v0.1",
+  "keyring": {
+    "issuers": [],
+    "trust_bundle_version": "srs.trust_bundle.v0.1"
+  },
+  "policy": {
+    "accepted_boundary_ids": [
+      "boundary:test:fastmcp"
+    ],
+    "accepted_issuer_ids": [
+      "issuer:vcp:test",
+      "issuer:stranger0:synthetic-a"
+    ],
+    "accepted_policy_pack_ids": [
+      "policy:test:mcp"
+    ],
+    "require_admission_link_for_outcome": true
+  },
+  "policy_id": "stranger0.policy.default.v0.1",
+  "receiver_id": "receiver:stranger0:synthetic",
+  "relied_receipt_ledger": [],
+  "schema": "arcs.verify.stranger0.receiver_trust_input.v0.1"
+}

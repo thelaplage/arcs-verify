@@ -1,0 +1,4101 @@
+{
+  "cases": [
+    {
+      "case_id": "pc-admitted-pinned",
+      "case_ok": true,
+      "description": "Pinned admitted receipt, receiver default trust input.",
+      "family": "controls",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:354f167c1625c3c80ae73ef6e7791a101084159605dc27bd16692042d3f2f9e9",
+        "verifier_findings_sha256": "sha256:316ea1122f8ca9235381f050c20a722ee6c98d65555d1f2fdf8c07658f927695"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-refused-pinned",
+      "case_ok": true,
+      "description": "Pinned refused receipt: relied upon as a refusal, not as an admission.",
+      "family": "controls",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-refused.json",
+          "sha256": "sha256:067170f21c5f5e253557460f19c8eead4b6b06e205ddd37cc3c9996ac1835a6e"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "refused",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_refused",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:067170f21c5f5e253557460f19c8eead4b6b06e205ddd37cc3c9996ac1835a6e",
+          "receipt_id": "urn:srs:receipt:admission:0002",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "absence_of_execution_outside_the_named_boundary"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_refused"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:4de19c32a869dff4c09fc83e8f8142b6ea27545ceb933c406043c17f1a4272cf",
+        "verifier_findings_sha256": "sha256:7974979ed63c664491c16237509fb7f08d7c7a03e809222381006f3fe0c8e3e2"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-deferred-pinned",
+      "case_ok": true,
+      "description": "Pinned deferred receipt: relied upon as a deferral, not as an approval.",
+      "family": "controls",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-deferred.json",
+          "sha256": "sha256:e1476642ee443709c350131e5461a02d390cb3e0f89d8ba2fdbdde31836c40d6"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "deferred_for_review",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_deferred_for_review",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:e1476642ee443709c350131e5461a02d390cb3e0f89d8ba2fdbdde31836c40d6",
+          "receipt_id": "urn:srs:receipt:admission:0003",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "approval_of_the_deferred_call",
+              "tool_body_execution"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_deferred_for_review"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:52648403d668a9baf332a34ad7d935fd55b920fa267ec033b1e808b3eefac91d",
+        "verifier_findings_sha256": "sha256:0cd42b2e19f496ce56af4ebad87776344d2943d3d48379eada5df93c17b1310d"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-reserialized-pinned",
+      "case_ok": true,
+      "description": "Pinned whitespace-reserialization receipt: formatting changes, same signed content.",
+      "family": "controls",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/mutations/whitespace-reserialization-pass.json",
+          "sha256": "sha256:70cc7912957fb276ea43efd84f6fe5b41a8efba67e8f329a85323f731ff9f539"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:70cc7912957fb276ea43efd84f6fe5b41a8efba67e8f329a85323f731ff9f539",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:3f62d0656c38ef00bfc195ad63b62aea1ea1472f2aa21e6062eaa7f23fdd2e0f",
+        "verifier_findings_sha256": "sha256:3faba88717748822a2948c0b26254ef8bc00063ce6023e77395aad5b79fbe2d6"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-reordered-keys-pinned",
+      "case_ok": true,
+      "description": "Pinned reordered-keys receipt: key order changes, same signed content.",
+      "family": "controls",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/mutations/reordered-keys-pass.json",
+          "sha256": "sha256:d9e8b2682ec5a8e5c11169d0f5b375d407c01862a237f8a337171e10b2a7929b"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:d9e8b2682ec5a8e5c11169d0f5b375d407c01862a237f8a337171e10b2a7929b",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:803960b986dd10c7e8d84ce9ae5b7a3f57d3a1ca265265364842212d0eea12ae",
+        "verifier_findings_sha256": "sha256:8d852ef2d130403db2e48477b56a2074e44957119f82f56ac99559bdc0cef1b2"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-synthetic-issuer-a",
+      "case_ok": true,
+      "description": "Synthetic admitted receipt validly signed by the receiver-pinned synthetic issuer-a.",
+      "family": "controls",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-admitted-issuer-a.json",
+          "sha256": "sha256:feae4efcf7ba69606bc0520bc43251fa9b0dbfb0dab6b01f2f1ce596cf4a0217"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:feae4efcf7ba69606bc0520bc43251fa9b0dbfb0dab6b01f2f1ce596cf4a0217",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:ef10dbf0c80ed476d1d35ea81b70f40b566e32f518ba3cfc7169eb6e30342be2",
+        "verifier_findings_sha256": "sha256:a1e4ff45fb4641089ae1326d2402246dd8a7128067e7080b9e037f592fa01002"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-chain-intact-pinned",
+      "case_ok": true,
+      "description": "Pinned admission + outcome pair, intact linkage.",
+      "family": "controls",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        },
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/outcome-result-returned.json",
+          "sha256": "sha256:24e897203377bff1ca124a51a5669590d434f31c8e5941bfd8df25af3b318c66"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        },
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": null,
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_outcome_result_returned",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 1,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:24e897203377bff1ca124a51a5669590d434f31c8e5941bfd8df25af3b318c66",
+          "receipt_id": "urn:srs:receipt:outcome:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_outcome_result_returned"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:50f9058b2083cd44196f942091f50d5e81ac9107c2afeac6ecfecef938e52db2",
+        "verifier_findings_sha256": "sha256:67d06cc460c90af699f964a989465bfb2cf311ceef22ec293b485f36da826f33"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-chain-intact-synthetic",
+      "case_ok": true,
+      "description": "Synthetic issuer-a admission + outcome pair, intact linkage.",
+      "family": "controls",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-admitted-issuer-a.json",
+          "sha256": "sha256:feae4efcf7ba69606bc0520bc43251fa9b0dbfb0dab6b01f2f1ce596cf4a0217"
+        },
+        {
+          "path": "stranger0/cases/receipts/s0-outcome-issuer-a.json",
+          "sha256": "sha256:6a46d894d0191eb35f1cb6bcf22c3f5c0fdc2fdd207f62a8252a5ee98000bb21"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:feae4efcf7ba69606bc0520bc43251fa9b0dbfb0dab6b01f2f1ce596cf4a0217",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        },
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": null,
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_outcome_result_returned",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 1,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:6a46d894d0191eb35f1cb6bcf22c3f5c0fdc2fdd207f62a8252a5ee98000bb21",
+          "receipt_id": "urn:srs:receipt:stranger0:outcome:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_outcome_result_returned"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:42ecd2e5a010b84e29c2ed724a1782abd3a97619db2a4ed308949fa4de67cda0",
+        "verifier_findings_sha256": "sha256:f6b570d6d79d5d2c0f552887827a4501931aa41d1ad6c3b01a1b2de8a66d32e1"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-two-distinct-receipts",
+      "case_ok": true,
+      "description": "Two distinct pinned receipts in one submission.",
+      "family": "controls",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        },
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-refused.json",
+          "sha256": "sha256:067170f21c5f5e253557460f19c8eead4b6b06e205ddd37cc3c9996ac1835a6e"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        },
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "refused",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_refused",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 1,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:067170f21c5f5e253557460f19c8eead4b6b06e205ddd37cc3c9996ac1835a6e",
+          "receipt_id": "urn:srs:receipt:admission:0002",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "absence_of_execution_outside_the_named_boundary"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_refused"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:fe81a2f123df933bfa40b1f215948094a3062d9581ec37d1bbd82f6545e22fdd",
+        "verifier_findings_sha256": "sha256:b2601d7d726d4a853185414173a00656d09856b971e856b88b7efe3007cfa8da"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-ledger-other-receipt",
+      "case_ok": true,
+      "description": "Receiver ledger holds a different receipt; this one is new.",
+      "family": "controls",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:a1c1bd40a0952782b0b058226e7317c98d2fd625267be28cd11ced1948605261",
+        "verifier_findings_sha256": "sha256:fbde0a84c02e59b92829ab5afe6d7443e579224020b140e64e8fc7144b3bb7fa"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-ledger-other.json",
+        "sha256": "sha256:2f714909ddee6b0faf5002ce1fa4741f0ed016263286d51463fd3f07fe340caf"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-mixed-dispositions-represented",
+      "case_ok": true,
+      "description": "Admitted, refused and deferred receipts together: all three are represented, each with its own reliance claim.",
+      "family": "refused_deferred_honesty",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        },
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-refused.json",
+          "sha256": "sha256:067170f21c5f5e253557460f19c8eead4b6b06e205ddd37cc3c9996ac1835a6e"
+        },
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-deferred.json",
+          "sha256": "sha256:e1476642ee443709c350131e5461a02d390cb3e0f89d8ba2fdbdde31836c40d6"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        },
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "refused",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_refused",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 1,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:067170f21c5f5e253557460f19c8eead4b6b06e205ddd37cc3c9996ac1835a6e",
+          "receipt_id": "urn:srs:receipt:admission:0002",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "absence_of_execution_outside_the_named_boundary"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_refused"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        },
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "deferred_for_review",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_deferred_for_review",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 2,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:e1476642ee443709c350131e5461a02d390cb3e0f89d8ba2fdbdde31836c40d6",
+          "receipt_id": "urn:srs:receipt:admission:0003",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "approval_of_the_deferred_call",
+              "tool_body_execution"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_deferred_for_review"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:daa9b3d481ad06b09120a38edf4155e9e102ecb351a803cc5fc961732894bd38",
+        "verifier_findings_sha256": "sha256:6d5a7f5b85da13b2071a34f1a6b4ac1939e5b25894feb79b701fb90b5e1b5009"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "pc-claimed-key-trusted-issuer",
+      "case_ok": true,
+      "description": "Receipt carries the same embedded-key claim shape, but the claimed key is the one the receiver already holds for the issuer.",
+      "family": "self_trust_embedded_key",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-claimed-key-trusted-issuer.json",
+          "sha256": "sha256:6e5ea5b3ec5a43f522671d69ffad6fce2ccc78ac87de45f4c2e0758e4b01431f"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:6e5ea5b3ec5a43f522671d69ffad6fce2ccc78ac87de45f4c2e0758e4b01431f",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0003",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:c8dfc9612c8fcbc51296f6902aef25a32fdf579a7c3d72f43fee80a9189866c4",
+        "verifier_findings_sha256": "sha256:e47ea5f69db268fad7ad69d5bb711399f06d2d38b2ee614cc95e71d2e236f987"
+      },
+      "role": "control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "x-counterfactual-claimed-key-in-trust",
+      "case_ok": true,
+      "description": "COUNTERFACTUAL: the receiver itself adds the receipt's claimed key to its own trust input. Shows the receipt is well formed and validly signed, so the only variable in the negative is trust-input membership.",
+      "family": "self_trust_embedded_key",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-selfclaimed-key.json",
+          "sha256": "sha256:3b0c07752fb35771e7df9d3b9716b5635767aaae4ac0f996493db7d18bf0ea45"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:3b0c07752fb35771e7df9d3b9716b5635767aaae4ac0f996493db7d18bf0ea45",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0002",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:675dfad512117d32179e97faf01d4a302362eccf45eaf573beccfc47467cff6c",
+        "verifier_findings_sha256": "sha256:248ab863b946de27909a66ae724724ca380b1c058aeef56d91fcb6522d191aa2"
+      },
+      "role": "counterfactual_control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-counterfactual-selftrust.json",
+        "sha256": "sha256:2b4660e6cb8c326f08ac35ce1d9b376ee39fddca03d7f70a85c8c66438f0a744"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "x-chain-link-not-required",
+      "case_ok": true,
+      "description": "COUNTERFACTUAL: a receiver whose policy does not require the admission link relies on the same outcome bytes.",
+      "family": "chain_link",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/outcome-result-returned.json",
+          "sha256": "sha256:24e897203377bff1ca124a51a5669590d434f31c8e5941bfd8df25af3b318c66"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": null,
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_outcome_result_returned",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:24e897203377bff1ca124a51a5669590d434f31c8e5941bfd8df25af3b318c66",
+          "receipt_id": "urn:srs:receipt:outcome:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_outcome_result_returned"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:de301d3e8baac629770d1170194c2400fd516b1a19c1c402328b9ac8cdc59ed2",
+        "verifier_findings_sha256": "sha256:92d14ff4e9af27c017f598b80ef9ca08312b9880821b819a403fe380d2c5d2a8"
+      },
+      "role": "counterfactual_control",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-no-link-requirement.json",
+        "sha256": "sha256:497c87b596a63b96b2d8787823cd90bf4d9ae29c6a5a31643eaeb0c03c1ab20c"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-tamper-refused-to-admitted",
+      "case_ok": true,
+      "description": "Pinned refused receipt with disposition edited to admitted after signing.",
+      "family": "body_tamper_after_signing",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/n-tamper-refused-to-admitted.json",
+          "sha256": "sha256:abc1b58ea5e8f2155f45252067ad3ec8f74f40ee4f77f28c953d5f03c192baf7"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "signature_invalid"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:abc1b58ea5e8f2155f45252067ad3ec8f74f40ee4f77f28c953d5f03c192baf7",
+          "receipt_id": "urn:srs:receipt:admission:0002",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "signature_invalid"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:3e3997f4bd960cf2892fdd1916e80e54efe5a03cdfbf7c04585df30eafc171d9",
+        "verifier_findings_sha256": "sha256:48291c376383b6549acd3b8f81f580827861561dd14a900bb5111e04bb38507a"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-tamper-pinned-semantic-field-change",
+      "case_ok": true,
+      "description": "Pinned vector: a semantic field changed after signing.",
+      "family": "body_tamper_after_signing",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/mutations/semantic-field-change-fail.json",
+          "sha256": "sha256:f4e7a806a8fde7bb93ac05c7e0eeda75370420ae2d4b530ddebb757810f88582"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "signature_invalid"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:f4e7a806a8fde7bb93ac05c7e0eeda75370420ae2d4b530ddebb757810f88582",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "signature_invalid"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:04e6b504ca56706007b8c9fef5fba094ce57009ffd0758f14b169167cbe4575a",
+        "verifier_findings_sha256": "sha256:093c4ccc67aa3b75fd5f7abe391c4c4069025dd19b56dc595e1be9e088ccd1cb"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-tamper-pinned-signature-bytes",
+      "case_ok": true,
+      "description": "Pinned vector: signature bytes altered.",
+      "family": "body_tamper_after_signing",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/mutations/signature-bytes-fail.json",
+          "sha256": "sha256:c640a1a78ccac0116ff8cb398395e5a7e259cd864dcecc8841414193b237f0f4"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "signature_invalid"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:c640a1a78ccac0116ff8cb398395e5a7e259cd864dcecc8841414193b237f0f4",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "signature_invalid"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:dce82ecd93a5aea03c0409fb56aa10e078150b1ea843dd70ae460d670f70a01f",
+        "verifier_findings_sha256": "sha256:173318c5bb3924d2d2fb2926326d3b66d395a3f5ecbaeb63a42b1ac294e54fb4"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-tamper-pinned-unknown-extension-added",
+      "case_ok": true,
+      "description": "Pinned vector: an unknown extension added after signing.",
+      "family": "body_tamper_after_signing",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/mutations/unknown-extension-added-fail.json",
+          "sha256": "sha256:d8f8f2308ac438d077deded23d98861ffbfe42b9f8d08069293f56e6b9947523"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "signature_invalid"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:d8f8f2308ac438d077deded23d98861ffbfe42b9f8d08069293f56e6b9947523",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "signature_invalid"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:7e5ba3ec709d87c7a59f5ff0f5f2c2165cf84a3f27e3d20d0d6260588c2258d0",
+        "verifier_findings_sha256": "sha256:342ad28689e4cfe3e7e91c0fb7cadeade58d3477ace03d775e984c7ace843e4c"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-wrong-key-claims-trusted-key-id",
+      "case_ok": true,
+      "description": "Validly formed receipt signed by a rogue key while presenting the trusted issuer-a key_id: the key resolves and is trusted, the signature does not verify under it.",
+      "family": "wrong_key",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-wrong-key-claims-issuer-a.json",
+          "sha256": "sha256:4e8f4f2cc2130ce5d6a422cef24c6e86c663345cf6fd3b208b767a95b320fea6"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "signature_invalid"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:4e8f4f2cc2130ce5d6a422cef24c6e86c663345cf6fd3b208b767a95b320fea6",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "signature_invalid"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:3b4cfaf3b16e87a380914c731612200904cb5ad45adfc6c1f6f1181eb89147dc",
+        "verifier_findings_sha256": "sha256:2c4db4c81d85eabfc84a4aa1917796a410ce8db77714d2f8a0af60764aa5f59a"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-pinned-key-id-unresolved",
+      "case_ok": true,
+      "description": "Pinned vector: key_id names a key the receiver does not hold.",
+      "family": "wrong_key",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/mutations/key-id-fail.json",
+          "sha256": "sha256:3b77969fea7d96eae2dd31e7260581f7111e1caf57b5ac54857b463ef126c168"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "issuer_key_resolved",
+              "issuer_key_trusted",
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "key_id_unresolved"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:3b77969fea7d96eae2dd31e7260581f7111e1caf57b5ac54857b463ef126c168",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "issuer_key_resolved",
+              "issuer_key_trusted",
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "key_id_unresolved"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:f2c29cc9be860cbd2d1fdc6a2c70a258e12969513439e4ab43977f0535ad89e4",
+        "verifier_findings_sha256": "sha256:c6a6166eaced56f3ebd671afeb0c78421998b541b8aa614a485bc437a884c27f"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-embedded-key-not-in-receiver-trust",
+      "case_ok": true,
+      "description": "Receipt names the accepted issuer, carries its own public key as a claim, and is validly signed under that key; the key is not in the receiver's trust input.",
+      "family": "self_trust_embedded_key",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-selfclaimed-key.json",
+          "sha256": "sha256:3b0c07752fb35771e7df9d3b9716b5635767aaae4ac0f996493db7d18bf0ea45"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "issuer_key_resolved",
+              "issuer_key_trusted",
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "key_id_unresolved"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:3b0c07752fb35771e7df9d3b9716b5635767aaae4ac0f996493db7d18bf0ea45",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0002",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "issuer_key_resolved",
+              "issuer_key_trusted",
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "key_id_unresolved"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:74aa28a15769e481a7cc70fcaa2fe7205327adbbe6acb382761f24e26e6324cc",
+        "verifier_findings_sha256": "sha256:c56faebb35404d43ec256e3732247de6c8240d5630b5bfb33886131ce2d1c159"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-no-trust-anchors",
+      "case_ok": true,
+      "description": "Same pinned bytes, receiver holds no issuer keys.",
+      "family": "trust_input_variants",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "issuer_key_resolved",
+              "issuer_key_trusted",
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "key_id_unresolved"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "issuer_key_resolved",
+              "issuer_key_trusted",
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "key_id_unresolved"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:e92496f4ff4115f968cf1e5da3126950d0f362a086c9bccbf5fe35520a10baea",
+        "verifier_findings_sha256": "sha256:1c64c4a06bb348237981781bff272c4caed7ef94d18d59fc4388895095a98117"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-no-anchors.json",
+        "sha256": "sha256:49c8d64873dac992b52e523576ae3c903e8f72989b1dfe6c2ec3b7c00dc52e3d"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-key-marked-untrusted-by-receiver",
+      "case_ok": true,
+      "description": "Same pinned bytes; the receiver marks the issuer key untrusted. The signature verifies, yet key trust fails and there is no reliance.",
+      "family": "trust_input_variants",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "issuer_key_trusted"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "key_untrusted"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "issuer_key_trusted"
+            ],
+            "failure_codes": [
+              "key_untrusted"
+            ],
+            "passed": false,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:325640a9d09700d7ec37e3ce274310b9295f6f9a0e4e92f1808d0842a4c8a2aa",
+        "verifier_findings_sha256": "sha256:95bbaf5959239aedc5d9b06faf1af2348dd4c247415346c1209ad427c5d52586"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-key-revoked.json",
+        "sha256": "sha256:5a6e819a8f4eb45ff6f8dad8cd2c9e46d121ca392b49988f4a7f38a5c3d61a05"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-unknown-receipt-version",
+      "case_ok": true,
+      "description": "Validly signed receipt whose receipt_version is not a known version.",
+      "family": "unknown_version_profile",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-unknown-receipt-version.json",
+          "sha256": "sha256:2b809133cc86e530f4d57940f8bae94c8670578ee3ff16d792b8b4e3ebd33040"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "profile",
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "policy.receipt_version_not_accepted",
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "profile.invalid_receipt_version",
+              "version_binding_mismatch"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:2b809133cc86e530f4d57940f8bae94c8670578ee3ff16d792b8b4e3ebd33040",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0004",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "policy.receipt_version_not_accepted",
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "profile",
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "profile.invalid_receipt_version",
+              "version_binding_mismatch"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:54e8736421ae67fb17d28a059692b87be162ac8df153b96f669cb6507297ac51",
+        "verifier_findings_sha256": "sha256:696d38480f1361d4aa5cf90bab634362136d80b3c687d7362aa9dfb7e7d1e875"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-unknown-profile",
+      "case_ok": true,
+      "description": "Validly signed receipt naming an unregistered profile id.",
+      "family": "unknown_version_profile",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-unknown-profile.json",
+          "sha256": "sha256:2e60f4e7bef41c64c1a7473eb11d5acab5f7b64a3c00ebe906fc42bbf5dc0a6a"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "profile",
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "policy.profile_not_accepted",
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "profile.unsupported_selection",
+              "version_binding_mismatch"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:2e60f4e7bef41c64c1a7473eb11d5acab5f7b64a3c00ebe906fc42bbf5dc0a6a",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0005",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "policy.profile_not_accepted",
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.example.unregistered.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "profile",
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "profile.unsupported_selection",
+              "version_binding_mismatch"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:c4a7f93c6d1433de4831bab0db474a71274b3d485bb137c7a3b2989ef04e5416",
+        "verifier_findings_sha256": "sha256:addf17d17d374aed2b9abeb7526c468b951487a75f9fbd30bdf689b50ba0b115"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-pinned-version-binding",
+      "case_ok": true,
+      "description": "Pinned vector: profile_version altered to v9.9 after signing, so the claimed profile slug is not one the verifier evaluates.",
+      "family": "unknown_version_profile",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/mutations/version-binding-fail.json",
+          "sha256": "sha256:a026ba68ab63333f00cfea712f7460c2f1ce3e1c9f890f05f460325f6222646d"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "profile",
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "policy.profile_not_accepted",
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "profile.unsupported_selection",
+              "signature_invalid",
+              "version_binding_mismatch"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:a026ba68ab63333f00cfea712f7460c2f1ce3e1c9f890f05f460325f6222646d",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "policy.profile_not_accepted",
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v9.9",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "profile",
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "profile.unsupported_selection",
+              "signature_invalid",
+              "version_binding_mismatch"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:eb62ef92376db1c6de41c6275bdb5b93b92be0f165cae4e85dc08d8878fdccf4",
+        "verifier_findings_sha256": "sha256:730d5f353e3d8aec68e2aad618c21a7e87900441c9c5425006164d9acdae42c6"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-chain-missing-admission",
+      "case_ok": true,
+      "description": "Outcome receipt submitted without its admission receipt: every single-receipt check passes, the chain link cannot be established.",
+      "family": "chain_link",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/outcome-result-returned.json",
+          "sha256": "sha256:24e897203377bff1ca124a51a5669590d434f31c8e5941bfd8df25af3b318c66"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": null,
+          "expected": {
+            "decision": "insufficient_evidence",
+            "failed_checks": [],
+            "reason_tokens": [
+              "chain.admission_receipt_unresolved"
+            ],
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:24e897203377bff1ca124a51a5669590d434f31c8e5941bfd8df25af3b318c66",
+          "receipt_id": "urn:srs:receipt:outcome:0001",
+          "receiver_decision": {
+            "decision": "insufficient_evidence",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "chain.admission_receipt_unresolved"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:0c22a7058f168aad832e81ceb3820330d6ac5290ba5742d76c61005fa2c51114",
+        "verifier_findings_sha256": "sha256:8815df74daa03f4bfaebe1c63371b3522e5fa5b03349dc685064d202b881fec7"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-chain-linkage-mismatch",
+      "case_ok": true,
+      "description": "Validly signed outcome whose logical_call_id disagrees with the admission receipt it references.",
+      "family": "chain_link",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-admitted-issuer-a.json",
+          "sha256": "sha256:feae4efcf7ba69606bc0520bc43251fa9b0dbfb0dab6b01f2f1ce596cf4a0217"
+        },
+        {
+          "path": "stranger0/cases/receipts/s0-outcome-linkage-mismatch.json",
+          "sha256": "sha256:32bfb1dff16fab90635c89715779c17374c99cdf6fa4e899ed55b3ca7d30d9bd"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:feae4efcf7ba69606bc0520bc43251fa9b0dbfb0dab6b01f2f1ce596cf4a0217",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        },
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": null,
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [],
+            "reason_tokens": [
+              "chain.admission_outcome_linkage_mismatch"
+            ],
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 1,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:32bfb1dff16fab90635c89715779c17374c99cdf6fa4e899ed55b3ca7d30d9bd",
+          "receipt_id": "urn:srs:receipt:stranger0:outcome:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "chain.admission_outcome_linkage_mismatch"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:2a0d14833649adaf18fa14fff588caae8db742b43afc8f71f62232c1072d53fc",
+        "verifier_findings_sha256": "sha256:22974bac04a052f49c1a2ba7861e9b1457e804bdafeb8986176501834ac2f02e"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-duplicate-in-submission",
+      "case_ok": true,
+      "description": "The same receipt bytes submitted twice: relied upon once.",
+      "family": "duplicate_replay",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        },
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        },
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [],
+            "reason_tokens": [
+              "replay.duplicate_in_submission"
+            ],
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 1,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "replay.duplicate_in_submission"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:e5e4fe87a51a1671c85cd047042be1672785da71fe5e163acb3825573bcc2153",
+        "verifier_findings_sha256": "sha256:620b0b5f6e32462b5dd3dda9398a365c32664ef2949ebcbfd2bcc342bbd58fd9"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-replay-from-ledger",
+      "case_ok": true,
+      "description": "Receipt already in the receiver's prior-reliance ledger is presented again.",
+      "family": "duplicate_replay",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [],
+            "reason_tokens": [
+              "replay.already_relied_in_ledger"
+            ],
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "replay.already_relied_in_ledger"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:ad1f147953e8084a36457966d6f0fdf3d4730d5289fd38760be05e5744ba1e29",
+        "verifier_findings_sha256": "sha256:6955cc4c3f8ca8059d96f343211024e3cdf88fa4c143809e121e1b63a8180674"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-ledger-has-admitted.json",
+        "sha256": "sha256:aac9ab8e129cd30a3b8606a33b29a37fd893c79bf97429bedbc3aac197a7d338"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-receipt-id-conflict",
+      "case_ok": true,
+      "description": "Two validly signed receipts with the same receipt_id and different content: neither is relied upon.",
+      "family": "duplicate_replay",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-admitted-issuer-a.json",
+          "sha256": "sha256:feae4efcf7ba69606bc0520bc43251fa9b0dbfb0dab6b01f2f1ce596cf4a0217"
+        },
+        {
+          "path": "stranger0/cases/receipts/s0-conflict-b.json",
+          "sha256": "sha256:015153eecbde963423d3d5d4e8fac3b21533acf2cc154ffc1239301b553a06e4"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [],
+            "reason_tokens": [
+              "replay.receipt_id_conflict"
+            ],
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:feae4efcf7ba69606bc0520bc43251fa9b0dbfb0dab6b01f2f1ce596cf4a0217",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "replay.receipt_id_conflict"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        },
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [],
+            "reason_tokens": [
+              "replay.receipt_id_conflict"
+            ],
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 1,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:015153eecbde963423d3d5d4e8fac3b21533acf2cc154ffc1239301b553a06e4",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "replay.receipt_id_conflict"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:b0e2279d39794f51f86ef3916f27a0b0748e395b7b58fbef00055cf56b0d1c86",
+        "verifier_findings_sha256": "sha256:0b5e5cda82cafc718f8951f3d51d7017ae4e4d58d60a8be5e96818869f5f8b24"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-mixed-one-tampered",
+      "case_ok": true,
+      "description": "Admitted, a refused-to-admitted forgery, and deferred together: the forgery is rejected and the others are still represented.",
+      "family": "refused_deferred_honesty",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        },
+        {
+          "path": "stranger0/cases/receipts/n-tamper-refused-to-admitted.json",
+          "sha256": "sha256:abc1b58ea5e8f2155f45252067ad3ec8f74f40ee4f77f28c953d5f03c192baf7"
+        },
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-deferred.json",
+          "sha256": "sha256:e1476642ee443709c350131e5461a02d390cb3e0f89d8ba2fdbdde31836c40d6"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "tool_body_execution",
+              "completion_or_approval_of_the_underlying_action"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_admitted"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        },
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "signature_invalid"
+            ],
+            "verifier_passed": false
+          },
+          "index": 1,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:abc1b58ea5e8f2155f45252067ad3ec8f74f40ee4f77f28c953d5f03c192baf7",
+          "receipt_id": "urn:srs:receipt:admission:0002",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "signature_valid"
+            ],
+            "failure_codes": [
+              "signature_invalid"
+            ],
+            "passed": false,
+            "signature_valid": false
+          }
+        },
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "deferred_for_review",
+          "expected": {
+            "decision": "rely",
+            "failed_checks": [],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_deferred_for_review",
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 2,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:e1476642ee443709c350131e5461a02d390cb3e0f89d8ba2fdbdde31836c40d6",
+          "receipt_id": "urn:srs:receipt:admission:0003",
+          "receiver_decision": {
+            "decision": "rely",
+            "not_relied_upon": [
+              "occurrence_of_the_real_world_event",
+              "truth_of_the_issuers_assertions",
+              "receiver_admission_of_the_underlying_action",
+              "approval_of_the_deferred_call",
+              "tool_body_execution"
+            ],
+            "reason_tokens": [],
+            "reliance_claim": "issuer_attests_admission_disposition_deferred_for_review"
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:2e7619ba1686a4c37635feb4dafaf33b0472151e7642133d018bc85d8ca7d495",
+        "verifier_findings_sha256": "sha256:f8a8eb9b50a4eb585a2ef9f7dbc81c7d772a66ee880c167e3c86ffe9dedf5bd9"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-raw-tool-arguments",
+      "case_ok": true,
+      "description": "Validly signed receipt with a raw-content-shaped `tool_arguments` field.",
+      "family": "metadata_only_violation",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-raw-tool-arguments.json",
+          "sha256": "sha256:69c69bdadd1e88cb9c7bfe77cf45d35f40aeaaa02f16fe632f3289c9381f0e32"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "raw_content_exclusion"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "raw_content.forbidden_key:tool_arguments"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:69c69bdadd1e88cb9c7bfe77cf45d35f40aeaaa02f16fe632f3289c9381f0e32",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0010",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "raw_content_exclusion"
+            ],
+            "failure_codes": [
+              "raw_content.forbidden_key:tool_arguments"
+            ],
+            "passed": false,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:948654cbfe46161ef609822594553f17b1bf687ec2161a9e89be18ba03137086",
+        "verifier_findings_sha256": "sha256:92d09fb576a682f7b04f4fcb591c4555bc15ed907bc3f022d75038fc39bef8a1"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-raw-result-body",
+      "case_ok": true,
+      "description": "Validly signed receipt with a raw-content-shaped `result_body` field.",
+      "family": "metadata_only_violation",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-raw-result-body.json",
+          "sha256": "sha256:9feaf8414d4f54be1e6bd5e92169671ea3a97ba63534f7005ca511c6342f7197"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "raw_content_exclusion"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "raw_content.forbidden_key:result_body"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:9feaf8414d4f54be1e6bd5e92169671ea3a97ba63534f7005ca511c6342f7197",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0011",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "raw_content_exclusion"
+            ],
+            "failure_codes": [
+              "raw_content.forbidden_key:result_body"
+            ],
+            "passed": false,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:6421f1166b318b8f9ef4071a82bcc6e35a83c2b8ebc52d31b4e8f9695a0960cc",
+        "verifier_findings_sha256": "sha256:665e2d8d745f22b157cc482d2d73fd7b5aec1aaeebdd94ba3ebc6d7ffbb9252d"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-raw-access-token",
+      "case_ok": true,
+      "description": "Validly signed receipt with a raw-content-shaped `access_token` field.",
+      "family": "metadata_only_violation",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/s0-raw-access-token.json",
+          "sha256": "sha256:47d0f6010140502066c335199f3f63894ec59b2f7bb605d838c94cbb022803b8"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [
+              "raw_content_exclusion"
+            ],
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "verifier_failure_codes": [
+              "raw_content.forbidden_key:access_token"
+            ],
+            "verifier_passed": false
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:47d0f6010140502066c335199f3f63894ec59b2f7bb605d838c94cbb022803b8",
+          "receipt_id": "urn:srs:receipt:stranger0:admission:0012",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "verifier.not_passed"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [
+              "raw_content_exclusion"
+            ],
+            "failure_codes": [
+              "raw_content.forbidden_key:access_token"
+            ],
+            "passed": false,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:80ce6bae382b468e5f162dbcf7e74e30fb9d7f3317bd343d42107d624c227b53",
+        "verifier_findings_sha256": "sha256:a58428cafdbf0e88f08faa9cbd4c1490173a755672663e1c14189f455a4bb12b"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-declined-boundary-not-accepted",
+      "case_ok": true,
+      "description": "Same pinned bytes as the control; the receiver's policy accepts a different boundary. Every verifier check passes.",
+      "family": "valid_but_declined",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [],
+            "reason_tokens": [
+              "policy.boundary_not_accepted"
+            ],
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "policy.boundary_not_accepted"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:6bc10fe9cd142303bb18e1019d72751b415dadd81b62c8281e68716375e6297a",
+        "verifier_findings_sha256": "sha256:e613e1eae254ec4f0fa9353d3e4d1f87089d5671e090b03abed2822e21be5c10"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-strict-boundary.json",
+        "sha256": "sha256:4e42ecc106107ddb09aa2ed8ab818353f392a41e5a2140812a8f1d5162171026"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-declined-issuer-not-accepted",
+      "case_ok": true,
+      "description": "Same pinned bytes; the issuer key is still trusted, but the receiver's policy does not accept this issuer.",
+      "family": "valid_but_declined",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+          "sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": {
+            "cli_json_equals_receiver_recorded_report": true
+          },
+          "declared_disposition": "admitted",
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": [],
+            "reason_tokens": [
+              "policy.issuer_not_accepted"
+            ],
+            "verifier_failure_codes": [],
+            "verifier_passed": true
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a",
+          "receipt_id": "urn:srs:receipt:admission:0001",
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "policy.issuer_not_accepted"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": "srs.mcp.sdk_enforcement.v0.1",
+          "verifier": {
+            "chain_status": "not_applicable",
+            "failed_checks": [],
+            "failure_codes": [],
+            "passed": true,
+            "signature_valid": true
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:4269a2a76dba1a1fa939ea85e3dec1057773b662180066916d93134ef7d5413a",
+        "verifier_findings_sha256": "sha256:0fc7c0bab290e13277443f5ca6631033c389bb2e1e9ab5eb974d400bbeae29ed"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-strict-issuer.json",
+        "sha256": "sha256:79dc858df63bf4083d887be4b4fe85b260287aad0e3c9ac7a59dc1425aa67af8"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    },
+    {
+      "case_id": "n-malformed-json",
+      "case_ok": true,
+      "description": "Truncated, non-JSON bytes.",
+      "family": "input_integrity",
+      "problems": [],
+      "process_facts": {
+        "network_blocked_attempts": 0,
+        "producer_modules_loaded": [],
+        "python_isolated_flag": true,
+        "third_party_top_level_modules_loaded": [
+          "attr",
+          "attrs",
+          "cryptography",
+          "jsonschema",
+          "jsonschema_specifications",
+          "referencing",
+          "rfc3339_validator",
+          "rfc8785",
+          "rpds",
+          "six",
+          "typing_extensions"
+        ]
+      },
+      "receipt_inputs": [
+        {
+          "path": "stranger0/cases/receipts/n-malformed-json.json",
+          "sha256": "sha256:90e12a62447b8adcc7e86f0fde380c9683076d5a60da2eaf496375e3341a80a0"
+        }
+      ],
+      "receipts": [
+        {
+          "cli_crosscheck": null,
+          "declared_disposition": null,
+          "expected": {
+            "decision": "do_not_rely",
+            "failed_checks": null,
+            "reason_tokens": [
+              "input.malformed_json"
+            ],
+            "verifier_failure_codes": null,
+            "verifier_passed": null
+          },
+          "index": 0,
+          "mismatches": [],
+          "receipt_bytes_sha256": "sha256:90e12a62447b8adcc7e86f0fde380c9683076d5a60da2eaf496375e3341a80a0",
+          "receipt_id": null,
+          "receiver_decision": {
+            "decision": "do_not_rely",
+            "not_relied_upon": null,
+            "reason_tokens": [
+              "input.malformed_json"
+            ],
+            "reliance_claim": null
+          },
+          "selected_profile": null,
+          "verifier": {
+            "chain_status": null,
+            "failed_checks": null,
+            "failure_codes": null,
+            "passed": null,
+            "signature_valid": null
+          }
+        }
+      ],
+      "receiver_exit_code": 0,
+      "receiver_stderr": "",
+      "records": {
+        "findings_and_decision_are_distinct_files": true,
+        "reliance_decision_sha256": "sha256:487fbaed6b7c60e237b377654db16de8a06fe3ae3d908518478a8327b31c5cf1",
+        "verifier_findings_sha256": "sha256:de7ca658f4b7616180c296e9307809f5a8da517056ba41832e5fdab5633679b3"
+      },
+      "role": "negative",
+      "trust_input": {
+        "path": "stranger0/cases/trust/receiver-default.json",
+        "sha256": "sha256:26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      },
+      "verifier_inputs_sha256": {
+        "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+        "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+        "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+      }
+    }
+  ],
+  "claim_discipline": [
+    "A verifier finding is not a reliance decision.",
+    "A valid signature is not event truth and is not receiver admission.",
+    "not_evaluated is not PASS; not_applicable is not PASS; envelope-valid is not profile-pass.",
+    "A receiver decision is the receiver's own, under its own trust input; it grants no authority to the issuer."
+  ],
+  "environment": {
+    "orchestrator_python": "3.12.13",
+    "receiver_python": "3.12.13"
+  },
+  "falsifier": {
+    "overall": "NOT_FALSIFIED_IN_THIS_RUN",
+    "signature_promoted_to_truth_or_admission": {
+      "evidence": {
+        "decisions_rely_without_verifier_pass": [],
+        "every_rely_decision_names_what_is_not_relied_upon": true,
+        "receipts_with_valid_signature_that_were_not_relied_upon": [
+          "n-key-marked-untrusted-by-receiver#0",
+          "n-chain-missing-admission#0",
+          "n-chain-linkage-mismatch#1",
+          "n-duplicate-in-submission#1",
+          "n-replay-from-ledger#0",
+          "n-receipt-id-conflict#0",
+          "n-receipt-id-conflict#1",
+          "n-raw-tool-arguments#0",
+          "n-raw-result-body#0",
+          "n-raw-access-token#0",
+          "n-declined-boundary-not-accepted#0",
+          "n-declined-issuer-not-accepted#0"
+        ],
+        "records_containing_reserved_or_truth_conclusion_keys": []
+      },
+      "evidence_sufficient": true,
+      "falsified": false,
+      "statement": "a passing signature is silently promoted to event truth or to receiver admission"
+    },
+    "verification_requires_producer_or_counterpedia": {
+      "evidence": {
+        "detector_selfcheck_positive_controls": {
+          "checks": {
+            "module_inventory_clean_after_removal": true,
+            "module_inventory_detects_a_really_imported_producer_module": true,
+            "network_tripwire_refuses_and_counts": true,
+            "producer_predicate_flags_producer_names": true,
+            "producer_predicate_ignores_benign_names": true
+          },
+          "exit_code": 0,
+          "ok": true
+        },
+        "processes_not_python_isolated": 0,
+        "processes_with_network_attempts": 0,
+        "processes_with_producer_modules_loaded": 0,
+        "receiver_processes_inspected": 38,
+        "receiver_source_imports": {
+          "imported_top_level": [
+            "__future__",
+            "arcs_verify",
+            "argparse",
+            "hashlib",
+            "importlib",
+            "json",
+            "os",
+            "pathlib",
+            "shutil",
+            "socket",
+            "sys",
+            "tempfile",
+            "typing"
+          ],
+          "ok": true,
+          "outside_stdlib_and_arcs_verify": []
+        }
+      },
+      "evidence_sufficient": true,
+      "falsified": false,
+      "statement": "verification requires producer software or Counterpedia infrastructure"
+    }
+  },
+  "families": [
+    {
+      "claim": "A receipt whose signed content was changed after signing is reported with signature_invalid and nothing else failing; the receiver does not rely on it.",
+      "controls_in_family": [],
+      "family": "body_tamper_after_signing",
+      "negatives": [
+        "n-tamper-refused-to-admitted",
+        "n-tamper-pinned-semantic-field-change",
+        "n-tamper-pinned-signature-bytes",
+        "n-tamper-pinned-unknown-extension-added"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "A receipt signed by a key other than the one its key_id names, or naming a key id the receiver does not hold, is not relied upon.",
+      "controls_in_family": [],
+      "family": "wrong_key",
+      "negatives": [
+        "n-wrong-key-claims-trusted-key-id",
+        "n-pinned-key-id-unresolved"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "A receipt cannot vouch for its own key: a validly signed receipt carrying its own public key is not relied upon unless the receiver's own trust input holds that key.",
+      "controls_in_family": [
+        "pc-claimed-key-trusted-issuer",
+        "x-counterfactual-claimed-key-in-trust"
+      ],
+      "family": "self_trust_embedded_key",
+      "negatives": [
+        "n-embedded-key-not-in-receiver-trust"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "The same receipt bytes yield different verifier findings under different receiver-supplied keys: with no anchors, or with the key marked untrusted by the receiver, there is no reliance even though the signature may verify.",
+      "controls_in_family": [],
+      "family": "trust_input_variants",
+      "negatives": [
+        "n-no-trust-anchors",
+        "n-key-marked-untrusted-by-receiver"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "A receipt with an unknown receipt_version or an unregistered profile is not relied upon, with both verifier findings and receiver policy reasons shown.",
+      "controls_in_family": [],
+      "family": "unknown_version_profile",
+      "negatives": [
+        "n-unknown-receipt-version",
+        "n-unknown-profile",
+        "n-pinned-version-binding"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "An outcome receipt whose admission receipt is absent yields insufficient evidence; one whose linkage is inconsistent is not relied upon; an intact pair is.",
+      "controls_in_family": [
+        "x-chain-link-not-required"
+      ],
+      "family": "chain_link",
+      "negatives": [
+        "n-chain-missing-admission",
+        "n-chain-linkage-mismatch"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "A repeated, previously relied-upon, or id-conflicting receipt is not relied upon a second time.",
+      "controls_in_family": [],
+      "family": "duplicate_replay",
+      "negatives": [
+        "n-duplicate-in-submission",
+        "n-replay-from-ledger",
+        "n-receipt-id-conflict"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "Refused and deferred dispositions are represented as what they are and never dropped, even beside a receipt that fails.",
+      "controls_in_family": [
+        "pc-mixed-dispositions-represented"
+      ],
+      "family": "refused_deferred_honesty",
+      "negatives": [
+        "n-mixed-one-tampered"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "A validly signed receipt that carries raw arguments, results or credential-shaped content fails raw_content_exclusion while its signature stays valid.",
+      "controls_in_family": [],
+      "family": "metadata_only_violation",
+      "negatives": [
+        "n-raw-tool-arguments",
+        "n-raw-result-body",
+        "n-raw-access-token"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "A receipt that passes every verifier check can still be declined by the receiver under its own policy: verifier pass is necessary, not sufficient.",
+      "controls_in_family": [],
+      "family": "valid_but_declined",
+      "negatives": [
+        "n-declined-boundary-not-accepted",
+        "n-declined-issuer-not-accepted"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "Bytes that are not a JSON object produce no verifier findings (not a pass) and no reliance.",
+      "controls_in_family": [],
+      "family": "input_integrity",
+      "negatives": [
+        "n-malformed-json"
+      ],
+      "ok": true
+    },
+    {
+      "claim": "Positive controls and counterfactual controls shared by the families above.",
+      "controls_in_family": [
+        "pc-admitted-pinned",
+        "pc-refused-pinned",
+        "pc-deferred-pinned",
+        "pc-reserialized-pinned",
+        "pc-reordered-keys-pinned",
+        "pc-synthetic-issuer-a",
+        "pc-chain-intact-pinned",
+        "pc-chain-intact-synthetic",
+        "pc-two-distinct-receipts",
+        "pc-ledger-other-receipt"
+      ],
+      "family": "controls",
+      "negatives": [],
+      "ok": true
+    }
+  ],
+  "isolation_problems": [],
+  "not_exercised": [
+    "OS-level network sandbox: only an in-process socket tripwire was used, and it is not a sandbox",
+    "independent cross-implementation verification: the existing verifier was run in another process, which is the same code, not independent code",
+    "real producer-emitted receipts: every receipt is a pinned test vector or a synthetic derivation of one",
+    "time-based reliance: no trusted clock input; key validity is evaluated by the existing verifier against the receipt's own issued_at only",
+    "revocation, key rotation and trust-anchor governance beyond a static receiver-supplied keyring",
+    "SCITT or any transparency-service evidence (a separate lane)",
+    "live network federation, external publication, production activation"
+  ],
+  "package": {
+    "artifacts_sha256": "sha256:eeed2af435305b14c607407a20e6e402e6d710c99086b6b1d71366194bf99281",
+    "catalog_sha256": "sha256:ad8ddb49560552a4e79fb1f9a2f76077c27a30e9493966164023dc8e019f08ab",
+    "orchestrator_sha256": "sha256:bd9581b7d95922ceea1b56b03017abce1c217cb249404de69af30753d3b7c1d1",
+    "receiver_sha256": "sha256:c4277bcb20c6f4816d3152e674a4544e88f6afbe8f1dc7cac59c30a7d79e0128"
+  },
+  "result": "PASS",
+  "schema": "arcs.verify.stranger0.result_transcript.v0.1",
+  "scope": "full",
+  "separation_matrix": {
+    "no_verifier_findings_and_not_rely": 1,
+    "no_verifier_findings_and_rely": 0,
+    "verifier_failed_and_not_rely": 16,
+    "verifier_failed_and_rely": 0,
+    "verifier_passed_and_not_rely": 8,
+    "verifier_passed_and_rely": 23
+  },
+  "totals": {
+    "cases": 38,
+    "cases_ok": 38,
+    "control_cases": 14,
+    "negative_cases": 24,
+    "receipts_evaluated": 48
+  },
+  "verifier_identity": {
+    "arcs_verify/data/srs-envelope-v0.2.0.schema.json": "sha256:d03aad1d5517e2acb65d5c866905aed7219bcbbfadd1a4a97eac546dd23f0333",
+    "arcs_verify/receipt_set.py": "sha256:12308542b2423c9e594a5a49f51a81c4c3d437d58a5e89d1034590068e10e777",
+    "arcs_verify/verifier.py": "sha256:1adf4a1cbdaae464f2468d0592edf93cba1bd797910e73acf80754b1ee2484e8"
+  }
+}
