@@ -104,15 +104,26 @@ receipt did and did not arrive.
 
 One consequence worth knowing before selecting the strict setting: it applies to
 the submission in front of the receiver, and it interacts with the replay ledger.
-Once an admission has been relied upon and entered the ledger, no later
-submission can rely on its outcome. Submitting the outcome alone gives
-`insufficient_evidence` under `chain.admission_receipt_unresolved`, because the
-admission is not in that submission; resubmitting the pair gives the admission
-`do_not_rely` under `replay.already_relied_in_ledger` and the outcome
-`do_not_rely` under `chain.admission_not_relied_upon`. The same happens from a
-duplicate admission in a single batch, which ledgers the first copy. So
-co-submission only works from the FIRST submission that carries either receipt;
-after that, the arrival-only reading is the only one that relies on the outcome.
+Co-submission works only while the admission has not yet been relied upon --
+against an empty ledger, an admission and its outcome submitted together are
+both relied upon. Once that admission is in the receiver's ledger, a strict
+receiver cannot rely on that outcome in any later submission: the outcome alone
+gives `insufficient_evidence` under `chain.admission_receipt_unresolved`,
+because the admission is not in that submission, and resubmitting the pair gives
+the admission `do_not_rely` under `replay.already_relied_in_ledger` and the
+outcome `do_not_rely` under `chain.admission_not_relied_upon`.
+
+Submitting the outcome alone ledgers nothing, so doing so does not foreclose a
+later co-submission. A duplicate admission in one batch is a different case: the
+outcome is refused there and then, because two receipts carry the referenced id,
+while the first copy *is* relied upon and enters the ledger -- so any later
+submission of that outcome meets the paragraph above.
+
+Relying on such an outcome afterwards takes a policy that does not require
+reliance on its admission: the arrival-only reading relies on it when the
+admission is resubmitted beside it, and the no-link reading relies on it
+submitted alone. None of this is an asynchronous dependency protocol. It is one
+submission, judged under one policy.
 
 Declining to rely on an outcome says nothing about whether the underlying action
 occurred. It is this receiver's decision about this evidence, under its own policy.
