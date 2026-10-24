@@ -1,0 +1,1256 @@
+{
+  "schema": "arcs.verify.stranger0.cases.v0.1",
+  "path_prefixes": {
+    "pinned:": "packs/srs.mcp.sdk_enforcement/v0.1/normative/",
+    "case:": "stranger0/cases/"
+  },
+  "families": {
+    "body_tamper_after_signing": "A receipt whose signed content was changed after signing is reported with signature_invalid and nothing else failing; the receiver does not rely on it.",
+    "wrong_key": "A receipt signed by a key other than the one its key_id names, or naming a key id the receiver does not hold, is not relied upon.",
+    "self_trust_embedded_key": "A receipt cannot vouch for its own key: a validly signed receipt carrying its own public key is not relied upon unless the receiver's own trust input holds that key.",
+    "trust_input_variants": "The same receipt bytes yield different verifier findings under different receiver-supplied keys: with no anchors, or with the key marked untrusted by the receiver, there is no reliance even though the signature may verify.",
+    "unknown_version_profile": "A receipt with an unknown receipt_version or an unregistered profile is not relied upon, with both verifier findings and receiver policy reasons shown.",
+    "chain_link": "An outcome receipt whose admission receipt is absent yields insufficient evidence; one whose linkage is inconsistent is not relied upon; an intact pair is.",
+    "duplicate_replay": "A repeated, previously relied-upon, or id-conflicting receipt is not relied upon a second time.",
+    "refused_deferred_honesty": "Refused and deferred dispositions are represented as what they are and never dropped, even beside a receipt that fails.",
+    "metadata_only_violation": "A validly signed receipt that carries raw arguments, results or credential-shaped content fails raw_content_exclusion while its signature stays valid.",
+    "valid_but_declined": "A receipt that passes every verifier check can still be declined by the receiver under its own policy: verifier pass is necessary, not sufficient.",
+    "input_integrity": "Bytes that are not a JSON object produce no verifier findings (not a pass) and no reliance.",
+    "controls": "Positive controls and counterfactual controls shared by the families above."
+  },
+  "cases": [
+    {
+      "case_id": "pc-admitted-pinned",
+      "family": "controls",
+      "role": "control",
+      "description": "Pinned admitted receipt, receiver default trust input.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-refused-pinned",
+      "family": "controls",
+      "role": "control",
+      "description": "Pinned refused receipt: relied upon as a refusal, not as an admission.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:valid/admission-refused.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_refused"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-deferred-pinned",
+      "family": "controls",
+      "role": "control",
+      "description": "Pinned deferred receipt: relied upon as a deferral, not as an approval.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:valid/admission-deferred.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_deferred_for_review"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-reserialized-pinned",
+      "family": "controls",
+      "role": "control",
+      "description": "Pinned whitespace-reserialization receipt: formatting changes, same signed content.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:mutations/whitespace-reserialization-pass.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-reordered-keys-pinned",
+      "family": "controls",
+      "role": "control",
+      "description": "Pinned reordered-keys receipt: key order changes, same signed content.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:mutations/reordered-keys-pass.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-synthetic-issuer-a",
+      "family": "controls",
+      "role": "control",
+      "description": "Synthetic admitted receipt validly signed by the receiver-pinned synthetic issuer-a.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-admitted-issuer-a.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-chain-intact-pinned",
+      "family": "controls",
+      "role": "control",
+      "description": "Pinned admission + outcome pair, intact linkage.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json",
+        "pinned:valid/outcome-result-returned.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        },
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_outcome_result_returned"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-chain-intact-synthetic",
+      "family": "controls",
+      "role": "control",
+      "description": "Synthetic issuer-a admission + outcome pair, intact linkage.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-admitted-issuer-a.json",
+        "case:receipts/s0-outcome-issuer-a.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        },
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_outcome_result_returned"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-two-distinct-receipts",
+      "family": "controls",
+      "role": "control",
+      "description": "Two distinct pinned receipts in one submission.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json",
+        "pinned:valid/admission-refused.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        },
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_refused"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-ledger-other-receipt",
+      "family": "controls",
+      "role": "control",
+      "description": "Receiver ledger holds a different receipt; this one is new.",
+      "trust_input": "case:trust/receiver-ledger-other.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-mixed-dispositions-represented",
+      "family": "refused_deferred_honesty",
+      "role": "control",
+      "description": "Admitted, refused and deferred receipts together: all three are represented, each with its own reliance claim.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json",
+        "pinned:valid/admission-refused.json",
+        "pinned:valid/admission-deferred.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        },
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_refused"
+        },
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_deferred_for_review"
+        }
+      ]
+    },
+    {
+      "case_id": "pc-claimed-key-trusted-issuer",
+      "family": "self_trust_embedded_key",
+      "role": "control",
+      "description": "Receipt carries the same embedded-key claim shape, but the claimed key is the one the receiver already holds for the issuer.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-claimed-key-trusted-issuer.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        }
+      ]
+    },
+    {
+      "case_id": "x-counterfactual-claimed-key-in-trust",
+      "family": "self_trust_embedded_key",
+      "role": "counterfactual_control",
+      "description": "COUNTERFACTUAL: the receiver itself adds the receipt's claimed key to its own trust input. Shows the receipt is well formed and validly signed, so the only variable in the negative is trust-input membership.",
+      "trust_input": "case:trust/receiver-counterfactual-selftrust.json",
+      "receipts": [
+        "case:receipts/s0-selfclaimed-key.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        }
+      ]
+    },
+    {
+      "case_id": "x-chain-link-not-required",
+      "family": "chain_link",
+      "role": "counterfactual_control",
+      "description": "COUNTERFACTUAL: a receiver whose policy does not require the admission link relies on the same outcome bytes.",
+      "trust_input": "case:trust/receiver-no-link-requirement.json",
+      "receipts": [
+        "pinned:valid/outcome-result-returned.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_outcome_result_returned"
+        }
+      ]
+    },
+    {
+      "case_id": "n-tamper-refused-to-admitted",
+      "family": "body_tamper_after_signing",
+      "role": "negative",
+      "description": "Pinned refused receipt with disposition edited to admitted after signing.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/n-tamper-refused-to-admitted.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "signature_invalid"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-refused-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-refused-pinned",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "signed content changed after signing"
+        }
+      ]
+    },
+    {
+      "case_id": "n-tamper-pinned-semantic-field-change",
+      "family": "body_tamper_after_signing",
+      "role": "negative",
+      "description": "Pinned vector: a semantic field changed after signing.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:mutations/semantic-field-change-fail.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "signature_invalid"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-admitted-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-admitted-pinned",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "signed content changed after signing"
+        }
+      ]
+    },
+    {
+      "case_id": "n-tamper-pinned-signature-bytes",
+      "family": "body_tamper_after_signing",
+      "role": "negative",
+      "description": "Pinned vector: signature bytes altered.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:mutations/signature-bytes-fail.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "signature_invalid"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-admitted-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-admitted-pinned",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "signed content changed after signing"
+        }
+      ]
+    },
+    {
+      "case_id": "n-tamper-pinned-unknown-extension-added",
+      "family": "body_tamper_after_signing",
+      "role": "negative",
+      "description": "Pinned vector: an unknown extension added after signing.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:mutations/unknown-extension-added-fail.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "signature_invalid"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-admitted-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-admitted-pinned",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "signed content changed after signing"
+        }
+      ]
+    },
+    {
+      "case_id": "n-wrong-key-claims-trusted-key-id",
+      "family": "wrong_key",
+      "role": "negative",
+      "description": "Validly formed receipt signed by a rogue key while presenting the trusted issuer-a key_id: the key resolves and is trusted, the signature does not verify under it.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-wrong-key-claims-issuer-a.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "signature_invalid"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-synthetic-issuer-a"
+      ],
+      "isolation": [
+        {
+          "control": "pc-synthetic-issuer-a",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "signing key differs from the key the key_id names"
+        }
+      ]
+    },
+    {
+      "case_id": "n-pinned-key-id-unresolved",
+      "family": "wrong_key",
+      "role": "negative",
+      "description": "Pinned vector: key_id names a key the receiver does not hold.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:mutations/key-id-fail.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "issuer_key_resolved",
+            "issuer_key_trusted",
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "key_id_unresolved"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-admitted-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-admitted-pinned",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "key_id differs"
+        }
+      ]
+    },
+    {
+      "case_id": "n-embedded-key-not-in-receiver-trust",
+      "family": "self_trust_embedded_key",
+      "role": "negative",
+      "description": "Receipt names the accepted issuer, carries its own public key as a claim, and is validly signed under that key; the key is not in the receiver's trust input.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-selfclaimed-key.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "issuer_key_resolved",
+            "issuer_key_trusted",
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "key_id_unresolved"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-claimed-key-trusted-issuer",
+        "x-counterfactual-claimed-key-in-trust"
+      ],
+      "isolation": [
+        {
+          "control": "pc-claimed-key-trusted-issuer",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "claimed key is not held by the receiver"
+        },
+        {
+          "control": "x-counterfactual-claimed-key-in-trust",
+          "same_receipt_bytes": true,
+          "same_trust_input": false,
+          "variable": "receiver trust input: key absent vs added by the receiver"
+        }
+      ]
+    },
+    {
+      "case_id": "n-no-trust-anchors",
+      "family": "trust_input_variants",
+      "role": "negative",
+      "description": "Same pinned bytes, receiver holds no issuer keys.",
+      "trust_input": "case:trust/receiver-no-anchors.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "issuer_key_resolved",
+            "issuer_key_trusted",
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "key_id_unresolved"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-admitted-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-admitted-pinned",
+          "same_receipt_bytes": true,
+          "same_trust_input": false,
+          "variable": "receiver keyring: empty vs pinned"
+        }
+      ]
+    },
+    {
+      "case_id": "n-key-marked-untrusted-by-receiver",
+      "family": "trust_input_variants",
+      "role": "negative",
+      "description": "Same pinned bytes; the receiver marks the issuer key untrusted. The signature verifies, yet key trust fails and there is no reliance.",
+      "trust_input": "case:trust/receiver-key-revoked.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "issuer_key_trusted"
+          ],
+          "verifier_failure_codes": [
+            "key_untrusted"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-admitted-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-admitted-pinned",
+          "same_receipt_bytes": true,
+          "same_trust_input": false,
+          "variable": "receiver keyring: key trusted vs marked untrusted"
+        }
+      ]
+    },
+    {
+      "case_id": "n-unknown-receipt-version",
+      "family": "unknown_version_profile",
+      "role": "negative",
+      "description": "Validly signed receipt whose receipt_version is not a known version.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-unknown-receipt-version.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "profile",
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "profile.invalid_receipt_version",
+            "version_binding_mismatch"
+          ],
+          "reason_tokens": [
+            "policy.receipt_version_not_accepted",
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-synthetic-issuer-a"
+      ],
+      "isolation": [
+        {
+          "control": "pc-synthetic-issuer-a",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "receipt_version"
+        }
+      ]
+    },
+    {
+      "case_id": "n-unknown-profile",
+      "family": "unknown_version_profile",
+      "role": "negative",
+      "description": "Validly signed receipt naming an unregistered profile id.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-unknown-profile.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "profile",
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "profile.unsupported_selection",
+            "version_binding_mismatch"
+          ],
+          "reason_tokens": [
+            "policy.profile_not_accepted",
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-synthetic-issuer-a"
+      ],
+      "isolation": [
+        {
+          "control": "pc-synthetic-issuer-a",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "profile_id"
+        }
+      ]
+    },
+    {
+      "case_id": "n-pinned-version-binding",
+      "family": "unknown_version_profile",
+      "role": "negative",
+      "description": "Pinned vector: profile_version altered to v9.9 after signing, so the claimed profile slug is not one the verifier evaluates.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:mutations/version-binding-fail.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "profile",
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "profile.unsupported_selection",
+            "signature_invalid",
+            "version_binding_mismatch"
+          ],
+          "reason_tokens": [
+            "policy.profile_not_accepted",
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-admitted-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-admitted-pinned",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "profile_version"
+        }
+      ]
+    },
+    {
+      "case_id": "n-chain-missing-admission",
+      "family": "chain_link",
+      "role": "negative",
+      "description": "Outcome receipt submitted without its admission receipt: every single-receipt check passes, the chain link cannot be established.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:valid/outcome-result-returned.json"
+      ],
+      "expect": [
+        {
+          "decision": "insufficient_evidence",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "chain.admission_receipt_unresolved"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-chain-intact-pinned",
+        "x-chain-link-not-required"
+      ],
+      "isolation": [
+        {
+          "control": "pc-chain-intact-pinned",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "admission receipt present in submission"
+        },
+        {
+          "control": "x-chain-link-not-required",
+          "same_receipt_bytes": true,
+          "same_trust_input": false,
+          "variable": "receiver policy: link required vs not required"
+        }
+      ]
+    },
+    {
+      "case_id": "n-chain-linkage-mismatch",
+      "family": "chain_link",
+      "role": "negative",
+      "description": "Validly signed outcome whose logical_call_id disagrees with the admission receipt it references.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-admitted-issuer-a.json",
+        "case:receipts/s0-outcome-linkage-mismatch.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        },
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "chain.admission_outcome_linkage_mismatch"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-chain-intact-synthetic"
+      ],
+      "isolation": [
+        {
+          "control": "pc-chain-intact-synthetic",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "outcome logical_call_id"
+        }
+      ]
+    },
+    {
+      "case_id": "n-duplicate-in-submission",
+      "family": "duplicate_replay",
+      "role": "negative",
+      "description": "The same receipt bytes submitted twice: relied upon once.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json",
+        "pinned:valid/admission-admitted.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        },
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "replay.duplicate_in_submission"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-two-distinct-receipts"
+      ],
+      "isolation": [
+        {
+          "control": "pc-two-distinct-receipts",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "second receipt repeats the first"
+        }
+      ]
+    },
+    {
+      "case_id": "n-replay-from-ledger",
+      "family": "duplicate_replay",
+      "role": "negative",
+      "description": "Receipt already in the receiver's prior-reliance ledger is presented again.",
+      "trust_input": "case:trust/receiver-ledger-has-admitted.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "replay.already_relied_in_ledger"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-ledger-other-receipt"
+      ],
+      "isolation": [
+        {
+          "control": "pc-ledger-other-receipt",
+          "same_receipt_bytes": true,
+          "same_trust_input": false,
+          "variable": "receiver ledger: holds this receipt vs another"
+        }
+      ]
+    },
+    {
+      "case_id": "n-receipt-id-conflict",
+      "family": "duplicate_replay",
+      "role": "negative",
+      "description": "Two validly signed receipts with the same receipt_id and different content: neither is relied upon.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-admitted-issuer-a.json",
+        "case:receipts/s0-conflict-b.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "replay.receipt_id_conflict"
+          ]
+        },
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "replay.receipt_id_conflict"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-two-distinct-receipts"
+      ],
+      "isolation": [
+        {
+          "control": "pc-two-distinct-receipts",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "receipt_id collision"
+        }
+      ]
+    },
+    {
+      "case_id": "n-mixed-one-tampered",
+      "family": "refused_deferred_honesty",
+      "role": "negative",
+      "description": "Admitted, a refused-to-admitted forgery, and deferred together: the forgery is rejected and the others are still represented.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json",
+        "case:receipts/n-tamper-refused-to-admitted.json",
+        "pinned:valid/admission-deferred.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        },
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "signature_invalid"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        },
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_deferred_for_review"
+        }
+      ],
+      "controls": [
+        "pc-mixed-dispositions-represented"
+      ],
+      "isolation": [
+        {
+          "control": "pc-mixed-dispositions-represented",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "middle receipt is a post-signing forgery"
+        }
+      ]
+    },
+    {
+      "case_id": "n-raw-tool-arguments",
+      "family": "metadata_only_violation",
+      "role": "negative",
+      "description": "Validly signed receipt with a raw-content-shaped `tool_arguments` field.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-raw-tool-arguments.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "raw_content_exclusion"
+          ],
+          "verifier_failure_codes": [
+            "raw_content.forbidden_key:tool_arguments"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-synthetic-issuer-a"
+      ],
+      "isolation": [
+        {
+          "control": "pc-synthetic-issuer-a",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "added field `tool_arguments`"
+        }
+      ]
+    },
+    {
+      "case_id": "n-raw-result-body",
+      "family": "metadata_only_violation",
+      "role": "negative",
+      "description": "Validly signed receipt with a raw-content-shaped `result_body` field.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-raw-result-body.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "raw_content_exclusion"
+          ],
+          "verifier_failure_codes": [
+            "raw_content.forbidden_key:result_body"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-synthetic-issuer-a"
+      ],
+      "isolation": [
+        {
+          "control": "pc-synthetic-issuer-a",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "added field `result_body`"
+        }
+      ]
+    },
+    {
+      "case_id": "n-raw-access-token",
+      "family": "metadata_only_violation",
+      "role": "negative",
+      "description": "Validly signed receipt with a raw-content-shaped `access_token` field.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-raw-access-token.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "raw_content_exclusion"
+          ],
+          "verifier_failure_codes": [
+            "raw_content.forbidden_key:access_token"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-synthetic-issuer-a"
+      ],
+      "isolation": [
+        {
+          "control": "pc-synthetic-issuer-a",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "added field `access_token`"
+        }
+      ]
+    },
+    {
+      "case_id": "n-declined-boundary-not-accepted",
+      "family": "valid_but_declined",
+      "role": "negative",
+      "description": "Same pinned bytes as the control; the receiver's policy accepts a different boundary. Every verifier check passes.",
+      "trust_input": "case:trust/receiver-strict-boundary.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "policy.boundary_not_accepted"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-admitted-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-admitted-pinned",
+          "same_receipt_bytes": true,
+          "same_trust_input": false,
+          "variable": "receiver policy: accepted boundaries"
+        }
+      ]
+    },
+    {
+      "case_id": "n-declined-issuer-not-accepted",
+      "family": "valid_but_declined",
+      "role": "negative",
+      "description": "Same pinned bytes; the issuer key is still trusted, but the receiver's policy does not accept this issuer.",
+      "trust_input": "case:trust/receiver-strict-issuer.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "policy.issuer_not_accepted"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-admitted-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-admitted-pinned",
+          "same_receipt_bytes": true,
+          "same_trust_input": false,
+          "variable": "receiver policy: accepted issuers"
+        }
+      ]
+    },
+    {
+      "case_id": "n-malformed-json",
+      "family": "input_integrity",
+      "role": "negative",
+      "description": "Truncated, non-JSON bytes.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/n-malformed-json.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": null,
+          "failed_checks": null,
+          "verifier_failure_codes": null,
+          "reason_tokens": [
+            "input.malformed_json"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-admitted-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-admitted-pinned",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "bytes are not JSON"
+        }
+      ]
+    }
+  ]
+}

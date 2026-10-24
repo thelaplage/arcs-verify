@@ -1,0 +1,49 @@
+{
+  "accepted_profiles": [
+    "srs.mcp.sdk_enforcement.v0.1"
+  ],
+  "accepted_receipt_versions": [
+    "srs.core.v5.1"
+  ],
+  "default_profile": "srs.mcp.sdk_enforcement.v0.1",
+  "keyring": {
+    "issuers": [
+      {
+        "algorithm": "Ed25519",
+        "issuer_id": "issuer:vcp:test",
+        "key_id": "issuer.vcp.test/receipt-signing/2026-01",
+        "not_after": "2027-01-01T00:00:00Z",
+        "not_before": "2026-01-01T00:00:00Z",
+        "public_key": "A6EHv_POEL4dcN0Y50vAmWfk1jCbpQ1fHdyGZBJVMbg",
+        "trusted": true
+      },
+      {
+        "algorithm": "Ed25519",
+        "issuer_id": "issuer:stranger0:synthetic-a",
+        "key_id": "issuer.stranger0.synthetic-a/receipt-signing/2026-10",
+        "not_after": "2027-10-01T00:00:00Z",
+        "not_before": "2026-10-01T00:00:00Z",
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "trusted": true
+      }
+    ],
+    "trust_bundle_version": "srs.trust_bundle.v0.1"
+  },
+  "policy": {
+    "accepted_boundary_ids": [
+      "boundary:test:fastmcp"
+    ],
+    "accepted_issuer_ids": [
+      "issuer:vcp:test",
+      "issuer:stranger0:synthetic-a"
+    ],
+    "accepted_policy_pack_ids": [
+      "policy:test:mcp"
+    ],
+    "require_admission_link_for_outcome": false
+  },
+  "policy_id": "stranger0.policy.default.v0.1",
+  "receiver_id": "receiver:stranger0:synthetic",
+  "relied_receipt_ledger": [],
+  "schema": "arcs.verify.stranger0.receiver_trust_input.v0.1"
+}
