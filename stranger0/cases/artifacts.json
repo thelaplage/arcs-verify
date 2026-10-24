@@ -21,6 +21,63 @@
       "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-refused.json",
       "source_sha256": "067170f21c5f5e253557460f19c8eead4b6b06e205ddd37cc3c9996ac1835a6e"
     },
+    "cases/receipts/s0-admission-signature-broken.json": {
+      "edits": [
+        {
+          "op": "set",
+          "path": [
+            "issuer_id"
+          ],
+          "value": "issuer:stranger0:synthetic-a"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_signature",
+            "key_id"
+          ],
+          "value": "issuer.stranger0.synthetic-a/receipt-signing/2026-10"
+        },
+        {
+          "op": "set",
+          "path": [
+            "receipt_id"
+          ],
+          "value": "urn:srs:receipt:stranger0:admission:0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "logical_call_id"
+          ],
+          "value": "s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "subject_ref"
+          ],
+          "value": "tool-call:s0-call-0001"
+        },
+        {
+          "op": "set",
+          "path": [
+            "issued_at"
+          ],
+          "value": "2026-10-24T09:00:00Z"
+        }
+      ],
+      "kind": "derived_from_pinned_receipt",
+      "note": "Byte-identical to cases/receipts/s0-admitted-issuer-a.json except that one base64url character of receipt_signature.signature was changed AFTER signing and it was NOT re-signed, so the signature must fail. Isolates 'the referenced admission arrived and this receiver refused it' from absence and from linkage mismatch (E-A-LINK).",
+      "resigned_with": {
+        "public_key": "c_ACb8pCzJKghwq76VNMTA3xcdeLYtPixWUspHgwoOk",
+        "synthetic_key_label": "issuer-a"
+      },
+      "sha256": "e216151f2bd57c8017d23411e55a01171201c3e9afa1924c23236729231218bb",
+      "signature_invalidated_after_signing": true,
+      "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
+      "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
+    },
     "cases/receipts/s0-admitted-issuer-a.json": {
       "edits": [
         {
@@ -775,68 +832,75 @@
       "source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/valid/admission-admitted.json",
       "source_sha256": "1beb77bc038cab46622a188276e56b85e2fbc5a5138217a6c64ccb2113c8181a"
     },
+    "cases/trust/receiver-arrival-only-linkage.json": {
+      "kind": "receiver_trust_input",
+      "note": "COUNTERFACTUAL: requires the referenced admission to ARRIVE but not that this receiver relied on it. Keeps the narrower arrival-only reading reachable and visible (E-A-LINK).",
+      "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
+      "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
+      "sha256": "66d6ed853aa72a44656e1ffa06ab0fa6b543235321284a49f3b2c6888c63331f"
+    },
     "cases/trust/receiver-counterfactual-selftrust.json": {
       "kind": "receiver_trust_input",
       "note": "COUNTERFACTUAL: the receiver chooses to add the key a receipt claimed for itself to its own trust input. Exists to isolate trust-input membership as the only variable.",
       "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
       "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
-      "sha256": "2b4660e6cb8c326f08ac35ce1d9b376ee39fddca03d7f70a85c8c66438f0a744"
+      "sha256": "640eccdc660f34201e2e52a6e554bf84455bfeba6376faf1f536f1893f37f52f"
     },
     "cases/trust/receiver-default.json": {
       "kind": "receiver_trust_input",
       "note": "Pins the pinned test issuer and the stranger0 synthetic issuer-a; accepts the MCP profile only.",
       "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
       "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
-      "sha256": "26625148fb50f0401c9351e2db260aae04bdb88329a51638614448e3e5db0f41"
+      "sha256": "72b16a31a9966ae1095a52eed3da21dd0e313488e92dabc7beb1f2963416f30b"
     },
     "cases/trust/receiver-key-revoked.json": {
       "kind": "receiver_trust_input",
       "note": "The receiver has marked the pinned test issuer key as not trusted.",
       "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
       "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
-      "sha256": "5a6e819a8f4eb45ff6f8dad8cd2c9e46d121ca392b49988f4a7f38a5c3d61a05"
+      "sha256": "7ec915c1d75ddc5aab7196dfd97305fedc93cba921b7f4d5b3064da4be66deba"
     },
     "cases/trust/receiver-ledger-has-admitted.json": {
       "kind": "receiver_trust_input",
       "note": "Prior-reliance ledger already holds the pinned admitted receipt.",
       "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
       "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
-      "sha256": "aac9ab8e129cd30a3b8606a33b29a37fd893c79bf97429bedbc3aac197a7d338"
+      "sha256": "d00d2366a99d24c88c4f3c9b32baee6a1530620bbb6bb3c96664d65735939beb"
     },
     "cases/trust/receiver-ledger-other.json": {
       "kind": "receiver_trust_input",
       "note": "Prior-reliance ledger holds a different receipt (the pinned refused one).",
       "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
       "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
-      "sha256": "2f714909ddee6b0faf5002ce1fa4741f0ed016263286d51463fd3f07fe340caf"
+      "sha256": "22840766325c961a9c67fba3ae9740a6f683760514cc1847a211f1978b6bd0ed"
     },
     "cases/trust/receiver-no-anchors.json": {
       "kind": "receiver_trust_input",
       "note": "Identical policy, but the receiver holds NO issuer keys.",
       "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
       "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
-      "sha256": "49c8d64873dac992b52e523576ae3c903e8f72989b1dfe6c2ec3b7c00dc52e3d"
+      "sha256": "3779282b2d1a14497a5865d85d70a0f5f644029e6e0f8eea27719fb801805cf3"
     },
     "cases/trust/receiver-no-link-requirement.json": {
       "kind": "receiver_trust_input",
       "note": "Does not require an outcome to arrive with its admission receipt.",
       "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
       "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
-      "sha256": "497c87b596a63b96b2d8787823cd90bf4d9ae29c6a5a31643eaeb0c03c1ab20c"
+      "sha256": "e8ac4a8546dd44c6fcd965266685308a6a196b5242bd9582a842e77bd60074cf"
     },
     "cases/trust/receiver-strict-boundary.json": {
       "kind": "receiver_trust_input",
       "note": "Accepts only a boundary id that none of the test receipts use.",
       "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
       "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
-      "sha256": "4e42ecc106107ddb09aa2ed8ab818353f392a41e5a2140812a8f1d5162171026"
+      "sha256": "ae512cfee0635a10cfcbd2cd57c36ddcb2fada85087a50de6b0c97634e31b912"
     },
     "cases/trust/receiver-strict-issuer.json": {
       "kind": "receiver_trust_input",
       "note": "Accepts issuer-a only; key for the pinned test issuer is still trusted.",
       "pinned_keyring_source": "packs/srs.mcp.sdk_enforcement/v0.1/normative/trust/issuer-keys.json",
       "pinned_keyring_source_sha256": "8c97b9baa16adf4c2ae802d6a8eef8b38d7b18c361fa83ca7ae74e92929b38b5",
-      "sha256": "79dc858df63bf4083d887be4b4fe85b260287aad0e3c9ac7a59dc1425aa67af8"
+      "sha256": "bd564a1751f5ddfb26397e52529426038f252ba97a9cf4ac526d3b2df2456280"
     }
   },
   "generator": "make_synthetic_cases.py (out-of-repo; lives in the lane evidence packet)",

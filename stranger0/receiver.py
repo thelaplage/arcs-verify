@@ -39,8 +39,8 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-RECEIVER_ID = "stranger0.receiver.v0.1"
-TRUST_INPUT_SCHEMA = "arcs.verify.stranger0.receiver_trust_input.v0.1"
+RECEIVER_ID = "stranger0.receiver.v0.2"
+TRUST_INPUT_SCHEMA = "arcs.verify.stranger0.receiver_trust_input.v0.2"
 FINDINGS_SCHEMA = "arcs.verify.stranger0.verifier_findings.v0.1"
 DECISION_SCHEMA = "arcs.verify.stranger0.reliance_decision.v0.1"
 FACTS_SCHEMA = "arcs.verify.stranger0.receiver_process_facts.v0.1"
@@ -136,6 +136,7 @@ _POLICY_KEYS = {
     "accepted_boundary_ids",
     "accepted_policy_pack_ids",
     "require_admission_link_for_outcome",
+    "require_relied_admission_for_outcome",
 }
 
 
@@ -170,6 +171,15 @@ def load_trust_input(path: Path) -> tuple[dict[str, Any], str]:
         _str_list(policy[key], f"policy.{key}")
     if not isinstance(policy["require_admission_link_for_outcome"], bool):
         raise UsageError("trust input: policy.require_admission_link_for_outcome must be a boolean")
+    if not isinstance(policy["require_relied_admission_for_outcome"], bool):
+        raise UsageError("trust input: policy.require_relied_admission_for_outcome must be a boolean")
+    if policy["require_relied_admission_for_outcome"] and not policy["require_admission_link_for_outcome"]:
+        # Requiring reliance on an admission that is not even required to arrive has no
+        # reading. Refuse the combination rather than invent one.
+        raise UsageError(
+            "trust input: policy.require_relied_admission_for_outcome requires "
+            "policy.require_admission_link_for_outcome"
+        )
     ledger = data["relied_receipt_ledger"]
     if not isinstance(ledger, list):
         raise UsageError("trust input: relied_receipt_ledger must be a list")
@@ -258,6 +268,19 @@ def reason(token: str, source: str, **detail: Any) -> dict[str, Any]:
 
 
 INSUFFICIENT_TOKENS = frozenset({"chain.admission_receipt_unresolved"})
+# E-A-LINK. Receiver-origin, and deliberately outside INSUFFICIENT_TOKENS: an admission that
+# arrived and was not relied upon is a decision this receiver made, not evidence it lacks.
+STRICT_ADMISSION_TOKEN = "chain.admission_not_relied_upon"
+
+
+def decide_from(reasons: list[dict[str, Any]]) -> str:
+    """The receiver's decision for one receipt, given its reasons. Used twice: once
+    provisionally, so a dependent decision can read it, and once for the record."""
+    if not reasons:
+        return "rely"
+    if all(r["token"] in INSUFFICIENT_TOKENS for r in reasons):
+        return "insufficient_evidence"
+    return "do_not_rely"
 CHAIN_CODES = ("admission_receipt_unresolved", "admission_outcome_linkage_mismatch")
 
 
@@ -556,16 +579,57 @@ def _run(args: argparse.Namespace) -> int:
             elif position > 0:
                 rs.append(reason("replay.duplicate_in_submission", "receiver_state", receipt_id=rid, first_index=group[0].index))
 
+    # ---- E-A-LINK: strict dependent reliance, under this receiver's own policy only.
+    # An admission's decision never depends on an outcome, so one provisional pass over every
+    # receipt settles the dependency and the result cannot depend on the order they arrived in.
+    # A matching receipt id alone is not enough, and neither is the receipt-set linker's
+    # arrival finding: the referenced admission must be the one this receiver relied upon.
+    if policy["require_relied_admission_for_outcome"]:
+        provisional = {i.index: decide_from(reasons_by_index[i.index]) for i in items}
+        by_receipt_id: dict[str, list[Item]] = {}
+        for i in items:
+            if i.receipt_id:
+                by_receipt_id.setdefault(i.receipt_id, []).append(i)
+        for item in items:
+            if item.parsed is None or item.parsed.get("receipt_kind") != "outcome":
+                continue
+            ref = item.parsed.get("admission_receipt_ref")
+            if not isinstance(ref, str) or not ref:
+                continue  # nothing referenced; the arrival requirement owns that case
+            group = by_receipt_id.get(ref, [])
+            if not group:
+                continue  # absent: chain.admission_receipt_unresolved already owns this case
+            if len(group) > 1:
+                state = "duplicate_receipt_id_in_submission"
+            else:
+                admission = group[0]
+                parsed = admission.parsed or {}
+                if parsed.get("receipt_kind") != "admission":
+                    # Not an admission, so the reference is unresolved rather than refused:
+                    # chain.admission_receipt_unresolved already owns it, and saying both
+                    # would assert that the same receipt did and did not arrive.
+                    continue
+                if parsed.get("logical_call_id") != item.parsed.get("logical_call_id"):
+                    state = "logical_call_id_differs"
+                elif provisional[admission.index] != "rely":
+                    state = provisional[admission.index]
+                else:
+                    continue
+            reasons_by_index[item.index].append(
+                reason(
+                    STRICT_ADMISSION_TOKEN,
+                    "receiver_policy",
+                    admission_receipt_id=ref,
+                    admission_state=state,
+                    matching_receipts_in_submission=len(group),
+                )
+            )
+
     decisions = []
     ledger_additions = []
     for item in items:
         rs = sorted(reasons_by_index[item.index], key=lambda r: (r["token"], r["source"]))
-        if not rs:
-            decision = "rely"
-        elif all(r["token"] in INSUFFICIENT_TOKENS for r in rs):
-            decision = "insufficient_evidence"
-        else:
-            decision = "do_not_rely"
+        decision = decide_from(rs)
         entry: dict[str, Any] = {
             "index": item.index,
             "file_name": item.file_name,
@@ -603,7 +667,18 @@ def _run(args: argparse.Namespace) -> int:
             "truth and is not receiver admission of the underlying action."
         ),
         "receiver_id": trust["receiver_id"],
+        "receiver_version": RECEIVER_ID,
         "policy_id": trust["policy_id"],
+        "effective_linkage_policy": {
+            "require_admission_link_for_outcome": policy["require_admission_link_for_outcome"],
+            "require_relied_admission_for_outcome": policy["require_relied_admission_for_outcome"],
+            "note": (
+                "The first requires the referenced admission to ARRIVE. The second "
+                "additionally requires that this receiver relied on it. With the second "
+                "false, a separately verified outcome may be relied upon while its linked "
+                "admission was not: that is the narrower, arrival-only reading."
+            ),
+        },
         "trust_input_sha256": trust_sha,
         "findings_record_sha256": sha256_ref(findings_bytes),
         "decisions": decisions,

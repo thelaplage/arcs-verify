@@ -21,10 +21,11 @@
     "accepted_policy_pack_ids": [
       "policy:test:mcp"
     ],
-    "require_admission_link_for_outcome": true
+    "require_admission_link_for_outcome": true,
+    "require_relied_admission_for_outcome": true
   },
-  "policy_id": "stranger0.policy.default.v0.1",
+  "policy_id": "stranger0.policy.default.v0.2",
   "receiver_id": "receiver:stranger0:synthetic",
   "relied_receipt_ledger": [],
-  "schema": "arcs.verify.stranger0.receiver_trust_input.v0.1"
+  "schema": "arcs.verify.stranger0.receiver_trust_input.v0.2"
 }
