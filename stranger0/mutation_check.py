@@ -112,7 +112,7 @@ MUTANTS: list[dict[str, Any]] = [
         "what": "inconsistent admission/outcome linkage no longer reduces reliance",
         "old": '            if "admission_outcome_linkage_mismatch" in codes:\n',
         "new": '            if False:\n',
-        "targets": [R + "test_inconsistent_linkage_is_not_relied_upon"],
+        "targets": [R + "test_inconsistent_linkage_is_not_relied_upon", R + "test_ealink_arrival_only_still_refuses_a_call_id_mismatch"],
     },
     {
         "id": "M11", "file": RECV,
@@ -261,6 +261,27 @@ MUTANTS: list[dict[str, Any]] = [
         "old": '    if not isinstance(policy["require_relied_admission_for_outcome"], bool):\n',
         "new": '    if False:\n',
         "targets": [R + "test_ealink_a_non_boolean_linkage_setting_is_refused"],
+    },
+    {
+        "id": "M31", "file": RECV,
+        "what": "E-A-LINK: the admission kind is compared case-insensitively, so 'Admission' satisfies the reference",
+        "old": '                if parsed.get("receipt_kind") != "admission":\n',
+        "new": '                if str(parsed.get("receipt_kind", "")).strip().lower() != "admission":\n',
+        "targets": [R + "test_ealink_only_an_exact_admission_kind_satisfies_the_reference"],
+    },
+    {
+        "id": "M32", "file": RECV,
+        "what": "E-A-LINK: only an outcome referent is skipped, so a missing or odd kind falls through",
+        "old": '                if parsed.get("receipt_kind") != "admission":\n',
+        "new": '                if parsed.get("receipt_kind") == "outcome":\n',
+        "targets": [R + "test_ealink_only_an_exact_admission_kind_satisfies_the_reference"],
+    },
+    {
+        "id": "M33", "file": RECV,
+        "what": "E-A-LINK: the decision record stops naming the receiver version whose meaning changed",
+        "old": '        "receiver_id": trust["receiver_id"],\n        "receiver_version": RECEIVER_ID,\n',
+        "new": '        "receiver_id": trust["receiver_id"],\n',
+        "targets": [R + "test_ealink_the_decision_record_names_the_receiver_version"],
     },
     {
         "id": "O01", "file": ORCH,

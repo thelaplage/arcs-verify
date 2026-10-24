@@ -81,11 +81,14 @@ states which reading it applied, under `effective_linkage_policy` in
 Under the strict setting an outcome is relied upon only if the admission it
 references is present, carries the same `logical_call_id`, is the only receipt in
 the submission with that receipt id, and was itself relied upon. A matching
-receipt id is not enough, and neither is the receipt-set linker's own arrival
-finding: the requirement establishes the dependency itself rather than waiting for
-a sibling check to fire. The dependency is resolved from the whole submission
-after every receipt has a provisional decision, so the result does not depend on
-the order the receipts arrived in.
+receipt id is not enough: where the referenced admission IS present, the
+requirement decides for itself rather than reading the linker's finding. Where it
+is absent, carries no reference, or resolves to something that is not an
+admission, the strict pass adds nothing and `chain.admission_receipt_unresolved`
+is what refuses — so for those three the gate does depend on the linker. The
+dependency is resolved from the whole submission after every receipt has a
+provisional decision, so the result does not depend on the order the receipts
+arrived in.
 
 A referenced admission that never arrived stays `insufficient_evidence` under
 `chain.admission_receipt_unresolved` — missing evidence, not a refusal. One that
@@ -100,11 +103,16 @@ the dependency reason stays out of it, because asserting both would say the same
 receipt did and did not arrive.
 
 One consequence worth knowing before selecting the strict setting: it applies to
-the submission in front of the receiver. An outcome submitted in a *later* batch
-than its admission cannot be relied upon, because the admission is by then in the
-receiver's own replay ledger and is declined as already relied upon — so the
-dependency cannot be satisfied within that second submission. Submit an outcome
-together with its admission, or select the arrival-only reading.
+the submission in front of the receiver, and it interacts with the replay ledger.
+Once an admission has been relied upon and entered the ledger, no later
+submission can rely on its outcome. Submitting the outcome alone gives
+`insufficient_evidence` under `chain.admission_receipt_unresolved`, because the
+admission is not in that submission; resubmitting the pair gives the admission
+`do_not_rely` under `replay.already_relied_in_ledger` and the outcome
+`do_not_rely` under `chain.admission_not_relied_upon`. The same happens from a
+duplicate admission in a single batch, which ledgers the first copy. So
+co-submission only works from the FIRST submission that carries either receipt;
+after that, the arrival-only reading is the only one that relies on the outcome.
 
 Declining to rely on an outcome says nothing about whether the underlying action
 occurred. It is this receiver's decision about this evidence, under its own policy.

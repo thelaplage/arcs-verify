@@ -567,3 +567,80 @@ def test_ealink_a_non_boolean_linkage_setting_is_refused(tmp_path, setting, valu
     result = run_receiver([PV("admission-admitted")], bad, tmp_path / "out")
     assert result.proc.returncode == 2 and result.decision is None
     assert f"policy.{setting} must be a boolean" in result.proc.stderr
+
+
+# --------------------------------------------- signed variants, for referents and referrers
+# The synthetic key derivation is published in cases/artifacts.json: it authenticates nothing
+# and exists so tests can build a VALIDLY SIGNED receipt. Without one, a referrer fails its own
+# verifier and its decision is `do_not_rely` whatever the dependency logic does, which leaves
+# the preserved `insufficient_evidence` outcome unasserted.
+
+def _issuer_a_key():
+    import hashlib
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+    seed = hashlib.sha256(b"arcs-verify/stranger0/synthetic-test-key/v0.1/issuer-a").digest()
+    return Ed25519PrivateKey.from_private_bytes(seed)
+
+
+def _signed(receipt: dict) -> dict:
+    """Re-sign over the verifier's preimage: the receipt with receipt_signature.signature removed,
+    RFC8785-canonicalized."""
+    import base64
+    import copy as _copy
+    import rfc8785
+    out = _copy.deepcopy(receipt)
+    preimage = _copy.deepcopy(out)
+    del preimage["receipt_signature"]["signature"]
+    signature = _issuer_a_key().sign(rfc8785.dumps(preimage))
+    out["receipt_signature"]["signature"] = base64.urlsafe_b64encode(signature).rstrip(b"=").decode()
+    return out
+
+
+def test_the_signing_helper_matches_the_published_derivation_and_the_committed_bytes():
+    """Control for every test below: if this helper were wrong, those tests would be asserting
+    something about receipts the verifier rejects for an unrelated reason."""
+    import base64
+    import json as _json
+    derived = base64.urlsafe_b64encode(_issuer_a_key().public_key().public_bytes_raw()).rstrip(b"=").decode()
+    artifacts = _json.loads((S0 / "cases" / "artifacts.json").read_text())
+    recorded = artifacts["artifacts"]["cases/receipts/s0-admitted-issuer-a.json"]["resigned_with"]["public_key"]
+    assert derived == recorded
+    intact = _json.loads(INTACT_ADMISSION.read_text())
+    assert _signed(intact)["receipt_signature"]["signature"] == intact["receipt_signature"]["signature"]
+
+
+@pytest.mark.parametrize(
+    "kind",
+    [None, "Admission", "ADMISSION", "admission ", "outcome", "", 5],
+    ids=["deleted", "Admission", "ADMISSION", "trailing-space", "outcome", "empty", "non-string"],
+)
+def test_ealink_only_an_exact_admission_kind_satisfies_the_reference(run, tmp_path, kind):
+    """The referent is present, shares the call id, and is NOT relied upon, so anything other
+    than an exact `admission` kind falling through would add the dependency reason. Only
+    `chain.admission_receipt_unresolved` may fire, and the decision stays insufficient_evidence
+    — a case-insensitive, whitespace-tolerant or outcome-only comparison breaks this."""
+    referent = json.loads(INTACT_ADMISSION.read_text())
+    referent["receipt_id"] = "urn:srs:receipt:stranger0:admission:0009"
+    if kind is None:
+        del referent["receipt_kind"]
+    else:
+        referent["receipt_kind"] = kind
+    referrer = json.loads(LINKED_OUTCOME.read_text())
+    referrer["receipt_id"] = "urn:srs:receipt:stranger0:outcome:0009"
+    referrer["admission_receipt_ref"] = referent["receipt_id"]
+    paths = []
+    for name, doc in (("referent.json", referent), ("referrer.json", _signed(referrer))):
+        path = tmp_path / name
+        path.write_text(json.dumps(doc, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        paths.append(path)
+    result = run(paths, DEFAULT)
+    assert result.report(1)["passed"] is True, result.decisions[1]["reasons"]  # the referrer verifies
+    assert result.tokens(1) == ["chain.admission_receipt_unresolved"]
+    assert result.decisions[1]["decision"] == "insufficient_evidence"
+
+
+def test_ealink_the_decision_record_names_the_receiver_version(run, received=None):
+    """The strict setting changed what `rely` means under the default trust, so the record that
+    carries those decisions states which receiver produced them."""
+    record = run([INTACT_ADMISSION, LINKED_OUTCOME], DEFAULT).decision
+    assert record["receiver_version"] == "stranger0.receiver.v0.2"

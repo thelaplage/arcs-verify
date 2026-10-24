@@ -667,6 +667,7 @@ def _run(args: argparse.Namespace) -> int:
             "truth and is not receiver admission of the underlying action."
         ),
         "receiver_id": trust["receiver_id"],
+        "receiver_version": RECEIVER_ID,
         "policy_id": trust["policy_id"],
         "effective_linkage_policy": {
             "require_admission_link_for_outcome": policy["require_admission_link_for_outcome"],
