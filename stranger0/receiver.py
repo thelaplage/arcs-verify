@@ -39,7 +39,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-RECEIVER_ID = "stranger0.receiver.v0.1"
+RECEIVER_ID = "stranger0.receiver.v0.2"
 TRUST_INPUT_SCHEMA = "arcs.verify.stranger0.receiver_trust_input.v0.2"
 FINDINGS_SCHEMA = "arcs.verify.stranger0.verifier_findings.v0.1"
 DECISION_SCHEMA = "arcs.verify.stranger0.reliance_decision.v0.1"
@@ -605,8 +605,11 @@ def _run(args: argparse.Namespace) -> int:
                 admission = group[0]
                 parsed = admission.parsed or {}
                 if parsed.get("receipt_kind") != "admission":
-                    state = "referenced_receipt_is_not_an_admission"
-                elif parsed.get("logical_call_id") != item.parsed.get("logical_call_id"):
+                    # Not an admission, so the reference is unresolved rather than refused:
+                    # chain.admission_receipt_unresolved already owns it, and saying both
+                    # would assert that the same receipt did and did not arrive.
+                    continue
+                if parsed.get("logical_call_id") != item.parsed.get("logical_call_id"):
                     state = "logical_call_id_differs"
                 elif provisional[admission.index] != "rely":
                     state = provisional[admission.index]

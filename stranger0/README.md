@@ -94,6 +94,18 @@ arrived and was not relied upon is `do_not_rely` under
 state that disqualified it. Requiring reliance without requiring arrival has no
 reading, so the trust input refuses that combination instead of guessing.
 
+A reference that resolves to something other than an admission has not resolved to
+an admission: `chain.admission_receipt_unresolved` owns that case on its own, and
+the dependency reason stays out of it, because asserting both would say the same
+receipt did and did not arrive.
+
+One consequence worth knowing before selecting the strict setting: it applies to
+the submission in front of the receiver. An outcome submitted in a *later* batch
+than its admission cannot be relied upon, because the admission is by then in the
+receiver's own replay ledger and is declined as already relied upon — so the
+dependency cannot be satisfied within that second submission. Submit an outcome
+together with its admission, or select the arrival-only reading.
+
 Declining to rely on an outcome says nothing about whether the underlying action
 occurred. It is this receiver's decision about this evidence, under its own policy.
 
@@ -124,7 +136,8 @@ Reason tokens that originate with the receiver: `verifier.not_passed`,
 `policy.boundary_not_accepted`, `policy.policy_pack_not_accepted`,
 `replay.duplicate_in_submission`, `replay.already_relied_in_ledger`,
 `replay.receipt_id_conflict`, `chain.admission_receipt_unresolved`,
-`chain.admission_outcome_linkage_mismatch`. Verifier failure codes
+`chain.admission_outcome_linkage_mismatch`, `chain.admission_not_relied_upon`.
+Verifier failure codes
 (`signature_invalid`, `key_id_unresolved`, `key_untrusted`,
 `raw_content.forbidden_key:<key>`, ...) are carried through unchanged in the findings.
 

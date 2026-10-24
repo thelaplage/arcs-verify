@@ -514,3 +514,56 @@ def test_ealink_matching_receipt_id_with_a_different_call_id_is_not_the_linked_a
     assert result.tokens(1) == [STRICT_TOKEN, "chain.admission_outcome_linkage_mismatch"]
     strict = next(r for r in result.decisions[1]["reasons"] if r["token"] == STRICT_TOKEN)
     assert strict["detail"]["admission_state"] == "logical_call_id_differs"
+
+
+def test_ealink_a_reference_to_a_non_admission_is_unresolved_not_refused(run, tmp_path):
+    """A reference that resolves to something other than an admission has not resolved to an
+    admission. The unresolved reason owns that; claiming the dependency reason beside it would
+    assert that the same receipt both arrived and did not.
+
+    The referenced outcome's own signature is broken, so it is not relied upon in the
+    provisional pass. That matters: with a relied referent, removing the kind check would be
+    indistinguishable, and the test would not bind it.
+    """
+    outcome = json.loads(LINKED_OUTCOME.read_text())
+    signature = outcome["receipt_signature"]["signature"]
+    broken_outcome = {**outcome, "receipt_signature": {
+        **outcome["receipt_signature"], "signature": ("B" if signature[0] != "B" else "C") + signature[1:]}}
+    pointing_at_an_outcome = {**outcome,
+                              "receipt_id": "urn:srs:receipt:stranger0:outcome:0002",
+                              "admission_receipt_ref": outcome["receipt_id"]}
+    paths = []
+    for name, doc in (("broken-outcome.json", broken_outcome),
+                      ("outcome-referencing-an-outcome.json", pointing_at_an_outcome)):
+        path = tmp_path / name
+        path.write_text(json.dumps(doc, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        paths.append(path)
+    result = run(paths, DEFAULT)
+    assert result.decisions[0]["decision"] == "do_not_rely"      # the referenced outcome itself
+    assert "verifier.not_passed" in result.tokens(0)
+    tokens = result.tokens(1)
+    assert "chain.admission_receipt_unresolved" in tokens
+    assert STRICT_TOKEN not in tokens, tokens
+
+
+def test_ealink_arrival_only_still_refuses_a_call_id_mismatch(run):
+    """Under the arrival-only reading the linker's own mismatch finding is what refuses it, so
+    removing that finding must not leave the pair relied upon."""
+    result = run([INTACT_ADMISSION, CR("s0-outcome-linkage-mismatch")], ARRIVAL_ONLY)
+    assert_relied(result, index=0, claim="issuer_attests_admission_disposition_admitted")
+    assert result.decisions[1]["decision"] == "do_not_rely"
+    assert result.tokens(1) == ["chain.admission_outcome_linkage_mismatch"]
+
+
+@pytest.mark.parametrize("setting", ["require_admission_link_for_outcome", "require_relied_admission_for_outcome"])
+@pytest.mark.parametrize("value", ["false", "true", 0, 1, None, [], {}], ids=repr)
+def test_ealink_a_non_boolean_linkage_setting_is_refused(tmp_path, setting, value):
+    """A string "false" is truthy, so an untyped setting would silently turn the strict
+    requirement ON for a receiver whose author meant to turn it off."""
+    body = json.loads(DEFAULT.read_text())
+    body["policy"][setting] = value
+    bad = tmp_path / f"non-bool-{setting}.json"
+    bad.write_text(json.dumps(body, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    result = run_receiver([PV("admission-admitted")], bad, tmp_path / "out")
+    assert result.proc.returncode == 2 and result.decision is None
+    assert f"policy.{setting} must be a boolean" in result.proc.stderr

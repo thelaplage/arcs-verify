@@ -230,8 +230,8 @@ MUTANTS: list[dict[str, Any]] = [
     {
         "id": "M26", "file": RECV,
         "what": "E-A-LINK: a matching receipt id is accepted as linkage, without comparing logical_call_id",
-        "old": '                elif parsed.get("logical_call_id") != item.parsed.get("logical_call_id"):\n',
-        "new": '                elif False:\n',
+        "old": '                if parsed.get("logical_call_id") != item.parsed.get("logical_call_id"):\n',
+        "new": '                if False:\n',
         "targets": [R + "test_ealink_matching_receipt_id_with_a_different_call_id_is_not_the_linked_admission"],
     },
     {
@@ -247,6 +247,20 @@ MUTANTS: list[dict[str, Any]] = [
         "old": 'INSUFFICIENT_TOKENS = frozenset({"chain.admission_receipt_unresolved"})\n',
         "new": 'INSUFFICIENT_TOKENS = frozenset({"chain.admission_receipt_unresolved", "chain.admission_not_relied_upon"})\n',
         "targets": [R + "test_ealink_refused_admission_stops_reliance_on_its_linked_outcome"],
+    },
+    {
+        "id": "M29", "file": RECV,
+        "what": "E-A-LINK: a reference resolving to a non-admission is treated as a refused admission rather than an unresolved one",
+        "old": '                if parsed.get("receipt_kind") != "admission":\n',
+        "new": '                if False:\n',
+        "targets": [R + "test_ealink_a_reference_to_a_non_admission_is_unresolved_not_refused"],
+    },
+    {
+        "id": "M30", "file": RECV,
+        "what": "E-A-LINK: the strict setting is not type-checked, so a truthy string silently turns it on",
+        "old": '    if not isinstance(policy["require_relied_admission_for_outcome"], bool):\n',
+        "new": '    if False:\n',
+        "targets": [R + "test_ealink_a_non_boolean_linkage_setting_is_refused"],
     },
     {
         "id": "O01", "file": ORCH,

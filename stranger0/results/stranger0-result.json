@@ -4919,7 +4919,7 @@
     "artifacts_sha256": "sha256:40b956af0a623fcc328dde237b14cfaea809745f73945d1bc1e03274d1a562c4",
     "catalog_sha256": "sha256:2bcb7aa0f702132ba8625e09ea67073e57663a9c6620c5e6e8181fc657494818",
     "orchestrator_sha256": "sha256:bd9581b7d95922ceea1b56b03017abce1c217cb249404de69af30753d3b7c1d1",
-    "receiver_sha256": "sha256:970864fba9a79191196af1f52db7c5a5c544fc6f802ebf2b5261a144e0599cbe"
+    "receiver_sha256": "sha256:0b1306a1ddf4ab88e38e9fafba96d11dfc10e5df7f1300d5a2ee4517824c586b"
   },
   "result": "PASS",
   "schema": "arcs.verify.stranger0.result_transcript.v0.1",
