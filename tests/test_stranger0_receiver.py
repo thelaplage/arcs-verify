@@ -206,7 +206,9 @@ def test_inconsistent_linkage_is_not_relied_upon(run):
     assert_relied(result, 0)                                      # the admission alone is fine
     assert result.report(1)["passed"] is True                     # the outcome verifies on its own
     assert result.decisions[1]["decision"] == "do_not_rely"
-    assert result.tokens(1) == ["chain.admission_outcome_linkage_mismatch"]
+    # the strict dependent-reliance requirement establishes this itself rather than relying on
+    # the linker's finding, so both are reported; the decision is unchanged.
+    assert result.tokens(1) == ["chain.admission_not_relied_upon", "chain.admission_outcome_linkage_mismatch"]
 
 
 # --------------------------------------------------------------------------- duplicate / replay
@@ -371,3 +373,144 @@ def test_stale_records_from_an_earlier_run_are_never_left_beside_a_usage_error(t
     second = run_receiver([tmp_path / "does-not-exist.json"], DEFAULT, out)
     assert second.proc.returncode == 2
     assert second.decision is None and second.findings is None and second.facts is None
+
+
+# ----------------------------------------------- E-A-LINK: reliance on the referenced admission
+# The outcome's own verification is never in question in this family: in every case below its
+# verifier report passes. What changes is whether this receiver relied on the admission it
+# references, and whether its selected policy requires that.
+
+STRICT_TOKEN = "chain.admission_not_relied_upon"
+BROKEN_ADMISSION = CR("s0-admission-signature-broken")
+LINKED_OUTCOME = CR("s0-outcome-issuer-a")
+INTACT_ADMISSION = CR("s0-admitted-issuer-a")
+ARRIVAL_ONLY = TRUST("receiver-arrival-only-linkage")
+
+
+def assert_outcome_declined_for_its_admission(result: Run, index: int) -> None:
+    """The outcome is refused for the dependency, and for nothing about itself."""
+    d = result.decisions[index]
+    assert d["decision"] == "do_not_rely", d["reasons"]
+    assert result.tokens(index) == [STRICT_TOKEN]
+    # the verifier's own finding on these bytes is untouched and still passing
+    assert result.report(index)["passed"] is True
+    assert result.failed_checks(index) == []
+    assert "reliance_claim" not in d
+    reason = next(r for r in d["reasons"] if r["token"] == STRICT_TOKEN)
+    assert reason["source"] == "receiver_policy"
+    assert reason["detail"]["admission_receipt_id"] == "urn:srs:receipt:stranger0:admission:0001"
+
+
+def test_ealink_refused_admission_stops_reliance_on_its_linked_outcome(run):
+    assert_relied(run([INTACT_ADMISSION, LINKED_OUTCOME], DEFAULT), index=1,
+                  claim="issuer_attests_outcome_result_returned")  # positive control
+    result = run([BROKEN_ADMISSION, LINKED_OUTCOME], DEFAULT)
+    assert result.decisions[0]["decision"] == "do_not_rely"
+    assert result.tokens(0) == ["verifier.not_passed"]
+    assert result.failed_checks(0) == SIGNATURE_ONLY
+    assert_outcome_declined_for_its_admission(result, 1)
+    assert result.decisions[1]["reasons"][0]["detail"]["admission_state"] == "do_not_rely"
+
+
+def test_ealink_decision_does_not_depend_on_submission_order(run):
+    forward = run([BROKEN_ADMISSION, LINKED_OUTCOME], DEFAULT)
+    reversed_ = run([LINKED_OUTCOME, BROKEN_ADMISSION], DEFAULT)
+    assert [d["decision"] for d in forward.decisions] == ["do_not_rely", "do_not_rely"]
+    assert [d["decision"] for d in reversed_.decisions] == ["do_not_rely", "do_not_rely"]
+    assert_outcome_declined_for_its_admission(reversed_, 0)  # the outcome arrived first
+    by_id = lambda r: {d["receipt_id"]: (d["decision"], sorted(x["token"] for x in d["reasons"])) for d in r.decisions}
+    assert by_id(forward) == by_id(reversed_)
+
+
+def test_ealink_arrival_only_policy_relies_on_the_outcome_it_separately_verified(run):
+    """The narrower reading stays reachable, and the record says which one was applied."""
+    result = run([BROKEN_ADMISSION, LINKED_OUTCOME], ARRIVAL_ONLY)
+    assert result.decisions[0]["decision"] == "do_not_rely"       # the admission is still refused
+    assert result.tokens(0) == ["verifier.not_passed"]
+    assert_relied(result, index=1, claim="issuer_attests_outcome_result_returned")
+    policy = result.decision["effective_linkage_policy"]
+    assert policy["require_admission_link_for_outcome"] is True
+    assert policy["require_relied_admission_for_outcome"] is False
+
+
+def test_ealink_strict_policy_is_named_in_the_decision_record(run):
+    policy = run([INTACT_ADMISSION, LINKED_OUTCOME], DEFAULT).decision["effective_linkage_policy"]
+    assert policy["require_admission_link_for_outcome"] is True
+    assert policy["require_relied_admission_for_outcome"] is True
+
+
+def test_ealink_duplicate_admission_receipt_id_is_not_a_unique_relied_admission(run):
+    """Two receipts carry the referenced id, so no single relied admission exists."""
+    result = run([INTACT_ADMISSION, BROKEN_ADMISSION, LINKED_OUTCOME], DEFAULT)
+    assert result.tokens(0) == ["replay.receipt_id_conflict"]
+    assert result.tokens(1) == ["replay.receipt_id_conflict", "verifier.not_passed"]
+    assert_outcome_declined_for_its_admission(result, 2)
+    detail = result.decisions[2]["reasons"][0]["detail"]
+    assert detail["admission_state"] == "duplicate_receipt_id_in_submission"
+    assert detail["matching_receipts_in_submission"] == 2
+
+
+def test_ealink_admission_declined_from_the_receivers_own_ledger_stops_the_outcome(run):
+    """The requirement keys on the receiver's decision, not on the verifier's result:
+    here every verifier check passes and the admission is declined from the ledger."""
+    ledger = TRUST("receiver-ledger-has-admitted")
+    assert_relied(run([PV("admission-admitted"), PV("outcome-result-returned")], DEFAULT), index=1)
+    result = run([PV("admission-admitted"), PV("outcome-result-returned")], ledger)
+    assert result.report(0)["passed"] is True and result.report(1)["passed"] is True
+    assert result.tokens(0) == ["replay.already_relied_in_ledger"]
+    assert result.decisions[1]["decision"] == "do_not_rely"
+    assert result.tokens(1) == [STRICT_TOKEN]
+    assert result.decisions[1]["reasons"][0]["detail"]["admission_state"] == "do_not_rely"
+
+
+def test_ealink_unrelated_valid_admission_is_not_a_substitute(run):
+    """A valid admission the receiver does rely on, but not the referenced one. The
+    pre-existing unresolved-reference semantics own this, and still do."""
+    result = run([PV("admission-admitted"), LINKED_OUTCOME], DEFAULT)
+    assert_relied(result, index=0, claim="issuer_attests_admission_disposition_admitted")
+    assert result.decisions[1]["decision"] == "insufficient_evidence"
+    assert result.tokens(1) == ["chain.admission_receipt_unresolved"]
+
+
+def test_ealink_missing_admission_still_reports_insufficient_evidence(run):
+    """Preserved: an admission that never arrived is missing evidence, not a refusal."""
+    result = run([PV("outcome-result-returned")], DEFAULT)
+    assert result.decisions[0]["decision"] == "insufficient_evidence"
+    assert result.tokens(0) == ["chain.admission_receipt_unresolved"]
+    assert STRICT_TOKEN not in result.tokens(0)
+
+
+def test_ealink_strict_reliance_without_the_arrival_requirement_is_refused(tmp_path):
+    """The one combination with no reading is refused at load time, not guessed at."""
+    body = json.loads(DEFAULT.read_text())
+    body["policy"]["require_admission_link_for_outcome"] = False
+    body["policy"]["require_relied_admission_for_outcome"] = True
+    bad = tmp_path / "incoherent-trust.json"
+    bad.write_text(json.dumps(body, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    result = run_receiver([PV("admission-admitted")], bad, tmp_path / "out")
+    assert result.proc.returncode == 2
+    assert result.decision is None
+    assert "require_relied_admission_for_outcome requires" in result.proc.stderr
+
+
+def test_ealink_trust_input_without_the_new_setting_is_refused(tmp_path):
+    """The setting is required, so no trust input silently falls back to either reading."""
+    body = json.loads(DEFAULT.read_text())
+    del body["policy"]["require_relied_admission_for_outcome"]
+    bad = tmp_path / "missing-setting-trust.json"
+    bad.write_text(json.dumps(body, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    result = run_receiver([PV("admission-admitted")], bad, tmp_path / "out")
+    assert result.proc.returncode == 2 and result.decision is None
+    assert "policy keys must be exactly" in result.proc.stderr
+
+
+def test_ealink_matching_receipt_id_with_a_different_call_id_is_not_the_linked_admission(run):
+    """A receipt id match is not linkage. The strict requirement establishes this itself
+    rather than waiting for the receipt-set linker's finding to appear."""
+    assert_relied(run([INTACT_ADMISSION, LINKED_OUTCOME], DEFAULT), index=1)  # positive control
+    result = run([INTACT_ADMISSION, CR("s0-outcome-linkage-mismatch")], DEFAULT)
+    assert_relied(result, index=0, claim="issuer_attests_admission_disposition_admitted")
+    assert result.decisions[1]["decision"] == "do_not_rely"
+    assert result.tokens(1) == [STRICT_TOKEN, "chain.admission_outcome_linkage_mismatch"]
+    strict = next(r for r in result.decisions[1]["reasons"] if r["token"] == STRICT_TOKEN)
+    assert strict["detail"]["admission_state"] == "logical_call_id_differs"

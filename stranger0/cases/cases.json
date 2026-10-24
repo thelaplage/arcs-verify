@@ -16,7 +16,8 @@
     "metadata_only_violation": "A validly signed receipt that carries raw arguments, results or credential-shaped content fails raw_content_exclusion while its signature stays valid.",
     "valid_but_declined": "A receipt that passes every verifier check can still be declined by the receiver under its own policy: verifier pass is necessary, not sufficient.",
     "input_integrity": "Bytes that are not a JSON object produce no verifier findings (not a pass) and no reliance.",
-    "controls": "Positive controls and counterfactual controls shared by the families above."
+    "controls": "Positive controls and counterfactual controls shared by the families above.",
+    "dependent_admission_reliance": "Under the strict receiver policy, an outcome receipt is relied upon only if this receiver also relied on the admission receipt it references. Arrival of the referenced receipt, a matching receipt id, or the receipt-set linker's own finding is not enough. The arrival-only reading stays reachable as an explicit counterfactual policy."
   },
   "cases": [
     {
@@ -863,6 +864,7 @@
           "failed_checks": [],
           "verifier_failure_codes": [],
           "reason_tokens": [
+            "chain.admission_not_relied_upon",
             "chain.admission_outcome_linkage_mismatch"
           ]
         }
@@ -1249,6 +1251,272 @@
           "same_receipt_bytes": false,
           "same_trust_input": true,
           "variable": "bytes are not JSON"
+        }
+      ]
+    },
+    {
+      "case_id": "n-ealink-admission-signature-broken",
+      "family": "dependent_admission_reliance",
+      "role": "negative",
+      "description": "E-A-LINK: the referenced admission arrived but its signature fails, so the receiver does not rely on it; the separately valid outcome is therefore not relied upon either.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-admission-signature-broken.json",
+        "case:receipts/s0-outcome-issuer-a.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "signature_invalid"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        },
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "chain.admission_not_relied_upon"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-chain-intact-synthetic"
+      ],
+      "isolation": [
+        {
+          "control": "pc-chain-intact-synthetic",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "one signature character of the referenced admission changed after signing"
+        }
+      ]
+    },
+    {
+      "case_id": "n-ealink-reversed-input-order",
+      "family": "dependent_admission_reliance",
+      "role": "negative",
+      "description": "E-A-LINK: the same two receipts submitted outcome-first. The dependency is resolved from the whole submission, so the result does not depend on arrival order.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-outcome-issuer-a.json",
+        "case:receipts/s0-admission-signature-broken.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "chain.admission_not_relied_upon"
+          ]
+        },
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "signature_invalid"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-chain-intact-synthetic"
+      ],
+      "isolation": [
+        {
+          "control": "pc-chain-intact-synthetic",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "the referenced admission's signature broken, and the pair submitted outcome-first"
+        }
+      ]
+    },
+    {
+      "case_id": "x-ealink-arrival-only-counterfactual",
+      "family": "dependent_admission_reliance",
+      "role": "counterfactual_control",
+      "description": "COUNTERFACTUAL: a receiver whose policy requires the admission to arrive but not to be relied upon relies on the same separately valid outcome bytes. The narrower reading is preserved and is visible in the decision record.",
+      "trust_input": "case:trust/receiver-arrival-only-linkage.json",
+      "receipts": [
+        "case:receipts/s0-admission-signature-broken.json",
+        "case:receipts/s0-outcome-issuer-a.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "signature_invalid"
+          ],
+          "reason_tokens": [
+            "verifier.not_passed"
+          ]
+        },
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_outcome_result_returned"
+        }
+      ]
+    },
+    {
+      "case_id": "n-ealink-admission-declined-by-receiver-state",
+      "family": "dependent_admission_reliance",
+      "role": "negative",
+      "description": "E-A-LINK: the referenced admission passes every verifier check but this receiver declines it from its own replay ledger. The strict requirement keys on the receiver's decision, not on the verifier's result.",
+      "trust_input": "case:trust/receiver-ledger-has-admitted.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json",
+        "pinned:valid/outcome-result-returned.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "replay.already_relied_in_ledger"
+          ]
+        },
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "chain.admission_not_relied_upon"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-chain-intact-pinned"
+      ],
+      "isolation": [
+        {
+          "control": "pc-chain-intact-pinned",
+          "same_receipt_bytes": true,
+          "same_trust_input": false,
+          "variable": "receiver ledger already holds the referenced admission"
+        }
+      ]
+    },
+    {
+      "case_id": "n-ealink-duplicate-admission-id",
+      "family": "dependent_admission_reliance",
+      "role": "negative",
+      "description": "E-A-LINK: two different receipts carry the referenced admission id, so no unique relied admission exists. A matching receipt id alone cannot satisfy the requirement.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "case:receipts/s0-admitted-issuer-a.json",
+        "case:receipts/s0-admission-signature-broken.json",
+        "case:receipts/s0-outcome-issuer-a.json"
+      ],
+      "expect": [
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "replay.receipt_id_conflict"
+          ]
+        },
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": false,
+          "failed_checks": [
+            "signature_valid"
+          ],
+          "verifier_failure_codes": [
+            "signature_invalid"
+          ],
+          "reason_tokens": [
+            "replay.receipt_id_conflict",
+            "verifier.not_passed"
+          ]
+        },
+        {
+          "decision": "do_not_rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "chain.admission_not_relied_upon"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-chain-intact-synthetic"
+      ],
+      "isolation": [
+        {
+          "control": "pc-chain-intact-synthetic",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "a second receipt carrying the same admission receipt id"
+        }
+      ]
+    },
+    {
+      "case_id": "n-ealink-unrelated-admission-is-not-a-substitute",
+      "family": "dependent_admission_reliance",
+      "role": "negative",
+      "description": "E-A-LINK: a valid admission the receiver does rely on, but not the one the outcome references. The unresolved-reference semantics are preserved and the unrelated admission is no substitute.",
+      "trust_input": "case:trust/receiver-default.json",
+      "receipts": [
+        "pinned:valid/admission-admitted.json",
+        "case:receipts/s0-outcome-issuer-a.json"
+      ],
+      "expect": [
+        {
+          "decision": "rely",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [],
+          "reliance_claim": "issuer_attests_admission_disposition_admitted"
+        },
+        {
+          "decision": "insufficient_evidence",
+          "verifier_passed": true,
+          "failed_checks": [],
+          "verifier_failure_codes": [],
+          "reason_tokens": [
+            "chain.admission_receipt_unresolved"
+          ]
+        }
+      ],
+      "controls": [
+        "pc-chain-intact-synthetic"
+      ],
+      "isolation": [
+        {
+          "control": "pc-chain-intact-synthetic",
+          "same_receipt_bytes": false,
+          "same_trust_input": true,
+          "variable": "the admission present is valid and relied upon, but is not the one the outcome references"
         }
       ]
     }

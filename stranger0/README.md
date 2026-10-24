@@ -57,9 +57,45 @@ cross-checks the findings with the existing CLI, evaluates the falsifier checks.
 The receiver is given exactly two kinds of input: receipt bytes and one trust-input
 file. The trust input holds the receiver's keyring, the receipt versions and
 profiles it accepts, its acceptance policy (issuers, boundaries, policy packs,
-whether an outcome must arrive with its admission receipt), and a ledger of
-receipts it has already relied on. Keys or key claims that travel inside a
+and the two linkage settings below), and a ledger of receipts it has already
+relied on. Keys or key claims that travel inside a
 receipt are never trust input.
+
+### The two linkage settings
+
+Both are required in the trust input; neither has a default, so no receiver
+silently gets one reading or the other.
+
+| Setting | What it requires |
+|---|---|
+| `require_admission_link_for_outcome` | the referenced admission must **arrive** in the submission |
+| `require_relied_admission_for_outcome` | additionally, **this receiver must have relied on it** |
+
+These are different questions, and the second is the stricter one. With it
+`false`, a separately verified outcome may be relied upon while the admission it
+references was refused: that is the narrower, arrival-only reading, and
+`cases/trust/receiver-arrival-only-linkage.json` keeps it reachable. Every run
+states which reading it applied, under `effective_linkage_policy` in
+`reliance-decision.json`.
+
+Under the strict setting an outcome is relied upon only if the admission it
+references is present, carries the same `logical_call_id`, is the only receipt in
+the submission with that receipt id, and was itself relied upon. A matching
+receipt id is not enough, and neither is the receipt-set linker's own arrival
+finding: the requirement establishes the dependency itself rather than waiting for
+a sibling check to fire. The dependency is resolved from the whole submission
+after every receipt has a provisional decision, so the result does not depend on
+the order the receipts arrived in.
+
+A referenced admission that never arrived stays `insufficient_evidence` under
+`chain.admission_receipt_unresolved` — missing evidence, not a refusal. One that
+arrived and was not relied upon is `do_not_rely` under
+`chain.admission_not_relied_upon`, which names the admission's receipt id and the
+state that disqualified it. Requiring reliance without requiring arrival has no
+reading, so the trust input refuses that combination instead of guessing.
+
+Declining to rely on an outcome says nothing about whether the underlying action
+occurred. It is this receiver's decision about this evidence, under its own policy.
 
 One detail worth knowing: the existing receipt-set verifier accepts exactly one
 workflow-index schema identifier, and that identifier names a demo workflow. The
@@ -94,7 +130,7 @@ Reason tokens that originate with the receiver: `verifier.not_passed`,
 
 ## Cases
 
-38 cases, 48 receipts. Every negative family has at least one positive control,
+44 cases, 61 receipts. Every negative family has at least one positive control,
 and each negative states which single variable it changes relative to its
 control (`isolation` in `cases/cases.json`). The orchestrator checks those
 isolation claims against the actual input bytes.
@@ -107,6 +143,7 @@ isolation claims against the actual input bytes.
 | `trust_input_variants` | same pinned bytes under a receiver with no keys; under a receiver that marked the key untrusted | `key_id_unresolved`; `key_untrusted` with `signature_valid` still true |
 | `unknown_version_profile` | unknown `receipt_version`; unregistered profile id; pinned version-binding vector | `profile.invalid_receipt_version`, `profile.unsupported_selection`, plus the receiver's own policy tokens |
 | `chain_link` | outcome without its admission; outcome whose `logical_call_id` disagrees | `insufficient_evidence` (every single-receipt check passes); `chain.admission_outcome_linkage_mismatch` |
+| `dependent_admission_reliance` | the referenced admission arrived but its signature fails; the same pair outcome-first; the admission declined from the receiver's own ledger with every verifier check passing; two receipts carrying the referenced id; a valid but unrelated admission | `chain.admission_not_relied_upon`, while the outcome's own verifier finding stays passing and is not converted to a failure. The unrelated-admission case keeps `chain.admission_receipt_unresolved`. A counterfactual control applies the arrival-only reading to the same bytes and relies on the outcome, which isolates the policy as the only variable |
 | `duplicate_replay` | same bytes twice; a receipt already in the receiver's ledger; two validly signed receipts with one id | `replay.*` tokens; verifier passes in all three |
 | `refused_deferred_honesty` | refused and deferred beside an admitted receipt and beside a forgery | none dropped; refusal is never described as admission; deferral is never described as approval |
 | `metadata_only_violation` | validly signed receipts carrying `tool_arguments`, `result_body`, `access_token` | only `raw_content_exclusion` fails, `signature_valid` stays true |
