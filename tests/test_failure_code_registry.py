@@ -183,6 +183,63 @@ def test_registry_lists_no_phantom_static_codes() -> None:
     )
 
 
+def test_registry_documents_no_code_unknown_to_the_verifier() -> None:
+    """Whole-registry phantom check, dotted identifiers included.
+
+    test_registry_lists_no_phantom_static_codes above is deliberately strict and
+    deliberately narrow: two modules, one section, bare identifiers, and
+    membership in the precise structural extraction. This one trades that
+    precision for reach -- every table row in both registry documents.
+
+    The two directions need different predicates. "Is every emitted code
+    documented?" must extract conservatively, or it demands documentation for
+    strings that are not codes. "Is every documented code real?" must accept
+    any evidence that the verifier knows the string, because the sweep has
+    known blind spots that are not registry inventions: cg_replay.py and
+    cg_execution_replay.py pass the code at helper argument 0 while the sweep
+    reads argument 1, relation.* codes live in a tuple literal inside a for
+    loop, and ACPS_B1_PRINCIPAL_BINDING_DIGEST_FAILED is a module constant.
+    Treating those as phantoms would be wrong.
+
+    So a documented code is accepted when it appears as a string literal in an
+    emitting module, or matches a dynamic family prefix, or ends with the
+    literal tail of a variable-first f-string. A code satisfying none of those
+    appears nowhere in the verifier and is an invention.
+
+    Weaker than the narrow check in one way, and stated rather than hidden: a
+    code mentioned only in a comment or docstring would pass here. The narrow
+    check is kept precisely so that nothing is given up.
+    """
+    import re
+
+    sources = {module: (ROOT / module).read_text(encoding="utf-8") for module in MODULES}
+    blob = "\n".join(sources.values())
+
+    prefixes = set()
+    for module in MODULES:
+        prefixes |= _extract(module)[1]
+    prefixes.discard("")
+
+    tails: set[str] = set()
+    for text in sources.values():
+        tails |= {tail for tail in re.findall(r'f"\{[a-z_]+\}([a-z0-9_.]+)"', text) if tail}
+
+    documented = sorted(set(re.findall(r"^\| `([a-z][A-Za-z0-9_.]*)` \|", REGISTRY, re.M)))
+
+    def known(code: str) -> bool:
+        if f'"{code}"' in blob or f"'{code}'" in blob:
+            return True
+        if any(code.startswith(prefix) for prefix in prefixes):
+            return True
+        return any(code.endswith(tail) for tail in tails)
+
+    invented = sorted(code for code in documented if not known(code))
+    assert not invented, (
+        "the registries document codes that appear nowhere in the verifier:\n"
+        + "\n".join(invented)
+    )
+
+
 def test_no_emitting_module_is_unregistered() -> None:
     """Every module under arcs_verify/ that carries a code-emission signature
     must appear in MODULES. This is the module-level analogue of the code-level
