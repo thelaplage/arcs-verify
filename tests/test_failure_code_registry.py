@@ -183,6 +183,96 @@ def test_registry_lists_no_phantom_static_codes() -> None:
     )
 
 
+def test_registry_documents_no_code_unknown_to_the_verifier() -> None:
+    """Whole-registry phantom check, dotted identifiers included.
+
+    test_registry_lists_no_phantom_static_codes above is deliberately strict and
+    deliberately narrow: two modules, one section, bare identifiers, and
+    membership in the precise structural extraction. This one trades that
+    precision for reach -- every table row in both registry documents.
+
+    The two directions need different predicates. "Is every emitted code
+    documented?" must extract conservatively, or it demands documentation for
+    strings that are not codes. "Is every documented code real?" must accept
+    any evidence that the verifier knows the string, because the sweep has
+    known blind spots that are not registry inventions: cg_replay.py and
+    cg_execution_replay.py pass the code at helper argument 0 while the sweep
+    reads argument 1, relation.* codes live in a tuple literal inside a for
+    loop, and ACPS_B1_PRINCIPAL_BINDING_DIGEST_FAILED is a module constant.
+    Treating those as phantoms would be wrong.
+
+    So a documented code is accepted when it appears as a string literal in an
+    emitting module, matches a dynamic family prefix, or is one of the
+    enumerated products of a variable-first f-string and the literals bound to
+    a keyword of that same name. A code satisfying none of those appears
+    nowhere in the verifier and is an invention.
+
+    That enumeration is a LEXICAL association, not call-site provenance: it
+    pairs names with literals found in the same module set and does not trace
+    dataflow, so it cannot prove a given literal reaches a given f-string. It
+    therefore OVER-approximates -- it may accept a product whose label never
+    reaches that site. That is the safe direction here: it cannot invent a
+    phantom report, only miss an invention that happens to combine a real label
+    with a real tail. It is still far tighter than matching the tail alone,
+    which accepted any prefix whatsoever.
+
+    Both letter cases are censused: UPPER_SNAKE code families exist in these
+    documents alongside the lowercase ones.
+
+    Weaker than the narrow check in one way, and stated rather than hidden: a
+    code mentioned only in a comment or docstring would pass here. The narrow
+    check is kept precisely so that nothing is given up.
+    """
+    import re
+
+    sources = {module: (ROOT / module).read_text(encoding="utf-8") for module in MODULES}
+    blob = "\n".join(sources.values())
+
+    prefixes = set()
+    for module in MODULES:
+        prefixes |= _extract(module)[1]
+    prefixes.discard("")
+
+    # Variable-first f-strings are ENUMERATED, never suffix-matched. Accepting
+    # anything ending in ".invalid_json" would let the registry invent
+    # "zz_fabricated.invalid_json": the tail says nothing about which labels can
+    # reach that site. Pair each (variable, literal tail) with the string
+    # literals bound to a keyword of the same name anywhere in the module set.
+    # Lexical, not dataflow: see the docstring on what that does and does not
+    # establish.
+    pairs = {
+        pair
+        for text in sources.values()
+        for pair in re.findall(r'f"\{([A-Za-z_][A-Za-z0-9_]*)\}([A-Za-z0-9_.]+)"', text)
+    }
+    dynamic: set[str] = set()
+    for variable, tail in pairs:
+        for value in {
+            value
+            for text in sources.values()
+            for value in re.findall(rf'\b{re.escape(variable)}\s*=\s*"([A-Za-z0-9_.]+)"', text)
+        }:
+            dynamic.add(value + tail)
+
+    # Codes are documented in either case: UPPER_SNAKE families such as
+    # C2PA_SCHEMA and FIXED_VALUE_MISMATCH sit alongside the lowercase ones and
+    # are censused too. A lowercase-only census silently skipped 72 of 489.
+    documented = sorted(set(re.findall(r"^\| `([A-Za-z][A-Za-z0-9_.]*)` \|", REGISTRY, re.M)))
+
+    def known(code: str) -> bool:
+        if f'"{code}"' in blob or f"'{code}'" in blob:
+            return True
+        if any(code.startswith(prefix) for prefix in prefixes):
+            return True
+        return code in dynamic
+
+    invented = sorted(code for code in documented if not known(code))
+    assert not invented, (
+        "the registries document codes that appear nowhere in the verifier:\n"
+        + "\n".join(invented)
+    )
+
+
 def test_no_emitting_module_is_unregistered() -> None:
     """Every module under arcs_verify/ that carries a code-emission signature
     must appear in MODULES. This is the module-level analogue of the code-level
