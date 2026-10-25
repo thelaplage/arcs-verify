@@ -202,9 +202,13 @@ def test_registry_documents_no_code_unknown_to_the_verifier() -> None:
     Treating those as phantoms would be wrong.
 
     So a documented code is accepted when it appears as a string literal in an
-    emitting module, or matches a dynamic family prefix, or ends with the
-    literal tail of a variable-first f-string. A code satisfying none of those
-    appears nowhere in the verifier and is an invention.
+    emitting module, matches a dynamic family prefix, or is one of the
+    enumerated products of a variable-first f-string and the literals its
+    variable actually carries. A code satisfying none of those appears nowhere
+    in the verifier and is an invention.
+
+    Both letter cases are censused: UPPER_SNAKE code families exist in these
+    documents alongside the lowercase ones.
 
     Weaker than the narrow check in one way, and stated rather than hidden: a
     code mentioned only in a comment or docstring would pass here. The narrow
@@ -220,18 +224,36 @@ def test_registry_documents_no_code_unknown_to_the_verifier() -> None:
         prefixes |= _extract(module)[1]
     prefixes.discard("")
 
-    tails: set[str] = set()
-    for text in sources.values():
-        tails |= {tail for tail in re.findall(r'f"\{[a-z_]+\}([a-z0-9_.]+)"', text) if tail}
+    # Variable-first f-strings are ENUMERATED, never suffix-matched. Accepting
+    # anything ending in ".invalid_json" would let the registry invent
+    # "zz_fabricated.invalid_json": the tail says nothing about which labels can
+    # reach that site. Pair each (variable, literal tail) with the string
+    # literals that variable is actually given, and accept only those products.
+    pairs = {
+        pair
+        for text in sources.values()
+        for pair in re.findall(r'f"\{([A-Za-z_][A-Za-z0-9_]*)\}([A-Za-z0-9_.]+)"', text)
+    }
+    dynamic: set[str] = set()
+    for variable, tail in pairs:
+        for value in {
+            value
+            for text in sources.values()
+            for value in re.findall(rf'\b{re.escape(variable)}\s*=\s*"([A-Za-z0-9_.]+)"', text)
+        }:
+            dynamic.add(value + tail)
 
-    documented = sorted(set(re.findall(r"^\| `([a-z][A-Za-z0-9_.]*)` \|", REGISTRY, re.M)))
+    # Codes are documented in either case: UPPER_SNAKE families such as
+    # C2PA_SCHEMA and FIXED_VALUE_MISMATCH sit alongside the lowercase ones and
+    # are censused too. A lowercase-only census silently skipped 72 of 489.
+    documented = sorted(set(re.findall(r"^\| `([A-Za-z][A-Za-z0-9_.]*)` \|", REGISTRY, re.M)))
 
     def known(code: str) -> bool:
         if f'"{code}"' in blob or f"'{code}'" in blob:
             return True
         if any(code.startswith(prefix) for prefix in prefixes):
             return True
-        return any(code.endswith(tail) for tail in tails)
+        return code in dynamic
 
     invented = sorted(code for code in documented if not known(code))
     assert not invented, (

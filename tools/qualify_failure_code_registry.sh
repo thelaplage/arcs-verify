@@ -424,7 +424,11 @@ def main():
             changed = []
             for rel in REGS:
                 text = read(sb, rel)
-                new = text.replace(f"`{code}`", "`REDACTED_BY_CONTROL`")
+                # The replacement must not itself read as a documented code. An
+                # identifier here lands in the first column of a table row and the
+                # whole-registry gate then reports it as a phantom -- the control
+                # would trip a sibling gate through its own scaffolding.
+                new = text.replace(f"`{code}`", "`~redacted-by-control~`")
                 if new != text:
                     write(sb, rel, new)
                     changed.append(rel)
@@ -513,6 +517,27 @@ def main():
 
     go({"id": "C7", "label": "dotted phantom code", "wanted": T_PHANTOM_WIDE,
         "token": "zz_family.invented_code", "apply": a_phantom_dotted})
+
+    # C8 and C9 cover the two ways a documented invention slipped past the wide
+    # gate's first form: an UPPER_SNAKE code (the census was lowercase-only) and
+    # a fabricated variable-first code (the tail was suffix-matched, so any
+    # label would do). Neither is visible to the narrow gate, so both isolate.
+    def a_phantom_uppercase(sb):
+        write(sb, REGS[0], read(sb, REGS[0]) +
+              "\n| `ZZ_PHANTOM_UPPER_CODE` | Emitted by nothing in the verifier. |\n")
+        return [REGS[0]]
+
+    def a_phantom_fabricated_label(sb):
+        # ends in a real dynamic tail, but "zz_fabricated" never reaches that site
+        write(sb, REGS[0], read(sb, REGS[0]) +
+              "\n| `zz_fabricated.invalid_json` | Looks dynamic; no such label exists. |\n")
+        return [REGS[0]]
+
+    go({"id": "C8", "label": "uppercase phantom code", "wanted": T_PHANTOM_WIDE,
+        "token": "ZZ_PHANTOM_UPPER_CODE", "apply": a_phantom_uppercase})
+
+    go({"id": "C9", "label": "fabricated variable-first code", "wanted": T_PHANTOM_WIDE,
+        "token": "zz_fabricated.invalid_json", "apply": a_phantom_fabricated_label})
     go({"id": "C4", "label": "undocumented dynamic family", "wanted": T_FAMILY,
         "token": "zz_dynamic_control.",
         "apply": a_append("arcs_verify/findings.py",
