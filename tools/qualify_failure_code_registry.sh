@@ -27,55 +27,73 @@ VERIFIER=arcs_verify/verifier.py
 FINDINGS=arcs_verify/findings.py
 PROBE=arcs_verify/_control_probe_emitting_module.py
 TRACKED="$REG $VERIFIER $FINDINGS"
-WORK=$(mktemp -d /tmp/registry-controls.XXXXXX)
-fail=0
-
-# Interrupt-safe: a half-applied mutation must never survive this script.
-cleanup() {
-  for f in $TRACKED; do
-    [ -f "$f.control-backup" ] && mv -f "$f.control-backup" "$f"
-  done
-  rm -f "$PROBE"
-  rm -rf "$WORK"
-}
-trap 'cleanup' EXIT
-trap 'cleanup; exit 130' INT
-trap 'cleanup; exit 143' TERM HUP
-
-digest() {
-  if [ ! -f "$1" ]; then printf 'MISSING:%s\n' "$1"; return 0; fi
-  shasum -a 256 "$1" | cut -d' ' -f1
-}
-
-# Refuse to start unless every file this script will mutate is actually here.
-# Without this, a wrong working directory reads as "nothing to restore".
+# --- preflight, BEFORE any cleanup handler exists --------------------------
+# Nothing in this script may move or delete a path it did not create. The
+# cleanup handler is therefore installed only after these checks pass.
 for f in $TRACKED $T; do
   if [ ! -f "$f" ]; then
     printf 'qualify: BLOCKED -- %s not found; run this from the repository (ROOT=%s)\n' "$f" "$ROOT" >&2
     exit 2
   fi
 done
+
+collisions=''
+for f in $TRACKED; do
+  [ -e "$f.control-backup" ] && collisions="$collisions $f.control-backup"
+done
+[ -e "$PROBE" ] && collisions="$collisions $PROBE"
+if [ -n "$collisions" ]; then
+  printf 'qualify: BLOCKED -- these paths already exist and do not belong to this run:\n' >&2
+  for c in $collisions; do printf '    %s\n' "$c" >&2; done
+  printf '  A previous run may have been killed, or they belong to another process.\n' >&2
+  printf '  Inspect and move them aside yourself: this script will neither delete\n' >&2
+  printf '  them nor restore them over a tracked file.\n' >&2
+  exit 2
+fi
+
+# --- custody: only this run's own artifacts are ever cleaned up -----------
+OWNED=''
+OWN_PROBE=no
+WORK=''
+cleanup() {
+  for f in $OWNED; do
+    [ -f "$f.control-backup" ] && mv -f "$f.control-backup" "$f"
+  done
+  [ "$OWN_PROBE" = yes ] && rm -f "$PROBE"
+  [ -n "$WORK" ] && rm -rf "$WORK"
+  return 0
+}
+trap 'cleanup' EXIT
+trap 'cleanup; exit 130' INT
+trap 'cleanup; exit 143' TERM HUP
+
+WORK=$(mktemp -d /tmp/registry-controls.XXXXXX)
+fail=0
+
+digest() {
+  if [ ! -f "$1" ]; then printf 'MISSING:%s\n' "$1"; return 0; fi
+  shasum -a 256 "$1" | cut -d' ' -f1
+}
 for f in $TRACKED; do
   eval "BEFORE_$(printf '%s' "$f" | tr './-' '___')=$(digest "$f")"
 done
 
-perturb() {  # file -- back it up first, so cleanup can always restore it
-  # Refuse to clobber an existing backup. A stale backup means an earlier
-  # control did not restore, and overwriting it would capture already-mutated
-  # bytes as the "original" -- losing the pristine copy entirely.
+perturb() {  # take custody of a file before mutating it
   if [ -e "$1.control-backup" ]; then
-    printf '  !! stale backup for %s: an earlier control did not restore\n' "$1"
+    printf '  !! backup collision for %s; refusing to mutate it\n' "$1"
     fail=1
     return 1
   fi
-  cp "$1" "$1.control-backup"
+  cp "$1" "$1.control-backup" || { fail=1; return 1; }
+  OWNED="$OWNED $1"
 }
 restore() {
   mv -f "$1.control-backup" "$1"
 }
 
-# A control passes only when ITS OWN test fails. Other failures are reported
-# for transparency but never substitute for the expected one.
+# A control passes only when ITS OWN test fails. Any other failing test means
+# the control does not isolate the property it claims to exercise, which is a
+# harness defect, not a detail.
 expect_fail() {
   label=$1
   wanted=$2
@@ -87,7 +105,10 @@ expect_fail() {
     fail=1
   fi
   others=$(printf '%s\n' "$out" | grep -oE 'FAILED [^ ]*::[a-z_]+' | sed 's/.*:://' | grep -v "^${wanted}$" | sort -u | tr '\n' ' ')
-  [ -n "$others" ] && printf '             %-30s also tripped: %s\n' "" "$others"
+  if [ -n "$others" ]; then
+    printf '  !! %-30s also tripped: %s(a control must isolate its property)\n' "$label" "$others"
+    fail=1
+  fi
   return 0
 }
 
@@ -111,6 +132,7 @@ restore "$REG"
 
 # --- C2: a new emitting module escapes the fixed MODULES list. This is the
 #         property that once let governed_memory_sequence.py through unnoticed.
+OWN_PROBE=yes
 cat > "$PROBE" <<'PYEOF'
 """Transient control fixture; removed by tools/qualify_failure_code_registry.sh."""
 
