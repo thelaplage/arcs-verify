@@ -27,6 +27,12 @@ VERIFIER=arcs_verify/verifier.py
 FINDINGS=arcs_verify/findings.py
 PROBE=arcs_verify/_control_probe_emitting_module.py
 TRACKED="$REG $VERIFIER $FINDINGS"
+# `test -e` FOLLOWS symbolic links, so a dangling link is invisible to it. Any
+# existence check that guards a later mv or rm must use this instead: a dangling
+# backup symlink would otherwise pass preflight and then be moved over a tracked
+# file, replacing it with a broken link.
+exists_any() { [ -e "$1" ] || [ -L "$1" ]; }
+
 # --- preflight, BEFORE any cleanup handler exists --------------------------
 # Nothing in this script may move or delete a path it did not create. The
 # cleanup handler is therefore installed only after these checks pass.
@@ -35,13 +41,17 @@ for f in $TRACKED $T; do
     printf 'qualify: BLOCKED -- %s not found; run this from the repository (ROOT=%s)\n' "$f" "$ROOT" >&2
     exit 2
   fi
+  if [ -L "$f" ]; then
+    printf 'qualify: BLOCKED -- %s is a symbolic link; refusing to mutate it\n' "$f" >&2
+    exit 2
+  fi
 done
 
 collisions=''
 for f in $TRACKED; do
-  [ -e "$f.control-backup" ] && collisions="$collisions $f.control-backup"
+  exists_any "$f.control-backup" && collisions="$collisions $f.control-backup"
 done
-[ -e "$PROBE" ] && collisions="$collisions $PROBE"
+exists_any "$PROBE" && collisions="$collisions $PROBE"
 if [ -n "$collisions" ]; then
   printf 'qualify: BLOCKED -- these paths already exist and do not belong to this run:\n' >&2
   for c in $collisions; do printf '    %s\n' "$c" >&2; done
@@ -57,7 +67,9 @@ OWN_PROBE=no
 WORK=''
 cleanup() {
   for f in $OWNED; do
-    [ -f "$f.control-backup" ] && mv -f "$f.control-backup" "$f"
+    if [ -f "$f.control-backup" ] && [ ! -L "$f.control-backup" ]; then
+      mv -f "$f.control-backup" "$f"
+    fi
   done
   [ "$OWN_PROBE" = yes ] && rm -f "$PROBE"
   [ -n "$WORK" ] && rm -rf "$WORK"
@@ -79,16 +91,40 @@ for f in $TRACKED; do
 done
 
 perturb() {  # take custody of a file before mutating it
-  if [ -e "$1.control-backup" ]; then
+  if exists_any "$1.control-backup"; then
     printf '  !! backup collision for %s; refusing to mutate it\n' "$1"
     fail=1
     return 1
   fi
-  cp "$1" "$1.control-backup" || { fail=1; return 1; }
+  if [ -L "$1" ]; then
+    printf '  !! %s is a symbolic link; refusing to mutate it\n' "$1"
+    fail=1
+    return 1
+  fi
+  if ! cp "$1" "$1.control-backup"; then
+    # The backup is the only copy of the original. Without one, no mutation may
+    # happen -- and nothing may later be moved onto the tracked path.
+    printf '  !! could not back up %s; refusing to mutate it\n' "$1"
+    rm -f "$1.control-backup"
+    fail=1
+    return 1
+  fi
   OWNED="$OWNED $1"
+  return 0
 }
 restore() {
-  mv -f "$1.control-backup" "$1"
+  # Only ever move a regular file we made. A symlink here is not our backup.
+  if [ -L "$1.control-backup" ] || [ ! -f "$1.control-backup" ]; then
+    printf '  !! refusing to restore %s: backup missing or not a regular file\n' "$1"
+    fail=1
+    return 1
+  fi
+  if ! mv -f "$1.control-backup" "$1"; then
+    printf '  !! RESTORE FAILED for %s\n' "$1"
+    fail=1
+    return 1
+  fi
+  return 0
 }
 
 # A control passes only when ITS OWN test fails. Any other failing test means
@@ -124,11 +160,11 @@ printf 'interpreter: %s\n\n' "$($PY --version 2>&1)"
 
 # --- C1: a code the modules emit stops being documented.
 CODE=$(grep -ohE '`[a-z_]+\.[a-z_]+`' "$REG" | head -1 | tr -d '`')
-perturb "$REG"
+perturb "$REG" || exit 1
 perl -0pi -e "s/\`\Q$CODE\E\`/\`REDACTED_BY_CONTROL\`/g" "$REG"
 assert_changed "$REG" "omitted static code"
 expect_fail "omitted static code" test_every_emitted_code_is_in_the_registry
-restore "$REG"
+restore "$REG" || exit 1
 
 # --- C2: a new emitting module escapes the fixed MODULES list. This is the
 #         property that once let governed_memory_sequence.py through unnoticed.
@@ -151,7 +187,7 @@ rm -f "$PROBE"
 #         gate reads the receipt-set..amnesiac-chain section and matches dotless
 #         identifiers, so a control placed elsewhere, or written family.code,
 #         would prove nothing. Widening that check is separate work.
-perturb "$REG"
+perturb "$REG" || exit 1
 $PY - "$REG" <<'PYEOF'
 import sys
 path = sys.argv[1]
@@ -162,14 +198,14 @@ open(path, "w", encoding="utf-8").write(text[:index] + row + text[index:])
 PYEOF
 assert_changed "$REG" "phantom documented code"
 expect_fail "phantom documented code" test_registry_lists_no_phantom_static_codes
-restore "$REG"
+restore "$REG" || exit 1
 
 # --- C4: a module starts emitting a NEW dynamic family that nobody documented.
 #         Mutating the code rather than the registry is deliberate: it exercises
 #         the property in its real direction, and an f-string emission harvests
 #         as a template only, so the static-code gate stays quiet and the signal
 #         is isolated to the dynamic-family gate.
-perturb "$FINDINGS"
+perturb "$FINDINGS" || exit 1
 cat >> "$FINDINGS" <<'PYEOF'
 
 
@@ -178,12 +214,12 @@ def _control_probe_dynamic_family(report, value):  # transient control fixture
 PYEOF
 assert_changed "$FINDINGS" "undocumented dynamic family"
 expect_fail "undocumented dynamic family" test_every_dynamic_family_prefix_is_in_the_registry
-restore "$FINDINGS"
+restore "$FINDINGS" || exit 1
 
 # --- C5: the verifier declares a NEW signature failure code that nobody
 #         documented. Added to the set literal, which the structural sweep does
 #         not harvest, so only the signature-registry gate can see it.
-perturb "$VERIFIER"
+perturb "$VERIFIER" || exit 1
 $PY - "$VERIFIER" <<'PYEOF'
 import sys
 path = sys.argv[1]
@@ -196,7 +232,7 @@ open(path, "w", encoding="utf-8").write(
 PYEOF
 assert_changed "$VERIFIER" "undocumented signature code"
 expect_fail "undocumented signature code" test_every_signature_failure_code_is_in_the_registry
-restore "$VERIFIER"
+restore "$VERIFIER" || exit 1
 
 # --- post-conditions -------------------------------------------------------
 printf '\npost-conditions\n'
