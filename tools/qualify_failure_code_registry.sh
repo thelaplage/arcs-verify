@@ -154,6 +154,7 @@ PROOF_TREES = ("arcs_verify", "docs", "tests", "tools")
 T_STATIC = "test_every_emitted_code_is_in_the_registry"
 T_FAMILY = "test_every_dynamic_family_prefix_is_in_the_registry"
 T_PHANTOM = "test_registry_lists_no_phantom_static_codes"
+T_PHANTOM_WIDE = "test_registry_documents_no_code_unknown_to_the_verifier"
 T_MODULE = "test_no_emitting_module_is_unregistered"
 T_SIGNATURE = "test_every_signature_failure_code_is_in_the_registry"
 
@@ -366,7 +367,11 @@ def main():
         if control["wanted"] not in run.cases:
             return "HARNESS", f"{control['wanted']} did not run"
         state, text = run.cases[control["wanted"]]
-        others = sorted(run.failed - {control["wanted"]})
+        # Two gates can genuinely overlap: a dotless phantom inside the
+        # receipt-set slice is a phantom by both the narrow and the
+        # whole-registry definition. Such an overlap must be DECLARED on the
+        # control; an undeclared one is still NOT-ISOLATED.
+        others = sorted(run.failed - {control["wanted"]} - set(control.get("also", ())))
         if state == "pass":
             return "SURVIVED", f"{control['wanted']} stayed green"
         if control["token"] not in text:
@@ -487,7 +492,27 @@ def main():
     go({"id": "C2", "label": "unregistered emitting module", "wanted": T_MODULE,
         "token": PROBE, "apply": a_probe_module})
     go({"id": "C3", "label": "phantom documented code", "wanted": T_PHANTOM,
-        "token": "zz_phantom_code", "apply": a_phantom})
+        "token": "zz_phantom_code", "apply": a_phantom, "also": (T_PHANTOM_WIDE,)})
+
+    # C6 and C7 reach the two cases the narrow gate cannot see by construction:
+    # it reads only receipt-set..amnesiac-chain and matches bare identifiers.
+    def a_phantom_outside(sb):
+        write(sb, REGS[0], read(sb, REGS[0]) +
+              "\n| `zz_phantom_outside_section` | Documented nowhere near receipt-set. |\n")
+        return [REGS[0]]
+
+    def a_phantom_dotted(sb):
+        text = read(sb, REGS[0])
+        index = text.index("## `amnesiac-chain` subcommand")
+        row = "| `zz_family.invented_code` | Emitted by nothing in the verifier. |\n\n"
+        write(sb, REGS[0], text[:index] + row + text[index:])
+        return [REGS[0]]
+
+    go({"id": "C6", "label": "phantom outside the narrow section", "wanted": T_PHANTOM_WIDE,
+        "token": "zz_phantom_outside_section", "apply": a_phantom_outside})
+
+    go({"id": "C7", "label": "dotted phantom code", "wanted": T_PHANTOM_WIDE,
+        "token": "zz_family.invented_code", "apply": a_phantom_dotted})
     go({"id": "C4", "label": "undocumented dynamic family", "wanted": T_FAMILY,
         "token": "zz_dynamic_control.",
         "apply": a_append("arcs_verify/findings.py",
