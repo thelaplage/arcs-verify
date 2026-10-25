@@ -203,9 +203,18 @@ def test_registry_documents_no_code_unknown_to_the_verifier() -> None:
 
     So a documented code is accepted when it appears as a string literal in an
     emitting module, matches a dynamic family prefix, or is one of the
-    enumerated products of a variable-first f-string and the literals its
-    variable actually carries. A code satisfying none of those appears nowhere
-    in the verifier and is an invention.
+    enumerated products of a variable-first f-string and the literals bound to
+    a keyword of that same name. A code satisfying none of those appears
+    nowhere in the verifier and is an invention.
+
+    That enumeration is a LEXICAL association, not call-site provenance: it
+    pairs names with literals found in the same module set and does not trace
+    dataflow, so it cannot prove a given literal reaches a given f-string. It
+    therefore OVER-approximates -- it may accept a product whose label never
+    reaches that site. That is the safe direction here: it cannot invent a
+    phantom report, only miss an invention that happens to combine a real label
+    with a real tail. It is still far tighter than matching the tail alone,
+    which accepted any prefix whatsoever.
 
     Both letter cases are censused: UPPER_SNAKE code families exist in these
     documents alongside the lowercase ones.
@@ -228,7 +237,9 @@ def test_registry_documents_no_code_unknown_to_the_verifier() -> None:
     # anything ending in ".invalid_json" would let the registry invent
     # "zz_fabricated.invalid_json": the tail says nothing about which labels can
     # reach that site. Pair each (variable, literal tail) with the string
-    # literals that variable is actually given, and accept only those products.
+    # literals bound to a keyword of the same name anywhere in the module set.
+    # Lexical, not dataflow: see the docstring on what that does and does not
+    # establish.
     pairs = {
         pair
         for text in sources.values()
