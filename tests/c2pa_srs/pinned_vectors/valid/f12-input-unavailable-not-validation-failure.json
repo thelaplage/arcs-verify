@@ -1,0 +1,127 @@
+{
+  "_fixture_case": "F12",
+  "_fixture_note": "Recovery is separated from validation. The Manifest Store could not be obtained, so no report exists and none is invented. This is an input condition, never a validation failure.",
+  "_expected_field_schema": "accept",
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.c2pa.validation_observation",
+  "profile_version": "v0.1",
+  "receipt_id": "c2pa-observation-f12-0001",
+  "receipt_type": "provenance",
+  "receipt_kind": "c2pa_validation_observation",
+  "boundary_type": "c2pa_validation_observation_boundary",
+  "protocol_binding": "c2pa/2.4+native-validator-observation-v0-1",
+  "external_binding_relation_mode": "validation_observation",
+  "subject_ref": "sha256:72769a803e43b0622d0667b8c3a42e49f0ece8ecf6b0c39ab85d28d239ee5efc",
+  "issuer_id": "issuer.arcs-srs/conformance",
+  "runtime_instance_id": "runtime-c2pa-observation-0001",
+  "boundary_id": "boundary-c2pa-observation-0001",
+  "issued_at": "2026-08-15T00:00:00Z",
+  "asset_digest": "sha256:72769a803e43b0622d0667b8c3a42e49f0ece8ecf6b0c39ab85d28d239ee5efc",
+  "manifest_store": {
+    "state": "inaccessible"
+  },
+  "manifest_acquisition": {
+    "mode": "remote_reference",
+    "remote_manifest_uri": "https://cai-manifests.example.invalid/manifests/urn-uuid-0012",
+    "remote_resolution_performed": false,
+    "remote_resolution_phase": "not_performed"
+  },
+  "hermetic_replay": {
+    "performed": true,
+    "remote_manifest_fetch_applied": false,
+    "ocsp_fetch_applied": false,
+    "allowed_network_hosts": [],
+    "replay_report_digest": "sha256:80ad4617ddd17a379f0c6b738255db89fde3a86e4e0ba286c08f74767a679ad4"
+  },
+  "native_validator": {
+    "implementation": "c2patool",
+    "version": "0.27.15",
+    "build_digest": "sha256:1083484bcbb8918f0fb9f815824bc8bcce916034198d2fdafb43403d4044323b",
+    "configuration_posture": "configuration_supplied",
+    "configuration_digest": "sha256:7b7b499bf7e2c3fe3dedc38b65181da607354febf80c1761d7ea329ac57d135c",
+    "specification_version_applied": "2.4",
+    "specification_version_applied_source": "native_validator_applied"
+  },
+  "signer_trust": {
+    "trust_basis": "default_no_trust_material",
+    "trust_observation": "not_evaluated",
+    "trust_pointer_dereferenced": false
+  },
+  "signer_validity": {
+    "observation": "not_evaluated",
+    "determinism_class": "time_dependent"
+  },
+  "trusted_timestamp": {
+    "present": false,
+    "observation": "not_evaluated"
+  },
+  "validation_time": {
+    "validation_timestamp_observed": "2026-08-15T00:00:00Z",
+    "validation_time_control": "unsupported",
+    "trusted_timestamp_relevant": true
+  },
+  "revocation": {
+    "observation": "not_evaluated",
+    "mechanism": "not_available",
+    "note": "Revocation is reachable only via network OCSP and cannot be frozen for hermetic replay."
+  },
+  "ingredient_refs": [],
+  "prior_producer_report": {
+    "present": false,
+    "comparison_posture": "not_evaluated"
+  },
+  "later_comparison_posture": "not_evaluated",
+  "evaluation_posture": "input_unavailable",
+  "unavailable_inputs": [
+    {
+      "input": "remote_manifest_store_bytes",
+      "reason": "remote manifest fetch was disabled and no captured bytes were supplied; the validator produced no report"
+    }
+  ],
+  "artifact_classes_covered": [
+    "asset_digest",
+    "manifest_store_state",
+    "manifest_acquisition_mode",
+    "native_validator_identity",
+    "native_report_digest",
+    "trust_material_digests",
+    "validation_observation",
+    "trusted_timestamp_observation"
+  ],
+  "artifact_classes_excluded": [
+    "raw_asset_bytes",
+    "raw_manifest_store_bytes",
+    "raw_native_report_bytes",
+    "raw_certificate_private_material"
+  ],
+  "attestation_limits": [
+    "The receipt records an observation of a native C2PA validation performed by a named external validator over pinned inputs. It does not establish content truth, depicted-event truth, physical liveness, universal signer trust, independent ARCS recomputation, DAGR admission, or public standing."
+  ],
+  "machine_limitations": [
+    {
+      "code": "CONTENT_TRUTH_NOT_EVALUATED"
+    },
+    {
+      "code": "ADMISSION_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_SIGNER_TRUST_NOT_UNIVERSAL"
+    },
+    {
+      "code": "C2PA_NATIVE_VALIDATION_NOT_RECOMPUTED"
+    },
+    {
+      "code": "C2PA_DEPICTED_CONTENT_NOT_ESTABLISHED"
+    },
+    {
+      "code": "PUBLIC_STANDING_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_REVOCATION_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_VALIDATION_TIME_NOT_CONTROLLED"
+    }
+  ],
+  "extensions": {}
+}

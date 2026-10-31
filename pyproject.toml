@@ -85,4 +85,7 @@ arcs_verify = [
   # that projection locally (the pin is over the projection, not over the file).
   "contracts/c2pa-native-finding/v0.1/*.json",
   "contracts/c2pa-native-finding/v0.1/*.md",
+  # C2PA-BRIDGE0: byte-exact copies of the pinned arcs-srs profile artifacts that
+  # arcs_verify/c2pa_srs_observed.py re-hashes against its code-held pin on every load.
+  "contracts/c2pa-srs-observation/v0.1/*.json",
 ]
