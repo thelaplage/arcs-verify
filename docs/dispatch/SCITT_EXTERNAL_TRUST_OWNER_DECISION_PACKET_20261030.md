@@ -126,9 +126,9 @@ Sub-decision **T1.3, service-operator independence.** A registration does not es
 - Bundling a public key does not establish trust in it (S4 L120–121). A key a caller supplies does not establish trust (R0 L119).
 - The ratified precedent for the `public_publication` signer is as follows. G6A §3.3 requires a single, named, separate custody role (G6A L85–90) and a governed, versioned, retentive trust-material path (G6A L119–126). G6B-PREP0 sets storage requirements: the key stays outside the repository and outside artifacts, access is role-restricted, and there is an audit trail (G6B L85–96). A functional custody role is named at G6B L75–83. **Both records govern only the `public_publication` signer (G6A L45–46): precedent, not delegated authority.**
 - **Decoded fact (input, not an AV-S1 result).** The known-answer statement's 54-byte protected header (B3 `expected.statement_hex`, decoded by hand) is `{3: "application/json", 15: {1: iss, 2: sub}, 1: -8}`, and its unprotected header is empty. It carries no `kid` (4), `x5chain` (33) or `x5t` (34).
-  - For the SRS construction the binding requires `kid` unless `x5t` or `x5chain` is present (S1 L132–135).
-  - G6A L79–83 makes `key_id` rotation-addressable.
-  - Without a key identifier, a verifier can choose a key only by issuer and validity window, and a rotation cannot be addressed from the statement.
+  - The statement therefore carries no in-statement key reference. It does not satisfy the SRS binding's key-reference requirement: `kid`, unless `x5t` or `x5chain` is present (S1 L131–150).
+  - Explicit, versioned, out-of-band public-key selection remains possible. ARCS Verify's adapter accepts an explicitly selected public key and binds that key's SPKI digest into the evaluation context (V2 L92–98, L116–119). It has no time policy (V2 L120), so it does no validity-window selection either.
+  - The narrower result: nothing in the statement names its key, so key choice and rotation rest entirely on the out-of-band selection and its versioning. G6A L79–83 (a rotation-addressable `key_id`) is precedent.
 
 **Keys and options.**
 
@@ -142,7 +142,7 @@ Sub-decision **T1.3, service-operator independence.** A registration does not es
 
 Sub-decision **T2.1, key identifier in a registered statement:**
 - (i) Require `kid` (or a certificate reference, under T5) in any statement profile accepted for registration. That is a producer change, a separate act not authorized here.
-- (ii) Permit statements without `kid`, with one active key per issuer at a time.
+- (ii) Permit statements without `kid`, relying solely on explicit, versioned out-of-band key selection. Such statements stay outside the SRS binding's key-reference requirement.
 
 **Recommendation.** K1 (a); K2 (a)+(b); K3 (a); K4 and K5 as stated; T2.1 (i).
 
@@ -176,7 +176,7 @@ Sub-decision **T2.1, key identifier in a registered statement:**
 
 | Seat | Options | Recommendation |
 |---|---|---|
-| **3.1** Normative trust semantics and the trust-input wire shape | (a) arcs-srs, under G2 §5.5. (b) garp-doctrine directly. (c) ARCS Verify. | **(a).** Not (c): a verifier that defines its own trust inputs is self-authorizing (R0 L77). |
+| **3.1** Normative trust semantics and the trust-input wire shape | (a) arcs-srs, under G2 §5.5. (b) garp-doctrine directly. (c) ARCS Verify. | **(a).** Not (c), keeping syntax apart from authority. ARCS Verify may define a local selection format and compute findings from it. It must not silently turn that format into portable policy authority, or auto-select trusted principals. R0 recognizes the local selection without ratifying it or granting service trust (R0 L77, L92). |
 | **3.2** Submission side: may a BAGR deployment register to this service? | (a) The governed egress / runtime owner, through per-event, destination-bound sign-off (E4 L98, L100; R0 L135). (b) The deployment operator alone (today's unnamed default). (c) ARCS Verify. | **(a)** |
 | **3.3** Reliance side: does a receiver accept this issuer or service in its role? | (a) Each receiver, under its own trust input (V4 L57–62; G2 L236). (b) An estate-published accepted list, offered as candidate input that binds no receiver. (c) ARCS Verify defaults. | **(a), optionally fed by (b).** Never (c): the experimental input is explicitly not a portable contract (V2 L68–75). |
 
@@ -311,12 +311,12 @@ No production transport or egress path is composed in either producer repository
 
 **Options.**
 1. **Publicly readable service** (anyone can read entries) → `public_publication`. The five locked affirmations, the six ACT0 seats and per-event sign-off apply, and the submission is treated as permanent.
-2. **Service with an enumerated, authorized recipient set and no public read** → `digest_export` (E4 L119, L213). The operator is always a recipient, so this option requires evidence of the operator's read policy and of its inability to widen readership later. Without that evidence, option 3 applies.
+2. **Service with an enumerated, authorized recipient set and no public read** → `digest_export` (E4 L119, L213). The operator is always a recipient, so this option requires evidence of the operator's read policy. Also requiring evidence that the operator can never widen readership later is a **PROPOSED stronger condition**: the cited recipient-set rule (E4 L119, L213) does not establish it. Without the evidence the owner requires, option 3 applies.
 3. **Unknown or changeable readership** → classified as `public_publication`, the stricter case. *No doctrine line states this rule.* The nearest analogue is RE1 strictest-wins (G4 L60–68), which orders compartment and egress dispositions, not readership. Adopting option 3 is new doctrine, not a reading of existing doctrine.
 4. **No thirteenth class.** The egress SRS receipt records the submission act and its sign-off. It is not native inclusion, and not the registration-event SRS receipt that the binding declines to define.
 5. **Same statement, second service** → a new egress act with its own sign-off (E4 L98; S1 L318).
 
-**Recommendation.** Adopt 1, 2 (with its evidence condition), 3, 4 and 5 together, with D4b decided first: under v0.4 no `public_publication` checklist can be answered while L142 is undefined.
+**Recommendation.** Adopt 1, 2 (with its evidence condition), 3, 4 and 5 together. For this hash-bearing SCITT submission, resolve the fingerprint classification before recording an affirmative answer to `no_derived_fingerprint_present`. This adds no restriction on unrelated publication work.
 
 **Would authorize:** a classification rule that future egress proposals for SCITT registration must apply.
 
@@ -340,12 +340,14 @@ No production transport or egress path is composed in either producer repository
   | Field | How it is made | Locator oracle? |
   |---|---|---|
   | `source_locator_sha256` | Plain, unsalted SHA-256 of the locator (C1 L298) | **Yes.** Anyone who can guess the URL confirms it offline. |
-  | `source_id` | `"src_"` + the first 32 hex characters of SHA-256 over canonical JSON `{"url": <locator>}` (C3 L78–105). `CaptureReceipt` refuses any `source_id` not so derived; "derived from source_locator only" (C2 L139–147). Recomputed for B4's fixture locator: equal to B4's `source_id`. | **Yes.** A second, independent oracle for the same locator. |
-  | `capture_id` | `cap_` + random UUID4 (C3 L52–54) | No. It is a correlation handle (S1 L314). |
-  | `binding_id` | SHA-256 over the body, which includes the two digests above (C1 L308–311) | Not by itself. It is a correlation handle. |
+  | `source_id` | `"src_"` + the first 32 hex characters of SHA-256 over canonical JSON `{"url": <locator>}` (C3 L78–105). `CaptureReceipt` refuses any `source_id` not so derived; "derived from source_locator only" (C2 L139–147). Recomputed for B4's fixture locator: equal to B4's `source_id`. `source_locator_sha256` hashes the locator's UTF-8 bytes directly (C1 L298); `source_id` instead hashes canonical JSON that contains the locator. | **Yes.** A second, independent oracle for the same locator. |
+  | `capture_id` | By default the factory mints `cap_` + random UUID4 (C3 L52–54), as the field's default (C2 L100). That is a default, not an invariant: a caller may supply any value (C2 L100), the binding checks only length (C1 L256–263), and B4's own fixture uses `cap_one`. | Default-generated UUID4 values: no; they are random correlation handles (S1 L314). Caller-supplied values need field-level assessment, unless a provenance rule is explicitly enforced. Randomness is not a guarantee of the current contract. |
+  | `binding_id` | `acq:transparency:sha256:` + SHA-256 over the canonical body, which includes `source_id` and `source_locator_sha256` (C1 L294–311) | **Yes, when kept beside a redacted body.** Anyone holding the remaining body fields and the original `binding_id` can rebuild the body for each candidate URL and compare digests. Reproduced with stdlib hashing: with both locator-derived fields withheld, B4's provenance locator reproduces B4's `binding_id` (`acq:transparency:sha256:5f1af280…2425b`); the same URL with a different query value does not. |
   | `capture_receipt_sha256` | SHA-256 of the canonical `CaptureReceipt` (C1 L306), whose preimage includes the locator and capture metadata | Depends on preimage entropy. Assess per field. |
   | `exact_bytes_sha256` | Digest of the captured bytes | Confirms content to anyone who already holds it. Assess per source. |
   | `source_locator` | Literal in `literal` mode; `null` in `digest_only`, the default (C1 L289; C4 L19–22) | Literal disclosure. |
+
+  Today's schema requires both locator-derived fields: `source_id` and `source_locator_sha256` have no default (C1 L224–225), and extra fields are forbidden (C1 L217). The `binding_id` finding therefore concerns the proposed remedy. It does not show that the current implementation accepts a binding with those fields deleted.
 
 - **SRS construction.** The payload is the SHA-256 of the exact receipt bytes, plus `iss` and key reference (S1 L304–306).
 - **Ratified precedent in another domain.** BTE rules that a bare, unsalted hash of a low-entropy or identifying value is not sufficient redaction (BTE L169). It permits only a keyed, domain-separated HMAC or an opaque reference (BTE L171). It adds that a public-safe derivative needs a separate egress or publication determination, and that the keyed path governs retention, not disclosure (BTE L178). BTE governs browser-trace evidence: **precedent, not delegated egress authority.**
@@ -354,13 +356,18 @@ No production transport or egress path is composed in either producer repository
 - **(i)** Any digest of protected material is a derived fingerprint. Public registration is then impossible without blinding, which changes the statement's subject construction.
 - **(ii)** A digest, truncated digest, or identifier deterministically derived from one is a derived fingerprint when its preimage is low-entropy, guessable or enumerable by a plausible adversary.
 - **(iii)** Field-level disclosure review per destination, recorded with evidence in the checklist answer.
-- **(iv)** A remedy, not a rule: replace an oracle field with a keyed or salted commitment (BTE L171 model). This changes Acquisition's binding and BAGR's statement, each by its own owner's separate act.
+- **(iv)** A remedy, not a rule.
+  - The named precedent is BTE L171: a keyed, domain-separated HMAC over the value, or an opaque external reference resolvable only through a separately governed system. BTE L178 limits that exception to retention; it does not by itself establish safe publication.
+  - Salted hashing is not established as equivalent: a disclosed salt still lets an observer hash candidate URLs.
+  - Secret random blinding, or any other hiding commitment, is a separate proposal. It would have to specify its secrecy, entropy, custody and verification consequences.
+  - Any of these changes Acquisition's binding and BAGR's statement, each by its own owner's separate act.
 
 **Recommendation.** Adopt (ii) as the rule, (iii) as the procedure, and record (iv) as the available remedy. Concretely:
 - every identifier deterministically derived from a non-public locator — today **both** `source_locator_sha256` **and** `source_id` — is a derived fingerprint;
-- a `digest_only` capture binding over a non-public locator cannot satisfy E4 L142 until **both** are removed or blinded;
-- `capture_receipt_sha256` and `exact_bytes_sha256` go to the (iii) review per destination;
-- `capture_id` and `binding_id` are not fingerprints under (ii), but remain correlation handles reviewed under (iii).
+- `binding_id` goes through the same preimage and disclosure analysis. Any separately versioned redacted or blinded construction must define its identifier over that construction, and must assess whether keeping an original-body identifier reintroduces the guessing oracle. The reproduction above shows that it does;
+- a `digest_only` capture binding over a non-public locator cannot satisfy E4 L142 until the locator-derived fields are removed or replaced under (iv), with the identifier redefined over the new construction;
+- the assessment covers the COMPLETE disclosed representation, including retained identifiers and digests: `capture_receipt_sha256` and `exact_bytes_sha256` go to the (iii) review per destination;
+- default-generated `capture_id` values are random correlation handles, reviewed under (iii). A caller-supplied `capture_id` needs field-level assessment.
 
 This is a doctrine decision, not an engineering detail.
 
@@ -378,7 +385,7 @@ This is a doctrine decision, not an engineering detail.
 ## 10. Corrections to the 2026-10-23 D4 draft
 
 1. **Citations re-verified; none moved.** E4 L108–125, L115, L119, L139–144, L142, L154, L175, L209 and L213, and ACT0 L41–49, are unchanged. E4's blob is identical at `85e2f419`, `40740cb1` and `1ff26868`. The citations are now pinned to `1ff26868`.
-2. **The locator has a second fingerprint.** The draft named `source_locator_sha256` as the field that fails, and its remedy removes or blinds that one field. `source_id` is an independent unsalted-hash oracle for the same locator (C2 L139–147; C3 L78–105; recomputed against B4). Under the draft's own recommended rule its remedy was insufficient, and §9 corrects it.
+2. **The locator has a second fingerprint.** The draft named `source_locator_sha256` as the field that fails, and its remedy removes or blinds that one field. `source_id` is an independent unsalted-hash oracle for the same locator (C2 L139–147; C3 L78–105; recomputed against B4). Under the draft's own recommended rule its remedy was insufficient, and §9 corrects it. A remedy must also account for `binding_id`, which commits to both locator-derived fields (C1 L294–311): keeping the original `binding_id` beside a redacted body reintroduces the oracle.
 3. **The payload is the whole binding.** The draft described the capture-witness statement as carrying three digests. The BAGR statement attaches the entire binding JSON (B2 L545–553; C1 L314–315), so every binding field is disclosed verbatim.
 4. **Metadata outside the statement.** The draft did not address request headers, network address and timing (B2 L497, L570; S1 L309–313). §8 does.
 5. **"Unknown → public" is new doctrine.** No line states it, and RE1 (G4 L60–68) is an analogue only. §8 option 3 says so.
@@ -387,7 +394,7 @@ This is a doctrine decision, not an engineering detail.
 
 1. **D3-0** (from the 2026-10-23 D3 draft) rules on the existing two-shape trust-material divergence. T2 K2/K3 and T3 seat 3.1 build on it.
 2. **D1** (R0 L88) settles the relation mode for the SRS construction before an arcs-srs binding revision. T5.1 depends on the binding's scope.
-3. **D4b before D4.** No `public_publication` checklist can be answered while L142 is undefined.
+3. **D4b before an affirmative L142 answer.** For this hash-bearing SCITT submission, resolve the fingerprint classification before recording an affirmative answer to `no_derived_fingerprint_present`. Unrelated publication work is not affected.
 4. **T1–T5, then plan item 9.** Conformance vectors follow ratified policy only (P0 L22).
 5. **AV-S3 stays held** until every row here is decided and the plan's own preconditions are met: one frozen endpoint, keys, policy, caps, expiry and evidence destination, plus explicit owner authority before network interaction (P0 L26). R0's order (R0 L241–247) also applies.
 
@@ -398,7 +405,7 @@ This is a doctrine decision, not an engineering detail.
 - version-scoped trust evaluation;
 - a declared receipt profile with named gaps;
 - an issuer identity with `kid`;
-- a blinded or field-reduced capture binding;
+- a separately versioned redacted or blinded capture binding, with its identifier defined over that construction;
 - a classification rule for egress proposals.
 
 **It would still not authorize:**
@@ -414,8 +421,9 @@ Each of those remains its own deliberate act.
 ## 13. Method and limits
 
 - **How sources were read.** Every source was read from Git objects at the pinned commit. Line numbers were printed from those exact bytes. Registry status and digests were recomputed from `registry/doctrine_registry.json` at `1ff26868`. PR states for #449, ARCS Verify #5–#8, dagr-mcp #179 and counterpedia-acquisition #457 were read from GitHub.
-- **Two local recomputations.**
+- **Three local recomputations.**
   - B4's `source_id` was recomputed from B4's provenance locator by the C3 rule, using Python `hashlib`.
+  - B4's `binding_id` was rebuilt from B4's other body fields plus the provenance locator, using C1's canonical JSON form (sorted keys, compact separators, ASCII). It matched; a negative control with a different query value did not.
   - B3's protected header was decoded by hand from `expected.statement_hex`.
 - **Not done.** No test suite, build, cryptographic verification, network-denied replay or service contact was performed for this document. AV-S1 owns local cryptographic compatibility.
 
