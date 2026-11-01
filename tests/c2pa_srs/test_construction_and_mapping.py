@@ -345,3 +345,15 @@ def test_observed_settings_mirror_the_observations_own_hermetic_statement():
     assert finding["settings"]["ocsp_fetch"] is replay["ocsp_fetch_applied"] is False
     assert finding["settings"]["allowed_network_hosts"] == replay["allowed_network_hosts"] == []
     assert finding["settings"]["hermeticity"]["trust_list_uri_dereferenced"] is obs["signer_trust"]["trust_pointer_dereferenced"] is False
+
+
+def test_producer_asserted_exposes_both_comparability_fields_on_the_native_validation_path():
+    """Owner code finding at 4d34abad: the producer-asserted block exposed neither field."""
+    obs = m.synthetic_observation(m.REPORT_ANCHORED)
+    obs["later_comparison_posture"] = "not_comparable"
+    obs["unavailable_inputs"].append({"input": "tsa_trust_material", "reason": "any wording"})
+    asserted = adapter._producer_asserted(obs)
+    assert asserted["later_comparison_posture"] == "not_comparable"
+    assert [i["input"] for i in asserted["unavailable_inputs"]] == ["certificate_revocation_evidence", "tsa_trust_material"]
+    assert {f["code"] for f in asserted["native_findings_as_observations"]} >= {"timeStamp.trusted", "claimSignature.validated"}
+    assert all(set(f) <= {"scope", "severity", "code", "uri"} for f in asserted["native_findings_as_observations"])

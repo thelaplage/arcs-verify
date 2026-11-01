@@ -271,28 +271,32 @@ def test_mutation_forged_foreign_report_pairing_passes_every_bytes_only_check():
 # -- the verifier's own recomputation over the frozen inputs (needs the pinned validator) --
 
 
+def produced_posture(name="positive"):
+    return json.loads(observation_bytes(name)).get("later_comparison_posture")
+
+
 @live_only
-def test_positive_replay_per_axis_and_deterministic_on_byte_identical_inputs():
+def test_positive_replay_independent_findings_per_axis_and_deterministic_on_byte_identical_inputs():
     first = run("positive", executable=LIVE)
     second = run("positive", executable=LIVE)
-    assert first.stopped_at is None, [(n, [r.code for r in s.refusals]) for n, s in first.stages.items() if s.refusals]
+    assert first.stages["native_recomputation"].status == "completed"
+    assert first.stages["comparison"].status in ("completed", "restricted")
     assert normalized(first) == normalized(second)
     axes = per_axis(first)
+    # the independent findings, whatever the producer declared about comparability
     expected = {
-        "manifest_structure": ("match", "satisfied", "satisfied"),
-        "asset_binding": ("match", "satisfied", "satisfied"),
-        "claim_signature": ("match", "satisfied", "satisfied"),
-        "signer_trust": ("match", "failed", "failed"),
-        "signer_validity": ("match", "not_evaluated", "not_evaluated"),
-        "timestamp": ("not_comparable", "satisfied", "satisfied"),  # TSA trust material not captured: not compared as comparable
-        "revocation": ("not_comparable", "not_evaluated", "not_evaluated"),
-        "ingredient": ("match", "indeterminate", "indeterminate"),
+        "manifest_structure": ("satisfied", "satisfied"),
+        "asset_binding": ("satisfied", "satisfied"),
+        "claim_signature": ("satisfied", "satisfied"),
+        "signer_trust": ("failed", "failed"),
+        "signer_validity": ("not_evaluated", "not_evaluated"),
+        "timestamp": ("satisfied", "satisfied"),
+        "revocation": ("not_evaluated", "not_evaluated"),
+        "ingredient": ("indeterminate", "indeterminate"),
     }
-    assert {k: (v["state"], v["observed_status"], v["recomputed_status"]) for k, v in axes.items()} == expected
-    assert axes["revocation"]["comparison_reason"] == "revocation_basis_delta"
-    assert axes["timestamp"]["effective_state_source"] == "adapter"
-    assert axes["timestamp"]["contract_comparison"]["state"] == "match"  # kept visible, not the effective reading
-    assert axes["signer_validity"]["agreement_basis"] == "both_sides_not_evaluated"
+    assert {k: (v["observed_status"], v["recomputed_status"]) for k, v in axes.items()} == expected
+    recomputation = {a["axis"]: a["recomputed_status"] for a in first.report["axes"]["independent_recomputation"]["per_axis"]}
+    assert recomputation == {k: v[1] for k, v in expected.items()}
     assert not [a for a in axes.values() if a["integrity_posture"] == "possible_substantive_divergence"]
     ax = first.report["axes"]
     assert (ax["native_validation_state"]["observed_verbatim"], ax["native_validation_state"]["recomputed_verbatim"]) == ("Valid", "Valid")
@@ -310,6 +314,34 @@ def test_positive_replay_per_axis_and_deterministic_on_byte_identical_inputs():
         "settings_match": True,
     }
     assert ax["operational_issuance_readiness"]["status"] == "not_established"
+
+
+@live_only
+def test_positive_replay_effective_comparison_follows_the_producers_declared_posture():
+    result = run("positive", executable=LIVE)
+    axes = per_axis(result)
+    restriction = result.report["axes"]["comparability_restriction"]
+    if produced_posture() == "not_comparable":
+        assert restriction["scope"] == "receipt_wide"
+        assert result.stages["comparison"].status == "restricted" and result.stopped_at == "comparison"
+        assert {v["state"] for v in axes.values()} == {"restricted_receipt_wide"}
+        assert not [v for v in axes.values() if v["state"] in ("match", "mismatch")]  # no byte-deterministic agreement reads as a match
+    else:
+        assert restriction["scope"] == "none"
+        assert result.stages["comparison"].status == "completed"
+        assert {k: v["state"] for k, v in axes.items() if k != "timestamp"} == {
+            "manifest_structure": "match",
+            "asset_binding": "match",
+            "claim_signature": "match",
+            "signer_trust": "match",
+            "signer_validity": "match",
+            "revocation": "not_comparable",
+            "ingredient": "match",
+        }
+        assert axes["timestamp"]["state"] == "not_comparable" and axes["timestamp"]["comparison_reason"] == "tsa_trust_material_not_captured"
+        assert axes["timestamp"]["contract_comparison"]["state"] == "match"
+    assert [r["reason"] for r in restriction["reasons"]] == ["tsa_trust_material_uncaptured"]  # its own field, not inferred from the posture
+    assert restriction["producer_declared_later_comparison_posture"] == produced_posture()
 
 
 @live_only
@@ -393,29 +425,29 @@ def test_missing_tsa_trust_material_is_not_compared_as_comparable_on_the_real_re
     result = run("positive", executable=LIVE)
     entry = per_axis(result)["timestamp"]
     assert (entry["observed_status"], entry["recomputed_status"]) == ("satisfied", "satisfied")
-    assert entry["state"] == "not_comparable"
-    assert entry["comparison_reason"] in ("tsa_trust_material_not_captured", "producer_declared_not_comparable")
+    assert entry["state"] in ("not_comparable", "restricted_receipt_wide")
+    assert entry["comparison_reason"] in ("tsa_trust_material_not_captured", "receipt_comparability_restricted")
     assert entry["contract_comparison"]["state"] == "match"
     assert entry["integrity_posture"] == "no_integrity_inference"
-    if json.loads(observation_bytes("positive")).get("later_comparison_posture") == "not_comparable":
-        assert entry["comparison_reason"] == "producer_declared_not_comparable"
+    if produced_posture() == "not_comparable":
+        assert entry["state"] == "restricted_receipt_wide"
     assert result.report["axes"]["timestamp"]["independent_tsa_appraisal"] == "not_evaluated"
 
 
 @live_only
-def test_mutation_producer_declares_not_comparable_so_trust_and_clock_axes_are_not_compared():  # TEST MUTATION
+def test_mutation_producer_declares_not_comparable_so_the_whole_receipt_is_restricted():  # TEST MUTATION
     """Same real bytes, with later_comparison_posture rewritten to not_comparable inside the test
-    (the vendored observation is not edited). The trust- and clock-dependent axes are then not
-    compared; the byte-deterministic axes still are."""
+    (the vendored observation is not edited). Every axis is still recomputed and reported, none is an
+    effective match, and the byte-deterministic agreements stay visible only as the contract's entry."""
     declared = json.loads(observation_bytes("positive"))
     declared["later_comparison_posture"] = "not_comparable"
     result = run("positive", obs=declared, executable=LIVE)
     axes = per_axis(result)
-    for name in ("signer_trust", "signer_validity", "timestamp"):
-        assert axes[name]["state"] == "not_comparable", name
-        assert axes[name]["comparison_reason"] == "producer_declared_not_comparable", name
-    for name in ("manifest_structure", "asset_binding", "claim_signature", "ingredient"):
-        assert axes[name]["state"] == "match", name
+    assert {v["state"] for v in axes.values()} == {"restricted_receipt_wide"}
+    assert axes["asset_binding"]["contract_comparison"]["state"] == "match"
+    assert axes["asset_binding"]["observed_status"] == axes["asset_binding"]["recomputed_status"] == "satisfied"
+    assert result.stages["comparison"].status == "restricted"
+    assert result.report["axes"]["comparability_restriction"]["scope"] == "receipt_wide"
     assert result.report["axes"]["independent_comparison"]["producer_declared_later_comparison_posture"] == "not_comparable"
 
 
@@ -430,3 +462,65 @@ def test_mutation_promoting_the_disclosed_timestamp_is_visible_not_silent():  # 
     assert view["reading"] == "producer_observed_tsa_trust_basis_not_disclosed"
     assert view["independent_tsa_appraisal"] == "not_evaluated"
     assert "independent" not in view["reading"]
+
+
+# -- NAMED NEGATIVE on the really produced bytes (bytes-only tier; needs no validator) ----------
+
+
+def reliance_for(obs):
+    return run("positive", obs=obs).report["axes"]["timestamp"]["reliance"]
+
+
+def restriction_for(obs):
+    return run("positive", obs=obs).report["axes"]["comparability_restriction"]
+
+
+def test_real_bytes_carry_both_fields_and_each_reason_comes_only_from_its_own_field():
+    produced = json.loads(observation_bytes("positive"))
+    assert any(i["input"] == "tsa_trust_material" for i in produced["unavailable_inputs"])
+    assert produced["signer_trust"]["trust_basis"] != "unknown_not_captured"
+    restriction = restriction_for(produced)
+    assert [r["reason"] for r in restriction["reasons"]] == ["tsa_trust_material_uncaptured"]  # not the signer reason
+    assert restriction["scope"] == ("receipt_wide" if produced["later_comparison_posture"] == "not_comparable" else "none")
+    assert restriction["producer_declared_later_comparison_posture"] == produced["later_comparison_posture"]
+
+
+def test_removing_unavailable_inputs_or_ignoring_not_comparable_cannot_yield_reliance_on_a_trusted_timestamp_on_the_real_bytes():  # TEST MUTATIONS
+    base = json.loads(observation_bytes("positive"))
+
+    def variant(posture, disclosure):
+        out = json.loads(json.dumps(base))
+        out["later_comparison_posture"] = posture
+        out["unavailable_inputs"] = [i for i in out["unavailable_inputs"] if i["input"] != "tsa_trust_material"]
+        if disclosure:
+            out["unavailable_inputs"].append({"input": "tsa_trust_material", "reason": "restored for this mutation"})
+        return out
+
+    expected = {
+        ("not_comparable", False): ["tsa_trust_basis_not_disclosed", "receipt_not_comparable"],  # the disclosure removed
+        ("comparable", True): ["tsa_trust_material_uncaptured"],  # the posture ignored
+        ("comparable", False): ["tsa_trust_basis_not_disclosed"],  # both
+        ("not_comparable", True): ["tsa_trust_material_uncaptured", "receipt_not_comparable"],
+    }
+    for (posture, disclosure), restricted_by in expected.items():
+        got = reliance_for(variant(posture, disclosure))
+        assert got["status"] == "not_established", (posture, disclosure)
+        assert got["restricted_by"] == restricted_by, (posture, disclosure)
+        assert got["independent_tsa_appraisal"] == "not_evaluated"
+    # and the restriction itself is visible from each field alone
+    assert restriction_for(variant("not_comparable", False))["scope"] == "receipt_wide"
+    assert restriction_for(variant("comparable", True))["axis_level"] == {"timestamp": ["tsa_trust_material_uncaptured"]}
+
+
+@live_only
+def test_real_replay_removing_unavailable_inputs_or_ignoring_not_comparable_never_compares_the_timestamp_as_trusted():  # TEST MUTATIONS
+    base = json.loads(observation_bytes("positive"))
+    no_disclosure = json.loads(json.dumps(base))
+    no_disclosure["unavailable_inputs"] = [i for i in no_disclosure["unavailable_inputs"] if i["input"] != "tsa_trust_material"]
+    no_disclosure["later_comparison_posture"] = "not_comparable"
+    posture_ignored = json.loads(json.dumps(base))
+    posture_ignored["later_comparison_posture"] = "comparable"
+    a = per_axis(run("positive", obs=no_disclosure, executable=LIVE))["timestamp"]
+    b = per_axis(run("positive", obs=posture_ignored, executable=LIVE))["timestamp"]
+    assert a["state"] == "restricted_receipt_wide" and a["contract_comparison"]["state"] == "match"
+    assert b["state"] == "not_comparable" and b["comparison_reason"] == "tsa_trust_material_not_captured"

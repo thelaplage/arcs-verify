@@ -54,7 +54,6 @@ ROWS = [
     ("profile violation", profile_violation_case, "profile_conformance", "EXIT_CODE_AS_VERDICT"),
     ("unknown / extra field", unknown_field_case, "profile_conformance", "ADAPTER_UNKNOWN_FIELD"),
     ("producer-asserted trust with no trust basis", producer_trust_without_basis_case, "profile_conformance", "TRUST_OBSERVATION_WITHOUT_BASIS"),
-    ("trust basis with no canonical mode", unmapped_trust_basis_case, "observed_finding_construction", "MAP_TRUST_BASIS_UNMAPPED"),
 ]
 
 
@@ -151,3 +150,22 @@ def test_no_axis_whose_statuses_differ_is_ever_reported_as_a_match(tmp_path):
     assert entries
     assert not [e for e in entries if e["state"] == "match" and e["observed_status"] != e["recomputed_status"]]
     assert [e["axis"] for e in entries if e["state"] == "mismatch"]  # and at least one real divergence is named
+
+
+def test_unmappable_observed_side_still_gets_an_independent_recomputation(tmp_path):
+    """A trust basis with no canonical mode refuses the OBSERVED side only. The verifier's own run
+    over the frozen inputs does not depend on the producer's claims, so it still happens and is
+    reported on its own; there is simply nothing canonical to compare it with."""
+    obs, evidence = unmapped_trust_basis_case()
+    fake = m.install_fake_validator(tmp_path, {m.SYNTHETIC_ASSET: (m.REPORT_VALID_UNTRUSTED, 0)})
+    result = adapter.consume_observation(m.encode(obs), evidence, executable=fake.path)
+    assert result.stages["observed_finding_construction"].status == "refused"
+    assert "MAP_TRUST_BASIS_UNMAPPED" in {r.code for r in result.stages["observed_finding_construction"].refusals}
+    assert result.stages["native_recomputation"].status == "completed"
+    assert result.stages["comparison"].status == "not_evaluated"
+    assert [r.code for r in result.stages["comparison"].refusals] == ["COMPARISON_OBSERVED_SIDE_NOT_CONSTRUCTED"]
+    assert len(fake.calls()) == 1
+    recomputation = result.report["axes"]["independent_recomputation"]
+    assert recomputation["evaluation_status"] == "evaluated"
+    assert {a["axis"]: a["recomputed_status"] for a in recomputation["per_axis"]}["claim_signature"] == "satisfied"
+    assert result.report["axes"]["independent_comparison"]["per_axis"] == []

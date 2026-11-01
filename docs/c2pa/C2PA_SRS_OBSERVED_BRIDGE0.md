@@ -108,9 +108,37 @@ other readings are `no_trusted_timestamp_claimed`,
 validator runs under timestamp-authority trust anchors that are not digest-bound input; the
 report says so and never reads it as independent trust.
 
-### Declared or disclosed non-comparability
+### Comparability restriction (owner rule: conservative and receipt-wide)
 
-**What the pinned profile says** (`thelaplage/arcs-srs@3219ff83eb47f46582eefbd53dc46a9d78ef5d4b`):
+The adapter consumes both `later_comparison_posture` and `unavailable_inputs` on the
+native-validation-performed path and keeps their reasons **separate**. Each reason is read only
+from its own field and is never inferred from `not_comparable` alone (nor `not_comparable` from a
+reason):
+
+| Reason | Read from |
+|---|---|
+| `signer_trust_inputs_uncaptured` | `signer_trust.trust_basis == unknown_not_captured` |
+| `tsa_trust_material_uncaptured` | an `unavailable_inputs` entry whose `input` is `tsa_trust_material` (the reason text is the producer's and is never interpreted) |
+| `declared_without_a_stated_reason` | `not_comparable` with neither of the above |
+
+**Scope.** If `later_comparison_posture == not_comparable`, the restriction is **receipt-wide**
+(`axes.comparability_restriction.scope`). Every supported axis is still recomputed by the
+verifier's own validator run and reported independently (`axes.independent_recomputation`,
+and each axis's `observed_status` and `recomputed_status`). But no axis is reported as an
+effective match or mismatch: its effective state is `restricted_receipt_wide`, so a
+byte-deterministic agreement can never read as an overall match, and there is no overall result.
+The unchanged contract entry stays in `native_comparison_report` and is echoed per axis as
+`contract_comparison` (a divergence therefore stays visible; the restriction hides agreement,
+never disagreement). The comparison stage's status is `restricted`, the pipeline's `stopped_at`
+is `comparison`, and the CLI exits 1.
+
+If the producer disclosed `tsa_trust_material` as unavailable but declared the receipt
+`comparable`, only the `timestamp` axis is restricted (`not_comparable`,
+`tsa_trust_material_not_captured`); the disclosure alone does not make the receipt
+`not_comparable`.
+
+**Grounding.** The pinned profile (`thelaplage/arcs-srs@3219ff83eb47f46582eefbd53dc46a9d78ef5d4b`)
+defines the posture as observation-wide:
 
 * `docs/profiles/SRS_C2PA_VALIDATION_OBSERVATION_PROFILE_v0_1.md:278-281` (section 11):
   "`later_comparison_posture` records whether a later observation can be compared to this one at
@@ -119,36 +147,26 @@ report says so and never reads it as independent trust.
   this one."
 * `...PROFILE_v0_1.md:285-286`: "There is no per-axis comparison output in this profile;
   comparison and recomputation belong to the independent verifier, not to the receipt."
-* `schemas/c2pa-profiles/v0.1/srs.c2pa.validation_observation.v0.1.schema.json:375-378` (the field:
-  "Whether a later observation can be compared to this one at all. Comparison itself belongs to the
-  independent verifier.") and `:516-528` (the one forcing rule, for `unknown_not_captured`);
-  `conformance/profiles/.../conformance-rules.json:68-71`; `tools/validate_srs_profile.py:4751-4764`.
-* `...PROFILE_v0_1.md:252-254` (section 8): replay of time-dependent trust and certificate findings
-  is not claimed to be deterministic across wall-clock time.
+* `schemas/c2pa-profiles/v0.1/srs.c2pa.validation_observation.v0.1.schema.json:375-378`
+  (the field) and `:516-528` (the one forcing rule); `conformance/profiles/.../conformance-rules.json:68-71`;
+  `tools/validate_srs_profile.py:4751-4764`.
 
-**Which axes it governs.** The profile defines the posture as **observation-wide** ("at all"). It
-names no axis, scopes it to no single axis (in particular not to the timestamp alone), and
-gives the verifier the decision on comparison (lines 285-286). The only value it forces is
-`not_comparable` for an uncaptured trust basis, justified by missing trust inputs. So which axes
-this verifier declines to compare is an **adapter decision**, not a profile rule. It applies the
-posture to the axes whose results depend on trust inputs or on the validation clock (the
-contract's `policy_dependent` and `time_dependent` classes), following the stated rationale
-(lines 280-281) and section 8, and keeps comparing byte-deterministic axes, which depend on bytes
-only. That is narrower than the profile's literal "at all". The override only ever turns a
-contract `match` or `mismatch` into `not_comparable`; it never produces a `match`, and nothing
-it reports reads as independent trust.
+The profile names no axis and gives the verifier the comparison decision, so the receipt-wide
+scope follows its literal "at all". (An earlier revision of this adapter restricted only the
+trust- and clock-dependent axes; the owner's receipt-wide rule replaced that.)
 
-If the observation declares `later_comparison_posture: not_comparable`, the axes that depend on
-trust inputs or the validation clock (the contract's `policy_dependent` and `time_dependent`
-classes: `signer_trust`, `signer_validity`, `timestamp`) are **not compared as if comparable**:
-their effective state is `not_comparable` with reason `producer_declared_not_comparable`.
-Byte-deterministic axes depend on bytes only and are still compared. If the producer disclosed
-`tsa_trust_material` as unavailable, the `timestamp` axis is likewise not compared as comparable
-(reason `tsa_trust_material_not_captured`). Only a `match` or `mismatch` is overridden. The
-unchanged contract entry stays in `native_comparison_report` and is echoed as
-`contract_comparison`, with `effective_state_source: adapter`, so nothing is hidden. The adapter
-never appraises timestamp-authority trust (`axes.timestamp.independent_tsa_appraisal` is always
-`not_evaluated`).
+**Independent recomputation is not stopped.** A mapping refusal of the observed side (for
+example `unknown_not_captured`, which the canonical finding cannot express) no longer prevents
+the verifier's own recomputation, which does not depend on the producer's claims. It is reported
+on its own, and the comparison is `not_evaluated` with `COMPARISON_OBSERVED_SIDE_NOT_CONSTRUCTED`.
+
+**Trusted timestamps.** The producer's native findings are preserved as observations
+(`producer_asserted.native_findings_as_observations`). A timestamp-trust finding is never
+promoted to independently established TSA trust when the retained basis is missing:
+`axes.timestamp.reliance.status` is `not_established` whenever a trusted timestamp is claimed,
+with every restriction in force named in `restricted_by` (`tsa_trust_material_uncaptured`,
+`tsa_trust_material_named_but_unchecked`, `tsa_trust_basis_not_disclosed`,
+`receipt_not_comparable`), and `independent_tsa_appraisal` is always `not_evaluated`.
 
 ## Typed outcomes
 
@@ -156,7 +174,7 @@ Every refusal carries a stable code and the field it concerns. Families: `OBS_*`
 `CORR_*` (correspondence), the pinned checker's own rule names plus `ENVELOPE_SCHEMA`,
 `FIELD_SCHEMA` and `ADAPTER_*` (profile), `MAP_*` (mapping), `RECOMPUTE_*` and `COMPARISON_*`
 (later stages), and `*_INTERNAL_ERROR` (an unexpected error is a refusal, never a pass).
-A stage status is one of `completed`, `refused`, `not_evaluated`, `not_run`; `completed` means
+A stage status is one of `completed`, `refused`, `not_evaluated`, `restricted` (comparison only), `not_run`; `completed` means
 only that the stage ran with no refusal.
 
 ## Authentication
@@ -198,8 +216,9 @@ python -m arcs_verify.c2pa_srs_observed --observation OBS.json --asset ASSET \
     [--asset-name NAME.ext] --c2patool /path/to/pinned/c2patool
 ```
 
-Exit 0 means every stage completed (a comparison was produced; that says nothing about
-whether the sides match). Exit 1: a stage refused or was not evaluated. Exit 2: usage or
+Exit 0 means every stage completed (a comparison was produced and the receipt was not restricted;
+that says nothing about whether the sides match). Exit 1: a stage refused, was not evaluated, or
+the comparison was restricted receipt-wide. Exit 2: usage or
 source-integrity error. Without `--c2patool` or `ARCS_VERIFY_C2PATOOL` the recomputation is
 `not_evaluated`; the verifier never falls back to an executable on `PATH`.
 

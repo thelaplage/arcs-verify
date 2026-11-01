@@ -170,10 +170,12 @@ class Refusal:
 @dataclass(frozen=True)
 class StageOutcome:
     """One stage's own result. ``completed`` means the stage ran to the end with no
-    refusal; it is not a statement that the observation is valid, true or trusted."""
+    refusal; it is not a statement that the observation is valid, true or trusted.
+    ``restricted`` (comparison only) means a receipt-wide comparability restriction applies:
+    the sides were recomputed and reported, but the receipt is not compared as comparable."""
 
     stage: str
-    status: str  # completed | refused | not_evaluated | not_run
+    status: str  # completed | refused | not_evaluated | restricted | not_run
     refusals: tuple[Refusal, ...] = ()
     detail: dict[str, Any] = field(default_factory=dict)
 
@@ -945,6 +947,11 @@ def _producer_asserted(obs: dict[str, Any]) -> dict[str, Any]:
         "validation_time": obs.get("validation_time"),
         "revocation": obs.get("revocation"),
         "unavailable_inputs": obs.get("unavailable_inputs"),
+        "native_findings_as_observations": [
+            {k: f.get(k) for k in ("scope", "severity", "code", "uri") if k in f}
+            for f in obs.get("native_findings") or []
+            if isinstance(f, dict)
+        ],
         "extensions": {
             "treatment": "uninterpreted_producer_content_feeds_no_axis",
             "content": obs.get("extensions"),
@@ -1218,12 +1225,19 @@ def source_digest_refusals(observed: dict[str, Any], recomputed: dict[str, Any])
 
 
 def _stage_compare(
-    observed: dict[str, Any],
+    observed: dict[str, Any] | None,
     recompute_report: dict[str, Any],
     bundle: c2pa_native.ContractBundle,
 ) -> tuple[dict[str, Any] | None, StageOutcome]:
     stage = "comparison"
     recomputed = recompute_report["recomputed"]
+    if observed is None:  # GUARD:CMP-OBSERVED-REQUIRED
+        return None, StageOutcome(
+            stage,
+            "not_evaluated",
+            (Refusal("COMPARISON_OBSERVED_SIDE_NOT_CONSTRUCTED", None, "no canonical observed side could be built from the observation; the independent recomputation is reported on its own"),),
+            {"evaluation_status": {"observed": None, "recomputed": recomputed["evaluation_status"]}},
+        )
     sides = {"observed": observed["evaluation_status"], "recomputed": recomputed["evaluation_status"]}
     if any(status != "evaluated" for status in sides.values()):  # GUARD:CMP-BOTH-EVALUATED
         return None, StageOutcome(
@@ -1281,37 +1295,14 @@ _BASE_LIMITATIONS = (
 )
 
 
-_POLICY_OR_TIME_CLASSES = frozenset({"policy_dependent", "time_dependent"})
-
-
-def _comparability_override(
-    obs: dict[str, Any] | None, producer: dict[str, Any] | None, item: dict[str, Any]
-) -> str | None:
-    """A reason this axis must not be compared as if it were comparable, or None.
-
-    * the producer declared ``later_comparison_posture == not_comparable``: the axes that depend on
-      trust inputs or on the validation clock (policy_dependent / time_dependent) are not compared;
-      byte-deterministic axes depend on bytes only and are still compared;
-    * the producer disclosed that timestamp-authority trust material was not captured: the
-      timestamp axis is not compared as comparable.
-    Only a ``match`` or ``mismatch`` is overridden; a contract entry that already says not
-    comparable or not evaluated is left alone."""
-    if obs is None or producer is None or item["state"] not in ("match", "mismatch"):
-        return None
-    if obs.get("later_comparison_posture") == "not_comparable" and item["reproducibility_class"] in _POLICY_OR_TIME_CLASSES:  # GUARD:CMP-DECLARED-NOT-COMPARABLE
-        return "producer_declared_not_comparable"
-    if item["axis"] == "timestamp" and _tsa_disclosure(obs, producer):  # GUARD:CMP-TSA-NOT-CAPTURED
-        return "tsa_trust_material_not_captured"
-    return None
-
-
 _TSA_INPUT = "tsa_trust_material"
+_SIGNER_BASIS_UNCAPTURED = "unknown_not_captured"
 
 
-def _tsa_disclosure(obs: dict[str, Any] | None, producer: dict[str, Any] | None) -> list[dict[str, Any]]:
+def _tsa_disclosure(obs: dict[str, Any] | None) -> list[dict[str, Any]]:
     """The producer's in-band disclosure that timestamp-authority trust material was not captured.
     Kept verbatim (the reason text is the producer's and is never interpreted)."""
-    if obs is None or producer is None:
+    if obs is None:
         return []
     return [
         {"input": item["input"], "reason": item.get("reason"), "provenance": "producer_disclosed"}
@@ -1320,25 +1311,92 @@ def _tsa_disclosure(obs: dict[str, Any] | None, producer: dict[str, Any] | None)
     ]
 
 
-def _timestamp_reading(
-    obs: dict[str, Any] | None, producer: dict[str, Any] | None, observed: dict[str, Any] | None
-) -> str | None:
+def _timestamp_claimed(obs: dict[str, Any] | None) -> bool:
+    """Whether the producer reports a trusted timestamp: its scalar, or a successful native
+    ``timeStamp.trusted`` finding in the observation's own native findings."""
+    if obs is None:
+        return False
+    if _dict(obs, "trusted_timestamp", "observation") == "validated_and_trusted":
+        return True
+    return any(
+        isinstance(f, dict) and f.get("severity") == "success" and f.get("code") == "timeStamp.trusted"
+        for f in obs.get("native_findings") or []
+    )
+
+
+def _comparability_restriction(obs: dict[str, Any] | None) -> dict[str, Any] | None:
+    """The receipt-wide comparability restriction, with its reasons kept separate.
+
+    The scope comes from ``later_comparison_posture`` alone. Each reason comes only from its own
+    field: the signer-trust inputs are uncaptured when ``signer_trust.trust_basis`` is
+    ``unknown_not_captured``; the timestamp-authority evidence is uncaptured when
+    ``unavailable_inputs`` names ``tsa_trust_material``. Neither reason is inferred from
+    ``not_comparable`` alone, and ``not_comparable`` is not inferred from either reason. A
+    ``not_comparable`` posture with neither stated reason is reported as exactly that."""
+    if obs is None:
+        return None
+    reasons: list[dict[str, str]] = []
+    if _dict(obs, "signer_trust", "trust_basis") == _SIGNER_BASIS_UNCAPTURED:  # GUARD:RESTRICT-REASON-SIGNER
+        reasons.append({"reason": "signer_trust_inputs_uncaptured", "stated_by": "signer_trust.trust_basis"})
+    tsa = _tsa_disclosure(obs)
+    if tsa:  # GUARD:RESTRICT-REASON-TSA
+        reasons.append({"reason": "tsa_trust_material_uncaptured", "stated_by": "unavailable_inputs[tsa_trust_material]"})
+    posture = obs.get("later_comparison_posture")
+    scope = "none"
+    if posture == "not_comparable":  # GUARD:RESTRICT-POSTURE
+        scope = "receipt_wide"
+        if not reasons:  # GUARD:RESTRICT-UNSTATED
+            reasons.append({"reason": "declared_without_a_stated_reason", "stated_by": "later_comparison_posture"})
+    return {
+        "scope": scope,
+        "producer_declared_later_comparison_posture": posture,
+        "reasons": reasons,
+        "axis_level": {"timestamp": ["tsa_trust_material_uncaptured"]} if tsa else {},
+        "reading_rule": (
+            "scope comes from later_comparison_posture; each reason comes only from its own field and is never "
+            "inferred from not_comparable alone"
+        ),
+        "effect": (
+            "every axis is still recomputed and reported independently; none is reported as an effective match, "
+            "no overall result exists, and a byte-deterministic agreement cannot override missing timestamp-trust evidence"
+            if scope == "receipt_wide"
+            else None
+        ),
+    }
+
+
+def _timestamp_reading(obs: dict[str, Any] | None) -> str | None:
     """How a trusted-timestamp result may be read. Never 'independently trusted': neither the
     producer's nor this verifier's validator run is given digest-bound TSA trust material, so a
     native ``timeStamp.trusted`` is a native finding under unrecorded trust anchors."""
-    if obs is None or producer is None:
+    if obs is None:
         return None
-    claimed = _dict(obs, "trusted_timestamp", "observation") == "validated_and_trusted" or any(
-        axis["axis"] == "timestamp" and any(f["code"] == "timeStamp.trusted" and f["severity"] == "success" for f in axis["native_findings"])
-        for axis in (observed or {}).get("axes", [])
-    )
-    if not claimed:
+    if not _timestamp_claimed(obs):
         return "no_trusted_timestamp_claimed"
-    if _tsa_disclosure(obs, producer):
+    if _tsa_disclosure(obs):
         return "producer_observed_tsa_trust_material_unavailable"
     if _dict(obs, "trusted_timestamp", "tsa_trust_material_ref"):
         return "producer_observed_tsa_trust_material_digest_named_unchecked"
     return "producer_observed_tsa_trust_basis_not_disclosed"
+
+
+def _timestamp_reliance(obs: dict[str, Any] | None, restriction: dict[str, Any] | None) -> dict[str, Any] | None:
+    """Whether a trusted timestamp may be relied on. It never may be on the strength of this adapter:
+    TSA trust is not appraised, and every restriction in force is listed by name."""
+    if obs is None or restriction is None:
+        return None
+    if not _timestamp_claimed(obs):
+        return {"status": "no_native_trusted_timestamp_claimed", "restricted_by": [], "independent_tsa_appraisal": "not_evaluated"}
+    restricted_by: list[str] = []
+    if _tsa_disclosure(obs):
+        restricted_by.append("tsa_trust_material_uncaptured")
+    elif _dict(obs, "trusted_timestamp", "tsa_trust_material_ref"):
+        restricted_by.append("tsa_trust_material_named_but_unchecked")
+    else:
+        restricted_by.append("tsa_trust_basis_not_disclosed")
+    if restriction["scope"] == "receipt_wide":  # GUARD:RELIANCE-POSTURE
+        restricted_by.append("receipt_not_comparable")
+    return {"status": "not_established", "restricted_by": restricted_by, "independent_tsa_appraisal": "not_evaluated"}
 
 
 def _timestamp_qualification(reading: str | None) -> str | None:
@@ -1406,19 +1464,27 @@ def _assemble(
             return None
         view = {k: item[k] for k in ("state", "comparison_reason", "integrity_posture", "reproducibility_class", "observed_status", "recomputed_status", "note")}
         view["effective_state_source"] = "contract"
-        override = _comparability_override(obs, producer, item)
-        if override is not None:
-            # The producer said its observation is not comparable (or disclosed that the trust
-            # material behind this axis was not captured). The axis is then not compared as if it
-            # were comparable. The unchanged contract entry stays in native_comparison_report; it is
-            # echoed here so nothing is hidden.
+        if restriction is not None and restriction["scope"] == "receipt_wide":  # GUARD:CMP-RESTRICTED-RECEIPT-WIDE
+            # The receipt is not comparable. Every axis keeps its independently recomputed status and
+            # the producer's observed status, but none is reported as an effective match or mismatch,
+            # so a byte-deterministic agreement cannot read as an overall match. The unchanged contract
+            # entry is echoed so nothing is hidden.
+            view["contract_comparison"] = {k: item[k] for k in ("state", "comparison_reason", "integrity_posture")}
+            view.update(
+                state="restricted_receipt_wide",
+                comparison_reason="receipt_comparability_restricted",
+                integrity_posture="no_integrity_inference",
+                effective_state_source="adapter",
+                note="receipt-wide comparability restriction; see axes.comparability_restriction for the separate reasons",
+            )
+        elif axis == "timestamp" and restriction is not None and restriction["axis_level"] and item["state"] in ("match", "mismatch"):  # GUARD:CMP-TSA-AXIS-LEVEL
             view["contract_comparison"] = {k: item[k] for k in ("state", "comparison_reason", "integrity_posture")}
             view.update(
                 state="not_comparable",
-                comparison_reason=override,
+                comparison_reason="tsa_trust_material_not_captured",
                 integrity_posture="no_integrity_inference",
                 effective_state_source="adapter",
-                note="not compared as comparable: " + override.replace("_", " "),
+                note="timestamp-authority trust material was not captured; not compared as comparable",
             )
         elif item["state"] == "match":
             # The existing comparison reports `match` when both sides carry the same status,
@@ -1432,6 +1498,8 @@ def _assemble(
     corr_detail = stages["input_correspondence"].detail
     checks = {c["field"]: c for c in corr_detail.get("checks", [])}
     producer = _producer_asserted(obs) if (obs is not None and stages["profile_conformance"].status == "completed") else None
+    profiled = obs if producer is not None else None
+    restriction = _comparability_restriction(profiled)
 
     observed_state = _dict(obs, "native_report", "native_validation_state") if obs else None
     srs_signature_present = bool(obs is not None and "receipt_signature" in obs)
@@ -1490,9 +1558,10 @@ def _assemble(
                     "trusted_timestamp": producer["trusted_timestamp"] if producer else None,
                     "validation_time": producer["validation_time"] if producer else None,
                 },
-                "trust_material_disclosure": _tsa_disclosure(obs, producer),
-                "reading": _timestamp_reading(obs, producer, observed),
-                "qualification": _timestamp_qualification(_timestamp_reading(obs, producer, observed)),
+                "trust_material_disclosure": _tsa_disclosure(profiled),
+                "reading": _timestamp_reading(profiled),
+                "reliance": _timestamp_reliance(profiled, restriction),
+                "qualification": _timestamp_qualification(_timestamp_reading(profiled)),
                 "independent_tsa_appraisal": "not_evaluated",
                 "observed_axis_status": _axis_status(observed, "timestamp"),
                 "recomputed_axis_status": _axis_status(recomputed, "timestamp"),
@@ -1505,11 +1574,29 @@ def _assemble(
                 "limitation": "not_evaluated on both sides; silence is not evidence of non-revocation",
                 "independent_comparison": comparison_for("revocation"),
             },
+            "comparability_restriction": restriction,
+            "independent_recomputation": {
+                "status": stages["native_recomputation"].status,
+                "evaluation_status": recomputed.get("evaluation_status") if recomputed else None,
+                "per_axis": (
+                    [
+                        {
+                            "axis": axis,
+                            "recomputed_status": _axis_status(recomputed, axis),
+                            "producer_observed_status": _axis_status(observed, axis),
+                        }
+                        for axis in _AXIS_NAMES
+                    ]
+                    if recomputed
+                    else []
+                ),
+                "scope": "the verifier's own validator run over the frozen inputs; reported whether or not the receipt is comparable",
+            },
             "independent_comparison": {
                 "status": stages["comparison"].status,
                 "per_axis": [{"axis": axis, **comparison_for(axis)} for axis in _AXIS_NAMES if comparison_for(axis)],
                 "comparability": (comparison_report or {}).get("comparability"),
-                "producer_declared_later_comparison_posture": obs.get("later_comparison_posture") if (obs is not None and producer) else None,
+                "producer_declared_later_comparison_posture": obs.get("later_comparison_posture") if profiled is not None else None,
                 "scope": "axes the verifier recomputed itself; no aggregate match value exists",
             },
             "operational_issuance_readiness": {
@@ -1562,7 +1649,7 @@ def _missing_paths(
     out: list[dict[str, str]] = []
     for name in STAGES:
         outcome = stages[name]
-        if outcome.status in ("refused", "not_evaluated", "not_run"):
+        if outcome.status in ("refused", "not_evaluated", "not_run", "restricted"):
             out.append({"path": name, "status": outcome.status, "codes": ",".join(sorted({r.code for r in outcome.refusals})) or "-"})
     for item in corr_detail.get("unchecked", []):
         out.append({"path": f"digest:{item['field']}", "status": "unchecked", "codes": item["reason"]})
@@ -1635,22 +1722,28 @@ def consume_observation(
         obs, stages["input_correspondence"], stages["profile_conformance"], bundle
     )
     stages["observed_finding_construction"] = outcome
-    if outcome.status != "completed":  # GUARD:ORDER-STOP-CONSTRUCTION
-        return done("observed_finding_construction")
-    state["observed"] = observed
+    # A value with no canonical representation refuses the observed side only. The verifier's own
+    # recomputation depends on the frozen inputs, not on the producer's claims, so it still runs.
+    state["observed"] = observed if outcome.status == "completed" else None
 
     recompute_report, outcome = _stage_recompute(obs, evidence, executable, bundle)
     stages["native_recomputation"] = outcome
     state["recompute"] = recompute_report
     if outcome.status != "completed":  # GUARD:ORDER-STOP-RECOMPUTATION
-        return done("native_recomputation")
+        return done(_first_incomplete(stages))
 
-    comparison_report, outcome = _stage_compare(observed, recompute_report, bundle)
+    comparison_report, outcome = _stage_compare(state["observed"], recompute_report, bundle)
+    restriction = _comparability_restriction(obs)
+    if outcome.status == "completed" and restriction is not None and restriction["scope"] == "receipt_wide":  # GUARD:ORDER-RESTRICT-COMPARISON
+        outcome = StageOutcome("comparison", "restricted", (), {**outcome.detail, "restriction": restriction})
     stages["comparison"] = outcome
     state["comparison"] = comparison_report
-    if outcome.status != "completed":
-        return done("comparison")
-    return done(None)
+    return done(_first_incomplete(stages))
+
+
+def _first_incomplete(stages: dict[str, StageOutcome]) -> str | None:
+    """The first stage that did not complete: refused, not evaluated, restricted or not run."""
+    return next((name for name in STAGES if stages[name].status != "completed"), None)
 
 
 # ---------------------------------------------------------------------------
@@ -1696,9 +1789,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Exit 0: every stage completed (a comparison was produced; that says nothing about
-    whether the sides match). Exit 1: a stage refused or was not evaluated. Exit 2: usage or
-    source-integrity error."""
+    """Exit 0: every stage completed (a comparison was produced and the receipt was not restricted;
+    that says nothing about whether the sides match). Exit 1: a stage refused, was not evaluated, or
+    the comparison was restricted receipt-wide. Exit 2: usage or source-integrity error."""
     args = build_parser().parse_args(argv)
     try:
         evidence = RetainedEvidence(

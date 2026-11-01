@@ -414,53 +414,186 @@ def test_a_different_validator_implementation_is_not_comparable(tmp_path):
         assert item["integrity_posture"] == "no_integrity_inference"
 
 
-# -- a producer-declared (or disclosed) non-comparability is honoured ------------------------
+# -- a producer-declared (or disclosed) non-comparability is honoured -------------------------
+#
+# Owner rule: a conservative RECEIPT-WIDE comparability restriction. Every supported axis is still
+# recomputed and reported independently; none is reported as an effective match; there is no overall
+# result; the separate reasons are kept separate and never inferred from not_comparable alone.
 
 
-def not_comparable_axes(result):
-    return {a: i for a, i in per_axis(result).items() if i["effective_state_source"] == "adapter"}
+def restricted(result):
+    return result.report["axes"]["comparability_restriction"]
 
 
-def test_producer_declared_not_comparable_stops_trust_and_clock_axes_from_being_compared(tmp_path):  # GUARD CMP-DECLARED-NOT-COMPARABLE
-    obs = m.mutated(m.synthetic_observation(), "later_comparison_posture", "not_comparable")
-    result, _ = consume(tmp_path, obs)
-    axes = per_axis(result)
-    for name in ("signer_trust", "signer_validity", "timestamp"):
-        assert axes[name]["state"] == "not_comparable" and axes[name]["comparison_reason"] == "producer_declared_not_comparable", name
-        assert axes[name]["integrity_posture"] == "no_integrity_inference"
-        assert axes[name]["contract_comparison"]["state"] == "match"
-    for name in ("manifest_structure", "asset_binding", "claim_signature", "ingredient"):
-        assert axes[name]["state"] == "match" and axes[name]["effective_state_source"] == "contract", name
-    assert set(not_comparable_axes(result)) == {"signer_trust", "signer_validity", "timestamp"}
+def reason_names(result):
+    return [r["reason"] for r in restricted(result)["reasons"]]
 
 
-def test_a_declared_not_comparable_axis_is_not_a_mismatch_either(tmp_path):
-    obs = m.mutated(m.synthetic_observation(m.REPORT_EXPIRED), "later_comparison_posture", "not_comparable")
-    result, _ = consume(tmp_path, obs, evidence=m.evidence_for(m.REPORT_EXPIRED), validator_report=m.REPORT_VALID_UNTRUSTED)
-    entry = per_axis(result)["signer_validity"]
-    assert entry["state"] == "not_comparable" and entry["integrity_posture"] == "no_integrity_inference"
+def declared(obs, posture="not_comparable"):
+    return m.mutated(obs, "later_comparison_posture", posture)
 
 
-def test_tsa_trust_material_disclosure_alone_makes_only_the_timestamp_axis_not_comparable(tmp_path):  # GUARD CMP-TSA-NOT-CAPTURED
-    obs = m.synthetic_observation(m.REPORT_ANCHORED)
-    obs["trusted_timestamp"] = {"present": True, "observation": "validated_and_trusted"}
-    obs["unavailable_inputs"].append({"input": "tsa_trust_material", "reason": "any producer wording"})
-    result, _ = consume(tmp_path, obs, evidence=m.evidence_for(m.REPORT_ANCHORED), validator_report=m.REPORT_ANCHORED)
-    axes = per_axis(result)
-    assert axes["timestamp"]["state"] == "not_comparable" and axes["timestamp"]["comparison_reason"] == "tsa_trust_material_not_captured"
-    assert axes["timestamp"]["contract_comparison"]["state"] == "match"
-    assert set(not_comparable_axes(result)) == {"timestamp"}
-    assert result.report["axes"]["timestamp"]["reading"] == "producer_observed_tsa_trust_material_unavailable"
+def with_tsa_disclosure(obs):
+    out = json.loads(json.dumps(obs))
+    out["unavailable_inputs"].append({"input": "tsa_trust_material", "reason": "any producer wording"})
+    return out
 
 
-def test_without_a_disclosure_or_declaration_a_matching_timestamp_stays_a_contract_match(tmp_path):
-    obs = m.synthetic_observation(m.REPORT_ANCHORED)
-    result, _ = consume(tmp_path, obs, evidence=m.evidence_for(m.REPORT_ANCHORED), validator_report=m.REPORT_ANCHORED)
+def anchored(obs):
+    out = json.loads(json.dumps(obs))
+    out["trusted_timestamp"] = {"present": True, "observation": "validated_and_trusted"}
+    return out
+
+
+def signer_basis_missing(obs):
+    out = json.loads(json.dumps(obs))
+    out["signer_trust"].update(trust_basis="unknown_not_captured", trust_observation="not_evaluated")
+    out["machine_limitations"].append({"code": "C2PA_TRUST_BASIS_NOT_CAPTURED"})
+    out["later_comparison_posture"] = "not_comparable"  # the pinned profile forces this
+    return out
+
+
+ANCHORED_BASE = anchored(m.synthetic_observation(m.REPORT_ANCHORED))
+
+
+def run_anchored(tmp_path, obs):
+    return consume(tmp_path, obs, evidence=m.evidence_for(m.REPORT_ANCHORED), validator_report=m.REPORT_ANCHORED)[0]
+
+
+def test_case_tsa_material_missing_restricts_the_whole_receipt_with_only_its_own_reason(tmp_path):  # GUARD CMP-RESTRICTED-RECEIPT-WIDE
+    result = run_anchored(tmp_path, declared(with_tsa_disclosure(ANCHORED_BASE)))
+    assert reason_names(result) == ["tsa_trust_material_uncaptured"]
+    assert restricted(result)["scope"] == "receipt_wide"
+    assert result.stages["comparison"].status == "restricted" and result.stopped_at == "comparison"
+    entries = per_axis(result)
+    assert list(entries) == list(c2pa_native.AXIS_ORDER)  # every supported axis is still reported
+    for name, item in entries.items():
+        assert item["state"] == "restricted_receipt_wide", name
+        assert item["effective_state_source"] == "adapter" and item["integrity_posture"] == "no_integrity_inference"
+        assert item["observed_status"] is not None and item["recomputed_status"] is not None
+    # a byte-deterministic agreement is visible as the contract's own entry, never as the effective state
+    assert entries["asset_binding"]["contract_comparison"]["state"] == "match"
+    assert not [i for i in entries.values() if i["state"] in ("match", "mismatch")]
+    assert "agreement_basis" not in entries["asset_binding"]
+
+
+def test_case_signer_basis_missing_restricts_the_whole_receipt_with_only_its_own_reason(tmp_path):  # GUARD RESTRICT-REASON-SIGNER
+    result, fake = consume(tmp_path, signer_basis_missing(ANCHORED_BASE), evidence=m.evidence_for(m.REPORT_ANCHORED), validator_report=m.REPORT_ANCHORED)
+    assert reason_names(result) == ["signer_trust_inputs_uncaptured"]
+    assert restricted(result)["scope"] == "receipt_wide"
+    # the observed side has no canonical form (no trust-basis mode), yet the recomputation still happened
+    assert result.stages["observed_finding_construction"].status == "refused"
+    assert result.stages["native_recomputation"].status == "completed" and len(fake.calls()) == 1
+    recomputation = result.report["axes"]["independent_recomputation"]
+    assert {a["axis"]: a["recomputed_status"] for a in recomputation["per_axis"]}["asset_binding"] == "satisfied"
+    assert result.report["axes"]["independent_comparison"]["per_axis"] == []
+    # the producer's native findings are preserved as observations
+    observed = result.report["producer_asserted"]["native_findings_as_observations"]
+    assert {"scope": "activeManifest", "severity": "success", "code": "timeStamp.trusted"} == {k: observed[2][k] for k in ("scope", "severity", "code")} or any(
+        f["code"] == "timeStamp.trusted" for f in observed
+    )
+
+
+def test_case_both_missing_lists_both_reasons_separately_in_a_stable_order(tmp_path):  # GUARD RESTRICT-REASON-TSA
+    result, _ = consume(tmp_path, with_tsa_disclosure(signer_basis_missing(ANCHORED_BASE)), evidence=m.evidence_for(m.REPORT_ANCHORED), validator_report=m.REPORT_ANCHORED)
+    assert reason_names(result) == ["signer_trust_inputs_uncaptured", "tsa_trust_material_uncaptured"]
+    assert {r["stated_by"] for r in restricted(result)["reasons"]} == {"signer_trust.trust_basis", "unavailable_inputs[tsa_trust_material]"}
+    assert restricted(result)["scope"] == "receipt_wide"
+
+
+def test_case_tsa_material_present_is_not_restricted_but_is_still_not_independent_tsa_trust(tmp_path):
+    obs = json.loads(json.dumps(ANCHORED_BASE))
+    obs["trusted_timestamp"]["tsa_trust_material_ref"] = m.ANCHORS_DIGEST
+    result = run_anchored(tmp_path, obs)
+    assert restricted(result)["scope"] == "none" and restricted(result)["reasons"] == []
+    assert result.stopped_at is None and result.stages["comparison"].status == "completed"
     entry = per_axis(result)["timestamp"]
     assert entry["state"] == "match" and entry["effective_state_source"] == "contract"
-    assert not_comparable_axes(result) == {}
+    timestamp = result.report["axes"]["timestamp"]
+    assert timestamp["reading"] == "producer_observed_tsa_trust_material_digest_named_unchecked"
+    assert timestamp["reliance"] == {"status": "not_established", "restricted_by": ["tsa_trust_material_named_but_unchecked"], "independent_tsa_appraisal": "not_evaluated"}
+
+
+def test_case_no_native_trusted_timestamp_claim_is_not_restricted_and_claims_nothing(tmp_path):
+    result, _ = consume(tmp_path, m.synthetic_observation())
+    assert restricted(result)["scope"] == "none" and restricted(result)["reasons"] == []
+    assert result.stopped_at is None
+    timestamp = result.report["axes"]["timestamp"]
+    assert timestamp["reading"] == "no_trusted_timestamp_claimed"
+    assert timestamp["reliance"]["status"] == "no_native_trusted_timestamp_claimed"
+
+
+def test_not_comparable_with_no_stated_reason_is_reported_as_exactly_that(tmp_path):  # GUARD RESTRICT-UNSTATED
+    result, _ = consume(tmp_path, declared(m.synthetic_observation()))
+    assert reason_names(result) == ["declared_without_a_stated_reason"]  # neither specific reason is inferred
+    assert restricted(result)["scope"] == "receipt_wide"
+
+
+def test_the_two_reasons_are_never_inferred_from_each_other_or_from_the_posture(tmp_path):
+    only_tsa = run_anchored(tmp_path, with_tsa_disclosure(ANCHORED_BASE))  # disclosure, posture left comparable
+    assert reason_names(only_tsa) == ["tsa_trust_material_uncaptured"]
+    assert restricted(only_tsa)["scope"] == "none"  # the disclosure does not make the receipt not_comparable
+    assert restricted(only_tsa)["axis_level"] == {"timestamp": ["tsa_trust_material_uncaptured"]}
+
+
+def test_a_disclosure_without_a_declared_posture_restricts_only_the_timestamp_axis(tmp_path):  # GUARD CMP-TSA-AXIS-LEVEL
+    result = run_anchored(tmp_path, with_tsa_disclosure(ANCHORED_BASE))
+    entries = per_axis(result)
+    assert entries["timestamp"]["state"] == "not_comparable" and entries["timestamp"]["comparison_reason"] == "tsa_trust_material_not_captured"
+    assert entries["timestamp"]["contract_comparison"]["state"] == "match"
+    assert entries["asset_binding"]["state"] == "match" and entries["asset_binding"]["effective_state_source"] == "contract"
+    assert result.stages["comparison"].status == "completed"
+
+
+def test_a_restricted_receipt_still_surfaces_an_independent_divergence(tmp_path):
+    obs = declared(m.synthetic_observation(m.REPORT_VALID_UNTRUSTED))
+    result, _ = consume(tmp_path, obs, validator_report=m.REPORT_INVALID_CLAIM)  # the verifier's own run disagrees
+    claim = per_axis(result)["claim_signature"]
+    assert claim["state"] == "restricted_receipt_wide"
+    assert (claim["observed_status"], claim["recomputed_status"]) == ("satisfied", "failed")
+    assert claim["contract_comparison"]["state"] == "mismatch"  # the restriction hides agreement, never divergence
 
 
 def test_a_comparable_declaration_changes_nothing(tmp_path):
-    result, _ = consume(tmp_path, m.mutated(m.synthetic_observation(), "later_comparison_posture", "comparable"))
-    assert not_comparable_axes(result) == {}
+    result, _ = consume(tmp_path, declared(m.synthetic_observation(), "comparable"))
+    assert restricted(result)["scope"] == "none"
+    assert result.stopped_at is None
+
+
+# -- NAMED NEGATIVE: neither removing unavailable_inputs nor ignoring not_comparable yields reliance --
+
+
+def reliance(result):
+    return result.report["axes"]["timestamp"]["reliance"]
+
+
+def test_removing_unavailable_inputs_or_ignoring_not_comparable_cannot_yield_reliance_on_a_trusted_timestamp(tmp_path):
+    base = ANCHORED_BASE
+    only_posture = declared(base)  # not_comparable, no disclosure
+    only_disclosure = with_tsa_disclosure(base)  # disclosure, posture comparable
+    neither = base
+    both = declared(with_tsa_disclosure(base))
+    cases = {
+        "only_posture": (only_posture, ["tsa_trust_basis_not_disclosed", "receipt_not_comparable"]),
+        "only_disclosure": (only_disclosure, ["tsa_trust_material_uncaptured"]),
+        "neither": (neither, ["tsa_trust_basis_not_disclosed"]),
+        "both": (both, ["tsa_trust_material_uncaptured", "receipt_not_comparable"]),
+    }
+    results = {}
+    for label, (obs, expected) in cases.items():
+        sub = tmp_path / label
+        sub.mkdir()
+        result = results[label] = run_anchored(sub, obs)
+        got = reliance(result)
+        assert got["status"] == "not_established", label
+        assert got["restricted_by"] == expected, label
+        assert got["independent_tsa_appraisal"] == "not_evaluated", label
+        reading = result.report["axes"]["timestamp"]["reading"]
+        assert "independent" not in reading and reading != "no_trusted_timestamp_claimed", label
+    # each restriction stands on its own field: ignoring the posture is visible, removing the disclosure is visible
+    posture_only = results["only_posture"]
+    assert restricted(posture_only)["scope"] == "receipt_wide"
+    assert per_axis(posture_only)["timestamp"]["state"] == "restricted_receipt_wide"
+    disclosure_only = results["only_disclosure"]
+    assert per_axis(disclosure_only)["timestamp"]["state"] == "not_comparable"
+    assert per_axis(disclosure_only)["timestamp"]["comparison_reason"] == "tsa_trust_material_not_captured"

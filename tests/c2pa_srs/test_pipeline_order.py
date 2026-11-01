@@ -78,13 +78,16 @@ def test_profile_violation_stops_before_the_observed_finding_exists(tmp_path, tr
     assert fake.calls() == []
 
 
-def test_mapping_refusal_stops_before_any_recomputation(tmp_path, trace):
+def test_mapping_refusal_does_not_stop_the_independent_recomputation(tmp_path, trace):
     obs = m.mutated(m.synthetic_observation(), "validation_time.validation_time_control", "supported_and_pinned")
     result, fake = run(tmp_path, obs)
-    assert result.stopped_at == "observed_finding_construction"
-    assert trace == ["parse", "correspondence", "conformance", "construct"]
-    assert result.report["native_recomputation"] is None
-    assert fake.calls() == []
+    assert result.stopped_at == "observed_finding_construction"  # the first stage that did not complete
+    assert trace == ["parse", "correspondence", "conformance", "construct", "recompute", "compare"]
+    assert result.stages["native_recomputation"].status == "completed"
+    assert result.stages["comparison"].status == "not_evaluated"
+    assert result.report["observed_finding"] is None
+    assert result.report["native_recomputation"] is not None
+    assert len(fake.calls()) == 1
 
 
 def test_the_observed_finding_cannot_be_built_before_step_one_completes():  # GUARD ORDER-CONSTRUCT-PRECONDITION
