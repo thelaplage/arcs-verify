@@ -412,3 +412,55 @@ def test_a_different_validator_implementation_is_not_comparable(tmp_path):
             continue
         assert (item["state"], item["comparison_reason"]) == ("not_comparable", "validator_implementation_delta"), name
         assert item["integrity_posture"] == "no_integrity_inference"
+
+
+# -- a producer-declared (or disclosed) non-comparability is honoured ------------------------
+
+
+def not_comparable_axes(result):
+    return {a: i for a, i in per_axis(result).items() if i["effective_state_source"] == "adapter"}
+
+
+def test_producer_declared_not_comparable_stops_trust_and_clock_axes_from_being_compared(tmp_path):  # GUARD CMP-DECLARED-NOT-COMPARABLE
+    obs = m.mutated(m.synthetic_observation(), "later_comparison_posture", "not_comparable")
+    result, _ = consume(tmp_path, obs)
+    axes = per_axis(result)
+    for name in ("signer_trust", "signer_validity", "timestamp"):
+        assert axes[name]["state"] == "not_comparable" and axes[name]["comparison_reason"] == "producer_declared_not_comparable", name
+        assert axes[name]["integrity_posture"] == "no_integrity_inference"
+        assert axes[name]["contract_comparison"]["state"] == "match"
+    for name in ("manifest_structure", "asset_binding", "claim_signature", "ingredient"):
+        assert axes[name]["state"] == "match" and axes[name]["effective_state_source"] == "contract", name
+    assert set(not_comparable_axes(result)) == {"signer_trust", "signer_validity", "timestamp"}
+
+
+def test_a_declared_not_comparable_axis_is_not_a_mismatch_either(tmp_path):
+    obs = m.mutated(m.synthetic_observation(m.REPORT_EXPIRED), "later_comparison_posture", "not_comparable")
+    result, _ = consume(tmp_path, obs, evidence=m.evidence_for(m.REPORT_EXPIRED), validator_report=m.REPORT_VALID_UNTRUSTED)
+    entry = per_axis(result)["signer_validity"]
+    assert entry["state"] == "not_comparable" and entry["integrity_posture"] == "no_integrity_inference"
+
+
+def test_tsa_trust_material_disclosure_alone_makes_only_the_timestamp_axis_not_comparable(tmp_path):  # GUARD CMP-TSA-NOT-CAPTURED
+    obs = m.synthetic_observation(m.REPORT_ANCHORED)
+    obs["trusted_timestamp"] = {"present": True, "observation": "validated_and_trusted"}
+    obs["unavailable_inputs"].append({"input": "tsa_trust_material", "reason": "any producer wording"})
+    result, _ = consume(tmp_path, obs, evidence=m.evidence_for(m.REPORT_ANCHORED), validator_report=m.REPORT_ANCHORED)
+    axes = per_axis(result)
+    assert axes["timestamp"]["state"] == "not_comparable" and axes["timestamp"]["comparison_reason"] == "tsa_trust_material_not_captured"
+    assert axes["timestamp"]["contract_comparison"]["state"] == "match"
+    assert set(not_comparable_axes(result)) == {"timestamp"}
+    assert result.report["axes"]["timestamp"]["reading"] == "producer_observed_tsa_trust_material_unavailable"
+
+
+def test_without_a_disclosure_or_declaration_a_matching_timestamp_stays_a_contract_match(tmp_path):
+    obs = m.synthetic_observation(m.REPORT_ANCHORED)
+    result, _ = consume(tmp_path, obs, evidence=m.evidence_for(m.REPORT_ANCHORED), validator_report=m.REPORT_ANCHORED)
+    entry = per_axis(result)["timestamp"]
+    assert entry["state"] == "match" and entry["effective_state_source"] == "contract"
+    assert not_comparable_axes(result) == {}
+
+
+def test_a_comparable_declaration_changes_nothing(tmp_path):
+    result, _ = consume(tmp_path, m.mutated(m.synthetic_observation(), "later_comparison_posture", "comparable"))
+    assert not_comparable_axes(result) == {}

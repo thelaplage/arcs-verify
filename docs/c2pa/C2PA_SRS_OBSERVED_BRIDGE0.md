@@ -108,6 +108,20 @@ other readings are `no_trusted_timestamp_claimed`,
 validator runs under timestamp-authority trust anchors that are not digest-bound input; the
 report says so and never reads it as independent trust.
 
+### Declared or disclosed non-comparability
+
+If the observation declares `later_comparison_posture: not_comparable`, the axes that depend on
+trust inputs or the validation clock (the contract's `policy_dependent` and `time_dependent`
+classes: `signer_trust`, `signer_validity`, `timestamp`) are **not compared as if comparable**:
+their effective state is `not_comparable` with reason `producer_declared_not_comparable`.
+Byte-deterministic axes depend on bytes only and are still compared. If the producer disclosed
+`tsa_trust_material` as unavailable, the `timestamp` axis is likewise not compared as comparable
+(reason `tsa_trust_material_not_captured`). Only a `match` or `mismatch` is overridden. The
+unchanged contract entry stays in `native_comparison_report` and is echoed as
+`contract_comparison`, with `effective_state_source: adapter`, so nothing is hidden. The adapter
+never appraises timestamp-authority trust (`axes.timestamp.independent_tsa_appraisal` is always
+`not_evaluated`).
+
 ## Typed outcomes
 
 Every refusal carries a stable code and the field it concerns. Families: `OBS_*` (parse),

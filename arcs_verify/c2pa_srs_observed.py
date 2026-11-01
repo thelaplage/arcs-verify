@@ -941,6 +941,7 @@ def _producer_asserted(obs: dict[str, Any]) -> dict[str, Any]:
         },
         "signer_validity": _signer_validity_asserted(obs, keys),
         "trusted_timestamp": obs.get("trusted_timestamp"),
+        "later_comparison_posture": obs.get("later_comparison_posture"),
         "validation_time": obs.get("validation_time"),
         "revocation": obs.get("revocation"),
         "unavailable_inputs": obs.get("unavailable_inputs"),
@@ -1280,6 +1281,30 @@ _BASE_LIMITATIONS = (
 )
 
 
+_POLICY_OR_TIME_CLASSES = frozenset({"policy_dependent", "time_dependent"})
+
+
+def _comparability_override(
+    obs: dict[str, Any] | None, producer: dict[str, Any] | None, item: dict[str, Any]
+) -> str | None:
+    """A reason this axis must not be compared as if it were comparable, or None.
+
+    * the producer declared ``later_comparison_posture == not_comparable``: the axes that depend on
+      trust inputs or on the validation clock (policy_dependent / time_dependent) are not compared;
+      byte-deterministic axes depend on bytes only and are still compared;
+    * the producer disclosed that timestamp-authority trust material was not captured: the
+      timestamp axis is not compared as comparable.
+    Only a ``match`` or ``mismatch`` is overridden; a contract entry that already says not
+    comparable or not evaluated is left alone."""
+    if obs is None or producer is None or item["state"] not in ("match", "mismatch"):
+        return None
+    if obs.get("later_comparison_posture") == "not_comparable" and item["reproducibility_class"] in _POLICY_OR_TIME_CLASSES:  # GUARD:CMP-DECLARED-NOT-COMPARABLE
+        return "producer_declared_not_comparable"
+    if item["axis"] == "timestamp" and _tsa_disclosure(obs, producer):  # GUARD:CMP-TSA-NOT-CAPTURED
+        return "tsa_trust_material_not_captured"
+    return None
+
+
 _TSA_INPUT = "tsa_trust_material"
 
 
@@ -1380,7 +1405,22 @@ def _assemble(
         if item is None:
             return None
         view = {k: item[k] for k in ("state", "comparison_reason", "integrity_posture", "reproducibility_class", "observed_status", "recomputed_status", "note")}
-        if item["state"] == "match":
+        view["effective_state_source"] = "contract"
+        override = _comparability_override(obs, producer, item)
+        if override is not None:
+            # The producer said its observation is not comparable (or disclosed that the trust
+            # material behind this axis was not captured). The axis is then not compared as if it
+            # were comparable. The unchanged contract entry stays in native_comparison_report; it is
+            # echoed here so nothing is hidden.
+            view["contract_comparison"] = {k: item[k] for k in ("state", "comparison_reason", "integrity_posture")}
+            view.update(
+                state="not_comparable",
+                comparison_reason=override,
+                integrity_posture="no_integrity_inference",
+                effective_state_source="adapter",
+                note="not compared as comparable: " + override.replace("_", " "),
+            )
+        elif item["state"] == "match":
             # The existing comparison reports `match` when both sides carry the same status,
             # including when neither side evaluated the axis. Say which, so an absence of
             # evidence on both sides is not read as agreement.
@@ -1453,6 +1493,7 @@ def _assemble(
                 "trust_material_disclosure": _tsa_disclosure(obs, producer),
                 "reading": _timestamp_reading(obs, producer, observed),
                 "qualification": _timestamp_qualification(_timestamp_reading(obs, producer, observed)),
+                "independent_tsa_appraisal": "not_evaluated",
                 "observed_axis_status": _axis_status(observed, "timestamp"),
                 "recomputed_axis_status": _axis_status(recomputed, "timestamp"),
                 "independent_comparison": comparison_for("timestamp"),
@@ -1468,6 +1509,7 @@ def _assemble(
                 "status": stages["comparison"].status,
                 "per_axis": [{"axis": axis, **comparison_for(axis)} for axis in _AXIS_NAMES if comparison_for(axis)],
                 "comparability": (comparison_report or {}).get("comparability"),
+                "producer_declared_later_comparison_posture": obs.get("later_comparison_posture") if (obs is not None and producer) else None,
                 "scope": "axes the verifier recomputed itself; no aggregate match value exists",
             },
             "operational_issuance_readiness": {

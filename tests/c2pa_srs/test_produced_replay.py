@@ -100,7 +100,8 @@ def test_provenance_names_the_producer_commit_the_command_the_validator_and_the_
         assert record["os_network_deny"] is True, logical
         assert record["validator_version_line"] == "c2patool " + c2pa_native.PINNED_VALIDATOR["version"], logical
         assert record["settings_sha256"] == m.sha(read("hermetic.toml")), logical
-    assert "/Users/" not in json.dumps(PROV) and "/home/" not in json.dumps(PROV)
+    private_markers = ("/" + "Users" + "/", "/" + "home" + "/", "/" + "private" + "/" + "var")
+    assert not any(marker in json.dumps(PROV) for marker in private_markers)
 
 
 def test_producer_configuration_digest_equals_the_verifiers_own_hermetic_settings_digest():
@@ -283,12 +284,14 @@ def test_positive_replay_per_axis_and_deterministic_on_byte_identical_inputs():
         "claim_signature": ("match", "satisfied", "satisfied"),
         "signer_trust": ("match", "failed", "failed"),
         "signer_validity": ("match", "not_evaluated", "not_evaluated"),
-        "timestamp": ("match", "satisfied", "satisfied"),
+        "timestamp": ("not_comparable", "satisfied", "satisfied"),  # TSA trust material not captured: not compared as comparable
         "revocation": ("not_comparable", "not_evaluated", "not_evaluated"),
         "ingredient": ("match", "indeterminate", "indeterminate"),
     }
     assert {k: (v["state"], v["observed_status"], v["recomputed_status"]) for k, v in axes.items()} == expected
     assert axes["revocation"]["comparison_reason"] == "revocation_basis_delta"
+    assert axes["timestamp"]["effective_state_source"] == "adapter"
+    assert axes["timestamp"]["contract_comparison"]["state"] == "match"  # kept visible, not the effective reading
     assert axes["signer_validity"]["agreement_basis"] == "both_sides_not_evaluated"
     assert not [a for a in axes.values() if a["integrity_posture"] == "possible_substantive_divergence"]
     ax = first.report["axes"]
@@ -356,3 +359,74 @@ def test_mutation_digest_consistent_tampered_asset_with_the_producers_valid_repo
     assert result.stages["input_correspondence"].status == "completed"
     entry = per_axis(result)["asset_binding"]
     assert entry["state"] == "mismatch" and (entry["observed_status"], entry["recomputed_status"]) == ("satisfied", "failed")
+
+
+# -- OWNER REQUIREMENT: missing TSA trust material never becomes an independently trusted timestamp --
+
+
+def timestamp_view(result):
+    return result.report["axes"]["timestamp"]
+
+
+@pytest.mark.parametrize("name", [n for n in NAMES if PROV["specimens"][n]["native_report"]])
+def test_missing_tsa_trust_material_never_becomes_an_independently_trusted_timestamp(name):
+    """On the really produced bytes: the producer disclosed that no TSA trust material was
+    captured. However the native finding reads, the bridge reports the timestamp as
+    producer-observed with TSA trust material unavailable, keeps independent TSA appraisal
+    not_evaluated, and carries the disclosure forward."""
+    produced = json.loads(observation_bytes(name))
+    assert any(i["input"] == "tsa_trust_material" for i in produced["unavailable_inputs"])  # the real bytes carry it
+    view = timestamp_view(run(name))
+    assert view["reading"] == "producer_observed_tsa_trust_material_unavailable"
+    assert view["independent_tsa_appraisal"] == "not_evaluated"
+    assert [d["input"] for d in view["trust_material_disclosure"]] == ["tsa_trust_material"]
+    assert view["observed_axis_status"] == "satisfied"  # the native finding is reported as a finding only
+    flat = json.dumps(view).lower()
+    assert "independently_trusted" not in flat and "independently trusted" not in flat
+
+
+@live_only
+def test_missing_tsa_trust_material_is_not_compared_as_comparable_on_the_real_replay():
+    """The verifier's own run also reports timeStamp.trusted, but under timestamp-authority anchors
+    that are not digest-bound input on either side. The two native findings agree, and the axis
+    is still not compared as comparable."""
+    result = run("positive", executable=LIVE)
+    entry = per_axis(result)["timestamp"]
+    assert (entry["observed_status"], entry["recomputed_status"]) == ("satisfied", "satisfied")
+    assert entry["state"] == "not_comparable"
+    assert entry["comparison_reason"] in ("tsa_trust_material_not_captured", "producer_declared_not_comparable")
+    assert entry["contract_comparison"]["state"] == "match"
+    assert entry["integrity_posture"] == "no_integrity_inference"
+    if json.loads(observation_bytes("positive")).get("later_comparison_posture") == "not_comparable":
+        assert entry["comparison_reason"] == "producer_declared_not_comparable"
+    assert result.report["axes"]["timestamp"]["independent_tsa_appraisal"] == "not_evaluated"
+
+
+@live_only
+def test_mutation_producer_declares_not_comparable_so_trust_and_clock_axes_are_not_compared():  # TEST MUTATION
+    """Same real bytes, with later_comparison_posture rewritten to not_comparable inside the test
+    (the vendored observation is not edited). The trust- and clock-dependent axes are then not
+    compared; the byte-deterministic axes still are."""
+    declared = json.loads(observation_bytes("positive"))
+    declared["later_comparison_posture"] = "not_comparable"
+    result = run("positive", obs=declared, executable=LIVE)
+    axes = per_axis(result)
+    for name in ("signer_trust", "signer_validity", "timestamp"):
+        assert axes[name]["state"] == "not_comparable", name
+        assert axes[name]["comparison_reason"] == "producer_declared_not_comparable", name
+    for name in ("manifest_structure", "asset_binding", "claim_signature", "ingredient"):
+        assert axes[name]["state"] == "match", name
+    assert result.report["axes"]["independent_comparison"]["producer_declared_later_comparison_posture"] == "not_comparable"
+
+
+@live_only
+def test_mutation_promoting_the_disclosed_timestamp_is_visible_not_silent():  # TEST MUTATION
+    """Strip the in-band disclosure inside the test. The timestamp is then read as 'trust basis not
+    disclosed' - never as independently trusted - and the axis is still not independent trust."""
+    stripped = json.loads(observation_bytes("positive"))
+    stripped["unavailable_inputs"] = [i for i in stripped["unavailable_inputs"] if i["input"] != "tsa_trust_material"]
+    result = run("positive", obs=stripped, executable=LIVE)
+    view = timestamp_view(result)
+    assert view["reading"] == "producer_observed_tsa_trust_basis_not_disclosed"
+    assert view["independent_tsa_appraisal"] == "not_evaluated"
+    assert "independent" not in view["reading"]
