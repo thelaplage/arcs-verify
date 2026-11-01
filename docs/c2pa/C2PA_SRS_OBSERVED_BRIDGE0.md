@@ -168,6 +168,25 @@ with every restriction in force named in `restricted_by` (`tsa_trust_material_un
 `tsa_trust_material_named_but_unchecked`, `tsa_trust_basis_not_disclosed`,
 `receipt_not_comparable`), and `independent_tsa_appraisal` is always `not_evaluated`.
 
+### Decisions awaiting independent review
+
+Three behaviours were not specified by the dispatch or the owner rule. They follow the owner's
+requirement that a restriction "must not stop BRIDGE0 from independently recomputing" and that no
+overall success may be reported. They are **not settled** until the independent reviewer has
+judged them.
+
+1. **The verifier's recomputation runs even when the observed side cannot be built.** If the
+   observation has no canonical form (for example `unknown_not_captured`), the observed-side
+   construction stage is `refused`, the verifier's own recomputation still runs and is reported
+   under `axes.independent_recomputation`, and the comparison stage is `not_evaluated` with
+   `COMPARISON_OBSERVED_SIDE_NOT_CONSTRUCTED`. Earlier stages (parse, correspondence, profile
+   conformance) still stop the run.
+2. **`stopped_at` names the first stage that did not complete**, whatever its status:
+   `refused`, `not_evaluated`, `restricted` or `not_run`. It is `null` only when every stage
+   completed. For a receipt-wide restriction it is `comparison`, although the comparison ran.
+3. **The CLI exits 1 for a restricted receipt.** Exit 0 would read as an aggregate success; it is
+   reserved for a run in which every stage completed and no receipt-wide restriction applies.
+
 ## Typed outcomes
 
 Every refusal carries a stable code and the field it concerns. Families: `OBS_*` (parse),
