@@ -40,7 +40,7 @@ CASES = [
     ("PF-ENVELOPE-SCHEMA", m.mutated(BASE, "receipt_type", "not_a_receipt_type"), "ENVELOPE_SCHEMA"),
     ("PF-FIELD-SCHEMA", m.mutated(BASE, "manifest_store.state", "weird"), "FIELD_SCHEMA"),
     ("PF-UNKNOWN-FIELD", m.mutated(BASE, "x_unmapped_extra", 1), "ADAPTER_UNKNOWN_FIELD"),
-    ("PF-EXTENSIONS", m.mutated(BASE, "extensions", {"a": 1}), "ADAPTER_EXTENSIONS_NOT_SUPPORTED"),
+    ("PF-EXTENSIONS-SHAPE", m.mutated(BASE, "extensions", ["not", "an", "object"]), "FIELD_SCHEMA"),
     ("PF-PROFILE-ID", m.mutated(BASE, "profile_id", "srs.other"), "PROFILE_ID_MISMATCH"),
     ("PF-PROFILE-VERSION", m.mutated(BASE, "profile_version", "v9"), "PROFILE_VERSION_MISMATCH"),
     ("PF-FIXED-VALUES", m.mutated(BASE, "external_binding_relation_mode", "native_emission"), "FIXED_VALUE_MISMATCH"),
@@ -184,3 +184,31 @@ def test_consume_stops_at_parse_without_touching_correspondence():
     result = adapter.consume_observation(b"[]", m.evidence_for())
     assert result.stopped_at == "input_parse"
     assert result.stages["input_correspondence"].status == "not_run"
+
+
+def test_extensions_content_is_carried_uninterpreted_and_never_refused():
+    """`extensions` is the envelope's place for producer-namespaced content. It is neither
+    refused nor read: it is reported verbatim and feeds no axis."""
+    obs = m.mutated(BASE, "extensions", {"vendor_ns": {"verified": True, "signer_trusted": True, "nested": [1, 2]}})
+    assert gate(obs).status == "completed"
+    asserted = adapter._producer_asserted(obs)
+    assert asserted["extensions"] == {
+        "treatment": "uninterpreted_producer_content_feeds_no_axis",
+        "content": {"vendor_ns": {"verified": True, "signer_trusted": True, "nested": [1, 2]}},
+    }
+
+
+def test_extension_content_cannot_move_any_axis(tmp_path):
+    plain = m.synthetic_observation()
+    loaded = m.mutated(plain, "extensions", {"vendor_ns": {"c2pa_valid": True, "trust_observation": "trusted", "note": "x" * 500}})
+    fake = m.install_fake_validator(tmp_path, {m.SYNTHETIC_ASSET: (m.REPORT_VALID_UNTRUSTED, 0)})
+    a = adapter.consume_observation(m.encode(plain), m.evidence_for(), executable=fake.path).report
+    b = adapter.consume_observation(m.encode(loaded), m.evidence_for(), executable=fake.path).report
+    for report in (a, b):
+        report["native_recomputation"]["recomputed"]["validation_clock"]["instant"] = None
+        report["native_comparison_report"]["recomputed"]["validation_clock"]["instant"] = None
+        report["axes"]["source_digest_pin"]["recomputation_validator"] = None
+    assert a["axes"] == b["axes"]
+    assert a["observed_finding"] == b["observed_finding"]
+    assert b["producer_asserted"]["extensions"]["content"]["vendor_ns"]["c2pa_valid"] is True
+    assert "c2pa_valid" not in json.dumps(b["axes"])

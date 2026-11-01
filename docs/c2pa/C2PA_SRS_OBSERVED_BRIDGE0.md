@@ -64,9 +64,13 @@ pinned `arcs_verify/data/srs-envelope-v0.2.1.schema.json`. A mismatch raises
 recorded but not recomputed here, because it also covers 27 fixtures this package does not
 vendor.
 
-Rule-level refusal codes use the pinned checker's names. Two adapter policies sit on top: an
-unknown top-level field and a non-empty `extensions` object are refused (the profile schema
-permits extra fields; this adapter will not silently drop what it cannot map).
+Rule-level refusal codes use the pinned checker's names. One adapter policy sits on top: an
+unknown top-level field is refused (the profile schema permits extra fields; this adapter will
+not silently drop what it cannot map). `extensions` is the envelope's place for
+producer-namespaced content: it is never interpreted and feeds no axis, and is reported
+verbatim under `producer_asserted.extensions`. (Phase A refused any non-empty `extensions`; the
+first really produced observation carries a provisional-emission notice there, which showed
+that policy to be stricter than the profile.)
 
 ### Step 3: mapping
 
@@ -76,13 +80,33 @@ material under a basis that supplies none, acquisition mode `none`, an evaluatio
 with no native evaluation, no settings digest (`validator_defaults`), hermeticity that is
 not stated or not established, a pinned validation clock, a native state outside
 `Trusted | Valid | Invalid`, and producer assertions that contradict the observation's own
-native findings (trust, signer validity).
+native findings (trust).
 
 The observed axes come from the observation's native findings through the verifier's single
 normalizer. Producer-asserted trust, validity, timestamp, revocation, issuer id and process
 exit code are reported under `producer_asserted`, labelled as such; none feeds an axis.
 An embedded store's digest is not separate bytes in the canonical finding (null); the
 observation's value is still checked when the bytes are retained.
+
+### Signer validity and the expired-certificate pair
+
+A real expired-certificate report carries `claimSignature.insideValidity` (validity at signing
+time) and `signingCredential.expired` (validity at validation time) together. That is two
+facts on two axes, never a contradiction: the canonical `signer_validity` axis comes from the
+native findings only, and the producer's scalar is annotated
+`consistency_with_native_findings` as `consistent`, `uncorroborated`, `time_basis_differs` or
+`not_evaluated_by_producer`. It is never refused as inconsistent.
+
+### Timestamps
+
+If the producer disclosed `unavailable_inputs[].input == "tsa_trust_material"`, the disclosure is
+kept under `axes.timestamp.trust_material_disclosure` (the reason text is the producer's and is
+never interpreted) and the reading is `producer_observed_tsa_trust_material_unavailable`. The
+other readings are `no_trusted_timestamp_claimed`,
+`producer_observed_tsa_trust_material_digest_named_unchecked` and
+`producer_observed_tsa_trust_basis_not_disclosed`. A timestamp `match` compares two native
+validator runs under timestamp-authority trust anchors that are not digest-bound input; the
+report says so and never reads it as independent trust.
 
 ## Typed outcomes
 
@@ -140,9 +164,25 @@ source-integrity error. Without `--c2patool` or `ARCS_VERIFY_C2PATOOL` the recom
 Tests: `python -m pytest tests/c2pa_srs`. The live pinned-validator tests are skipped (NOT
 EXERCISED) unless `ARCS_VERIFY_C2PATOOL` names c2patool 0.27.15.
 
+## Replay over a really produced observation (Phase B)
+
+`tests/c2pa_srs/produced/` holds the unmodified output of the C2PA-EMIT0 producer (a provisional,
+unsigned emitter in `dagr-ingest`) over a pinned asset and the machine report the pinned
+c2patool 0.27.15 emitted: one positive, one tampered derivative (native `Invalid` with process
+exit 0) and one missing remote manifest. `PROVENANCE.json` is the single place that records the
+producing commit, command, validator, licence and every file digest; the tests read expected
+digests only from it. Tampering negatives are created inside the tests from the vendored bytes
+and are labelled `TEST MUTATION`.
+
+The tests that need only bytes always run. The verifier's own recomputation over the frozen
+inputs needs the pinned validator and is NOT_EXERCISED unless `ARCS_VERIFY_C2PATOOL` is set.
+That replay is offline technical interoperability only: the observation is unsigned and
+provisional under a test issuer identity, and `axes.operational_issuance_readiness` stays
+`not_established`. It does not establish issuer trust, trust-list membership or content truth.
+
 ## What this does not establish
 
-All fixtures in Phase A are SYNTHETIC. They exercise ordering, refusals and typed outcomes;
+The Phase A fixtures are SYNTHETIC. They exercise ordering, refusals and typed outcomes;
 they prove nothing about end-to-end producer-to-verifier interoperability, which is owed to a
 replay over bytes a real producer emitted. Nothing here establishes content truth,
 depicted-event truth, signer trust in general, trust-list membership, issuer standing, or

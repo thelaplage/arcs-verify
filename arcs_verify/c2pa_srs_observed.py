@@ -31,6 +31,8 @@ What this module does NOT do, by construction:
   authenticated issuance.
 * A trust value the producer asserted is reported as ``producer_asserted``. It is never an
   independent finding and it never feeds a canonical axis.
+* The producer's ``extensions`` content is carried verbatim and uninterpreted; it feeds no axis.
+* A trusted-timestamp result is never read as independent timestamp-authority trust.
 * There is no aggregate verdict anywhere in the report.
 * The native validation state, the producer's process exit code and the observation's
   conformance are different facts and are reported separately.
@@ -604,9 +606,8 @@ def _profile_findings(obs: dict[str, Any], c: _Contract) -> list[Refusal]:
     allowed = set(c.field_schema.get("properties", {}))
     for key in sorted(set(obs) - allowed):  # GUARD:PF-UNKNOWN-FIELD
         add("ADAPTER_UNKNOWN_FIELD", key, "the profile schema permits extra top-level fields; this adapter refuses what it cannot map")
-    extensions = obs.get("extensions")
-    if isinstance(extensions, dict) and extensions:  # GUARD:PF-EXTENSIONS
-        add("ADAPTER_EXTENSIONS_NOT_SUPPORTED", "extensions", "non-empty extensions cannot be interpreted and are refused")
+    # `extensions` is the envelope's sanctioned place for producer-namespaced content. Its content is
+    # never interpreted and feeds no axis; it is reported verbatim under producer_asserted.extensions.
 
     # -- Identity, required fields, classes -------------------------------------------
     if obs.get("profile_id") != manifest["profile_id"]:  # GUARD:PF-PROFILE-ID
@@ -890,6 +891,31 @@ def _map_trust_basis(obs: dict[str, Any], refuse: Any) -> dict[str, Any] | None:
     }
 
 
+def _signer_validity_asserted(obs: dict[str, Any], keys: set[tuple[str, str]]) -> dict[str, Any]:
+    """The producer's signer-validity scalar, annotated against the native findings. Never a
+    contradiction label: a real expired-certificate report carries ``claimSignature.insideValidity``
+    (validity at signing time) and ``signingCredential.expired`` (validity at validation time)
+    together, and a producer may legitimately summarise either. The canonical signer_validity
+    axis comes from the native findings only."""
+    asserted = obs.get("signer_validity") if isinstance(obs.get("signer_validity"), dict) else {}
+    scalar = asserted.get("observation")
+    validity_failure = any(severity == "failure" and code in _INVALID_VALIDITY_CODES for severity, code in keys)
+    if scalar == "expired":
+        consistency = "consistent" if ("failure", "signingCredential.expired") in keys else "uncorroborated"
+    elif scalar == "inside_validity":
+        if validity_failure:
+            consistency = "time_basis_differs"
+        else:
+            consistency = "consistent" if ("success", "claimSignature.insideValidity") in keys else "uncorroborated"
+    else:
+        consistency = "not_evaluated_by_producer"
+    return {
+        "observation": scalar,
+        "determinism_class": asserted.get("determinism_class"),
+        "consistency_with_native_findings": consistency,
+    }
+
+
 def _producer_asserted(obs: dict[str, Any]) -> dict[str, Any]:
     """What the producer asserted, labelled as such. Nothing here is an independent finding
     and none of it feeds a canonical axis."""
@@ -913,10 +939,15 @@ def _producer_asserted(obs: dict[str, Any]) -> dict[str, Any]:
             "trust_pointer_uri": trust.get("trust_pointer_uri"),
             "consistency_with_native_findings": trust_consistency,
         },
-        "signer_validity": obs.get("signer_validity"),
+        "signer_validity": _signer_validity_asserted(obs, keys),
         "trusted_timestamp": obs.get("trusted_timestamp"),
         "validation_time": obs.get("validation_time"),
         "revocation": obs.get("revocation"),
+        "unavailable_inputs": obs.get("unavailable_inputs"),
+        "extensions": {
+            "treatment": "uninterpreted_producer_content_feeds_no_axis",
+            "content": obs.get("extensions"),
+        },
         "native_validation_state": _dict(obs, "native_report", "native_validation_state"),
         "process_exit_code": _dict(obs, "native_report", "process_exit_code"),
         "process_exit_code_semantics": "observation_only_never_a_verdict",
@@ -984,10 +1015,6 @@ def construct_observed_side(
         refuse("MAP_TRUST_OBSERVATION_CONTRADICTS_FINDINGS", "signer_trust.trust_observation", "asserted trusted while the native findings carry signingCredential.untrusted")
     if trust_observation == "untrusted" and ("success", "signingCredential.trusted") in keys:  # GUARD:MAP-TRUST-CONTRADICTS-UNTRUSTED
         refuse("MAP_TRUST_OBSERVATION_CONTRADICTS_FINDINGS", "signer_trust.trust_observation", "asserted untrusted while the native findings carry signingCredential.trusted")
-    if obs["signer_validity"]["observation"] == "inside_validity" and any(
-        severity == "failure" and code in _INVALID_VALIDITY_CODES for severity, code in keys
-    ):  # GUARD:MAP-VALIDITY-CONTRADICTS
-        refuse("MAP_SIGNER_VALIDITY_CONTRADICTS_FINDINGS", "signer_validity.observation", "asserted inside_validity while the native findings carry a signing-credential validity failure")
 
     if refusals:
         return None, StageOutcome(stage, "refused", tuple(refusals))
@@ -1253,6 +1280,53 @@ _BASE_LIMITATIONS = (
 )
 
 
+_TSA_INPUT = "tsa_trust_material"
+
+
+def _tsa_disclosure(obs: dict[str, Any] | None, producer: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """The producer's in-band disclosure that timestamp-authority trust material was not captured.
+    Kept verbatim (the reason text is the producer's and is never interpreted)."""
+    if obs is None or producer is None:
+        return []
+    return [
+        {"input": item["input"], "reason": item.get("reason"), "provenance": "producer_disclosed"}
+        for item in obs.get("unavailable_inputs") or []
+        if isinstance(item, dict) and item.get("input") == _TSA_INPUT
+    ]
+
+
+def _timestamp_reading(
+    obs: dict[str, Any] | None, producer: dict[str, Any] | None, observed: dict[str, Any] | None
+) -> str | None:
+    """How a trusted-timestamp result may be read. Never 'independently trusted': neither the
+    producer's nor this verifier's validator run is given digest-bound TSA trust material, so a
+    native ``timeStamp.trusted`` is a native finding under unrecorded trust anchors."""
+    if obs is None or producer is None:
+        return None
+    claimed = _dict(obs, "trusted_timestamp", "observation") == "validated_and_trusted" or any(
+        axis["axis"] == "timestamp" and any(f["code"] == "timeStamp.trusted" and f["severity"] == "success" for f in axis["native_findings"])
+        for axis in (observed or {}).get("axes", [])
+    )
+    if not claimed:
+        return "no_trusted_timestamp_claimed"
+    if _tsa_disclosure(obs, producer):
+        return "producer_observed_tsa_trust_material_unavailable"
+    if _dict(obs, "trusted_timestamp", "tsa_trust_material_ref"):
+        return "producer_observed_tsa_trust_material_digest_named_unchecked"
+    return "producer_observed_tsa_trust_basis_not_disclosed"
+
+
+def _timestamp_qualification(reading: str | None) -> str | None:
+    """Why a timestamp `match` is not independent TSA trust."""
+    if reading in (None, "no_trusted_timestamp_claimed"):
+        return None
+    return (
+        "A timestamp comparison compares two native validator runs, each applying timestamp-authority trust "
+        "anchors that are not digest-bound input to this adapter. It is not independent trust in the timestamp "
+        "authority."
+    )
+
+
 def _failure_codes(finding: dict[str, Any] | None) -> list[str] | None:
     if finding is None or finding.get("evaluation_status") != "evaluated":
         return None
@@ -1376,6 +1450,11 @@ def _assemble(
                     "trusted_timestamp": producer["trusted_timestamp"] if producer else None,
                     "validation_time": producer["validation_time"] if producer else None,
                 },
+                "trust_material_disclosure": _tsa_disclosure(obs, producer),
+                "reading": _timestamp_reading(obs, producer, observed),
+                "qualification": _timestamp_qualification(_timestamp_reading(obs, producer, observed)),
+                "observed_axis_status": _axis_status(observed, "timestamp"),
+                "recomputed_axis_status": _axis_status(recomputed, "timestamp"),
                 "independent_comparison": comparison_for("timestamp"),
             },
             "revocation": {
@@ -1390,6 +1469,14 @@ def _assemble(
                 "per_axis": [{"axis": axis, **comparison_for(axis)} for axis in _AXIS_NAMES if comparison_for(axis)],
                 "comparability": (comparison_report or {}).get("comparability"),
                 "scope": "axes the verifier recomputed itself; no aggregate match value exists",
+            },
+            "operational_issuance_readiness": {
+                "status": "not_established",
+                "reason": (
+                    "kept separate from the offline technical axes above: this adapter authenticates no issuer, "
+                    "the profile is unsigned and provisional, and a technical replay establishes neither issuer "
+                    "trust, trust-list membership, content truth nor readiness to issue"
+                ),
             },
             "srs_receipt_authentication": {
                 "receipt_signature_present": srs_signature_present,

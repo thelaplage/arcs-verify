@@ -163,10 +163,47 @@ def test_untrusted_assertion_contradicted_by_a_trusted_native_finding_is_refused
     assert codes(build(obs)[1]) == {"MAP_TRUST_OBSERVATION_CONTRADICTS_FINDINGS"}
 
 
-def test_inside_validity_assertion_contradicted_by_an_expiry_finding_is_refused():  # GUARD MAP-VALIDITY-CONTRADICTS
-    obs = m.synthetic_observation(m.REPORT_EXPIRED)
-    obs["signer_validity"]["observation"] = "inside_validity"
-    assert codes(build(obs)[1]) == {"MAP_SIGNER_VALIDITY_CONTRADICTS_FINDINGS"}
+# A real expired-signing-certificate report carries claimSignature.insideValidity (validity at signing
+# time) and signingCredential.expired (validity at validation time) together. That pair is two facts on
+# two axes, never a contradiction, whatever scalar the producer summarised it as.
+EXPIRED_PAIR_REPORT = m.native_report(
+    "Invalid",
+    success=("claimSignature.insideValidity", "claimSignature.validated", "assertion.dataHash.match"),
+    failure=("signingCredential.expired", "signingCredential.untrusted"),
+)
+
+
+@pytest.mark.parametrize(
+    "scalar,expected",
+    [
+        ("expired", "consistent"),
+        ("inside_validity", "time_basis_differs"),
+        ("not_evaluated", "not_evaluated_by_producer"),
+    ],
+)
+def test_expired_certificate_pair_is_never_a_contradiction_and_never_refused(scalar, expected):
+    obs = m.synthetic_observation(EXPIRED_PAIR_REPORT)
+    obs["signer_validity"]["observation"] = scalar
+    finding, outcome = build(obs)
+    assert outcome.status == "completed", outcome.refusals
+    by_axis = {a["axis"]: a["status"] for a in finding["axes"]}
+    assert by_axis["claim_signature"] == "satisfied"  # signing-time validity
+    assert by_axis["signer_validity"] == "failed"  # validation-time expiry, from the native finding
+    asserted = adapter._producer_asserted(obs)["signer_validity"]
+    assert asserted["consistency_with_native_findings"] == expected
+    assert "contradict" not in json.dumps(asserted).lower()
+    assert "contradict" not in json.dumps(outcome.to_dict()).lower()
+
+
+def test_signer_validity_scalar_never_feeds_the_canonical_axis():
+    quiet = m.native_report("Valid", success=("claimSignature.validated", "assertion.dataHash.match"))
+    inside, _ = build(m.mutated(m.synthetic_observation(quiet), "signer_validity.observation", "inside_validity"))
+    expired, _ = build(m.mutated(m.synthetic_observation(quiet), "signer_validity.observation", "expired"))
+    assert inside["axes"] == expired["axes"]
+    assert {a["axis"]: a["status"] for a in inside["axes"]}["signer_validity"] == "not_evaluated"
+    assert adapter._producer_asserted(m.mutated(m.synthetic_observation(quiet), "signer_validity.observation", "expired"))[
+        "signer_validity"
+    ]["consistency_with_native_findings"] == "uncorroborated"
 
 
 def test_a_producer_trust_claim_with_no_native_trust_finding_does_not_become_an_axis_result():
