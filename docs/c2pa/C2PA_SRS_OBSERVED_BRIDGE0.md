@@ -110,6 +110,34 @@ report says so and never reads it as independent trust.
 
 ### Declared or disclosed non-comparability
 
+**What the pinned profile says** (`thelaplage/arcs-srs@3219ff83eb47f46582eefbd53dc46a9d78ef5d4b`):
+
+* `docs/profiles/SRS_C2PA_VALIDATION_OBSERVATION_PROFILE_v0_1.md:278-281` (section 11):
+  "`later_comparison_posture` records whether a later observation can be compared to this one at
+  all. When `signer_trust.trust_basis` is `unknown_not_captured`, `later_comparison_posture` MUST
+  be `not_comparable`: without the exact trust inputs, a later native result is not comparable to
+  this one."
+* `...PROFILE_v0_1.md:285-286`: "There is no per-axis comparison output in this profile;
+  comparison and recomputation belong to the independent verifier, not to the receipt."
+* `schemas/c2pa-profiles/v0.1/srs.c2pa.validation_observation.v0.1.schema.json:375-378` (the field:
+  "Whether a later observation can be compared to this one at all. Comparison itself belongs to the
+  independent verifier.") and `:516-528` (the one forcing rule, for `unknown_not_captured`);
+  `conformance/profiles/.../conformance-rules.json:68-71`; `tools/validate_srs_profile.py:4751-4764`.
+* `...PROFILE_v0_1.md:252-254` (section 8): replay of time-dependent trust and certificate findings
+  is not claimed to be deterministic across wall-clock time.
+
+**Which axes it governs.** The profile defines the posture as **observation-wide** ("at all"). It
+names no axis, scopes it to no single axis (in particular not to the timestamp alone), and
+gives the verifier the decision on comparison (lines 285-286). The only value it forces is
+`not_comparable` for an uncaptured trust basis, justified by missing trust inputs. So which axes
+this verifier declines to compare is an **adapter decision**, not a profile rule. It applies the
+posture to the axes whose results depend on trust inputs or on the validation clock (the
+contract's `policy_dependent` and `time_dependent` classes), following the stated rationale
+(lines 280-281) and section 8, and keeps comparing byte-deterministic axes, which depend on bytes
+only. That is narrower than the profile's literal "at all". The override only ever turns a
+contract `match` or `mismatch` into `not_comparable`; it never produces a `match`, and nothing
+it reports reads as independent trust.
+
 If the observation declares `later_comparison_posture: not_comparable`, the axes that depend on
 trust inputs or the validation clock (the contract's `policy_dependent` and `time_dependent`
 classes: `signer_trust`, `signer_validity`, `timestamp`) are **not compared as if comparable**:
