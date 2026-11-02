@@ -168,11 +168,13 @@ with every restriction in force named in `restricted_by` (`tsa_trust_material_un
 `tsa_trust_material_named_but_unchecked`, `tsa_trust_basis_not_disclosed`,
 `receipt_not_comparable`), and `independent_tsa_appraisal` is always `not_evaluated`.
 
-### Decisions awaiting independent review
+### Independently reviewed adapter behaviours
 
-The independent review accepted the following three behaviours as consistent with the dispatch
-and the owner rule. The review was recorded in the `prov_final_review` review path; the separate
-owner merge hold remains unchanged.
+The independent review on 2026-11-02 accepted the following three adapter behaviours at runtime
+head `f19bd8c207432fcd492d24afd5c6c33711a9f724`. The evidence record is
+`STANDARDS-INTEROP0/reviews/BRIDGE0-f19bd8c20743-luna.md`; it includes a direct CLI replay
+with the pinned validator under network denial. These are adapter decisions, not changes to the
+pinned profile. The separate owner merge decision remains outstanding.
 
 1. **Accepted — the verifier's recomputation runs even when the observed side cannot be built.** If the
    observation has no canonical form (for example `unknown_not_captured`), the observed-side
