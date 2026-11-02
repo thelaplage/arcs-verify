@@ -1,4 +1,4 @@
-"""Negative controls: arcs-verify must import no DAGR/producer code."""
+"""Negative controls: arcs-verify must import no producer code."""
 
 from __future__ import annotations
 
@@ -22,10 +22,13 @@ def _pr010(tmp_path: Path, source: str) -> list:
 
 @pytest.mark.parametrize(
     "module",
-    ["dagr_mcp", "dagr_runtime", "dagr_sdk", "dagr_a2a", "dagr_mcp.server", "dagr"],
+    [
+        "dagr_mcp", "dagr_runtime", "dagr_sdk", "dagr_a2a", "dagr_mcp.server", "dagr",
+        "bagr", "bagr_mcp", "bagr_sdk", "bagr_mcp.server", "bagr_sdk.client",
+    ],
 )
 @pytest.mark.parametrize("form", ["import {m}\n", "from {m} import x\n"])
-def test_planted_dagr_import_fails(tmp_path: Path, module: str, form: str) -> None:
+def test_planted_producer_import_fails(tmp_path: Path, module: str, form: str) -> None:
     findings = _pr010(tmp_path, form.format(m=module))
     assert len(findings) == 1
     assert module.split(".")[0] in findings[0].message
@@ -38,7 +41,7 @@ def test_control_existing_and_clean_imports(tmp_path: Path, module: str) -> None
 
 
 def test_lookalike_names_are_not_flagged(tmp_path: Path) -> None:
-    assert _pr010(tmp_path, "import dagrfoo\nimport mydagr_mcp\n") == []
+    assert _pr010(tmp_path, "import dagrfoo\nimport mydagr_mcp\nimport bagrflow\n") == []
 
 
 def test_real_tree_is_clean() -> None:

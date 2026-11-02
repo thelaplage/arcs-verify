@@ -40,13 +40,12 @@ PRIVATE_IMPORT_ROOTS = (
     # countergraph is a producer; arcs-verify must never import producer code
     "counter" + "graph",
 )
-# arcs-verify must import no DAGR/producer code (emit here, verify there).
-# Every DAGR runtime/producer distribution is a top-level module named "dagr"
-# or "dagr_<suffix>" (dagr_mcp, dagr_runtime, dagr_sdk, dagr_a2a, ...), so the
-# whole family is matched by prefix rather than an enumerated list that a new
-# producer module would silently escape.
-PRIVATE_IMPORT_PREFIXES = ("dagr" + "_",)
-PRIVATE_IMPORT_EXACT = ("dagr",)
+# arcs-verify must import no producer code (emit here, verify there).
+# DAGR and BAGR runtime distributions use top-level modules named for their
+# family root or suffixed roots (dagr_mcp, bagr_mcp, bagr_sdk, ...), so each
+# family is matched by prefix rather than a list that misses future modules.
+PRIVATE_IMPORT_PREFIXES = ("dagr" + "_", "bagr" + "_")
+PRIVATE_IMPORT_EXACT = ("dagr", "bagr")
 
 
 def is_private_import_root(root_name: str) -> bool:

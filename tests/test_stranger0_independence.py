@@ -234,13 +234,48 @@ def test_planted_producer_module_is_detected_in_a_fresh_process(tmp_path):
     assert json.loads(proc.stdout) == {"before": [], "after": ["dagr_planted_producer"]}
 
 
+@pytest.mark.parametrize(
+    "module",
+    ["bagr_mcp", "bagr_sdk", "bagr_mcp.server", "bagr_sdk.client"],
+)
+def test_planted_bagr_module_and_submodule_are_detected_in_a_fresh_process(tmp_path, module):
+    parts = module.split(".")
+    package = tmp_path
+    for part in parts[:-1]:
+        package = package / part
+        package.mkdir(exist_ok=True)
+        (package / "__init__.py").write_text("\n")
+    (package / f"{parts[-1]}.py").write_text("VALUE = 1\n")
+    code = textwrap.dedent(
+        """
+        import importlib, importlib.util, json, sys
+        sys.path.insert(0, sys.argv[1])
+        spec = importlib.util.spec_from_file_location("rcv", sys.argv[2] + "/stranger0/receiver.py")
+        rcv = importlib.util.module_from_spec(spec); spec.loader.exec_module(rcv)
+        importlib.import_module(sys.argv[3])
+        print(json.dumps(rcv.producer_modules_in(list(sys.modules))))
+        """
+    )
+    proc = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(tmp_path), str(REPO), module],
+        capture_output=True,
+        text=True,
+        env=NEUTRAL_ENV,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert json.loads(proc.stdout) == [parts[0]]
+
+
 def test_receiver_predicate_covers_every_root_the_release_guard_forbids():
-    names = list(guard.PRIVATE_IMPORT_ROOTS) + list(guard.PRIVATE_IMPORT_EXACT) + ["dagr_mcp", "dagr_runtime", "dagr_sdk", "dagr_a2a"]
+    names = list(guard.PRIVATE_IMPORT_ROOTS) + list(guard.PRIVATE_IMPORT_EXACT) + [
+        "dagr_mcp", "dagr_runtime", "dagr_sdk", "dagr_a2a",
+        "bagr_mcp", "bagr_sdk", "bagr_mcp.server", "bagr_sdk.client",
+    ]
     assert names
     for name in names:
         assert guard.is_private_import_root(name) is True
         assert receiver.is_producer_module(name) is True, name
-    for name in ("json", "arcs_verify", "cryptography", "dagrfoo", "mydagr_mcp"):
+    for name in ("json", "arcs_verify", "cryptography", "dagrfoo", "mydagr_mcp", "bagrflow"):
         assert guard.is_private_import_root(name) is False
         assert receiver.is_producer_module(name) is False, name
 
