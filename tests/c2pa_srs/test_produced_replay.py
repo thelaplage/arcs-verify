@@ -317,6 +317,12 @@ def test_positive_replay_independent_findings_per_axis_and_deterministic_on_byte
 
 
 @live_only
+def test_positive_replay_preserves_producer_asserted_observed_provenance():
+    result = run("positive", executable=LIVE)
+    assert result.report["axes"]["native_validation_state"]["observed_provenance"] == "producer_asserted"
+
+
+@live_only
 def test_positive_replay_effective_comparison_follows_the_producers_declared_posture():
     result = run("positive", executable=LIVE)
     axes = per_axis(result)
