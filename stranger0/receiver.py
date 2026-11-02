@@ -62,6 +62,7 @@ BOOLEAN_CHECKS = (
 _PRODUCER_EXACT = frozenset(
     {
         "dagr",
+        "bagr",
         "countergraph",
         "counterpedia",
         "arcs_amnesiac",
@@ -70,7 +71,7 @@ _PRODUCER_EXACT = frozenset(
         "garp" + "_local",
     }
 )
-_PRODUCER_PREFIXES = ("dagr" + "_",)
+_PRODUCER_PREFIXES = ("dagr" + "_", "bagr" + "_")
 
 
 def is_producer_module(top_level_name: str) -> bool:
@@ -352,10 +353,20 @@ def selfcheck() -> dict[str, Any]:
     checks: dict[str, bool] = {
         "network_tripwire_refuses_and_counts": refused and "socket.getaddrinfo" in _TRIPWIRE_EVENTS,
         "producer_predicate_flags_producer_names": all(
-            is_producer_module(n) for n in ("dagr", "dagr_" + "mcp", "countergraph", "counterpedia")
+            is_producer_module(n)
+            for n in (
+                "dagr",
+                "dagr_" + "mcp",
+                "bagr",
+                "bagr_" + "mcp",
+                "bagr_" + "sdk",
+                "countergraph",
+                "counterpedia",
+            )
         ),
         "producer_predicate_ignores_benign_names": not any(
-            is_producer_module(n) for n in ("json", "arcs_verify", "dagrfoo", "mydagr_mcp")
+            is_producer_module(n)
+            for n in ("json", "arcs_verify", "dagrfoo", "mydagr_mcp", "bagrflow")
         ),
     }
     planted = "dagr_" + "selfcheck_planted"

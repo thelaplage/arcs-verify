@@ -4673,8 +4673,8 @@
     "A receiver decision is the receiver's own, under its own trust input; it grants no authority to the issuer."
   ],
   "environment": {
-    "orchestrator_python": "3.12.13",
-    "receiver_python": "3.12.13"
+    "orchestrator_python": "3.11.15",
+    "receiver_python": "3.11.15"
   },
   "falsifier": {
     "overall": "NOT_FALSIFIED_IN_THIS_RUN",
@@ -4919,7 +4919,7 @@
     "artifacts_sha256": "sha256:40b956af0a623fcc328dde237b14cfaea809745f73945d1bc1e03274d1a562c4",
     "catalog_sha256": "sha256:2bcb7aa0f702132ba8625e09ea67073e57663a9c6620c5e6e8181fc657494818",
     "orchestrator_sha256": "sha256:bd9581b7d95922ceea1b56b03017abce1c217cb249404de69af30753d3b7c1d1",
-    "receiver_sha256": "sha256:71f006e7dca4261a187ae44df74903e59663327799b57c2e634d095d6eed9717"
+    "receiver_sha256": "sha256:04c2d797225feccd2675f38072b3db2bbfd9c7f9888e2d1cc17e8db7a0bf89f9"
   },
   "result": "PASS",
   "schema": "arcs.verify.stranger0.result_transcript.v0.1",
