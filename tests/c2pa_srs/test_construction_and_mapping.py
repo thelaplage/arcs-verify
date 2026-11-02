@@ -201,6 +201,9 @@ def test_signer_validity_scalar_never_feeds_the_canonical_axis():
     expired, _ = build(m.mutated(m.synthetic_observation(quiet), "signer_validity.observation", "expired"))
     assert inside["axes"] == expired["axes"]
     assert {a["axis"]: a["status"] for a in inside["axes"]}["signer_validity"] == "not_evaluated"
+    assert adapter._producer_asserted(m.mutated(m.synthetic_observation(quiet), "signer_validity.observation", "inside_validity"))[
+        "signer_validity"
+    ]["consistency_with_native_findings"] == "uncorroborated"
     assert adapter._producer_asserted(m.mutated(m.synthetic_observation(quiet), "signer_validity.observation", "expired"))[
         "signer_validity"
     ]["consistency_with_native_findings"] == "uncorroborated"
