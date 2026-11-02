@@ -560,8 +560,8 @@ def test_tsa_disclosure_preserves_timestamp_mismatch_under_nonconformant_contrac
         validator_report=recomputed,
     )
     timestamp = per_axis(result)["timestamp"]
-    assert timestamp["contract_comparison"]["state"] == "mismatch"
     assert timestamp["state"] == "not_comparable"
+    assert timestamp["contract_comparison"]["state"] == "mismatch"
     assert timestamp["comparison_reason"] == "tsa_trust_material_not_captured"
     assert result.stages["comparison"].status == "refused"
     assert [r.code for r in result.stages["comparison"].refusals] == ["COMPARISON_REPORT_NONCONFORMANT"]
