@@ -546,6 +546,27 @@ def test_a_disclosure_without_a_declared_posture_restricts_only_the_timestamp_ax
     assert result.stages["comparison"].status == "completed"
 
 
+def test_tsa_disclosure_preserves_timestamp_mismatch_under_nonconformant_contract(tmp_path):
+    obs = with_tsa_disclosure(ANCHORED_BASE)
+    recomputed = m.native_report(
+        "Valid",
+        success=("claimSignature.validated", "assertion.dataHash.match", "timeStamp.validated", "timeStamp.trusted"),
+        failure=("signingCredential.untrusted", "timeStamp.mismatch"),
+    )
+    result, _ = consume(
+        tmp_path,
+        obs,
+        evidence=m.evidence_for(m.REPORT_ANCHORED),
+        validator_report=recomputed,
+    )
+    timestamp = per_axis(result)["timestamp"]
+    assert timestamp["contract_comparison"]["state"] == "mismatch"
+    assert timestamp["state"] == "not_comparable"
+    assert timestamp["comparison_reason"] == "tsa_trust_material_not_captured"
+    assert result.stages["comparison"].status == "refused"
+    assert [r.code for r in result.stages["comparison"].refusals] == ["COMPARISON_REPORT_NONCONFORMANT"]
+
+
 def test_a_restricted_receipt_still_surfaces_an_independent_divergence(tmp_path):
     obs = declared(m.synthetic_observation(m.REPORT_VALID_UNTRUSTED))
     result, _ = consume(tmp_path, obs, validator_report=m.REPORT_INVALID_CLAIM)  # the verifier's own run disagrees

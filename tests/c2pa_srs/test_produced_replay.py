@@ -205,6 +205,8 @@ def test_missing_manifest_specimen_claims_no_timestamp_and_stops_without_a_nativ
     assert result.report["axes"]["timestamp"]["reading"] == "no_trusted_timestamp_claimed"
     finding = result.report["observed_finding"]
     assert finding["evaluation_status"] == "input_unavailable" and all(a["status"] == "not_evaluated" for a in finding["axes"])
+    assert finding["evidence_class"] == "supplied_producer_assertion"
+    assert finding["side"] == "observed"
     assert finding["native_validation_state"] is None
 
 
