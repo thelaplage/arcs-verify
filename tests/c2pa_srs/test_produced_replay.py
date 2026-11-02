@@ -347,13 +347,16 @@ def test_positive_replay_effective_comparison_follows_the_producers_declared_pos
 @live_only
 def test_tampered_derivative_replay_native_invalid_exit_zero_is_failed_on_both_sides():
     result = run("negative_native_invalid_exit0", executable=LIVE)
-    if produced_posture() == "not_comparable":
+    if produced_posture("negative_native_invalid_exit0") == "not_comparable":
         assert result.stopped_at == "comparison"
         assert result.stages["comparison"].status == "restricted"
         assert {v["state"] for v in result.report["axes"]["independent_comparison"]["per_axis"]} == {"restricted_receipt_wide"}
+        asset = per_axis(result)["asset_binding"]
+        assert (asset["observed_status"], asset["recomputed_status"]) == ("failed", "failed")
         states = result.report["axes"]["native_validation_state"]
         assert (states["observed_verbatim"], states["recomputed_verbatim"]) == ("Invalid", "Invalid")
-        assert "assertion.dataHash.mismatch" in result.report["axes"]["native_failure_codes"]["observed"]
+        codes = result.report["axes"]["native_failure_codes"]
+        assert "assertion.dataHash.mismatch" in codes["observed"] and "assertion.dataHash.mismatch" in codes["recomputed"]
         assert result.report["producer_asserted"]["process_exit_code"] == 0
         return
     assert result.stopped_at is None
