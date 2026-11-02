@@ -521,6 +521,7 @@ def test_case_no_native_trusted_timestamp_claim_is_not_restricted_and_claims_not
     timestamp = result.report["axes"]["timestamp"]
     assert timestamp["reading"] == "no_trusted_timestamp_claimed"
     assert timestamp["reliance"]["status"] == "no_native_trusted_timestamp_claimed"
+    assert timestamp["reliance"]["independent_tsa_appraisal"] == "not_evaluated"
 
 
 def test_not_comparable_with_no_stated_reason_is_reported_as_exactly_that(tmp_path):  # GUARD RESTRICT-UNSTATED
