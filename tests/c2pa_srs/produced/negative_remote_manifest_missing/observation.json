@@ -43,7 +43,7 @@
     "performed": true,
     "remote_manifest_fetch_applied": false
   },
-  "issued_at": "2026-11-01T21:15:00Z",
+  "issued_at": "2026-11-01T21:42:41Z",
   "issuer_id": "issuer.TEST-NON-OPERATIONAL.dagr-ingest/c2pa-observation-provisional",
   "later_comparison_posture": "not_evaluated",
   "machine_limitations": [
@@ -133,6 +133,6 @@
   "validation_time": {
     "trusted_timestamp_relevant": false,
     "validation_time_control": "unsupported",
-    "validation_timestamp_observed": "2026-11-01T21:15:00Z"
+    "validation_timestamp_observed": "2026-11-01T21:42:41Z"
   }
 }

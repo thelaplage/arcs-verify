@@ -44,15 +44,15 @@
       "source": "specimen-negative-native-invalid-exit0/native_report.json"
     },
     "negative_native_invalid_exit0/observation.json": {
-      "bytes": 9369,
+      "bytes": 9880,
       "role": "observation the producer emitted",
-      "sha256": "sha256:f6e040be9fd43cfa21d87974f6d0fe6a4fa7bf26f74b3c106a585da94d3f0d09",
+      "sha256": "sha256:6b9f1219499da201c341cb45974ea2e3f0807a922c532967e297615a90c6a3da",
       "source": "specimen-negative-native-invalid-exit0/observation.json"
     },
     "negative_remote_manifest_missing/observation.json": {
       "bytes": 5471,
       "role": "observation the producer emitted",
-      "sha256": "sha256:9ef14a34b16e2b85b4d83eab513673f69fb3ef97a8f3b30d7a35f408e3cbfdfc",
+      "sha256": "sha256:d4818c21c319b417110b067c423ca8ecfddf7f367591111f9a1fc2527ff26982",
       "source": "specimen-negative-remote-manifest-missing/observation.json"
     },
     "positive/native_report.json": {
@@ -62,9 +62,9 @@
       "source": "specimen/native_report.json"
     },
     "positive/observation.json": {
-      "bytes": 9364,
+      "bytes": 9875,
       "role": "observation the producer emitted",
-      "sha256": "sha256:439b70d1caae60bbc98b0eb70f2bca5913b03b8f4fd5bc63ec922da57957376c",
+      "sha256": "sha256:32a0ebd9cb47edd093f15eba1db1eb43c3130bb32bda645016ee2f7a337cbb22",
       "source": "specimen/observation.json"
     }
   },
@@ -75,11 +75,11 @@
     "tampered_derivative": "cloud.TAMPERED-DERIVATIVE.jpg is cloud.jpg with one byte flipped by the EMIT0 lane; same licence as its source."
   },
   "producer": {
-    "head_commit": "fa75456853cae01098ab0fbf83bbaecaf40b8c08",
-    "head_relation": "HEAD differs from the producing commit only in docs and the committed fixture copies of these bytes; dagr_ingest/, scripts/, .ecosystem/ and tests/test_c2pa_observation.py are byte-identical to the producing commit.",
-    "head_tree": "5905e53f6eec77dbb322d13fd2391d5c216296ca",
-    "producing_commit": "9ae020a1c5b71620e967618dcc97c7804b3f12aa",
-    "producing_tree": "27647637f1c1a36827249ee8444281a740ce708c",
+    "head_commit": "abb165628aa93d2df7c806df72a5a541674dd13f",
+    "head_relation": "HEAD differs from the producing commit only in docs, tests (tests/test_c2pa_observation.py gained test-only commits) and the committed fixture copies of these bytes; dagr_ingest/, scripts/ and .ecosystem/ are byte-identical to the producing commit.",
+    "head_tree": "c222ab7d0ad4bbdc2021ddce12d82a3248143bda",
+    "producing_commit": "02e8a1f393d9835297e2141fcf6a8cd42e25b592",
+    "producing_tree": "bb981634d296fceefdc3c31dbffa5c77fff6b5c0",
     "pull_request": "https://github.com/thelaplage/dagr-ingest/pull/36",
     "repository": "https://github.com/thelaplage/dagr-ingest",
     "script": "scripts/c2pa_observation_specimen.py"
@@ -88,51 +88,51 @@
     "by_specimen": {
       "negative_native_invalid_exit0": {
         "checkout_dirty": false,
-        "observed_at": "2026-11-01T21:14:59Z",
+        "observed_at": "2026-11-01T21:42:40Z",
         "os_network_deny": true,
         "platform": "macOS-14.6.1-arm64-arm-64bit-Mach-O",
         "process_exit_code": 0,
-        "producer_commit": "9ae020a1c5b71620e967618dcc97c7804b3f12aa",
+        "producer_commit": "02e8a1f393d9835297e2141fcf6a8cd42e25b592",
         "python": "3.14.8",
         "sandbox_profile": "(version 1)(allow default)(deny network*)",
         "script": "scripts/c2pa_observation_specimen.py",
         "script_sha256": "sha256:bf4cec05158a9c06fa9a7d142e022f94440b697b1e2693f712cd51e139a8d997",
         "settings_sha256": "sha256:9e8ff2636c57c33a77549000ca69b733cba8f683f8fdf2e12ded512367f6a163",
-        "sha256_of_retained_original": "sha256:fe163685f2eee582ff9f60e53b858f56e9154875f7d625957577a015e926a0e9",
+        "sha256_of_retained_original": "sha256:e1cfe9685ccb0c17b3e8484bf7327b7e2538356840d72323366bfe6db3e2a6b9",
         "stdout_sha256": "sha256:f18c787b720490784756dff75740a8d6f6cc863b30cc04f07f4dde5415b6d067",
         "validator_binary_sha256": "sha256:95855a36e8bcf596d2c6bcebec2e68ccbefc05aea5f21457bb6234c4c6372528",
         "validator_version_line": "c2patool 0.27.15"
       },
       "negative_remote_manifest_missing": {
         "checkout_dirty": false,
-        "observed_at": "2026-11-01T21:15:00Z",
+        "observed_at": "2026-11-01T21:42:41Z",
         "os_network_deny": true,
         "platform": "macOS-14.6.1-arm64-arm-64bit-Mach-O",
         "process_exit_code": 1,
-        "producer_commit": "9ae020a1c5b71620e967618dcc97c7804b3f12aa",
+        "producer_commit": "02e8a1f393d9835297e2141fcf6a8cd42e25b592",
         "python": "3.14.8",
         "sandbox_profile": "(version 1)(allow default)(deny network*)",
         "script": "scripts/c2pa_observation_specimen.py",
         "script_sha256": "sha256:bf4cec05158a9c06fa9a7d142e022f94440b697b1e2693f712cd51e139a8d997",
         "settings_sha256": "sha256:9e8ff2636c57c33a77549000ca69b733cba8f683f8fdf2e12ded512367f6a163",
-        "sha256_of_retained_original": "sha256:f034d4cd4a03c8ce35826995c895dc743a27fba6a82fa2a075f3c594d578debb",
+        "sha256_of_retained_original": "sha256:30c8ec6d99401508d7532ddc7577c2aa1a986f009922d0aa4a42b3165a415160",
         "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "validator_binary_sha256": "sha256:95855a36e8bcf596d2c6bcebec2e68ccbefc05aea5f21457bb6234c4c6372528",
         "validator_version_line": "c2patool 0.27.15"
       },
       "positive": {
         "checkout_dirty": false,
-        "observed_at": "2026-11-01T21:14:59Z",
+        "observed_at": "2026-11-01T21:42:40Z",
         "os_network_deny": true,
         "platform": "macOS-14.6.1-arm64-arm-64bit-Mach-O",
         "process_exit_code": 0,
-        "producer_commit": "9ae020a1c5b71620e967618dcc97c7804b3f12aa",
+        "producer_commit": "02e8a1f393d9835297e2141fcf6a8cd42e25b592",
         "python": "3.14.8",
         "sandbox_profile": "(version 1)(allow default)(deny network*)",
         "script": "scripts/c2pa_observation_specimen.py",
         "script_sha256": "sha256:bf4cec05158a9c06fa9a7d142e022f94440b697b1e2693f712cd51e139a8d997",
         "settings_sha256": "sha256:9e8ff2636c57c33a77549000ca69b733cba8f683f8fdf2e12ded512367f6a163",
-        "sha256_of_retained_original": "sha256:4ea928bc509565feb92c71d76550806e3e1951999dd00ece95c0713d0d5bd969",
+        "sha256_of_retained_original": "sha256:589b4f962865abd796c80ffaeecd4a3965a69ccf022ef1383fe8de9da0bd37e4",
         "stdout_sha256": "sha256:86789a8860f062590188a200172e703a112548bc8ba44c9d659dcb7e57c7e8d2",
         "validator_binary_sha256": "sha256:95855a36e8bcf596d2c6bcebec2e68ccbefc05aea5f21457bb6234c4c6372528",
         "validator_version_line": "c2patool 0.27.15"
@@ -144,16 +144,16 @@
   "specimens": {
     "negative_native_invalid_exit0": {
       "asset": "assets/cloud.TAMPERED-DERIVATIVE.jpg",
-      "index_observation_sha256": "sha256:f6e040be9fd43cfa21d87974f6d0fe6a4fa7bf26f74b3c106a585da94d3f0d09",
+      "index_observation_sha256": "sha256:6b9f1219499da201c341cb45974ea2e3f0807a922c532967e297615a90c6a3da",
       "manifest_store": "assets/cloud_remote_manifest.c2pa",
       "native_report": "negative_native_invalid_exit0/native_report.json",
       "observation": "negative_native_invalid_exit0/observation.json",
       "producer_directory": "specimen-negative-native-invalid-exit0",
-      "role": "NEGATIVE: TAMPERED DERIVATIVE of the asset; native Invalid with process exit 0"
+      "role": "NEGATIVE: TAMPERED DERIVATIVE of the asset; native Invalid with process exit 0; same TSA-gap posture"
     },
     "negative_remote_manifest_missing": {
       "asset": "assets/cloud.jpg",
-      "index_observation_sha256": "sha256:9ef14a34b16e2b85b4d83eab513673f69fb3ef97a8f3b30d7a35f408e3cbfdfc",
+      "index_observation_sha256": "sha256:d4818c21c319b417110b067c423ca8ecfddf7f367591111f9a1fc2527ff26982",
       "manifest_store": null,
       "native_report": null,
       "observation": "negative_remote_manifest_missing/observation.json",
@@ -162,12 +162,12 @@
     },
     "positive": {
       "asset": "assets/cloud.jpg",
-      "index_observation_sha256": "sha256:439b70d1caae60bbc98b0eb70f2bca5913b03b8f4fd5bc63ec922da57957376c",
+      "index_observation_sha256": "sha256:32a0ebd9cb47edd093f15eba1db1eb43c3130bb32bda645016ee2f7a337cbb22",
       "manifest_store": "assets/cloud_remote_manifest.c2pa",
       "native_report": "positive/native_report.json",
       "observation": "positive/observation.json",
       "producer_directory": "specimen",
-      "role": "POSITIVE: native Valid, exit 0, signer untrusted (separate axes); carries the in-band tsa_trust_material disclosure (reason: 'named in the retained record')"
+      "role": "POSITIVE: native Valid, exit 0, signer untrusted; native-reported validated_and_trusted timestamp with the owner-ruled TSA-gap posture (not_comparable, explicit statement)"
     }
   },
   "status": "Real producer output (the producer was actually executed over the pinned asset and the report the pinned validator emitted). UNSIGNED and PROVISIONAL, emitted under a TEST NON-OPERATIONAL issuer identity. NOT an authenticated or operationally issued receipt. No operational issuer is selected.",

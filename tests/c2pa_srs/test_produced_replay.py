@@ -347,6 +347,15 @@ def test_positive_replay_effective_comparison_follows_the_producers_declared_pos
 @live_only
 def test_tampered_derivative_replay_native_invalid_exit_zero_is_failed_on_both_sides():
     result = run("negative_native_invalid_exit0", executable=LIVE)
+    if produced_posture() == "not_comparable":
+        assert result.stopped_at == "comparison"
+        assert result.stages["comparison"].status == "restricted"
+        assert {v["state"] for v in result.report["axes"]["independent_comparison"]["per_axis"]} == {"restricted_receipt_wide"}
+        states = result.report["axes"]["native_validation_state"]
+        assert (states["observed_verbatim"], states["recomputed_verbatim"]) == ("Invalid", "Invalid")
+        assert "assertion.dataHash.mismatch" in result.report["axes"]["native_failure_codes"]["observed"]
+        assert result.report["producer_asserted"]["process_exit_code"] == 0
+        return
     assert result.stopped_at is None
     axes = per_axis(result)
     assert (axes["asset_binding"]["state"], axes["asset_binding"]["observed_status"], axes["asset_binding"]["recomputed_status"]) == ("match", "failed", "failed")
@@ -368,8 +377,9 @@ def test_remote_manifest_missing_replay_has_no_native_evaluation_on_either_side(
 
 
 @live_only
-def test_mutation_forged_foreign_report_pairing_is_a_mismatch_never_a_match():  # TEST MUTATION
+def test_mutation_forged_foreign_report_pairing_is_a_mismatch_when_comparable():  # TEST MUTATION; explicit comparable posture
     forged, ev = forged_foreign_pairing()
+    forged["later_comparison_posture"] = "comparable"  # deep-copied test receipt; do not alter vendored bytes
     result = run("positive", obs=forged, ev=ev, executable=LIVE)
     assert result.stages["input_correspondence"].status == "completed"
     assert result.stopped_at is None
@@ -381,12 +391,13 @@ def test_mutation_forged_foreign_report_pairing_is_a_mismatch_never_a_match():  
 
 
 @live_only
-def test_mutation_digest_consistent_tampered_asset_with_the_producers_valid_report_is_a_mismatch():  # TEST MUTATION
+def test_mutation_digest_consistent_tampered_asset_with_the_producers_valid_report_is_a_mismatch_when_comparable():  # TEST MUTATION; explicit comparable posture
     asset = bytearray(read(PROV["specimens"]["positive"]["asset"]))
     asset[100000] ^= 0x01
     asset = bytes(asset)
     forged = json.loads(observation_bytes("positive"))
     forged["asset_digest"] = forged["subject_ref"] = m.sha(asset)
+    forged["later_comparison_posture"] = "comparable"  # deep-copied test receipt; do not alter vendored bytes
     result = run("positive", obs=forged, ev=evidence("positive", asset=asset, asset_name="cloud.mutated.jpg"), executable=LIVE)
     assert result.stages["input_correspondence"].status == "completed"
     entry = per_axis(result)["asset_binding"]

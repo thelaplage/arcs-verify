@@ -33,7 +33,13 @@
       "notice": "PROVISIONAL AND UNSIGNED. Emitted under a TEST issuer identity that is NON-OPERATIONAL; no receipt_signature and no key exist for this observation. It records what a named external validator reported over pinned bytes. It establishes no issuer standing, no content truth and no independent recomputation, and the operational issuer decision is not made.",
       "policy_profile_slug": "srs.c2pa.validation_observation.v0.1",
       "provisional_acknowledged": true,
-      "signature": "absent_by_design"
+      "signature": "absent_by_design",
+      "timestamp_trust": {
+        "downstream_promotion": "none",
+        "independent_appraisal": "not_evaluated",
+        "statement": "TSA trust cannot be independently established from the retained inputs; the timestamp trust shown is the native validator's report only and must not be promoted to comparison, Check, publication or receiver reliance",
+        "status": "native_reported_not_independently_established"
+      }
     }
   },
   "external_binding_relation_mode": "validation_observation",
@@ -43,9 +49,9 @@
     "performed": true,
     "remote_manifest_fetch_applied": false
   },
-  "issued_at": "2026-11-01T21:14:59Z",
+  "issued_at": "2026-11-01T21:42:40Z",
   "issuer_id": "issuer.TEST-NON-OPERATIONAL.dagr-ingest/c2pa-observation-provisional",
-  "later_comparison_posture": "comparable",
+  "later_comparison_posture": "not_comparable",
   "machine_limitations": [
     {
       "code": "CONTENT_TRUTH_NOT_EVALUATED"
@@ -230,12 +236,12 @@
     },
     {
       "input": "tsa_trust_material",
-      "reason": "the native report carries timeStamp.trusted while no tsa_trust_list material is named in the retained record; the timestamp trust anchors it applied are not captured as digest-bound input"
+      "reason": "the native report carries timeStamp.trusted while no tsa_trust_list material is named in the retained record; the timestamp trust anchors it applied are not captured as digest-bound input, so TSA trust cannot be independently established from the retained inputs"
     }
   ],
   "validation_time": {
     "trusted_timestamp_relevant": true,
     "validation_time_control": "unsupported",
-    "validation_timestamp_observed": "2026-11-01T21:14:59Z"
+    "validation_timestamp_observed": "2026-11-01T21:42:40Z"
   }
 }
