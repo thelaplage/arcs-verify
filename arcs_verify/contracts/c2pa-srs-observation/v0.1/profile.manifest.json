@@ -1,0 +1,151 @@
+{
+  "profile_id": "srs.c2pa.validation_observation",
+  "profile_version": "v0.1",
+  "profile_slug": "srs.c2pa.validation_observation.v0.1",
+  "release_stage": "provisional",
+  "document_path": "docs/profiles/SRS_C2PA_VALIDATION_OBSERVATION_PROFILE_v0_1.md",
+  "document_sha256": "eafe85fb735f5ffc3c2d95490986aa9bc5d1777e8e1363b83b18e49dce596aaa",
+  "field_schema_path": "schemas/c2pa-profiles/v0.1/srs.c2pa.validation_observation.v0.1.schema.json",
+  "conformance_rules_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/conformance-rules.json",
+  "compatible_envelope_identities": [
+    {
+      "published_version": "0.2.1",
+      "identity": "srs-envelope@0.2.1+sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1"
+    }
+  ],
+  "default_envelope_version": "0.2.1",
+  "requires_signing": false,
+  "fixed_values": {
+    "receipt_version": "srs.core.v5.1",
+    "profile_id": "srs.c2pa.validation_observation",
+    "profile_version": "v0.1",
+    "receipt_type": "provenance",
+    "boundary_type": "c2pa_validation_observation_boundary",
+    "receipt_kind": "c2pa_validation_observation",
+    "external_binding_relation_mode": "validation_observation"
+  },
+  "required_fields": [
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "external_binding_relation_mode",
+    "subject_ref",
+    "issuer_id",
+    "runtime_instance_id",
+    "boundary_id",
+    "issued_at",
+    "asset_digest",
+    "manifest_store",
+    "manifest_acquisition",
+    "native_validator",
+    "signer_trust",
+    "signer_validity",
+    "trusted_timestamp",
+    "validation_time",
+    "revocation",
+    "evaluation_posture",
+    "later_comparison_posture",
+    "prior_producer_report",
+    "unavailable_inputs",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "machine_limitations",
+    "extensions"
+  ],
+  "receipt_kinds": [
+    "c2pa_validation_observation"
+  ],
+  "manifest_store_states": [
+    "present",
+    "absent",
+    "inaccessible",
+    "not_evaluated"
+  ],
+  "manifest_acquisition_modes": [
+    "embedded",
+    "remote_reference",
+    "external_supplied",
+    "sidecar",
+    "durable_recovery",
+    "none"
+  ],
+  "trust_basis_values": [
+    "official_trust_list",
+    "custom_allowed_list",
+    "explicit_anchors",
+    "default_no_trust_material",
+    "trust_verification_disabled",
+    "unknown_not_captured"
+  ],
+  "forbidden_aggregate_fields": [
+    "c2pa_valid",
+    "provenance_valid",
+    "content_authentic",
+    "content_verified",
+    "depicted_content_verified",
+    "physical_liveness_verified",
+    "ai_generated",
+    "signer_trusted",
+    "observation_matches_recomputation",
+    "admission_verified",
+    "standing_score"
+  ],
+  "artifact_classes_covered_required": [
+    "asset_digest",
+    "manifest_store_state",
+    "manifest_acquisition_mode",
+    "native_validator_identity",
+    "native_report_digest",
+    "trust_material_digests",
+    "validation_observation",
+    "trusted_timestamp_observation"
+  ],
+  "artifact_classes_excluded_required": [
+    "raw_asset_bytes",
+    "raw_manifest_store_bytes",
+    "raw_native_report_bytes",
+    "raw_certificate_private_material"
+  ],
+  "required_attestation_limits": {
+    "base": "The receipt records an observation of a native C2PA validation performed by a named external validator over pinned inputs. It does not establish content truth, depicted-event truth, physical liveness, universal signer trust, independent ARCS recomputation, DAGR admission, or public standing."
+  },
+  "required_machine_limitation_codes": [
+    "CONTENT_TRUTH_NOT_EVALUATED",
+    "ADMISSION_NOT_EVALUATED",
+    "C2PA_SIGNER_TRUST_NOT_UNIVERSAL",
+    "C2PA_NATIVE_VALIDATION_NOT_RECOMPUTED",
+    "C2PA_DEPICTED_CONTENT_NOT_ESTABLISHED",
+    "PUBLIC_STANDING_NOT_EVALUATED"
+  ],
+  "limitation_codes_registry_version": "0.1",
+  "separate_findings": [
+    "envelope_shape",
+    "profile_conformance",
+    "signature_shape",
+    "key_resolved",
+    "key_trusted"
+  ],
+  "notes": [
+    "PROVISIONAL: this profile is not stable and has not been ratified. C2PA remains the native authority for every C2PA finding recorded here.",
+    "External-binding relation mode is validation_observation (governing doctrine s10). This receipt observes a native validation; it is not native emission and it is not an independent recomputation.",
+    "No envelope field is added and no frozen envelope bytes are changed. All profile fields are profile-owned placements.",
+    "A process exit code is never a validation verdict; verdict_source is fixed to native_machine_report.",
+    "native_validation_state is a native field only. It is never an SRS verdict and never a signer-trust statement; native failures are preserved independently in native_findings.",
+    "Native result, signer trust, signer validity, and trusted timestamp are independent axes. No aggregate roll-up field may appear.",
+    "Trust material is digest-bound bytes. A trust-list name or URL is not trust material, and remote trust pointers are never dereferenced during hermetic verification.",
+    "Validation time is not caller-injectable in the validator this profile was grounded against; replay of time-dependent trust and certificate findings is NOT claimed to be deterministic across wall-clock time.",
+    "Revocation is not_evaluated under hermetic settings. Silence about revocation is not evidence of non-revocation.",
+    "assertion_attribution gathered and redacted branches are structurally supported and empirically unexercised; no fixture manufactures coverage for them.",
+    "CANDIDATE PIN — UNRESOLVED: the generic provenance-envelope machine contract (arcs-standard, lane ARCS-PROV-ENVELOPE0, superseding the withdrawn ARCS-PROV-SIGNAL0 lane) has not landed on arcs-standard main at base 7b8985712dbf750c90cd746b8bf439f17eb25277. The generic object carries no required signal_result and references native findings opaquely. No digest exists to pin. It MUST be repinned before merge readiness.",
+    "CANDIDATE PIN — DRAFT UPSTREAM: the arcs-standard EvidenceSourceDescriptor shape is DRAFT / pre-adoption and is consumed as a compatibility constraint only, never cited as stable published authority.",
+    "The profile-specific conformance decisions are held as data in conformance-rules.json and consumed by the shared checker. That file is pinned by the binding's semantic_digest, so a checker-visible rule change cannot occur without moving the digest.",
+    "The normative Markdown document is a human-readable expression of the machine contract (field schema + profile manifest + conformance-rules.json + limitation-code contract + envelope identity + fixtures). It is not a second, independent source of normative behaviour, which is why it is excluded from the semantic digest.",
+    "The verifier recomputes receipt structure only. It does not perform C2PA validation, does not establish content truth, and does not confer admission or standing."
+  ]
+}

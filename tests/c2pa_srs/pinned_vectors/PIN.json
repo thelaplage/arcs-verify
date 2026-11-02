@@ -1,0 +1,117 @@
+{
+  "binding_manifest_path": "docs/integrations/SRS_C2PA_BINDING_v0_1.manifest.json",
+  "files": {
+    "invalid/c2pa-aggregate-validity-field.json": {
+      "sha256": "sha256:69b180c27ce8abedd36b3c461e316f3692a35d980f7b96e0f7cb2f2c138ad415",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-aggregate-validity-field.json"
+    },
+    "invalid/c2pa-comparison-posture-overstated.json": {
+      "sha256": "sha256:2e17b64381550ac1640ee9d0c32a6912270d893f66e0fa43d45b8a788fed9211",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-comparison-posture-overstated.json"
+    },
+    "invalid/c2pa-custom-basis-claims-official-trust-list.json": {
+      "sha256": "sha256:725d6f8ac442d47b39525468fa0a7e37a7a4c2c42e0a422b33de88fdfb6ccf30",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-custom-basis-claims-official-trust-list.json"
+    },
+    "invalid/c2pa-exit-code-as-verdict.json": {
+      "sha256": "sha256:201cadd5e6f7f33f10ae024f7275167e7d31425c7ef93416ed9bea1735e946a2",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-exit-code-as-verdict.json"
+    },
+    "invalid/c2pa-input-unavailable-rendered-as-validation-failure.json": {
+      "sha256": "sha256:f90c3f809543bd0c5c888a5e4115b856f307db0fe02b8bb9e46078b4b9316cad",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-input-unavailable-rendered-as-validation-failure.json"
+    },
+    "invalid/c2pa-manifest-digest-without-bytes.json": {
+      "sha256": "sha256:0454d6e40629edac27e4a20d209e3f7f88e036a6f276f4df46db02528ec2180b",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-manifest-digest-without-bytes.json"
+    },
+    "invalid/c2pa-missing-conditional-limitation.json": {
+      "sha256": "sha256:4543db9c1e88a95e9b081b8ba4d4081548990a8b70da98c4d6e57e0814b94ec7",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-missing-conditional-limitation.json"
+    },
+    "invalid/c2pa-prior-report-comparison-conflict.json": {
+      "sha256": "sha256:ca32e7c379e443bea9d57c026258110003999edaf09c7d5adbcead249607390e",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-prior-report-comparison-conflict.json"
+    },
+    "invalid/c2pa-remote-manifest-uri-missing.json": {
+      "sha256": "sha256:53060ca2f7eaf2572cd31a06440e383de20279d065cb6124a2484ad16b024ccf",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-remote-manifest-uri-missing.json"
+    },
+    "invalid/c2pa-signer-provenance-unordered.json": {
+      "sha256": "sha256:df81ffaa323fef10b7847f622a9974d5cc46c0fe0eefc28829b553695ecf10e9",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-signer-provenance-unordered.json"
+    },
+    "invalid/c2pa-spec-version-claim-weakens-applied.json": {
+      "sha256": "sha256:28735402931b5da18788cab88444cb67876050166b8d4db3780ac3ed77d05471",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-spec-version-claim-weakens-applied.json"
+    },
+    "invalid/c2pa-subject-binding-mismatch.json": {
+      "sha256": "sha256:07daec9ed9ad607f9ec1f6f8f8eef6a808c8b183b101721ef320ef07d8a8f74c",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-subject-binding-mismatch.json"
+    },
+    "invalid/c2pa-trust-observation-without-basis.json": {
+      "sha256": "sha256:f62302778855b9811e48d9bbce0cbf70b5ee22806e8ed909ae7f1705f839b712",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-trust-observation-without-basis.json"
+    },
+    "invalid/c2pa-trust-pointer-dereferenced.json": {
+      "sha256": "sha256:b28917192a1c4ee126364ec34e52160628543044bab60199f5a023d1a1ef9d95",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-trust-pointer-dereferenced.json"
+    },
+    "invalid/c2pa-wrong-profile-id.json": {
+      "sha256": "sha256:bd721a9f5d9d5a726edac7c07401f1a2fe696e1aac56b89f3783312070797464",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/invalid/c2pa-wrong-profile-id.json"
+    },
+    "valid/f01-deterministic-axes-frozen-inputs.json": {
+      "sha256": "sha256:cc0221767af9de6248f54d33d0f60fa286eb52065c0f7cd02248325375a609fe",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f01-deterministic-axes-frozen-inputs.json"
+    },
+    "valid/f02-native-invalid-observed-in-valid-srs.json": {
+      "sha256": "sha256:b8fed6f205f79a49e002bf7ce3e952899829780e08a05674c1396664cf41e17d",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f02-native-invalid-observed-in-valid-srs.json"
+    },
+    "valid/f05-trust-basis-not-captured-not-comparable.json": {
+      "sha256": "sha256:1d2ee8275bb0c4fa6a49ac44e028dd511107801de36a1cfc400e5891cff40f7b",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f05-trust-basis-not-captured-not-comparable.json"
+    },
+    "valid/f06-custom-allowed-list-basis.json": {
+      "sha256": "sha256:ab2cd49a979f0ef4005898b9647a4a3b43aead92afa4acf8f7bf35b9bf443dbb",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f06-custom-allowed-list-basis.json"
+    },
+    "valid/f06-official-trust-list-basis.json": {
+      "sha256": "sha256:770b1d0de344898c0275993b6dcc75026e80dedd82bb39b7e96e0a3a0734bcb7",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f06-official-trust-list-basis.json"
+    },
+    "valid/f07-trust-pointer-no-fetch-posture.json": {
+      "sha256": "sha256:13b94026be4871b044cb65e0a789a6b25b3125cc1720e3dbf47e93bdd01db5fb",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f07-trust-pointer-no-fetch-posture.json"
+    },
+    "valid/f09-no-manifest-store-no-digest.json": {
+      "sha256": "sha256:dc5398c44db2f01cb0e9becee243aff30a76e1e0f2f07ad7d66284b70b03b91d",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f09-no-manifest-store-no-digest.json"
+    },
+    "valid/f11-remote-manifest-captured-then-replayed.json": {
+      "sha256": "sha256:a0644ea0ef1c86198dcbb322296e1028c1b1c5da59dbc1be6383014c50654e73",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f11-remote-manifest-captured-then-replayed.json"
+    },
+    "valid/f12-input-unavailable-not-validation-failure.json": {
+      "sha256": "sha256:756f674b55f498686c47a6d35b53687b879e3056607063c082dc8c524a347f34",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f12-input-unavailable-not-validation-failure.json"
+    },
+    "valid/f13-ingredient-unavailable.json": {
+      "sha256": "sha256:fab6484a562816d31e6e4239db06eed25d51fe84430387121acadb3642f0392e",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f13-ingredient-unavailable.json"
+    },
+    "valid/f15-ordered-multi-signer-chain.json": {
+      "sha256": "sha256:3613885e623af7e1f61be1403dc6ff7eb3bb9bad50e4f4f0c66b6bd646530ef8",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f15-ordered-multi-signer-chain.json"
+    },
+    "valid/f16-no-prior-producer-report.json": {
+      "sha256": "sha256:77609d6e95dfa762c1cb66a8ebd1d81e963efdaa0e88fc3662b46bafaf6638da",
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/fixtures/valid/f16-no-prior-producer-report.json"
+    }
+  },
+  "note": "Byte-exact copies of the arcs-srs conformance fixtures for srs.c2pa.validation_observation.v0.1, used only to check that this repository's independent profile gate agrees with the pinned profile. Digests are the ones the arcs-srs binding manifest records. The fixtures are constructed by arcs-srs; none is a produced observation.",
+  "schema": "arcs-verify.test-vector-pin/v0.1",
+  "source_commit": "3219ff83eb47f46582eefbd53dc46a9d78ef5d4b",
+  "source_repository": "https://github.com/thelaplage/arcs-srs"
+}

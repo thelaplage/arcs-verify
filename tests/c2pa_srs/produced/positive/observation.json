@@ -1,0 +1,247 @@
+{
+  "artifact_classes_covered": [
+    "asset_digest",
+    "manifest_store_state",
+    "manifest_acquisition_mode",
+    "native_validator_identity",
+    "native_report_digest",
+    "trust_material_digests",
+    "validation_observation",
+    "trusted_timestamp_observation"
+  ],
+  "artifact_classes_excluded": [
+    "raw_asset_bytes",
+    "raw_manifest_store_bytes",
+    "raw_native_report_bytes",
+    "raw_certificate_private_material"
+  ],
+  "assertion_attribution": {
+    "support": "not_captured"
+  },
+  "asset_digest": "sha256:e6ad9f51be5bb83f137322a3f260b5881738e3528aee208727e75b6daaba6092",
+  "attestation_limits": [
+    "The receipt records an observation of a native C2PA validation performed by a named external validator over pinned inputs. It does not establish content truth, depicted-event truth, physical liveness, universal signer trust, independent ARCS recomputation, DAGR admission, or public standing.",
+    "PROVISIONAL AND UNSIGNED. Emitted under a TEST issuer identity that is NON-OPERATIONAL; no receipt_signature and no key exist for this observation. It records what a named external validator reported over pinned bytes. It establishes no issuer standing, no content truth and no independent recomputation, and the operational issuer decision is not made."
+  ],
+  "boundary_id": "boundary-TEST-NON-OPERATIONAL-c2pa-observation-0001",
+  "boundary_type": "c2pa_validation_observation_boundary",
+  "evaluation_posture": "native_validation_performed",
+  "extensions": {
+    "dagr_ingest_provisional_emission": {
+      "emission_mode": "provisional_only",
+      "issuer_status": "test_non_operational",
+      "notice": "PROVISIONAL AND UNSIGNED. Emitted under a TEST issuer identity that is NON-OPERATIONAL; no receipt_signature and no key exist for this observation. It records what a named external validator reported over pinned bytes. It establishes no issuer standing, no content truth and no independent recomputation, and the operational issuer decision is not made.",
+      "policy_profile_slug": "srs.c2pa.validation_observation.v0.1",
+      "provisional_acknowledged": true,
+      "signature": "absent_by_design",
+      "timestamp_trust": {
+        "downstream_promotion": "none",
+        "independent_appraisal": "not_evaluated",
+        "statement": "TSA trust cannot be independently established from the retained inputs; the timestamp trust shown is the native validator's report only and must not be promoted to comparison, Check, publication or receiver reliance",
+        "status": "native_reported_not_independently_established"
+      }
+    }
+  },
+  "external_binding_relation_mode": "validation_observation",
+  "hermetic_replay": {
+    "allowed_network_hosts": [],
+    "ocsp_fetch_applied": false,
+    "performed": true,
+    "remote_manifest_fetch_applied": false
+  },
+  "issued_at": "2026-11-01T21:42:40Z",
+  "issuer_id": "issuer.TEST-NON-OPERATIONAL.dagr-ingest/c2pa-observation-provisional",
+  "later_comparison_posture": "not_comparable",
+  "machine_limitations": [
+    {
+      "code": "CONTENT_TRUTH_NOT_EVALUATED"
+    },
+    {
+      "code": "ADMISSION_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_SIGNER_TRUST_NOT_UNIVERSAL"
+    },
+    {
+      "code": "C2PA_NATIVE_VALIDATION_NOT_RECOMPUTED"
+    },
+    {
+      "code": "C2PA_DEPICTED_CONTENT_NOT_ESTABLISHED"
+    },
+    {
+      "code": "PUBLIC_STANDING_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_REVOCATION_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_VALIDATION_TIME_NOT_CONTROLLED"
+    }
+  ],
+  "manifest_acquisition": {
+    "captured_at": "2026-08-15T19:41:00Z",
+    "mode": "remote_reference",
+    "remote_manifest_uri": "https://cai-manifests.adobe.com/manifests/adobe-urn-uuid-5f37e182-3687-462e-a7fb-573462780391",
+    "remote_resolution_performed": true,
+    "remote_resolution_phase": "acquisition"
+  },
+  "manifest_store": {
+    "byte_length": 100572,
+    "digest": "sha256:8ba1e123178b80d7bfbdf37042c9cebff16992b130f6bc2de130ad85f582bf1e",
+    "state": "present"
+  },
+  "native_findings": [
+    {
+      "code": "timeStamp.validated",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+    },
+    {
+      "code": "timeStamp.trusted",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+    },
+    {
+      "code": "claimSignature.insideValidity",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+    },
+    {
+      "code": "claimSignature.validated",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+    },
+    {
+      "code": "assertion.hashedURI.match",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.thumbnail.claim.jpeg"
+    },
+    {
+      "code": "assertion.hashedURI.match",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.thumbnail.ingredient.jpeg"
+    },
+    {
+      "code": "assertion.hashedURI.match",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.ingredient"
+    },
+    {
+      "code": "assertion.hashedURI.match",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.thumbnail.ingredient.png"
+    },
+    {
+      "code": "assertion.hashedURI.match",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.ingredient__1"
+    },
+    {
+      "code": "assertion.hashedURI.match",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.hash.data"
+    },
+    {
+      "code": "assertion.dataHash.match",
+      "scope": "activeManifest",
+      "severity": "success",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.hash.data"
+    },
+    {
+      "code": "signingCredential.untrusted",
+      "scope": "activeManifest",
+      "severity": "failure",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.signature"
+    },
+    {
+      "code": "ingredient.unknownProvenance",
+      "scope": "ingredientDeltas",
+      "severity": "informational",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.ingredient"
+    },
+    {
+      "code": "ingredient.unknownProvenance",
+      "scope": "ingredientDeltas",
+      "severity": "informational",
+      "uri": "self#jumbf=/c2pa/adobe:urn:uuid:5f37e182-3687-462e-a7fb-573462780391/c2pa.assertions/c2pa.ingredient__1"
+    }
+  ],
+  "native_report": {
+    "native_validation_state": "Valid",
+    "process_exit_code": 0,
+    "report_digest": "sha256:86789a8860f062590188a200172e703a112548bc8ba44c9d659dcb7e57c7e8d2",
+    "report_format": "c2patool.json",
+    "verdict_source": "native_machine_report"
+  },
+  "native_validator": {
+    "build_digest": "sha256:95855a36e8bcf596d2c6bcebec2e68ccbefc05aea5f21457bb6234c4c6372528",
+    "configuration_digest": "sha256:9e8ff2636c57c33a77549000ca69b733cba8f683f8fdf2e12ded512367f6a163",
+    "configuration_posture": "configuration_supplied",
+    "implementation": "c2patool",
+    "specification_version_applied_source": "native_validator_applied",
+    "version": "0.27.15"
+  },
+  "prior_producer_report": {
+    "comparison_posture": "not_evaluated",
+    "present": false
+  },
+  "profile_id": "srs.c2pa.validation_observation",
+  "profile_version": "v0.1",
+  "protocol_binding": "dagr-ingest/v0.1",
+  "receipt_id": "dagr-ingest-c2pa-obs-76f9f30fc6317d4d",
+  "receipt_kind": "c2pa_validation_observation",
+  "receipt_type": "provenance",
+  "receipt_version": "srs.core.v5.1",
+  "revocation": {
+    "mechanism": "not_available",
+    "note": "Revocation is reachable only via network OCSP and cannot be frozen for hermetic replay.",
+    "observation": "not_evaluated"
+  },
+  "runtime_instance_id": "runtime-TEST-NON-OPERATIONAL-c2pa-observation-0001",
+  "signer_provenance": [
+    {
+      "issuer": "Adobe Inc.",
+      "order": 0,
+      "subject": "cai-prod"
+    }
+  ],
+  "signer_trust": {
+    "trust_basis": "default_no_trust_material",
+    "trust_observation": "untrusted",
+    "trust_pointer_dereferenced": false
+  },
+  "signer_validity": {
+    "determinism_class": "time_dependent",
+    "observation": "inside_validity"
+  },
+  "subject_ref": "sha256:e6ad9f51be5bb83f137322a3f260b5881738e3528aee208727e75b6daaba6092",
+  "trusted_timestamp": {
+    "observation": "validated_and_trusted",
+    "present": true
+  },
+  "unavailable_inputs": [
+    {
+      "input": "certificate_revocation_evidence",
+      "reason": "no mechanism exists to supply captured revocation responses for offline replay"
+    },
+    {
+      "input": "tsa_trust_material",
+      "reason": "the native report carries timeStamp.trusted while no tsa_trust_list material is named in the retained record; the timestamp trust anchors it applied are not captured as digest-bound input, so TSA trust cannot be independently established from the retained inputs"
+    }
+  ],
+  "validation_time": {
+    "trusted_timestamp_relevant": true,
+    "validation_time_control": "unsupported",
+    "validation_timestamp_observed": "2026-11-01T21:42:40Z"
+  }
+}

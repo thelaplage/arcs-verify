@@ -1,0 +1,194 @@
+{
+  "_fixture_case": "F13",
+  "_fixture_note": "An unavailable ingredient is recorded as unavailable. It is not silently dropped and not treated as a validated ingredient.",
+  "_expected_field_schema": "accept",
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.c2pa.validation_observation",
+  "profile_version": "v0.1",
+  "receipt_id": "c2pa-observation-f13-0001",
+  "receipt_type": "provenance",
+  "receipt_kind": "c2pa_validation_observation",
+  "boundary_type": "c2pa_validation_observation_boundary",
+  "protocol_binding": "c2pa/2.4+native-validator-observation-v0-1",
+  "external_binding_relation_mode": "validation_observation",
+  "subject_ref": "sha256:b6a3bd09e3fa335b6eb6918fb0a1ef2a3a810759a5b4ae6ca85c08433bb51c29",
+  "issuer_id": "issuer.arcs-srs/conformance",
+  "runtime_instance_id": "runtime-c2pa-observation-0001",
+  "boundary_id": "boundary-c2pa-observation-0001",
+  "issued_at": "2026-08-15T00:00:00Z",
+  "asset_digest": "sha256:b6a3bd09e3fa335b6eb6918fb0a1ef2a3a810759a5b4ae6ca85c08433bb51c29",
+  "manifest_store": {
+    "state": "present",
+    "digest": "sha256:ccbcf4fb4a93741b7fb43d5cc9e1706f21fd2f7a0b9994a95b4d2634777286ee",
+    "byte_length": 100572
+  },
+  "manifest_acquisition": {
+    "mode": "embedded",
+    "remote_resolution_performed": false,
+    "remote_resolution_phase": "not_performed",
+    "captured_at": "2026-08-15T00:00:00Z"
+  },
+  "hermetic_replay": {
+    "performed": true,
+    "remote_manifest_fetch_applied": false,
+    "ocsp_fetch_applied": false,
+    "allowed_network_hosts": [],
+    "replay_report_digest": "sha256:eb0800c33f7d31c631757aa28a300fc6fc19a29b60f870754a2d44190b84da19"
+  },
+  "native_validator": {
+    "implementation": "c2patool",
+    "version": "0.27.15",
+    "build_digest": "sha256:cd39e838ad922af448d05fa8cf89372135805cd6be63da401b0a36b50ce4cbd8",
+    "configuration_posture": "configuration_supplied",
+    "configuration_digest": "sha256:229236d724cd29c9465aa9e019c5d384685813f2359535dcc39970145bfc4303",
+    "specification_version_applied": "2.4",
+    "specification_version_applied_source": "native_validator_applied"
+  },
+  "native_report": {
+    "report_digest": "sha256:d3c3aa816c5156760a482aa9d7fd73427361ce46d629545daa56b240d0295c35",
+    "report_format": "c2patool.json",
+    "verdict_source": "native_machine_report",
+    "process_exit_code": 0,
+    "native_validation_state": "Valid"
+  },
+  "native_findings": [
+    {
+      "scope": "activeManifest",
+      "severity": "success",
+      "code": "claimSignature.validated",
+      "uri": "self#jumbf=/c2pa/urn:uuid:0000/c2pa.signature"
+    },
+    {
+      "scope": "activeManifest",
+      "severity": "success",
+      "code": "assertion.dataHash.match",
+      "uri": "self#jumbf=/c2pa/urn:uuid:0000/c2pa.assertions/c2pa.hash.data"
+    },
+    {
+      "scope": "activeManifest",
+      "severity": "failure",
+      "code": "signingCredential.untrusted",
+      "uri": "self#jumbf=/c2pa/urn:uuid:0000/c2pa.signature"
+    },
+    {
+      "scope": "ingredientDeltas",
+      "severity": "success",
+      "code": "ingredient.manifest.validated",
+      "uri": "self#jumbf=/c2pa/urn:uuid:0013/c2pa.assertions/c2pa.ingredient.v3"
+    }
+  ],
+  "signer_provenance": [
+    {
+      "order": 0,
+      "subject": "Example Product C2PA",
+      "issuer": "Example Issuing CA",
+      "role": "end_entity"
+    },
+    {
+      "order": 1,
+      "subject": "Example Issuing CA",
+      "issuer": "Example Root CA",
+      "role": "intermediate"
+    }
+  ],
+  "signer_trust": {
+    "trust_basis": "default_no_trust_material",
+    "trust_observation": "untrusted",
+    "trust_pointer_dereferenced": false
+  },
+  "signer_validity": {
+    "observation": "inside_validity",
+    "determinism_class": "time_dependent"
+  },
+  "trusted_timestamp": {
+    "present": true,
+    "observation": "validated_and_trusted",
+    "tsa_trust_material_ref": "sha256:0ba95e006f8c41df8b2c0e9f3954d8084d45b939ff0dc6f174bef225a4c4e537"
+  },
+  "validation_time": {
+    "validation_timestamp_observed": "2026-08-15T00:00:00Z",
+    "validation_time_control": "unsupported",
+    "trusted_timestamp_relevant": true
+  },
+  "revocation": {
+    "observation": "not_evaluated",
+    "mechanism": "not_available",
+    "note": "Revocation is reachable only via network OCSP and cannot be frozen for hermetic replay."
+  },
+  "assertion_attribution": {
+    "support": "not_applicable",
+    "manifest_c2pa_version": "1"
+  },
+  "ingredient_refs": [
+    {
+      "uri": "self#jumbf=/c2pa/urn:uuid:0013/c2pa.assertions/c2pa.ingredient.v3",
+      "observation": "validated"
+    },
+    {
+      "uri": "self#jumbf=/c2pa/urn:uuid:0013/c2pa.assertions/c2pa.ingredient.v3__1",
+      "observation": "unavailable"
+    }
+  ],
+  "prior_producer_report": {
+    "present": false,
+    "comparison_posture": "not_evaluated"
+  },
+  "later_comparison_posture": "comparable",
+  "evaluation_posture": "native_validation_performed",
+  "unavailable_inputs": [
+    {
+      "input": "certificate_revocation_evidence",
+      "reason": "no mechanism exists to supply captured revocation responses for offline replay"
+    },
+    {
+      "input": "ingredient_manifest_bytes",
+      "reason": "one referenced ingredient manifest was not available at observation time"
+    }
+  ],
+  "artifact_classes_covered": [
+    "asset_digest",
+    "manifest_store_state",
+    "manifest_acquisition_mode",
+    "native_validator_identity",
+    "native_report_digest",
+    "trust_material_digests",
+    "validation_observation",
+    "trusted_timestamp_observation"
+  ],
+  "artifact_classes_excluded": [
+    "raw_asset_bytes",
+    "raw_manifest_store_bytes",
+    "raw_native_report_bytes",
+    "raw_certificate_private_material"
+  ],
+  "attestation_limits": [
+    "The receipt records an observation of a native C2PA validation performed by a named external validator over pinned inputs. It does not establish content truth, depicted-event truth, physical liveness, universal signer trust, independent ARCS recomputation, DAGR admission, or public standing."
+  ],
+  "machine_limitations": [
+    {
+      "code": "CONTENT_TRUTH_NOT_EVALUATED"
+    },
+    {
+      "code": "ADMISSION_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_SIGNER_TRUST_NOT_UNIVERSAL"
+    },
+    {
+      "code": "C2PA_NATIVE_VALIDATION_NOT_RECOMPUTED"
+    },
+    {
+      "code": "C2PA_DEPICTED_CONTENT_NOT_ESTABLISHED"
+    },
+    {
+      "code": "PUBLIC_STANDING_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_REVOCATION_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_VALIDATION_TIME_NOT_CONTROLLED"
+    }
+  ],
+  "extensions": {}
+}

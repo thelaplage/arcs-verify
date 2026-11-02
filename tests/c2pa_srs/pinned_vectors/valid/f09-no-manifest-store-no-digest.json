@@ -1,0 +1,125 @@
+{
+  "_fixture_case": "F09",
+  "_fixture_note": "No Manifest Store exists. The state carries the absence; no digest is fabricated. Absence of a Content Credential is not evidence about the content.",
+  "_expected_field_schema": "accept",
+  "receipt_version": "srs.core.v5.1",
+  "profile_id": "srs.c2pa.validation_observation",
+  "profile_version": "v0.1",
+  "receipt_id": "c2pa-observation-f09-0001",
+  "receipt_type": "provenance",
+  "receipt_kind": "c2pa_validation_observation",
+  "boundary_type": "c2pa_validation_observation_boundary",
+  "protocol_binding": "c2pa/2.4+native-validator-observation-v0-1",
+  "external_binding_relation_mode": "validation_observation",
+  "subject_ref": "sha256:3310800315ea07a6bbe13dddddd626238c79a084db1bd178f38723b38409bc36",
+  "issuer_id": "issuer.arcs-srs/conformance",
+  "runtime_instance_id": "runtime-c2pa-observation-0001",
+  "boundary_id": "boundary-c2pa-observation-0001",
+  "issued_at": "2026-08-15T00:00:00Z",
+  "asset_digest": "sha256:3310800315ea07a6bbe13dddddd626238c79a084db1bd178f38723b38409bc36",
+  "manifest_store": {
+    "state": "absent"
+  },
+  "manifest_acquisition": {
+    "mode": "none",
+    "remote_resolution_performed": false,
+    "remote_resolution_phase": "not_performed"
+  },
+  "hermetic_replay": {
+    "performed": false,
+    "remote_manifest_fetch_applied": false,
+    "ocsp_fetch_applied": false,
+    "allowed_network_hosts": []
+  },
+  "native_validator": {
+    "implementation": "c2patool",
+    "version": "0.27.15",
+    "build_digest": "sha256:438b47c5a016e39ae3b17d617d73c89f3ef4970bf702e0c06639f6c2a790f7d2",
+    "configuration_posture": "configuration_supplied",
+    "configuration_digest": "sha256:afccf1851abc791b94d591962cefb58c8316e4476a74eeb07a02cbfdd00aaa4d",
+    "specification_version_applied": "2.4",
+    "specification_version_applied_source": "native_validator_applied"
+  },
+  "signer_trust": {
+    "trust_basis": "default_no_trust_material",
+    "trust_observation": "not_evaluated",
+    "trust_pointer_dereferenced": false
+  },
+  "signer_validity": {
+    "observation": "not_evaluated",
+    "determinism_class": "time_dependent"
+  },
+  "trusted_timestamp": {
+    "present": false,
+    "observation": "not_evaluated"
+  },
+  "validation_time": {
+    "validation_timestamp_observed": "2026-08-15T00:00:00Z",
+    "validation_time_control": "unsupported",
+    "trusted_timestamp_relevant": true
+  },
+  "revocation": {
+    "observation": "not_evaluated",
+    "mechanism": "not_available",
+    "note": "Revocation is reachable only via network OCSP and cannot be frozen for hermetic replay."
+  },
+  "ingredient_refs": [],
+  "prior_producer_report": {
+    "present": false,
+    "comparison_posture": "not_evaluated"
+  },
+  "later_comparison_posture": "not_evaluated",
+  "evaluation_posture": "not_evaluated",
+  "unavailable_inputs": [
+    {
+      "input": "manifest_store_bytes",
+      "reason": "the asset carries no Manifest Store"
+    }
+  ],
+  "artifact_classes_covered": [
+    "asset_digest",
+    "manifest_store_state",
+    "manifest_acquisition_mode",
+    "native_validator_identity",
+    "native_report_digest",
+    "trust_material_digests",
+    "validation_observation",
+    "trusted_timestamp_observation"
+  ],
+  "artifact_classes_excluded": [
+    "raw_asset_bytes",
+    "raw_manifest_store_bytes",
+    "raw_native_report_bytes",
+    "raw_certificate_private_material"
+  ],
+  "attestation_limits": [
+    "The receipt records an observation of a native C2PA validation performed by a named external validator over pinned inputs. It does not establish content truth, depicted-event truth, physical liveness, universal signer trust, independent ARCS recomputation, DAGR admission, or public standing."
+  ],
+  "machine_limitations": [
+    {
+      "code": "CONTENT_TRUTH_NOT_EVALUATED"
+    },
+    {
+      "code": "ADMISSION_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_SIGNER_TRUST_NOT_UNIVERSAL"
+    },
+    {
+      "code": "C2PA_NATIVE_VALIDATION_NOT_RECOMPUTED"
+    },
+    {
+      "code": "C2PA_DEPICTED_CONTENT_NOT_ESTABLISHED"
+    },
+    {
+      "code": "PUBLIC_STANDING_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_REVOCATION_NOT_EVALUATED"
+    },
+    {
+      "code": "C2PA_VALIDATION_TIME_NOT_CONTROLLED"
+    }
+  ],
+  "extensions": {}
+}

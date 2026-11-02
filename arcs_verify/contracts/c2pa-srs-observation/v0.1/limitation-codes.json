@@ -1,0 +1,190 @@
+{
+  "version": "0.1",
+  "_notes": [
+    "required_for_profiles is advisory, non-operative metadata in v0.1. The validator does NOT read or enforce it. It is a human-facing hint only. To actually mandate a code for a profile, add it to that profile manifest's required_machine_limitation_codes list; enforcement is driven exclusively by the manifest, never by this field. See migration.md."
+  ],
+  "codes": [
+    {
+      "id": "PROVIDER_BEHAVIOR_NOT_ESTABLISHED",
+      "description": "Provider-side behavior (retention, deletion, backup) could not be independently established",
+      "required_for_profiles": ["srs.signed_receipt.v0.1"],
+      "renders_as": "Provider behavior regarding this record class has not been independently established.",
+      "contradicts_claims": ["provider_deletion_confirmed", "provider_retention_verified"],
+      "parameters": []
+    },
+    {
+      "id": "HANDLER_EXECUTION_NOT_ESTABLISHED",
+      "description": "Whether the tool/handler executed as declared could not be independently verified",
+      "required_for_profiles": ["srs.mcp.sdk_enforcement.v0.1"],
+      "renders_as": "Handler execution as declared has not been independently established.",
+      "contradicts_claims": [],
+      "parameters": []
+    },
+    {
+      "id": "CONTENT_NOT_VERIFIED",
+      "description": "The content of referenced fields was not independently verified",
+      "required_for_profiles": [],
+      "renders_as": "Referenced field content has not been independently verified.",
+      "contradicts_claims": ["content_verified"],
+      "parameters": []
+    },
+    {
+      "id": "SIGNATURE_KEY_NOT_IN_TRUST_BUNDLE",
+      "description": "The signing key is not present in any known trust bundle",
+      "required_for_profiles": [],
+      "renders_as": "The signing key is not present in a known trust bundle.",
+      "contradicts_claims": ["issuer_trusted"],
+      "parameters": []
+    },
+    {
+      "id": "SUBJECT_REF_NOT_DECLARED",
+      "description": "Subject reference origin was not declared by the emitter",
+      "required_for_profiles": [],
+      "renders_as": "Subject reference origin was not declared.",
+      "contradicts_claims": ["subject_ref_verified"],
+      "parameters": []
+    },
+    {
+      "id": "ARTICLE_TRUTH_NOT_EVALUATED",
+      "description": "The receipt does not evaluate or establish the factual accuracy of publication content claims",
+      "required_for_profiles": [
+        "srs.editorial.publication_ingest.v0.1",
+        "srs.editorial.citation_pack.v0.1"
+      ],
+      "renders_as": "Factual accuracy of publication content claims has not been evaluated.",
+      "contradicts_claims": ["article_truth_verified", "claims_verified"],
+      "parameters": []
+    },
+    {
+      "id": "EVIDENCE_COMPLETENESS_NOT_EVALUATED",
+      "description": "The receipt does not establish that all declared sources were captured, located, or independently verified",
+      "required_for_profiles": [
+        "srs.editorial.publication_ingest.v0.1",
+        "srs.editorial.citation_pack.v0.1"
+      ],
+      "renders_as": "Evidence completeness has not been established; not all declared sources may have been captured or verified.",
+      "contradicts_claims": ["evidence_complete", "all_sources_captured"],
+      "parameters": []
+    },
+    {
+      "id": "CITATION_MAPPING_MACHINE_PROPOSED",
+      "description": "Citation mappings in this receipt are machine-proposed only; they have not been operator-admitted or independently verified",
+      "required_for_profiles": ["srs.editorial.citation_pack.v0.1"],
+      "renders_as": "Citation mappings are machine-proposed and have not been operator-admitted or independently verified.",
+      "contradicts_claims": ["citations_admitted", "citations_verified"],
+      "parameters": []
+    },
+    {
+      "id": "SOURCE_NOT_CAPTURED",
+      "description": "The declared source URL was not captured; no captured bytes are associated with this declared reference",
+      "required_for_profiles": [],
+      "renders_as": "The declared source URL was not captured; no captured bytes are available for this declared reference.",
+      "contradicts_claims": ["source_captured", "bytes_available"],
+      "parameters": []
+    },
+    {
+      "id": "SOURCE_TRUTH_NOT_EVALUATED",
+      "description": "The receipt does not evaluate or establish that the ingested source content is authentic or is the source a declaration intended",
+      "required_for_profiles": ["srs.editorial.source_ingest.v0.1"],
+      "renders_as": "Source truth has not been evaluated; the source's authenticity and intended identity are not established.",
+      "contradicts_claims": ["source_truth_verified", "source_authentic"],
+      "parameters": []
+    },
+    {
+      "id": "CLAIM_SUPPORT_NOT_EVALUATED",
+      "description": "The receipt does not evaluate or establish that the source supports any claim it is used to support",
+      "required_for_profiles": ["srs.editorial.source_ingest.v0.1"],
+      "renders_as": "Claim support has not been evaluated; whether the source supports any claim is not established.",
+      "contradicts_claims": ["claim_supported", "claims_verified"],
+      "parameters": []
+    },
+    {
+      "id": "CONTENT_TRUTH_NOT_EVALUATED",
+      "description": "The receipt does not evaluate or establish the factual truth of authored content",
+      "required_for_profiles": ["srs.editorial.authoring_run.v0.1"],
+      "renders_as": "Content truth has not been evaluated.",
+      "contradicts_claims": ["content_truth_verified", "proposition_true"],
+      "parameters": []
+    },
+    {
+      "id": "ADMISSION_NOT_EVALUATED",
+      "description": "The receipt does not evaluate or establish any admission outcome",
+      "required_for_profiles": ["srs.editorial.authoring_run.v0.1"],
+      "renders_as": "Admission has not been evaluated.",
+      "contradicts_claims": ["admission_verified", "admitted"],
+      "parameters": []
+    },
+    {
+      "id": "PUBLICATION_NOT_EVALUATED",
+      "description": "The receipt does not evaluate or establish any publication outcome",
+      "required_for_profiles": ["srs.editorial.authoring_run.v0.1"],
+      "renders_as": "Publication has not been evaluated.",
+      "contradicts_claims": ["publication_verified", "published"],
+      "parameters": []
+    },
+    {
+      "id": "MODEL_QUALITY_NOT_EVALUATED",
+      "description": "The receipt does not evaluate or establish model quality",
+      "required_for_profiles": ["srs.editorial.authoring_run.v0.1"],
+      "renders_as": "Model quality has not been evaluated.",
+      "contradicts_claims": ["model_quality_verified"],
+      "parameters": []
+    },
+    {
+      "id": "C2PA_SIGNER_TRUST_NOT_UNIVERSAL",
+      "description": "Signer trust was observed only under the trust material actually supplied to the native validator; it is not universal trust",
+      "required_for_profiles": ["srs.c2pa.validation_observation.v0.1"],
+      "renders_as": "Signer trust was observed only under the trust material supplied to the native validator; universal signer trust is not established.",
+      "contradicts_claims": ["signer_trusted", "universal_signer_trust"],
+      "parameters": []
+    },
+    {
+      "id": "C2PA_NATIVE_VALIDATION_NOT_RECOMPUTED",
+      "description": "The native C2PA validation result was observed, not independently recomputed by ARCS",
+      "required_for_profiles": ["srs.c2pa.validation_observation.v0.1"],
+      "renders_as": "The native validation result was observed and recorded; it was not independently recomputed.",
+      "contradicts_claims": ["independently_recomputed", "observation_matches_recomputation"],
+      "parameters": []
+    },
+    {
+      "id": "C2PA_DEPICTED_CONTENT_NOT_ESTABLISHED",
+      "description": "The receipt does not establish depicted-event truth or physical liveness",
+      "required_for_profiles": ["srs.c2pa.validation_observation.v0.1"],
+      "renders_as": "Depicted-event truth and physical liveness have not been established.",
+      "contradicts_claims": ["depicted_content_verified", "physical_liveness_verified"],
+      "parameters": []
+    },
+    {
+      "id": "C2PA_REVOCATION_NOT_EVALUATED",
+      "description": "Certificate revocation was not evaluated; silence about revocation is not evidence of non-revocation",
+      "required_for_profiles": ["srs.c2pa.validation_observation.v0.1"],
+      "renders_as": "Certificate revocation was not evaluated; non-revocation is not established.",
+      "contradicts_claims": ["certificate_not_revoked", "revocation_checked"],
+      "parameters": []
+    },
+    {
+      "id": "C2PA_VALIDATION_TIME_NOT_CONTROLLED",
+      "description": "The native validator exposed no caller-injectable validation instant, so time-dependent findings are not deterministic across wall-clock time",
+      "required_for_profiles": ["srs.c2pa.validation_observation.v0.1"],
+      "renders_as": "The validation instant was not caller-controlled; replay of time-dependent findings is not deterministic across wall-clock time.",
+      "contradicts_claims": ["validation_time_pinned", "time_dependent_findings_deterministic"],
+      "parameters": []
+    },
+    {
+      "id": "C2PA_TRUST_BASIS_NOT_CAPTURED",
+      "description": "The exact trust basis supplied to the native validator was not captured, so a later observation is not comparable to this one",
+      "required_for_profiles": ["srs.c2pa.validation_observation.v0.1"],
+      "renders_as": "The trust basis supplied to the native validator was not captured; a later observation is not comparable to this one.",
+      "contradicts_claims": ["trust_basis_recorded", "comparable_trust_inputs"],
+      "parameters": []
+    },
+    {
+      "id": "PUBLIC_STANDING_NOT_EVALUATED",
+      "description": "The receipt does not evaluate or establish public standing",
+      "required_for_profiles": ["srs.c2pa.validation_observation.v0.1"],
+      "renders_as": "Public standing has not been evaluated.",
+      "contradicts_claims": ["standing_established", "public_standing_verified"],
+      "parameters": []
+    }
+  ]
+}

@@ -1,0 +1,595 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arcs.example/schemas/c2pa-profiles/v0.1/srs.c2pa.validation_observation.v0.1.schema.json",
+  "title": "SRS C2PA Validation Observation Profile v0.1 — field schema",
+  "x-status": "provisional",
+  "x-profile-id": "srs.c2pa.validation_observation",
+  "x-profile-version": "v0.1",
+  "x-external-binding-relation-mode": "validation_observation",
+  "x-native-authority": "C2PA. This schema describes an SRS observation of a native validation. It is not a C2PA validator and confers no C2PA authority.",
+  "x-specializes-envelope": "srs-envelope@0.2.1",
+  "description": "Field-level schema for one observation of a native C2PA validation over pinned inputs. Specializes the SRS envelope; does not fork it and adds no envelope field. PROVISIONAL. Native result, signer trust, signer validity, and trusted timestamp are independent axes and are never rolled up. No aggregate validity field may appear. A Manifest Store digest exists only when Manifest Store bytes were present.",
+  "type": "object",
+  "$defs": {
+    "sha256_ref": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "sha256: followed by exactly 64 lowercase hex chars."
+    },
+    "trust_material_ref": {
+      "type": "object",
+      "required": ["role", "digest", "source_identity", "source_pin"],
+      "properties": {
+        "role": {
+          "enum": ["trust_anchors", "allowed_list", "trust_config", "tsa_trust_list", "user_anchors"],
+          "description": "Which native trust input these bytes were supplied as."
+        },
+        "digest": { "$ref": "#/$defs/sha256_ref" },
+        "source_identity": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identity of the source the bytes came from. Not a substitute for the digest."
+        },
+        "source_pin": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Commit or equivalent immutable pin for the source. Trust-list membership is a time-varying fact."
+        }
+      },
+      "additionalProperties": false
+    },
+    "native_finding": {
+      "type": "object",
+      "required": ["scope", "severity", "code"],
+      "properties": {
+        "scope": {
+          "enum": ["activeManifest", "ingredientDeltas"],
+          "description": "Native result scope. The flattened legacy status array is lossy and is not the source."
+        },
+        "severity": { "enum": ["success", "informational", "failure"] },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Verbatim native finding code. Not normalized into an SRS vocabulary."
+        },
+        "uri": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Native JUMBF URI anchoring the finding to an exact manifest, assertion, or signature."
+        }
+      },
+      "additionalProperties": false
+    },
+    "signer_provenance_entry": {
+      "type": "object",
+      "required": ["order", "subject"],
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Zero-based position in the ordered signer chain."
+        },
+        "subject": { "type": "string", "minLength": 1 },
+        "issuer": { "type": "string", "minLength": 1 },
+        "role": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "assertion_ref": {
+      "type": "object",
+      "required": ["label"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "uri": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "receipt_version": { "const": "srs.core.v5.1" },
+    "profile_id": { "const": "srs.c2pa.validation_observation" },
+    "profile_version": { "const": "v0.1" },
+    "receipt_id": { "type": "string", "minLength": 1 },
+    "receipt_type": { "const": "provenance" },
+    "receipt_kind": { "const": "c2pa_validation_observation" },
+    "boundary_type": { "const": "c2pa_validation_observation_boundary" },
+    "protocol_binding": { "type": "string", "minLength": 1 },
+    "external_binding_relation_mode": {
+      "const": "validation_observation",
+      "description": "Doctrine s10 relation mode. This receipt observes a native validation; it is not native emission."
+    },
+    "subject_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "MUST equal asset_digest. Binds to exact asset bytes, never to a filename or depicted subject."
+    },
+    "issuer_id": { "type": "string", "minLength": 1 },
+    "runtime_instance_id": { "type": "string", "minLength": 1 },
+    "boundary_id": { "type": "string", "minLength": 1 },
+    "issued_at": { "type": "string", "minLength": 1 },
+
+    "asset_digest": { "$ref": "#/$defs/sha256_ref" },
+
+    "manifest_store": {
+      "type": "object",
+      "required": ["state"],
+      "properties": {
+        "state": {
+          "enum": ["present", "absent", "inaccessible", "not_evaluated"],
+          "description": "Explicit Manifest Store state. Absence is a state, never a fabricated digest."
+        },
+        "digest": { "$ref": "#/$defs/sha256_ref" },
+        "byte_length": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "present" } }, "required": ["state"] },
+          "then": { "required": ["digest"] },
+          "else": { "not": { "required": ["digest"] } }
+        }
+      ]
+    },
+
+    "manifest_acquisition": {
+      "type": "object",
+      "required": ["mode", "remote_resolution_performed"],
+      "properties": {
+        "mode": {
+          "enum": ["embedded", "remote_reference", "external_supplied", "sidecar", "durable_recovery", "none"],
+          "description": "sidecar and durable_recovery are structurally supported and empirically unexercised."
+        },
+        "remote_manifest_uri": { "type": "string", "minLength": 1 },
+        "remote_resolution_performed": {
+          "type": "boolean",
+          "description": "Whether remote resolution happened. Resolution is an acquisition concern, never part of later hermetic validation."
+        },
+        "remote_resolution_phase": { "enum": ["acquisition", "not_performed"] },
+        "captured_at": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+
+    "hermetic_replay": {
+      "type": "object",
+      "required": ["performed", "remote_manifest_fetch_applied", "ocsp_fetch_applied"],
+      "properties": {
+        "performed": { "type": "boolean" },
+        "remote_manifest_fetch_applied": { "type": "boolean" },
+        "ocsp_fetch_applied": { "type": "boolean" },
+        "allowed_network_hosts": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "replay_report_digest": { "$ref": "#/$defs/sha256_ref" }
+      },
+      "additionalProperties": false
+    },
+
+    "native_validator": {
+      "type": "object",
+      "required": ["implementation", "version", "configuration_posture", "specification_version_applied_source"],
+      "properties": {
+        "implementation": { "type": "string", "minLength": 1 },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Exact version. Validator version is a first-class verdict input; the same bytes can yield different native findings across versions."
+        },
+        "build_digest": { "$ref": "#/$defs/sha256_ref" },
+        "configuration_posture": { "enum": ["validator_defaults", "configuration_supplied"] },
+        "configuration_digest": {
+          "oneOf": [{ "$ref": "#/$defs/sha256_ref" }, { "type": "null" }]
+        },
+        "specification_version_applied": { "type": "string", "minLength": 1 },
+        "specification_version_applied_source": {
+          "const": "native_validator_applied",
+          "description": "The applied security-validation regime is the validator's, never a manifest-claimed specVersion."
+        },
+        "specification_version_claimed_by_manifest": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Recorded as a claim only. A claimed version cannot weaken the applied validation."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "configuration_posture": { "const": "configuration_supplied" } },
+            "required": ["configuration_posture"]
+          },
+          "then": { "required": ["configuration_digest"] }
+        }
+      ]
+    },
+
+    "native_report": {
+      "type": "object",
+      "required": ["report_digest", "report_format", "verdict_source", "native_validation_state"],
+      "properties": {
+        "report_digest": { "$ref": "#/$defs/sha256_ref" },
+        "report_format": { "type": "string", "minLength": 1 },
+        "verdict_source": {
+          "const": "native_machine_report",
+          "description": "The native machine report is the only admissible source. A process exit code is never a verdict."
+        },
+        "process_exit_code": {
+          "type": "integer",
+          "description": "Recorded as an observation only. It distinguishes could-not-evaluate from evaluated; it does not distinguish valid from invalid."
+        },
+        "native_validation_state": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Verbatim native value. A native field only; never an SRS verdict, and never a signer-trust statement."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "native_findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/native_finding" },
+      "description": "Native findings preserved independently. Failures are preserved even when the native state reads as passing."
+    },
+
+    "signer_provenance": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/signer_provenance_entry" },
+      "description": "Ordered signer chain. Order is preserved, not sorted or deduplicated."
+    },
+
+    "signer_trust": {
+      "type": "object",
+      "required": ["trust_basis", "trust_observation", "trust_pointer_dereferenced"],
+      "properties": {
+        "trust_basis": {
+          "enum": [
+            "official_trust_list",
+            "custom_allowed_list",
+            "explicit_anchors",
+            "default_no_trust_material",
+            "trust_verification_disabled",
+            "unknown_not_captured"
+          ],
+          "description": "Trust is a function of caller-supplied input, not a property of the asset."
+        },
+        "trust_material_refs": { "type": "array", "items": { "$ref": "#/$defs/trust_material_ref" } },
+        "trust_observation": { "enum": ["trusted", "untrusted", "not_evaluated"] },
+        "trust_pointer_uri": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A trustListURI or equivalent remote pointer, recorded only."
+        },
+        "trust_pointer_dereferenced": {
+          "const": false,
+          "description": "Remote trust pointers MUST NOT be dereferenced during later hermetic verification."
+        },
+        "official_trust_list_membership": {
+          "type": "boolean",
+          "description": "Permitted only when trust_basis is official_trust_list."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "signer_validity": {
+      "type": "object",
+      "required": ["observation", "determinism_class"],
+      "properties": {
+        "observation": { "enum": ["inside_validity", "expired", "not_evaluated"] },
+        "determinism_class": { "const": "time_dependent" }
+      },
+      "additionalProperties": false
+    },
+
+    "trusted_timestamp": {
+      "type": "object",
+      "required": ["present", "observation"],
+      "properties": {
+        "present": { "type": "boolean" },
+        "observation": {
+          "enum": ["validated_and_trusted", "validated_untrusted", "not_present", "not_evaluated"],
+          "description": "Preserved independently of ordinary certificate wall-clock validity."
+        },
+        "tsa_trust_material_ref": { "$ref": "#/$defs/sha256_ref" }
+      },
+      "additionalProperties": false
+    },
+
+    "validation_time": {
+      "type": "object",
+      "required": ["validation_timestamp_observed", "validation_time_control", "trusted_timestamp_relevant"],
+      "properties": {
+        "validation_timestamp_observed": {
+          "oneOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+        },
+        "validation_time_control": {
+          "enum": ["unsupported", "unavailable", "supported_and_pinned"],
+          "description": "The observed validator exposes no caller-injectable validation instant."
+        },
+        "trusted_timestamp_relevant": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+
+    "revocation": {
+      "type": "object",
+      "required": ["observation", "mechanism"],
+      "properties": {
+        "observation": {
+          "enum": ["not_evaluated", "revoked", "not_revoked"],
+          "description": "Under hermetic settings this is not_evaluated. Silence is not evidence of non-revocation."
+        },
+        "mechanism": { "enum": ["ocsp", "none", "not_available"] },
+        "note": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+
+    "assertion_attribution": {
+      "type": "object",
+      "required": ["support"],
+      "properties": {
+        "support": { "enum": ["supported", "not_applicable", "not_captured"] },
+        "report_mode": { "type": "string", "minLength": 1 },
+        "manifest_c2pa_version": { "type": "string", "minLength": 1 },
+        "created_assertions": { "type": "array", "items": { "$ref": "#/$defs/assertion_ref" } },
+        "gathered_assertions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assertion_ref" },
+          "description": "Structurally supported and empirically unexercised; no available specimen populated it."
+        },
+        "redacted_assertions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assertion_ref" },
+          "description": "Structurally supported and empirically unexercised."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "ingredient_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["uri", "observation"],
+        "properties": {
+          "uri": { "type": "string", "minLength": 1 },
+          "observation": { "enum": ["validated", "failed", "unavailable", "not_evaluated"] }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "digital_source_type": { "type": "string", "minLength": 1 },
+
+    "prior_producer_report": {
+      "type": "object",
+      "required": ["present", "comparison_posture"],
+      "properties": {
+        "present": { "type": "boolean" },
+        "report_digest": { "$ref": "#/$defs/sha256_ref" },
+        "comparison_posture": { "enum": ["comparable", "not_comparable", "not_evaluated"] }
+      },
+      "additionalProperties": false
+    },
+
+    "later_comparison_posture": {
+      "enum": ["comparable", "not_comparable", "not_evaluated"],
+      "description": "Whether a later observation can be compared to this one at all. Comparison itself belongs to the independent verifier."
+    },
+
+    "evaluation_posture": {
+      "enum": ["native_validation_performed", "input_unavailable", "not_evaluated"],
+      "description": "input_unavailable is an input condition, never a validation failure."
+    },
+
+    "unavailable_inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["input", "reason"],
+        "properties": {
+          "input": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "artifact_classes_covered": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "artifact_classes_excluded": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "attestation_limits": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "machine_limitations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code"],
+        "properties": { "code": { "type": "string", "minLength": 1 } },
+        "additionalProperties": true
+      }
+    },
+    "extensions": { "type": "object" },
+    "receipt_signature": { "type": "object" }
+  },
+  "required": [
+    "receipt_version",
+    "profile_id",
+    "profile_version",
+    "receipt_id",
+    "receipt_type",
+    "receipt_kind",
+    "boundary_type",
+    "protocol_binding",
+    "external_binding_relation_mode",
+    "subject_ref",
+    "issuer_id",
+    "runtime_instance_id",
+    "boundary_id",
+    "issued_at",
+    "asset_digest",
+    "manifest_store",
+    "manifest_acquisition",
+    "native_validator",
+    "signer_trust",
+    "validation_time",
+    "revocation",
+    "evaluation_posture",
+    "later_comparison_posture",
+    "prior_producer_report",
+    "artifact_classes_covered",
+    "artifact_classes_excluded",
+    "attestation_limits",
+    "machine_limitations",
+    "extensions"
+  ],
+  "not": {
+    "anyOf": [
+      { "required": ["c2pa_valid"] },
+      { "required": ["provenance_valid"] },
+      { "required": ["content_authentic"] },
+      { "required": ["content_verified"] },
+      { "required": ["depicted_content_verified"] },
+      { "required": ["physical_liveness_verified"] },
+      { "required": ["ai_generated"] },
+      { "required": ["signer_trusted"] },
+      { "required": ["observation_matches_recomputation"] },
+      { "required": ["admission_verified"] },
+      { "required": ["standing_score"] }
+    ]
+  },
+  "allOf": [
+    {
+      "description": "subject_ref binds to the exact asset bytes.",
+      "if": { "required": ["asset_digest", "subject_ref"] },
+      "then": {
+        "properties": { "subject_ref": { "$ref": "#/$defs/sha256_ref" } }
+      }
+    },
+    {
+      "description": "An input-unavailable observation carries no native validation state.",
+      "if": {
+        "properties": { "evaluation_posture": { "const": "input_unavailable" } },
+        "required": ["evaluation_posture"]
+      },
+      "then": { "not": { "required": ["native_report"] } }
+    },
+    {
+      "description": "A performed native validation carries a native report and native findings.",
+      "if": {
+        "properties": { "evaluation_posture": { "const": "native_validation_performed" } },
+        "required": ["evaluation_posture"]
+      },
+      "then": { "required": ["native_report", "native_findings"] }
+    },
+    {
+      "description": "official_trust_list_membership may appear only under an official trust-list basis.",
+      "if": {
+        "properties": {
+          "signer_trust": {
+            "type": "object",
+            "required": ["official_trust_list_membership"],
+            "properties": { "trust_basis": { "not": { "const": "official_trust_list" } } }
+          }
+        },
+        "required": ["signer_trust"]
+      },
+      "then": false
+    },
+    {
+      "description": "trust_observation trusted requires a supplied trust basis.",
+      "if": {
+        "properties": {
+          "signer_trust": {
+            "type": "object",
+            "required": ["trust_observation", "trust_basis"],
+            "properties": {
+              "trust_observation": { "const": "trusted" },
+              "trust_basis": {
+                "enum": ["default_no_trust_material", "trust_verification_disabled", "unknown_not_captured"]
+              }
+            }
+          }
+        },
+        "required": ["signer_trust"]
+      },
+      "then": false
+    },
+    {
+      "description": "An uncaptured trust basis makes later comparison not comparable.",
+      "if": {
+        "properties": {
+          "signer_trust": {
+            "type": "object",
+            "required": ["trust_basis"],
+            "properties": { "trust_basis": { "const": "unknown_not_captured" } }
+          }
+        },
+        "required": ["signer_trust"]
+      },
+      "then": { "properties": { "later_comparison_posture": { "const": "not_comparable" } } }
+    },
+    {
+      "description": "No prior producer report means no comparison posture other than not_evaluated.",
+      "if": {
+        "properties": {
+          "prior_producer_report": {
+            "type": "object",
+            "required": ["present"],
+            "properties": { "present": { "const": false } }
+          }
+        },
+        "required": ["prior_producer_report"]
+      },
+      "then": {
+        "properties": {
+          "prior_producer_report": {
+            "properties": { "comparison_posture": { "const": "not_evaluated" } }
+          }
+        }
+      }
+    },
+    {
+      "description": "A hermetic replay does not apply remote manifest fetch.",
+      "if": {
+        "properties": {
+          "hermetic_replay": {
+            "type": "object",
+            "required": ["performed"],
+            "properties": { "performed": { "const": true } }
+          }
+        },
+        "required": ["hermetic_replay"]
+      },
+      "then": {
+        "properties": {
+          "hermetic_replay": {
+            "properties": { "remote_manifest_fetch_applied": { "const": false } }
+          }
+        }
+      }
+    },
+    {
+      "description": "A captured remote Manifest Store carries its source URI.",
+      "if": {
+        "properties": {
+          "manifest_acquisition": {
+            "type": "object",
+            "required": ["mode"],
+            "properties": { "mode": { "const": "remote_reference" } }
+          },
+          "manifest_store": {
+            "type": "object",
+            "required": ["state"],
+            "properties": { "state": { "const": "present" } }
+          }
+        },
+        "required": ["manifest_acquisition", "manifest_store"]
+      },
+      "then": {
+        "properties": {
+          "manifest_acquisition": { "required": ["remote_manifest_uri"] }
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

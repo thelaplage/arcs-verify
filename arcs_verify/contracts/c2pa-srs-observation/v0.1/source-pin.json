@@ -1,0 +1,43 @@
+{
+  "schema": "arcs-verify.c2pa-srs-observation-source-pin/v0.1",
+  "status": "PROVISIONAL",
+  "note": "Provenance record for the vendored copies of the arcs-srs profile artifacts. The authoritative pin is the PINNED_CONTRACT_FILES constant in arcs_verify/c2pa_srs_observed.py; this file is cross-checked against it and cannot move the pin on its own. arcs-srs owns these artifacts and this repository only consumes exact bytes. Nothing here ratifies the provisional profile.",
+  "source_repository": "https://github.com/thelaplage/arcs-srs",
+  "source_commit": "3219ff83eb47f46582eefbd53dc46a9d78ef5d4b",
+  "profile_slug": "srs.c2pa.validation_observation.v0.1",
+  "release_stage": "provisional",
+  "requires_signing": false,
+  "binding_manifest": {
+    "source_path": "docs/integrations/SRS_C2PA_BINDING_v0_1.manifest.json",
+    "semantic_digest": "sha256:23506ae1d4b50c1742019363d43799d62844ad5a066398eb4bff04a58949d2f5",
+    "note": "Recorded, not recomputed here: that digest also covers the 27 conformance fixtures, which this package does not vendor. The per-file digests below are checked on every load."
+  },
+  "envelope": {
+    "identity": "srs-envelope@0.2.1+sha256:2afa1ec9f093fd7c06c4f5db7bfd37cc63e64e3dcbe47c963f4df586a1c18ca1",
+    "vendored_as": "arcs_verify/data/srs-envelope-v0.2.1.schema.json",
+    "pin_constant": "arcs_verify.schema.SCHEMA_PIN_V0_2_1"
+  },
+  "profile_manifest_projection_sha256": "ca2e1c22253a75ffe25c3a7067919cd00206646a9236a5ca3315fc1fd2e1e7b2",
+  "files": {
+    "field.schema.json": {
+      "source_path": "schemas/c2pa-profiles/v0.1/srs.c2pa.validation_observation.v0.1.schema.json",
+      "sha256": "6549230ebed4b28c9def301576ccf7dfead7a25e1bd8fb870fc751d466dce6df",
+      "git_blob": "0a539efa1a13da517802b1f5b7279439c65895ed"
+    },
+    "profile.manifest.json": {
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/profile.manifest.json",
+      "sha256": "824b40cb50b2b30281c03f31e9fa46ad6c2da70176eaf575848f141aa809cfbd",
+      "git_blob": "1746deff40f5eb94d9fbbc2f1a662a5ba40091a7"
+    },
+    "conformance-rules.json": {
+      "source_path": "conformance/profiles/srs.c2pa.validation_observation.v0.1/conformance-rules.json",
+      "sha256": "eaa8c20ed2992badcdefa63d9cb63293bcdd174087fa1e828b929034271c3b48",
+      "git_blob": "c0488a2ef08d561e7acefaef392a6da7eb25783f"
+    },
+    "limitation-codes.json": {
+      "source_path": "schemas/limitation-codes/v0.1/limitation-codes.json",
+      "sha256": "40caf8e622b5de9b9f8b08365d7d2dcc6fb89a9d4781e3dd35f84163fd3d1186",
+      "git_blob": "6530e1c62b37f16a82307d920a2d172d4ddb5f67"
+    }
+  }
+}

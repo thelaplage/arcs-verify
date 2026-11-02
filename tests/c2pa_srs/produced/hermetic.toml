@@ -1,0 +1,8 @@
+version = 1
+[verify]
+remote_manifest_fetch = false
+ocsp_fetch = false
+verify_trust = true
+verify_timestamp_trust = true
+[core]
+allowed_network_hosts = []

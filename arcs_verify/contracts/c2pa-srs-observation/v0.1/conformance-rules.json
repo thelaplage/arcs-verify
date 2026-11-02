@@ -1,0 +1,98 @@
+{
+  "schema": "arcs-srs.profile-conformance-rules.v0.1",
+  "profile_slug": "srs.c2pa.validation_observation.v0.1",
+  "release_stage": "provisional",
+  "notes": [
+    "MACHINE CONTRACT. This file is the single normative source of the profile-specific conformance decisions for srs.c2pa.validation_observation.v0.1. The shared checker in tools/validate_srs_profile.py consumes these values; it does not restate them.",
+    "This file is pinned by the semantic_digest in docs/integrations/SRS_C2PA_BINDING_v0_1.manifest.json. Editing any value here changes conformance behaviour and MUST move that digest.",
+    "The normative Markdown document is a human-readable expression of this contract. It is NOT a second, independent source of normative behaviour, which is why it is excluded from the semantic digest.",
+    "Byte-shape of a sha256 reference ('sha256:' + 64 lowercase hex) is NOT declared here. It is a repo-shared predicate already pinned by the field schema's sha256_ref $def, not a profile-owned decision.",
+    "Closed vocabularies (manifest_store_states, manifest_acquisition_modes, trust_basis_values, forbidden_aggregate_fields, receipt_kinds, required_fields, fixed_values, required_attestation_limits, required_machine_limitation_codes) live in profile.manifest.json, whose semantic projection is separately pinned. They are not duplicated here."
+  ],
+  "required_object_fields": [
+    "manifest_store",
+    "manifest_acquisition",
+    "native_validator",
+    "signer_trust"
+  ],
+  "subject_binding": {
+    "subject_ref_must_equal_field": "asset_digest"
+  },
+  "manifest_store": {
+    "state_requiring_digest": "present",
+    "digest_forbidden_unless_state_requires_it": true
+  },
+  "manifest_acquisition": {
+    "mode_requiring_remote_manifest_uri": "remote_reference",
+    "remote_manifest_uri_required_only_when_store_state": "present"
+  },
+  "hermetic_replay": {
+    "remote_manifest_fetch_applied_must_be": false
+  },
+  "native_validator": {
+    "required_identity_fields": [
+      "implementation",
+      "version"
+    ],
+    "posture_requiring_configuration_digest": "configuration_supplied",
+    "posture_forbidding_configuration_digest": "validator_defaults",
+    "specification_version_applied_source_required": "native_validator_applied"
+  },
+  "evaluation_posture": {
+    "input_unavailable_value": "input_unavailable",
+    "native_validation_performed_value": "native_validation_performed",
+    "verdict_source_required": "native_machine_report"
+  },
+  "signer_trust": {
+    "forbidden_trust_observation_under_non_supplying_basis": "trusted",
+    "non_supplying_trust_bases": [
+      "default_no_trust_material",
+      "trust_verification_disabled",
+      "unknown_not_captured"
+    ],
+    "material_requiring_trust_bases": [
+      "official_trust_list",
+      "custom_allowed_list",
+      "explicit_anchors"
+    ],
+    "trust_material_ref_required_keys": [
+      "source_identity",
+      "source_pin"
+    ],
+    "official_trust_list_membership_requires_basis": "official_trust_list",
+    "trust_pointer_dereferenced_must_be": false
+  },
+  "signer_provenance": {
+    "order_must_equal_zero_based_index": true
+  },
+  "later_comparison_posture": {
+    "trust_basis_forcing_not_comparable": "unknown_not_captured",
+    "required_value": "not_comparable"
+  },
+  "prior_producer_report": {
+    "absent_requires_comparison_posture": "not_evaluated"
+  },
+  "conditional_machine_limitation_codes": [
+    {
+      "code": "C2PA_REVOCATION_NOT_EVALUATED",
+      "field_path": "revocation.observation",
+      "operator": "equals",
+      "value": "not_evaluated",
+      "reason": "revocation.observation is 'not_evaluated'"
+    },
+    {
+      "code": "C2PA_VALIDATION_TIME_NOT_CONTROLLED",
+      "field_path": "validation_time.validation_time_control",
+      "operator": "present_and_not_equals",
+      "value": "supported_and_pinned",
+      "reason": "validation_time.validation_time_control is not 'supported_and_pinned'"
+    },
+    {
+      "code": "C2PA_TRUST_BASIS_NOT_CAPTURED",
+      "field_path": "signer_trust.trust_basis",
+      "operator": "equals",
+      "value": "unknown_not_captured",
+      "reason": "signer_trust.trust_basis is 'unknown_not_captured'"
+    }
+  ]
+}
