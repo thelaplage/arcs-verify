@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import base64
 import copy
+import hashlib
 import json
 
 import pytest
@@ -17,7 +18,7 @@ from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from arcs_verify.c2pa_test_signature0 import (
     APPROVED_UNSIGNED_SHA256,
     TEST_ISSUER,
-    TEST_KEY_ID,
+    TEST_KEY_ID_PREFIX,
     TestReceiverKey,
     verify_test_signed_observation,
 )
@@ -26,6 +27,8 @@ from arcs_verify.c2pa_test_signature0 import (
 def constructed_signed_test():
     """SYNTHETIC crypto fixture, not a C2PA observed-side or issuer proof."""
     key = Ed25519PrivateKey.generate()
+    public = key.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)
+    key_id = TEST_KEY_ID_PREFIX + hashlib.sha256(public).hexdigest()
     doc = {
         "receipt_version": "srs.core.v5.1",
         "profile_id": "srs.c2pa.validation_observation",
@@ -43,12 +46,12 @@ def constructed_signed_test():
         },
         "receipt_signature": {
             "algorithm": "Ed25519", "canonicalization": "RFC8785-JCS",
-            "key_id": TEST_KEY_ID,
+            "key_id": key_id,
         },
     }
     signature = key.sign(rfc8785.dumps(doc))
     doc["receipt_signature"]["signature"] = base64.urlsafe_b64encode(signature).decode().rstrip("=")
-    return doc, key.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)
+    return doc, public
 
 
 def wire(doc) -> bytes:
@@ -56,7 +59,7 @@ def wire(doc) -> bytes:
 
 
 def trust(key: bytes, *, trusted: bool, issuer: str = TEST_ISSUER):
-    return {TEST_KEY_ID: TestReceiverKey(issuer_id=issuer, public_key_raw=key, trusted_for_test=trusted)}
+    return {TEST_KEY_ID_PREFIX + hashlib.sha256(key).hexdigest(): TestReceiverKey(issuer_id=issuer, public_key_raw=key, trusted_for_test=trusted)}
 
 
 def test_valid_signature_only_under_an_explicitly_selected_test_key():
@@ -86,10 +89,12 @@ def test_crypto_validity_key_resolution_and_key_trust_are_separate():
 def test_wrong_key_is_not_signature_validity_or_issuer_trust():
     doc, _ = constructed_signed_test()
     other = Ed25519PrivateKey.generate().public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)
-    result = verify_test_signed_observation(wire(doc), selected_test_keys=trust(other, trusted=True))
-    assert result.signature_valid == "fail"
-    assert result.issuer_key_resolved == "pass"
-    assert "signature_invalid" in result.failure_codes
+    declared_id = doc["receipt_signature"]["key_id"]
+    selected = {declared_id: TestReceiverKey(issuer_id=TEST_ISSUER, public_key_raw=other, trusted_for_test=True)}
+    result = verify_test_signed_observation(wire(doc), selected_test_keys=selected)
+    assert result.signature_valid == "not_evaluated"
+    assert result.issuer_key_resolved == "fail"
+    assert "key_id_public_key_mismatch" in result.failure_codes
 
 
 @pytest.mark.parametrize("mutation", [
