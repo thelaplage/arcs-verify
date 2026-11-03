@@ -8,8 +8,10 @@ native validator is NOT_EXERCISED, not a passing integrated replay.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+from pathlib import Path
 
 import pytest
 
@@ -18,7 +20,7 @@ from arcs_verify.c2pa_test_signature0 import (
     verify_and_replay_test_signed_observation,
     verify_test_signed_observation,
 )
-from .test_produced_replay import evidence, observation_bytes
+from .test_produced_replay import PROV, evidence, observation_bytes
 
 try:
     from dagr_ingest.srs.c2pa_test_signing0 import sign_approved_test_observation
@@ -30,6 +32,18 @@ else:
 
 LIVE = os.environ.get("ARCS_VERIFY_C2PATOOL")
 NAMES = ("positive", "negative_native_invalid_exit0", "negative_remote_manifest_missing")
+
+
+@pytest.mark.skipif(not LIVE, reason="NOT_EXERCISED: exact pinned c2patool required")
+def test_selected_validator_is_the_exact_frozen_binary_not_version_only():
+    """The producer's recorded binary digest, not its version string, pins this replay."""
+    assert LIVE is not None
+    path = Path(LIVE)
+    assert path.is_file(), "a concrete local validator file is required"
+    records = PROV["run_records"]["by_specimen"].values()
+    pins = {record["validator_binary_sha256"] for record in records}
+    assert len(pins) == 1, "all original producer runs must agree on a binary pin"
+    assert "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest() == next(iter(pins))
 
 
 def signed(name):
