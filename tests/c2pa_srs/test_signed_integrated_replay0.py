@@ -14,7 +14,7 @@ import os
 import pytest
 
 from arcs_verify.c2pa_test_signature0 import (
-    TEST_ISSUER, TEST_KEY_ID, TestReceiverKey,
+    TEST_ISSUER, TestReceiverKey,
     verify_and_replay_test_signed_observation,
     verify_test_signed_observation,
 )
@@ -34,12 +34,15 @@ NAMES = ("positive", "negative_native_invalid_exit0", "negative_remote_manifest_
 
 def signed(name):
     if sign_approved_test_observation is None:
-        pytest.skip("NOT_EXERCISED: install dagr-ingest[signed-proof] exact SIGN0 candidate: " + str(SIGNER_IMPORT_FAILURE))
+        reason = "NOT_EXERCISED: install dagr-ingest[signed-proof] exact SIGN0 candidate: " + str(SIGNER_IMPORT_FAILURE)
+        if os.environ.get("C2PA_SIGN0_REQUIRED") == "1":
+            pytest.fail(reason)
+        pytest.skip(reason)
     artifact = sign_approved_test_observation(
         observation_bytes(name), acknowledge_test_signing=True,
     )
     selected = {
-        TEST_KEY_ID: TestReceiverKey(
+        artifact.key_id: TestReceiverKey(
             issuer_id=TEST_ISSUER,
             public_key_raw=artifact.public_key_raw,
             trusted_for_test=True,
@@ -76,12 +79,13 @@ def test_signed_real_producer_receipt_follows_existing_profile_and_native_pipeli
     assert combined["native_replay"]["pipeline"]["stages"]["native_recomputation"]["status"] == "not_evaluated"
     assert combined["native_replay"]["axes"]["srs_receipt_authentication"]["issuance_authentication"] == "not_evaluated"
     assert combined["scope"] == "independent_axes_no_aggregate_result"
+    assert combined["operational_issuer"] == "none_selected"
 
 
 @pytest.mark.parametrize("name", ("positive", "negative_native_invalid_exit0"))
 def test_wrong_key_or_tampered_signature_never_grants_receipt_authentication(name):
     artifact, selected = signed(name)
-    wrong = TEST_KEY_ID
+    wrong = artifact.key_id
     bogus = TestReceiverKey(TEST_ISSUER, b"\x01" * 32, trusted_for_test=True)
     result = verify_test_signed_observation(
         artifact.receipt_bytes, selected_test_keys={wrong: bogus},
