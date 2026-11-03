@@ -7,11 +7,11 @@ set -euo pipefail
 fail() { printf '%s\n' "C2PA_SIGNED0_BLOCKED: $*" >&2; exit 3; }
 [[ "$(uname -s)" == "Darwin" ]] || fail "macOS sandbox-exec required; no unsandboxed fallback"
 command -v sandbox-exec >/dev/null || fail "sandbox-exec not installed"
-: "$C2PA_SIGN0_REPO"
-: "$C2PA_SIGN0_EXPECTED_HEAD"
-: "$C2PA_SIGVERIFY_EXPECTED_HEAD"
-: "$ARCS_VERIFY_C2PATOOL"
-: "$C2PA_SIGNED_TEST_EVIDENCE_DIR"
+[[ -n "${C2PA_SIGN0_REPO:-}" ]] || fail "set C2PA_SIGN0_REPO"
+[[ -n "${C2PA_SIGN0_EXPECTED_HEAD:-}" ]] || fail "set exact C2PA_SIGN0_EXPECTED_HEAD"
+[[ -n "${C2PA_SIGVERIFY_EXPECTED_HEAD:-}" ]] || fail "set exact C2PA_SIGVERIFY_EXPECTED_HEAD"
+[[ -n "${ARCS_VERIFY_C2PATOOL:-}" ]] || fail "set ARCS_VERIFY_C2PATOOL"
+[[ -n "${C2PA_SIGNED_TEST_EVIDENCE_DIR:-}" ]] || fail "set C2PA_SIGNED_TEST_EVIDENCE_DIR"
 
 repo="$(cd "$(dirname "$0")/.." && pwd -P)"
 sign_repo="$(cd "$C2PA_SIGN0_REPO" && pwd -P)"
