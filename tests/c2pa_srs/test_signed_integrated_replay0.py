@@ -90,8 +90,9 @@ def test_wrong_key_or_tampered_signature_never_grants_receipt_authentication(nam
     result = verify_test_signed_observation(
         artifact.receipt_bytes, selected_test_keys={wrong: bogus},
     )
-    assert result.signature_valid == "fail"
-    assert "signature_invalid" in result.failure_codes
+    assert result.signature_valid == "not_evaluated"
+    assert result.issuer_key_resolved == "fail"
+    assert "key_id_public_key_mismatch" in result.failure_codes
     unsigned_decision = verify_test_signed_observation(
         artifact.receipt_bytes, selected_test_keys={},
     )
