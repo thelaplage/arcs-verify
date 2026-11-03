@@ -16,6 +16,8 @@ version, key id, unknown extensions and all semantic fields remain signed.
 
 Verifier code imports NO producer implementation. The caller supplies a
 specific TEST-only public key and an explicit trust decision, in memory.
+The issuer-namespaced key_id must bind SHA-256 of exactly that selected raw
+public key; key-id reuse or substitution is a typed refusal.
 There is no default trust bundle, key fetching, network egress or file-based
 key lookup.
 
@@ -45,6 +47,8 @@ The two independent tests are:
     python -m pytest -q tests/c2pa_srs/test_test_signature0.py
     python -m pytest -q tests/c2pa_srs/test_signed_integrated_replay0.py
 
+Set C2PA_SIGN0_REQUIRED=1 for the integrated qualification, so a missing
+SIGN0 installation is a test failure rather than a skip.
 Set ARCS_VERIFY_C2PATOOL to the exact pinned local c2patool 0.27.15 executable
 before the genuine native recomputation pass. Missing signer install or
 validator is NOT_EXERCISED; never count that as an integrated proof PASS.
