@@ -34,6 +34,43 @@ LIVE = os.environ.get("ARCS_VERIFY_C2PATOOL")
 NAMES = ("positive", "negative_native_invalid_exit0", "negative_remote_manifest_missing")
 
 
+def _retain_test_proof(name: str, artifact, combined: dict) -> None:
+    """Explicit, local-only evidence export: signed bytes and PUBLIC key, never private."""
+    target = os.environ.get("C2PA_SIGNED_TEST_EVIDENCE_DIR")
+    if not target:
+        return
+    base = Path(target).resolve(strict=True)
+    assert base.is_dir(), "evidence target must be an existing directory"
+    repo_root = Path(__file__).resolve().parents[2]
+    assert not base.is_relative_to(repo_root), "test evidence must stay outside the source tree"
+    files = {
+        f"{name}.signed-observation.json": artifact.receipt_bytes,
+        f"{name}.test-public-key.bin": artifact.public_key_raw,
+    }
+    for filename in files:
+        assert not (base / filename).exists(), "evidence overwrite is refused"
+    proof = {
+        "status": "OFFLINE_SIGNED_TEST_PROOF_NOT_OPERATIONAL_ISSUANCE",
+        "specimen": name,
+        "original_unsigned_observation_sha256": artifact.original_observation_sha256,
+        "signed_observation_sha256": "sha256:" + hashlib.sha256(artifact.receipt_bytes).hexdigest(),
+        "test_public_key_sha256": "sha256:" + hashlib.sha256(artifact.public_key_raw).hexdigest(),
+        "test_key_id": artifact.key_id,
+        "cryptographic_finding": combined["signature_test"],
+        "native_replay": combined["native_replay"],
+        "native_stopped_at": combined["native_stopped_at"],
+        "authority_movement": 0,
+        "operational_issuer": "none_selected",
+        "private_key_retained": False,
+    }
+    proof_filename = f"{name}.proof.json"
+    assert not (base / proof_filename).exists(), "evidence overwrite is refused"
+    # Persist only after the test has completed its positive/negative assertions.
+    for filename, data in files.items():
+        (base / filename).write_bytes(data)
+    (base / proof_filename).write_text(json.dumps(proof, sort_keys=True, indent=2) + "\n")
+
+
 @pytest.mark.skipif(not LIVE, reason="NOT_EXERCISED: exact pinned c2patool required")
 def test_selected_validator_is_the_exact_frozen_binary_not_version_only():
     """The producer's recorded binary digest, not its version string, pins this replay."""
@@ -143,3 +180,4 @@ def test_real_signed_specimen_is_independently_recomputed_without_trust_promotio
         assert native["axes"]["native_validation_state"]["observed_verbatim"] == "Invalid"
     else:
         assert native["pipeline"]["stages"]["native_recomputation"]["status"] in ("completed", "not_evaluated")
+    _retain_test_proof(name, artifact, combined)
