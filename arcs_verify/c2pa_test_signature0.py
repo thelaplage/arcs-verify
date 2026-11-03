@@ -27,7 +27,7 @@ PROFILE_ID = "srs.c2pa.validation_observation"
 PROFILE_VERSION = "v0.1"
 RECEIPT_VERSION = "srs.core.v5.1"
 TEST_ISSUER = "issuer.TEST-NON-OPERATIONAL.dagr-ingest/c2pa-observation-provisional"
-TEST_KEY_ID = TEST_ISSUER + "/receipt-signing/test-only"
+TEST_KEY_ID_PREFIX = TEST_ISSUER + "/receipt-signing/test-only/"
 TEST_EXTENSION = "dagr_ingest_test_signature0"
 APPROVED_UNSIGNED_SHA256 = frozenset({
     "32a0ebd9cb47edd093f15eba1db1eb43c3130bb32bda645016ee2f7a337cbb22",
@@ -159,7 +159,9 @@ def verify_test_signed_observation(
     if (
         signature.get("algorithm") != "Ed25519"
         or signature.get("canonicalization") != "RFC8785-JCS"
-        or signature.get("key_id") != TEST_KEY_ID
+        or not isinstance(signature.get("key_id"), str)
+        or not signature["key_id"].startswith(TEST_KEY_ID_PREFIX)
+        or not re.fullmatch(r"[0-9a-f]{64}", signature["key_id"][len(TEST_KEY_ID_PREFIX):])
     ):
         return _finding(signed_receipt_bytes, "not_evaluated", "not_evaluated", "not_evaluated", ["signature_object_invalid"], source)
     try:
@@ -173,11 +175,13 @@ def verify_test_signed_observation(
     except (TypeError, OverflowError):
         return _finding(signed_receipt_bytes, "not_evaluated", "not_evaluated", "not_evaluated", ["preimage_canonicalization_failed"], source)
 
-    selected = selected_test_keys.get(TEST_KEY_ID)
+    selected = selected_test_keys.get(signature["key_id"])
     if selected is None:
         return _finding(signed_receipt_bytes, "not_evaluated", "fail", "not_evaluated", ["key_id_unresolved"], source)
     if not isinstance(selected, TestReceiverKey) or type(selected.public_key_raw) is not bytes or len(selected.public_key_raw) != 32:
         return _finding(signed_receipt_bytes, "not_evaluated", "fail", "not_evaluated", ["public_key_invalid"], source)
+    if signature["key_id"] != TEST_KEY_ID_PREFIX + hashlib.sha256(selected.public_key_raw).hexdigest():
+        return _finding(signed_receipt_bytes, "not_evaluated", "fail", "not_evaluated", ["key_id_public_key_mismatch"], source)
     trusted = selected.issuer_id == TEST_ISSUER and selected.trusted_for_test is True
     trust_state = "pass" if trusted else "fail"
     codes: list[str] = [] if trusted else ["key_untrusted_for_test"]
