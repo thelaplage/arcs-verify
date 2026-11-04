@@ -32,6 +32,8 @@ filenames cannot close that class; the architecture below does.
 | Judge provenance | `failure_code_judge.py` + `failure_code_census.py` are extracted with `git show` from the **base commit** into a fresh temporary directory. If the base does not contain them: `BASE_JUDGE_ABSENT`, i.e. NOT_ESTABLISHED (exit 2). |
 | Isolation | The judge runs in its own interpreter: `python -I -S -B -X pycache_prefix=<fresh dir>`, environment cleared, working directory = the fresh directory. The candidate tree is on no import path. |
 | Candidate handling | Candidate `.py` files are read as bytes and `ast.parse`d; the registry is read as text; the ledger as JSON. Nothing from the candidate is imported or executed. Any judge failure (unparseable source, timeout, crash, no output) is `JUDGE_ERROR`, never an empty set. |
+| Read as Python runs it | The judge parses candidate source as **bytes** (`ast.parse(bytes)`), so a PEP 263 coding cookie (`# coding: utf-7`) or a BOM is honoured exactly as the interpreter honours it; decoding to text first let a cookie hide a code. It enumerates the package itself (no `rglob`) and **refuses** what a source scan cannot see but the interpreter can import: any symlink under `arcs_verify/` (`SYMLINK_IN_PACKAGE`) and source-less `.pyc` / extension files (`UNSCANNED_IMPORTABLE`). Undecodable source is `JUDGE_ERROR`. |
+| Package floor | Scanning zero modules is `PACKAGE_MISSING`; keeping fewer than half of the **base commit's** package modules is `PACKAGE_COLLAPSED` (relative to `git ls-tree` of the base, no hard-coded count). Removing a few modules is not a collapse. |
 | Decision | Every candidate undocumented `(module, code)` / `(module, family)` must be in the **base** ledger (`GROWTH_CODE`, `GROWTH_FAMILY`, `GROWTH_NEW_MODULE`); the candidate ledger must be a subset of the base ledger (`LEDGER_GROWTH`). The candidate ledger is never an input to the permission decision. Shrinkage and newly documented codes are permitted. |
 | Review pressure | The judge, the launcher, the census and their tests are GUARDED. A difference from the base is `SELECTION_CHANGED` unless an out-of-band digest of the candidate's guarded files is supplied after a human read the diff. A change to the judge cannot affect the verdict of the commit that makes it (the judge is the base's); it takes effect from the next base. |
 
@@ -80,6 +82,19 @@ candidate source tree, its bytecode, its configuration, its test helpers, its
 ledger, the registry text and the `.pth` / `sitecustomize` files it carries.
 
 Not defended, and stated plainly:
+
+* **Static census bound (irreducible).** The ratchet is a **best-effort growth
+  detector for statically-apparent failure codes**, not an absolute guarantee. An
+  AST census cannot see a code assembled purely at runtime: dynamic string
+  construction, `exec`/`eval`, `getattr` tricks, computed concatenation beyond the
+  family-prefix handling, or codes read from data files. A contributor determined
+  to emit an unregistered code that way is outside what this control can detect;
+  it narrows the honest path (a literal in a recognised emit form), it does not
+  prove absence.
+* **Bytecode caches.** A committed `__pycache__` entry (including an
+  `UNCHECKED_HASH` `.pyc`) for a package module would run instead of the source
+  the judge scanned. Judging is of the source; run the verifier from source
+  (`-B`, `PYTHONDONTWRITEBYTECODE`, fresh checkout).
 
 * **Bootstrap.** The change that first adds the judge has no base copy. Run
   against a base that predates it the result is `BASE_JUDGE_ABSENT`; with the

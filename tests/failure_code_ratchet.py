@@ -34,7 +34,11 @@ Architecture: the candidate checkout is DATA, never code
    undocumented ``(module, code|family)`` must be in the BASE ledger; the
    candidate ledger must be a subset of the base ledger; the candidate's ledger is
    never an input to the permission decision.
-5. REVIEW PRESSURE. Files that define the judge or this launcher are GUARDED;
+5. READ-AS-PYTHON-RUNS. The judge parses bytes (coding cookie and BOM honoured),
+   enumerates the package itself, and refuses symlinks and source-less importable
+   files under ``arcs_verify/``; this launcher refuses a package that is missing
+   or collapsed relative to the BASE commit's module count (no hard-coded floor).
+6. REVIEW PRESSURE. Files that define the judge or this launcher are GUARDED;
    a difference from the base is ``SELECTION_CHANGED`` unless an out-of-band
    digest of the candidate's guarded files is supplied after a human read the diff.
    They cannot affect the verdict of the change that edits them (the judge is the
@@ -95,6 +99,14 @@ LEDGER_GROWTH = "LEDGER_GROWTH"
 SELECTION_CHANGED = "SELECTION_CHANGED"
 BASE_JUDGE_ABSENT = "BASE_JUDGE_ABSENT"
 JUDGE_ERROR = "JUDGE_ERROR"
+PACKAGE_MISSING = "PACKAGE_MISSING"
+PACKAGE_COLLAPSED = "PACKAGE_COLLAPSED"
+SYMLINK_IN_PACKAGE = "SYMLINK_IN_PACKAGE"
+UNSCANNED_IMPORTABLE = "UNSCANNED_IMPORTABLE"
+# A candidate that keeps fewer than this fraction of the BASE's package modules
+# is a collapse (moved/emptied package), not a refactor. Relative to the base on
+# purpose: no hard-coded module count.
+COLLAPSE_FRACTION = 0.5
 
 _HEX40 = re.compile(r"^[0-9a-f]{40}$")
 
@@ -313,6 +325,29 @@ def run_judge(root: Path, judge_dir: Path, stage: Path) -> tuple[dict | None, li
     return payload, []
 
 
+def base_module_count(root: Path, sha: str) -> int:
+    got = _git(root, "ls-tree", "-r", "--name-only", sha, "--", "arcs_verify")
+    names = got.stdout.decode("utf-8", "replace").splitlines() if got.returncode == 0 else []
+    return sum(1 for name in names if name.endswith(".py"))
+
+
+def package_violations(payload: dict, base_count: int) -> list[Violation]:
+    out: list[Violation] = []
+    scanned = int(payload["package_modules"])
+    if scanned == 0:
+        out.append(Violation(PACKAGE_MISSING, "arcs_verify", "the candidate has no scannable package modules; nothing was judged"))
+    elif base_count and scanned < base_count * COLLAPSE_FRACTION:
+        out.append(Violation(
+            PACKAGE_COLLAPSED, "arcs_verify",
+            f"{scanned} modules scanned against {base_count} at the base (< {COLLAPSE_FRACTION:.0%}); the package moved or was emptied",
+        ))
+    for path in payload.get("symlinks", []):
+        out.append(Violation(SYMLINK_IN_PACKAGE, path, "a symlink under the package is importable but was not scanned; refused"))
+    for path in payload.get("unscanned_importable", []):
+        out.append(Violation(UNSCANNED_IMPORTABLE, path, "a source-less importable file cannot be censused; refused"))
+    return out
+
+
 def evaluate(
     root: Path,
     explicit_base: str | None = None,
@@ -351,6 +386,7 @@ def evaluate(
         candidate_ledger = {}
     if payload is not None:
         result.modules_checked = int(payload["package_modules"])
+        result.violations += package_violations(payload, base_module_count(root, sha))
         candidate = {m: (set(v["codes"]), set(v["families"])) for m, v in payload["modules"].items()}
         result.violations += growth_violations(candidate, base_ledger, candidate_ledger)
 

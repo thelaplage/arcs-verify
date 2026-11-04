@@ -673,6 +673,7 @@ def test_candidate_code_is_not_executed_when_a_guarded_file_changed(base_repo: d
 # 8. THE SEALED JUDGE (CORR2): the candidate checkout is data, never code
 # ---------------------------------------------------------------------------
 
+import importlib.machinery  # noqa: E402
 import importlib.util  # noqa: E402
 import py_compile  # noqa: E402
 
@@ -861,3 +862,181 @@ def test_judge_parity_with_the_census_test_on_the_real_tree() -> None:
     assert produced["modules"] == expected
     assert produced["package_modules"] == len(census_lib.package_modules())
     assert set(expected) == set(gate._known_gaps()), "the judge sees exactly the ledger's gap modules on the real tree"
+
+
+# ---------------------------------------------------------------------------
+# 9. READ-AS-PYTHON-RUNS (CORR3): the judge must see what the interpreter runs
+# ---------------------------------------------------------------------------
+
+import textwrap  # noqa: E402
+
+HIDDEN_CODE = "zz_growth"
+# Each entry: (id, source bytes). The interpreter evaluates every one to the string
+# "zz_growth" (proven by running it, below); a str-decoding scan sees something else.
+COOKIE_SOURCES = {
+    "utf-7-line1": b'# coding: utf-7\ndef _sink(code):\n    return code\n\n\nHIDDEN = _sink("+AHoAegBf-growth")\n',
+    "utf-7-line2": b'#!/usr/bin/env python\n# -*- coding: utf-7 -*-\ndef _sink(code):\n    return code\n\n\nHIDDEN = _sink("+AHoAegBf-growth")\n',
+    "unicode_escape": b'# coding: unicode_escape\ndef _sink(code):\n    return code\n\n\nHIDDEN = _sink("\\\\x7a\\\\x7a_growth")\n',
+    "utf-8-bom": b'\xef\xbb\xbfdef _sink(code):\n    return code\n\n\nHIDDEN = _sink("zz_growth")\n',
+}
+PLAIN_CONTROL = b'def _sink(code):\n    return code\n\n\nHIDDEN = _sink("zz_growth")\n'
+
+
+def interpreter_value(path: Path) -> str:
+    """What the interpreter actually evaluates HIDDEN to (the control for the attack)."""
+    done = subprocess.run(
+        [sys.executable, "-I", "-c", "import runpy,sys; print(runpy.run_path(sys.argv[1])['HIDDEN'])", str(path)],
+        capture_output=True, text=True,
+    )
+    assert done.returncode == 0, done.stderr
+    return done.stdout.strip()
+
+
+def test_control_plain_utf8_hidden_module_is_detected(base_repo: dict, candidate: Path) -> None:
+    (candidate / "arcs_verify" / "zz_hidden.py").write_bytes(PLAIN_CONTROL)
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and ("GROWTH_NEW_MODULE", "arcs_verify/zz_hidden.py") in violations(out), out
+    assert HIDDEN_CODE in out
+
+
+@pytest.mark.parametrize("name", sorted(COOKIE_SOURCES))
+def test_coding_cookie_or_bom_cannot_hide_a_growth_code_from_the_judge(name: str, base_repo: dict, candidate: Path) -> None:
+    """CORR3 bypass 1: a ``# coding: utf-7`` cookie makes the interpreter evaluate
+    "+AHoAegBf-growth" to "zz_growth", while ``ast.parse`` of a decoded ``str``
+    ignores the cookie and sees a non-code. The judge parses BYTES."""
+    target = candidate / "arcs_verify" / "zz_hidden.py"
+    target.write_bytes(COOKIE_SOURCES[name])
+    assert interpreter_value(target) == HIDDEN_CODE, "control: the interpreter really sees the growth code"
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and verdict(out).startswith("RATCHET=FAIL"), out
+    assert ("GROWTH_NEW_MODULE", "arcs_verify/zz_hidden.py") in violations(out), out
+    assert HIDDEN_CODE in out, "the decoded code is named, not merely the module"
+
+
+def test_undecodable_candidate_source_fails_closed(base_repo: dict, candidate: Path) -> None:
+    (candidate / "arcs_verify" / "zz_bad.py").write_bytes(b"# coding: no-such-codec\nX = 1\n")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and ratchet.JUDGE_ERROR in {c for c, _ in violations(out)}, out
+    (candidate / "arcs_verify" / "zz_bad.py").write_bytes(b"# coding: ascii\nX = '\xff'\n")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and ratchet.JUDGE_ERROR in {c for c, _ in violations(out)}, out
+
+
+def _importable(tree: Path, dotted: str) -> bool:
+    done = subprocess.run(
+        [sys.executable, "-I", "-c", "import importlib.util,sys; sys.path.insert(0, sys.argv[1]); "
+         "print(importlib.util.find_spec(sys.argv[2]) is not None)", str(tree), dotted],
+        capture_output=True, text=True,
+    )
+    return done.stdout.strip() == "True"
+
+
+def test_symlinked_package_directory_with_a_growth_code_is_refused(base_repo: dict, candidate: Path) -> None:
+    """CORR3 bypass 2: ``arcs_verify/zz_link -> ../zz_hidden_pkg`` is importable but
+    ``rglob`` never descended into a directory symlink."""
+    hidden = candidate / "zz_hidden_pkg"
+    hidden.mkdir()
+    (hidden / "__init__.py").write_bytes(PLAIN_CONTROL)
+    (candidate / "arcs_verify" / "zz_link").symlink_to(Path("..") / "zz_hidden_pkg", target_is_directory=True)
+    assert _importable(candidate, "arcs_verify.zz_link"), "control: the symlinked package really is importable"
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and (ratchet.SYMLINK_IN_PACKAGE, "arcs_verify/zz_link") in violations(out), out
+    assert verdict(out).startswith("RATCHET=FAIL")
+
+
+def test_symlinked_module_file_is_refused(base_repo: dict, candidate: Path) -> None:
+    (candidate / "zz_outside.py").write_bytes(PLAIN_CONTROL)
+    (candidate / "arcs_verify" / "zz_alias.py").symlink_to(Path("..") / "zz_outside.py")
+    assert _importable(candidate, "arcs_verify.zz_alias")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and (ratchet.SYMLINK_IN_PACKAGE, "arcs_verify/zz_alias.py") in violations(out), out
+
+
+def test_the_package_directory_itself_as_a_symlink_is_refused(base_repo: dict, candidate: Path) -> None:
+    (candidate / "arcs_verify").rename(candidate / "zz_real_pkg")
+    (candidate / "arcs_verify").symlink_to("zz_real_pkg", target_is_directory=True)
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and (ratchet.SYMLINK_IN_PACKAGE, "arcs_verify") in violations(out), out
+    assert ratchet.PACKAGE_MISSING in {c for c, _ in violations(out)}
+
+
+def test_sourceless_pyc_and_extension_files_in_the_package_are_refused(base_repo: dict, candidate: Path) -> None:
+    """The same read/run gap, by another route: a source-less ``.pyc`` or extension
+    module is importable and invisible to any source census."""
+    source = candidate / "zz_src.py"
+    source.write_bytes(PLAIN_CONTROL)
+    py_compile.compile(str(source), cfile=str(candidate / "arcs_verify" / "zz_hidden.pyc"), doraise=True)
+    suffix = importlib.machinery.EXTENSION_SUFFIXES[0]
+    (candidate / "arcs_verify" / f"zz_ext{suffix}").write_bytes(b"\x00")
+    assert _importable(candidate, "arcs_verify.zz_hidden"), "control: the source-less pyc really is importable"
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    found = violations(out)
+    assert code == 1
+    assert (ratchet.UNSCANNED_IMPORTABLE, "arcs_verify/zz_hidden.pyc") in found, out
+    assert (ratchet.UNSCANNED_IMPORTABLE, f"arcs_verify/zz_ext{suffix}") in found, out
+
+
+def test_package_moved_aside_is_a_failure_not_a_pass(base_repo: dict, candidate: Path) -> None:
+    """CORR3 bypass 3: with arcs_verify/ moved away the checker printed
+    RATCHET=PASS and ``modules checked: 0``."""
+    (candidate / "arcs_verify").rename(candidate / "zz_moved_aside")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and verdict(out).startswith("RATCHET=FAIL"), out
+    assert (ratchet.PACKAGE_MISSING, "arcs_verify") in violations(out), out
+    assert "modules checked: 0" in out and verdict(out) != "RATCHET=PASS"
+
+
+def test_package_emptied_is_a_failure_not_a_pass(base_repo: dict, candidate: Path) -> None:
+    shutil.rmtree(candidate / "arcs_verify")
+    (candidate / "arcs_verify").mkdir()
+    (candidate / "arcs_verify" / "README.txt").write_text("empty", encoding="utf-8")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and (ratchet.PACKAGE_MISSING, "arcs_verify") in violations(out), out
+
+
+def test_package_replaced_by_a_file_is_a_failure(base_repo: dict, candidate: Path) -> None:
+    shutil.rmtree(candidate / "arcs_verify")
+    (candidate / "arcs_verify").write_text("x", encoding="utf-8")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and (ratchet.PACKAGE_MISSING, "arcs_verify") in violations(out), out
+
+
+def test_package_collapse_relative_to_the_base_is_a_failure(base_repo: dict, candidate: Path) -> None:
+    """Not a hard-coded floor: more than half of the BASE's modules gone."""
+    modules = sorted((candidate / "arcs_verify").rglob("*.py"))
+    keep = len(modules) // 3
+    for path in modules[keep:]:
+        path.unlink()
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and (ratchet.PACKAGE_COLLAPSED, "arcs_verify") in violations(out), out
+
+
+def test_removing_a_few_modules_is_not_a_collapse_no_false_positive(base_repo: dict, candidate: Path) -> None:
+    gap = set(json.loads((candidate / LEDGER_PATH).read_text())["modules"])
+    victims = [p for p in sorted((candidate / "arcs_verify").glob("*.py"))
+               if p.relative_to(candidate).as_posix() not in gap and p.name != "__init__.py"][:3]
+    assert len(victims) == 3
+    for path in victims:
+        path.unlink()
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 0 and verdict(out) == "RATCHET=PASS" and violations(out) == [], out
+
+
+def test_judge_module_enumeration_matches_the_census_on_the_real_tree() -> None:
+    import failure_code_census as census_lib
+    import failure_code_judge as judge
+
+    modules, symlinks, unscanned = judge.enumerate_package(REAL)
+    assert modules == census_lib.package_modules()
+    assert symlinks == [] and unscanned == []
+
+
+def test_judge_decodes_exactly_like_the_interpreter_on_the_real_tree() -> None:
+    """Parsing bytes must equal parsing the text for every real module (all utf-8)."""
+    import ast
+
+    import failure_code_census as census_lib
+
+    for module in census_lib.package_modules():
+        raw = (REAL / module).read_bytes()
+        assert ast.dump(ast.parse(raw)) == ast.dump(ast.parse(raw.decode("utf-8"))), module
