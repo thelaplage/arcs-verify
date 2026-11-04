@@ -989,11 +989,12 @@ never stands in for success in another.
 | Code | Finding | Meaning |
 | --- | --- | --- |
 | `receipt_parse_invalid` | `failure_codes` | The signed receipt is not UTF-8 JSON, has duplicate members, or contains a non-finite number. |
+| `receipt_nesting_excessive` | `failure_codes` | The signed receipt nests JSON containers deeper than `MAX_RECEIPT_NESTING_DEPTH` (64), or the parser exhausted its recursion limit. Refused before parsing, preimage construction or canonicalization; no other finding is evaluated. |
 | `receipt_object_invalid` | `failure_codes` | The parsed receipt is not a JSON object. |
 | `test_provenance_not_admitted` | `failure_codes` | Profile, version, issuer, source reference, issuer status or key scope is outside the frozen test-only admission contract. |
 | `signature_object_invalid` | `failure_codes` | `receipt_signature` is absent, has extra or missing members, or carries a malformed algorithm, canonicalization, key id or test key prefix. |
 | `signature_encoding_invalid` | `failure_codes` | The signature is not canonical unpadded base64url for exactly 64 bytes. |
-| `preimage_canonicalization_failed` | `failure_codes` | The RFC 8785 JCS preimage could not be produced. |
+| `preimage_canonicalization_failed` | `failure_codes` | The RFC 8785 JCS preimage could not be produced (for example a lone surrogate, an integer outside the I-JSON range, or a number JCS cannot represent). |
 | `key_id_unresolved` | `failure_codes` | The declared key id is not among the receiver-selected test keys. |
 | `public_key_invalid` | `failure_codes` | The selected key is not a 32-byte raw Ed25519 public key. |
 | `key_id_public_key_mismatch` | `failure_codes` | The declared key id does not bind SHA-256 of the receiver-selected public key; refused before any cryptographic appraisal. |

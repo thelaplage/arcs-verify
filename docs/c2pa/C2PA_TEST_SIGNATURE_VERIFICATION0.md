@@ -61,6 +61,54 @@ reference and the frozen admission allowlist.
   supplied as `supplied_source_sha256`; on a refusal that field can hold the digest
   of rejected bytes, which is why it is not called *verified*.
 
+## Fail-closed handling of hostile receipt bytes (HARDEN0-P2)
+
+`verify_test_signed_observation` returns an explicit non-passing finding for every
+malformed receipt; it does not raise on hostile *content*. Before P2 a receipt that
+nested containers a little under 1,000 deep made `copy.deepcopy` raise
+`RecursionError` out of the function (and ~2,000 deep did the same inside JCS), so
+a caller got an exception rather than a finding.
+
+- **Nesting bound.** `MAX_RECEIPT_NESTING_DEPTH = 64` (root container = 1; genuine
+  specimens nest 4 deep; the same bound the native observation adapter uses). It is
+  measured by an iterative lexical scan of the raw bytes *before* parsing, so the
+  parser, preimage construction and JCS are never reached by a hostile document and
+  the outcome does not depend on the interpreter's recursion limit. Brackets inside
+  JSON strings are not counted. Refusal code: `receipt_nesting_excessive`; the three
+  cryptographic findings stay `not_evaluated`, and receipt identity is
+  `not_evaluated` (`receipt_identity_not_assessed`). Input that is not valid JSON may
+  be reported either as nesting or as `receipt_parse_invalid`; either is a refusal.
+- **Narrow backstops.** A `RecursionError` from the JSON parser maps to
+  `receipt_nesting_excessive`; one from preimage canonicalization maps to
+  `preimage_canonicalization_failed`. Only those two call sites are covered; there
+  is no blanket `except Exception`.
+- **No deep copy.** The preimage is the receipt with only `receipt_signature.signature`
+  removed, built with a shallow copy of the two affected objects. Bytes are identical
+  to the previous `deepcopy` construction; this removes a recursion site and a copy
+  of up to 1 MiB of attacker-chosen structure.
+- **Malformed input.** Invalid UTF-8, a BOM, malformed or truncated JSON, trailing
+  data, duplicate members (including via escapes such as `\u0061`), `NaN`/`Infinity`
+  and over-long integer literals give `receipt_parse_invalid`. A non-object root
+  gives `receipt_object_invalid`. Values that parse but have no JCS form (lone
+  surrogates, floats that overflow to infinity, integers outside the I-JSON range)
+  give `preimage_canonicalization_failed` after admission and signature-shape
+  checks; no key lookup or signature verification runs.
+- **No echo of receipt-controlled data.** `source_unsigned_sha256` is reported only
+  when the receipt's `original_observation_sha256` is a well-formed lowercase
+  `sha256:<64 hex>` reference. Any other value (an object, a very long string, a
+  malformed digest) is reported as `null`, so a finding stays small, typed and
+  serializable regardless of what the receipt carried. Admission still evaluates the
+  raw value.
+- **Independence is unchanged.** Signature validity, key resolution, key trust,
+  source integrity and receipt identity remain separate findings. No malformed
+  receipt produces `pass` for `signature_valid`, `issuer_key_resolved` or
+  `issuer_key_trusted`, and none produces any issuer-standing, authenticity or
+  operational finding.
+- **Contract for programmer errors is preserved.** A receipt that is not `bytes` or
+  is over 1 MiB, `source_bytes` that are not `bytes` or exceed 8 MiB, and a
+  non-`Mapping` key selection still raise `TypeError`, including when the receipt
+  itself is hostile.
+
 ## Genuine frozen source observations
 
 Only test-sign derivatives from these unsigned EMIT0 output SHA-256 values:
@@ -80,6 +128,7 @@ The two independent tests are:
 
     python -m pytest -q tests/c2pa_srs/test_test_signature0.py
     python -m pytest -q tests/c2pa_srs/test_receiver_binding0.py
+    python -m pytest -q tests/c2pa_srs/test_fail_closed0.py
     python -m pytest -q tests/c2pa_srs/test_signed_integrated_replay0.py
 
 Set C2PA_SIGN0_REQUIRED=1 for the integrated qualification, so a missing
@@ -94,7 +143,10 @@ extension; producer native Invalid with exit 0; Manifest Store unavailable;
 TSA trust material absent; no receipt-wide trust promotion. HARDEN0-P1 adds:
 missing source bytes; substituted source bytes; a single modified source byte;
 malformed, empty and missing receipt ids; and a validly re-signed receipt whose
-identity is bound to the wrong key or source. A signed test receipt is NOT a
+identity is bound to the wrong key or source. HARDEN0-P2 adds
+the hostile-bytes matrix in `test_fail_closed0.py` (nesting at the bound and far
+beyond it, malformed UTF-8/JSON, duplicate members, uncanonicalizable values, size
+boundaries, unchanged `TypeError` contracts). A signed test receipt is NOT a
 SCITT registration or an operational issuer receipt.
 
 ### One-command macOS offline execution

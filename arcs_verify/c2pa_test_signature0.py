@@ -12,7 +12,6 @@ only receipt_signature.signature removed. All other fields remain signed.
 from __future__ import annotations
 
 import base64
-import copy
 import hashlib
 import json
 import re
@@ -40,6 +39,16 @@ _RECEIPT_ID = re.compile(
     "^" + re.escape(TEST_RECEIPT_ID_PREFIX) + r"[0-9a-f]{16}-[0-9a-f]{16}$"
 )
 MAX_SOURCE_BYTES = 8 * 1024 * 1024
+MAX_RECEIPT_BYTES = 1024 * 1024
+# Maximum JSON container nesting accepted in a signed receipt (root container = 1).
+# Genuine specimens nest 4 deep. The bound is deliberately the same as the native
+# observation adapter's MAX_JSON_DEPTH, and far below where parsing or JCS would
+# exhaust the interpreter stack, so rejection never depends on the recursion limit.
+MAX_RECEIPT_NESTING_DEPTH = 64
+_SOURCE_REFERENCE = re.compile(r"^sha256:[0-9a-f]{64}$")
+# One JSON string (skipped whole, so brackets inside strings are not counted) or one
+# container delimiter. Linear, no nested quantifier, and no recursion.
+_JSON_STRUCTURE = re.compile(rb'"[^"\\]*(?:\\.[^"\\]*)*"|[\[\]{}]', re.DOTALL)
 
 
 @dataclass(frozen=True)
@@ -97,6 +106,33 @@ def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 def _reject_nonfinite(value: str) -> None:
     raise ValueError("nonfinite JSON value")
+
+
+def _exceeds_nesting(data: bytes, limit: int) -> bool:
+    """True when ``data`` nests JSON containers deeper than ``limit``.
+
+    Lexical and iterative: it never recurses, so a hostile receipt cannot reach
+    the parser, the preimage construction or JCS before being refused. Structural
+    bytes are ASCII and never occur inside UTF-8 multibyte sequences. Input that is
+    not valid JSON may be refused here or by the parser; either way it is refused.
+    """
+    depth = 0
+    for match in _JSON_STRUCTURE.finditer(data):
+        token = match.group()
+        if token in (b"[", b"{"):
+            depth += 1
+            if depth > limit:
+                return True
+        elif token in (b"]", b"}"):
+            depth = max(depth - 1, 0)
+    return False
+
+
+def _echoable_source_reference(value: Any) -> str | None:
+    """Only a well-formed digest reference is echoed; untrusted receipt data never is."""
+    if isinstance(value, str) and _SOURCE_REFERENCE.fullmatch(value):
+        return value
+    return None
 
 
 def _decode_signature(value: Any) -> bytes:
@@ -209,17 +245,46 @@ def verify_test_signed_observation(
     allowlist; when absent the source finding is ``not_evaluated`` and the receipt
     identity cannot be recomputed. Source integrity and receipt identity are
     reported beside signature validity and never promote it.
+
+    Hostile receipt content never raises: ``signed_receipt_bytes`` that are not UTF-8,
+    not JSON, carry duplicate members or non-finite numbers, nest containers deeper
+    than ``MAX_RECEIPT_NESTING_DEPTH`` (64), or cannot be canonicalized yield explicit
+    non-passing findings (``receipt_parse_invalid``, ``receipt_nesting_excessive``,
+    ``preimage_canonicalization_failed``) with ``signature_valid``,
+    ``issuer_key_resolved`` and ``issuer_key_trusted`` left ``not_evaluated``. Only
+    caller programming errors (wrong argument types, oversize inputs) raise
+    ``TypeError``. Receipt-controlled values are never echoed into a finding unless
+    they are a well-formed ``sha256:`` reference.
     """
-    if type(signed_receipt_bytes) is not bytes or len(signed_receipt_bytes) > 1024 * 1024:
+    if type(signed_receipt_bytes) is not bytes or len(signed_receipt_bytes) > MAX_RECEIPT_BYTES:
         raise TypeError("signed_receipt_bytes must be bytes of at most 1 MiB")
     if not isinstance(selected_test_keys, Mapping):
         raise TypeError("selected_test_keys must be an explicit receiver mapping")
-    try:
-        receipt = json.loads(
-            signed_receipt_bytes.decode("utf-8"),
-            object_pairs_hook=_unique_object, parse_constant=_reject_nonfinite,
+    too_deep = _exceeds_nesting(signed_receipt_bytes, MAX_RECEIPT_NESTING_DEPTH)
+    malformed = False
+    receipt: Any = None
+    if not too_deep:
+        try:
+            receipt = json.loads(
+                signed_receipt_bytes.decode("utf-8"),
+                object_pairs_hook=_unique_object, parse_constant=_reject_nonfinite,
+            )
+        except RecursionError:
+            too_deep = True
+        except (UnicodeError, ValueError, TypeError):
+            malformed = True
+    if too_deep:
+        source_state, source_digest, source_codes = _assess_source(source_bytes, None)
+        return _finding(
+            signed_receipt_bytes, ["receipt_nesting_excessive"],
+            "not_evaluated", "not_evaluated", "not_evaluated", None,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state="not_evaluated",
+            identity_codes=("receipt_identity_not_assessed",),
+            supplied_source=source_digest,
         )
-    except (UnicodeError, ValueError, TypeError):
+    if malformed:
         source_state, source_digest, source_codes = _assess_source(source_bytes, None)
         return _finding(
             signed_receipt_bytes, ["receipt_parse_invalid"],
@@ -248,6 +313,9 @@ def verify_test_signed_observation(
     if isinstance(proof, dict):
         source = proof.get("original_observation_sha256")
     source_state, source_digest, source_codes = _assess_source(source_bytes, source)
+    # Attacker-controlled receipt data is never echoed into the finding unless it is a
+    # well-formed digest reference; admission below still reads the raw value.
+    source_echo = _echoable_source_reference(source)
 
     def _identity(key_fingerprint: str | None) -> tuple[str, tuple[str, ...]]:
         return _assess_identity(receipt.get("receipt_id"), source_digest, key_fingerprint, source_state)
@@ -267,7 +335,7 @@ def verify_test_signed_observation(
         identity_state, identity_codes = _identity(None)
         return _finding(
             signed_receipt_bytes, ["test_provenance_not_admitted"],
-            "not_evaluated", "not_evaluated", "not_evaluated", source,
+            "not_evaluated", "not_evaluated", "not_evaluated", source_echo,
             source_state=source_state,
             source_codes=source_codes,
             identity_state=identity_state,
@@ -279,7 +347,7 @@ def verify_test_signed_observation(
         identity_state, identity_codes = _identity(None)
         return _finding(
             signed_receipt_bytes, ["signature_object_invalid"],
-            "not_evaluated", "not_evaluated", "not_evaluated", source,
+            "not_evaluated", "not_evaluated", "not_evaluated", source_echo,
             source_state=source_state,
             source_codes=source_codes,
             identity_state=identity_state,
@@ -296,7 +364,7 @@ def verify_test_signed_observation(
         identity_state, identity_codes = _identity(None)
         return _finding(
             signed_receipt_bytes, ["signature_object_invalid"],
-            "not_evaluated", "not_evaluated", "not_evaluated", source,
+            "not_evaluated", "not_evaluated", "not_evaluated", source_echo,
             source_state=source_state,
             source_codes=source_codes,
             identity_state=identity_state,
@@ -305,26 +373,30 @@ def verify_test_signed_observation(
         )
     try:
         sigbytes = _decode_signature(signature.get("signature"))
-        preimage_obj = copy.deepcopy(receipt)
-        del preimage_obj["receipt_signature"]["signature"]
+        # Exactly the receipt with only receipt_signature.signature removed. Containers
+        # are shared, never mutated, so no deep copy (and no copy recursion) is needed.
+        preimage_obj = dict(receipt)
+        preimage_obj["receipt_signature"] = {
+            name: member for name, member in signature.items() if name != "signature"
+        }
         preimage = rfc8785.dumps(preimage_obj)
     except ValueError as exc:
         code = "signature_encoding_invalid" if str(exc) == "signature_encoding_invalid" else "preimage_canonicalization_failed"
         identity_state, identity_codes = _identity(None)
         return _finding(
             signed_receipt_bytes, [code],
-            "not_evaluated", "not_evaluated", "not_evaluated", source,
+            "not_evaluated", "not_evaluated", "not_evaluated", source_echo,
             source_state=source_state,
             source_codes=source_codes,
             identity_state=identity_state,
             identity_codes=identity_codes,
             supplied_source=source_digest,
         )
-    except (TypeError, OverflowError):
+    except (TypeError, OverflowError, RecursionError):
         identity_state, identity_codes = _identity(None)
         return _finding(
             signed_receipt_bytes, ["preimage_canonicalization_failed"],
-            "not_evaluated", "not_evaluated", "not_evaluated", source,
+            "not_evaluated", "not_evaluated", "not_evaluated", source_echo,
             source_state=source_state,
             source_codes=source_codes,
             identity_state=identity_state,
@@ -337,7 +409,7 @@ def verify_test_signed_observation(
         identity_state, identity_codes = _identity(None)
         return _finding(
             signed_receipt_bytes, ["key_id_unresolved"],
-            "not_evaluated", "fail", "not_evaluated", source,
+            "not_evaluated", "fail", "not_evaluated", source_echo,
             source_state=source_state,
             source_codes=source_codes,
             identity_state=identity_state,
@@ -348,7 +420,7 @@ def verify_test_signed_observation(
         identity_state, identity_codes = _identity(None)
         return _finding(
             signed_receipt_bytes, ["public_key_invalid"],
-            "not_evaluated", "fail", "not_evaluated", source,
+            "not_evaluated", "fail", "not_evaluated", source_echo,
             source_state=source_state,
             source_codes=source_codes,
             identity_state=identity_state,
@@ -360,7 +432,7 @@ def verify_test_signed_observation(
         identity_state, identity_codes = _identity(None)
         return _finding(
             signed_receipt_bytes, ["key_id_public_key_mismatch"],
-            "not_evaluated", "fail", "not_evaluated", source,
+            "not_evaluated", "fail", "not_evaluated", source_echo,
             source_state=source_state,
             source_codes=source_codes,
             identity_state=identity_state,
@@ -379,7 +451,7 @@ def verify_test_signed_observation(
     identity_state, identity_codes = _identity(key_fingerprint)
     return _finding(
         signed_receipt_bytes, codes,
-        sig_state, "pass", trust_state, source,
+        sig_state, "pass", trust_state, source_echo,
         source_state=source_state,
         source_codes=source_codes,
         identity_state=identity_state,
