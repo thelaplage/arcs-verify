@@ -37,6 +37,7 @@ export PYTHONPATH="$sign_repo:$repo"
 sandbox-exec -p "$profile" \
   python -m pytest -q \
     tests/c2pa_srs/test_test_signature0.py \
+    tests/c2pa_srs/test_receiver_binding0.py \
     tests/c2pa_srs/test_signed_integrated_replay0.py
 
 # Three genuine specimens, three public artifacts each. Private keys never retained.

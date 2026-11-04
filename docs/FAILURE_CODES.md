@@ -977,3 +977,39 @@ Non-code observation outputs: the substantive findings `proof_receipt_signature`
 `exit_o_chain_satisfied` is true only when every required substantive finding is
 `pass` — so a well-formed, correctly-bound proof still fails closed until governed
 upstream verifiers and a provisioned key exist.
+
+## C2PA-SIGNED0 test-only receipt signature lane (`arcs_verify/c2pa_test_signature0.py`)
+
+Emitted only by the offline, non-operational test lane. Codes from
+`verify_test_signed_observation` land in `failure_codes` (signature and admission),
+`source_failure_codes` (receiver-supplied source bytes) or `identity_failure_codes`
+(recomputed test receipt id). The three lists are separate findings; a code in one
+never stands in for success in another.
+
+| Code | Finding | Meaning |
+| --- | --- | --- |
+| `receipt_parse_invalid` | `failure_codes` | The signed receipt is not UTF-8 JSON, has duplicate members, or contains a non-finite number. |
+| `receipt_object_invalid` | `failure_codes` | The parsed receipt is not a JSON object. |
+| `test_provenance_not_admitted` | `failure_codes` | Profile, version, issuer, source reference, issuer status or key scope is outside the frozen test-only admission contract. |
+| `signature_object_invalid` | `failure_codes` | `receipt_signature` is absent, has extra or missing members, or carries a malformed algorithm, canonicalization, key id or test key prefix. |
+| `signature_encoding_invalid` | `failure_codes` | The signature is not canonical unpadded base64url for exactly 64 bytes. |
+| `preimage_canonicalization_failed` | `failure_codes` | The RFC 8785 JCS preimage could not be produced. |
+| `key_id_unresolved` | `failure_codes` | The declared key id is not among the receiver-selected test keys. |
+| `public_key_invalid` | `failure_codes` | The selected key is not a 32-byte raw Ed25519 public key. |
+| `key_id_public_key_mismatch` | `failure_codes` | The declared key id does not bind SHA-256 of the receiver-selected public key; refused before any cryptographic appraisal. |
+| `key_untrusted_for_test` | `failure_codes` | The key resolved but the receiver did not mark it trusted for this test lane, or its issuer is not the test issuer. |
+| `signature_invalid` | `failure_codes` | Ed25519 verification failed over the reconstructed preimage. |
+| `source_bytes_missing` | `source_failure_codes` | The receiver supplied no source bytes, so source integrity is `not_evaluated`; a declared digest alone never establishes it. |
+| `source_reference_invalid` | `source_failure_codes` | The receipt carries no usable `sha256:` source reference. |
+| `source_digest_mismatch` | `source_failure_codes` | The supplied bytes do not hash to the reference the receipt carries. |
+| `source_not_admitted` | `source_failure_codes` | The bytes match the reference, but that reference is not one of the frozen admitted specimen digests. |
+| `receipt_id_malformed` | `identity_failure_codes` | `receipt_id` is missing, not a string, or not `dagr-ingest-c2pa-TEST-SIGNED-<16 hex>-<16 hex>`. |
+| `receipt_id_mismatch` | `identity_failure_codes` | The id does not recompute from the verified source digest and the receiver-selected key fingerprint. |
+| `receipt_identity_unverified` | `identity_failure_codes` | Source integrity or key resolution is not `pass`, so the expected id cannot be recomputed. |
+| `receipt_identity_not_assessed` | `identity_failure_codes` | The receipt could not be parsed or is not an object, so identity was not examined at all. |
+
+`source_integrity` is `pass` only when supplied bytes hash to the carried reference
+**and** that reference is a frozen admitted digest; it says nothing about receipt
+admission, signature validity or who produced the bytes. `receipt_identity` is a
+consistency label, not authentication: anyone who signs a receipt can write any id
+into it.

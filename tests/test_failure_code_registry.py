@@ -62,6 +62,8 @@ MODULES = [
     "arcs_verify/findings.py",
     # ARCS-VERIFY-EXIT-O0 — EXIT-O semantic-issuer origin-authentication verifier
     "arcs_verify/exit_o_origin_authentication.py",
+    # C2PA-SIGNED0 — test-only SRS receipt signature lane
+    "arcs_verify/c2pa_test_signature0.py",
 ]
 
 # Signatures that mark a module as one that emits verifier failure codes. The
@@ -93,6 +95,7 @@ def _harvest(node: ast.expr, static: set[str], templates: set[str]) -> None:
     if isinstance(node, ast.Constant) and isinstance(node.value, str):
         if " " not in node.value:
             static.add(node.value)
+
     elif isinstance(node, ast.JoinedStr):
         parts = []
         for piece in node.values:
@@ -111,7 +114,15 @@ def _extract(module: str) -> tuple[set[str], set[str]]:
         if isinstance(node, ast.Call):
             fname = getattr(node.func, "id", None) or getattr(node.func, "attr", None)
             if fname in HELPER_NAMES and len(node.args) > HELPER_CODE_ARG:
-                _harvest(node.args[HELPER_CODE_ARG], static, templates)
+                # A helper may take a list of codes at the code position; descend into
+                # it so those codes are censused. Only this position is widened: lists
+                # elsewhere are axis or field names, not codes.
+                arg = node.args[HELPER_CODE_ARG]
+                if isinstance(arg, (ast.List, ast.Tuple)):
+                    for element in arg.elts:
+                        _harvest(element, static, templates)
+                else:
+                    _harvest(arg, static, templates)
             if getattr(node.func, "attr", None) == "append" and node.args:
                 _harvest(node.args[0], static, templates)
         if isinstance(node, ast.Call):
