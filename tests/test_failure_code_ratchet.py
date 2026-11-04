@@ -97,7 +97,7 @@ def run_cli(tree: Path, *args: str, script: Path | None = None, env: dict | None
     clean["PYTHONDONTWRITEBYTECODE"] = "1"
     clean.update(env or {})
     done = subprocess.run(
-        [sys.executable, str(entry), "--root", str(tree), *args],
+        [sys.executable, "-I", str(entry), "--root", str(tree), *args],
         capture_output=True, text=True, env=clean, timeout=300,
     )
     return done.returncode, done.stdout + done.stderr
@@ -383,8 +383,8 @@ def test_authoritative_base_copy_run_defeats_a_neutered_candidate_checker(base_r
     assert code_own == 0 and verdict(out_own) == "RATCHET=PASS", "the neutered candidate checker should self-approve"
     code, out = run_cli(candidate, script=base_repo["dir"] / "tests" / "failure_code_ratchet.py")
     assert code == 1
-    assert (ratchet.GROWTH_CODE, f"{GAP_MODULE}: ZZ_NEUTERED") in violations(out)
     assert (ratchet.SELECTION_CHANGED, "tests/failure_code_ratchet.py") in violations(out)
+    assert "NOT_EVALUATED growth not evaluated" in out, "refused before importing any candidate code"
 
 
 def test_selection_change_accepted_only_by_the_out_of_band_digest(base_repo: dict, candidate: Path) -> None:
@@ -582,3 +582,95 @@ def test_p3_census_battery_and_ledger_are_byte_identical_to_the_base() -> None:
         theirs = ratchet.show(REAL, sha, path)
         assert theirs is not None, f"{path} absent at the base"
         assert (REAL / path).read_bytes() == theirs, f"{path} differs from the base commit's copy"
+
+
+# ---------------------------------------------------------------------------
+# 7. SHADOW-IMPORT CLASS: no unguarded candidate file may run inside the checker
+# ---------------------------------------------------------------------------
+
+SHADOWED = ("pytest", "contextlib", "functools", "dataclasses", "json", "re", "ast", "pathlib")
+
+# Restores the real module, then neuters the verdict if it ever gets to run, and
+# leaves a marker so the test can prove whether the candidate's code executed.
+_SHADOW_SOURCE = """\
+import importlib, os, sys
+open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'SHADOW_EXECUTED'), 'w').write('x')
+_here = os.path.realpath(os.path.dirname(os.path.abspath(__file__)))
+sys.path[:] = [p for p in sys.path if os.path.realpath(p or '.') != _here]
+sys.modules.pop(__name__, None)
+_real = importlib.import_module(__name__)
+sys.modules[__name__] = _real
+globals().update({k: v for k, v in vars(_real).items() if not k.startswith('__')})
+_main = sys.modules.get('__main__')
+if _main is not None and hasattr(_main, 'growth_violations'):
+    _main.growth_violations = lambda *a, **k: []
+"""
+
+
+def plant_concealed_growth(tree: Path) -> None:
+    """The reviewer's reproduction: an undocumented emission AND the ledger entry."""
+    append_source(tree, REPLAY, emit_snippet("zz_sneaky_code"))
+    edit_ledger(tree, lambda m: m[REPLAY]["codes"].append("zz_sneaky_code"))
+
+
+def test_control_concealed_growth_without_any_shadow_is_refused(base_repo: dict, candidate: Path) -> None:
+    plant_concealed_growth(candidate)
+    code, out = run_cli(candidate, script=base_repo["dir"] / "tests" / "failure_code_ratchet.py")
+    assert code == 1 and "RATCHET=FAIL" in verdict(out) and ratchet.GROWTH_CODE in verdict(out), out
+
+
+@pytest.mark.parametrize("name", SHADOWED)
+def test_shadow_module_planted_in_candidate_tests_cannot_neuter_the_authoritative_checker(
+    name: str, base_repo: dict, candidate: Path
+) -> None:
+    """Reviewer-reproduced bypass: tests/pytest.py (unguarded) was imported ahead
+    of the real pytest, ran inside the checker, and replaced growth_violations.
+    Every module the guarded files import is shadowed in turn; each must leave
+    the verdict FAIL and the shadow file un-executed."""
+    plant_concealed_growth(candidate)
+    (candidate / "tests" / f"{name}.py").write_text(_SHADOW_SOURCE, encoding="utf-8")
+    code, out = run_cli(candidate, script=base_repo["dir"] / "tests" / "failure_code_ratchet.py")
+    assert code == 1 and verdict(out).startswith("RATCHET=FAIL"), out
+    assert (ratchet.GROWTH_CODE, f"{REPLAY}: zz_sneaky_code") in violations(out), out
+    assert not (candidate / "tests" / "SHADOW_EXECUTED").exists(), f"tests/{name}.py executed inside the checker"
+
+
+def test_shadow_package_planted_in_candidate_tests_cannot_neuter_the_authoritative_checker(base_repo: dict, candidate: Path) -> None:
+    plant_concealed_growth(candidate)
+    package = candidate / "tests" / "collections"
+    package.mkdir()
+    (package / "__init__.py").write_text(_SHADOW_SOURCE, encoding="utf-8")
+    (package / "abc.py").write_text(_SHADOW_SOURCE, encoding="utf-8")
+    code, out = run_cli(candidate, script=base_repo["dir"] / "tests" / "failure_code_ratchet.py")
+    assert code == 1 and ratchet.GROWTH_CODE in verdict(out), out
+    assert not (package / "SHADOW_EXECUTED").exists()
+
+
+def test_candidate_code_is_not_executed_when_a_guarded_file_changed(base_repo: dict, candidate: Path) -> None:
+    """Hash checks come BEFORE any candidate import: a changed guarded file that
+    would run code at import time never runs, so it cannot lie about the verdict."""
+    marker = candidate / "tests" / "GUARDED_RAN"
+    append_source(candidate, "tests/failure_code_census.py", f"\nopen({str(marker)!r}, 'w').write('x')\n")
+    code, out = run_cli(candidate, script=base_repo["dir"] / "tests" / "failure_code_ratchet.py")
+    assert code == 1 and (ratchet.SELECTION_CHANGED, "tests/failure_code_census.py") in violations(out), out
+    assert not marker.exists(), "candidate code ran before the guarded-file hash check refused it"
+
+
+def test_unguarded_module_loaded_by_an_accepted_guarded_change_is_reported(base_repo: dict, candidate: Path) -> None:
+    """Defence in depth: even a reviewed (accepted) guarded change may not pull in
+    an unguarded sibling. The loaded-module audit names it."""
+    (candidate / "tests" / "zz_unguarded_helper.py").write_text("VALUE = 1\n", encoding="utf-8")
+    append_source(candidate, "tests/failure_code_census.py", "\nimport zz_unguarded_helper  # noqa: E402\n")
+    digest = ratchet.selection_digest(ratchet.selection_manifest(candidate))
+    code, out = run_cli(candidate, "--accept-selection-change", digest, script=base_repo["dir"] / "tests" / "failure_code_ratchet.py")
+    assert code == 1
+    assert (ratchet.UNGUARDED_MODULE_LOADED, "tests/zz_unguarded_helper.py") in violations(out), out
+
+
+def test_candidate_tests_directory_is_removed_from_the_front_of_sys_path() -> None:
+    """Unit: load_gate_sealed drops the candidate tests dir and '' from sys.path
+    and, when it appends it back, appends it LAST."""
+    import inspect
+
+    source = inspect.getsource(ratchet.load_gate_sealed)
+    assert "sys.path.append(str(tests))" in source and "sys.path.insert" not in source

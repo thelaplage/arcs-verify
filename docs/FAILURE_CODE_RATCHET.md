@@ -54,9 +54,38 @@ A candidate can rewrite its own checker. The authoritative run therefore
 executes the **base's** copy against the candidate tree:
 
 ```bash
-git show origin/main:tests/failure_code_ratchet.py > /tmp/ratchet_base.py
-python3 /tmp/ratchet_base.py --root <candidate checkout>
+mkdir -p /tmp/ratchet_base && git show origin/main:tests/failure_code_ratchet.py > /tmp/ratchet_base/ratchet.py
+python3 -I /tmp/ratchet_base/ratchet.py --root <candidate checkout>
 ```
+
+Run it from an otherwise empty directory with `-I` (isolated: no `PYTHON*`
+environment, no script or working directory on `sys.path`).
+
+## No candidate code runs before the verdict
+
+The checker must import the candidate's census (that is how the undocumented set
+is computed). Importing from the candidate tree is only safe if nothing the
+candidate controls but the guards do not cover can run first. A planted
+`tests/pytest.py` (reproduced by independent review against an earlier head) was
+imported ahead of the real pytest and replaced the growth check inside the
+checker process. The class is closed in three layers, in this order:
+
+1. **Hash before import.** The guarded files are compared with the base commit's
+   bytes first. If one differs and no out-of-band acceptance was given, the run
+   stops with `SELECTION_CHANGED` and `NOT_EVALUATED`; no candidate code is
+   imported at all.
+2. **Sealed import** (`load_gate_sealed`). The candidate's `tests/` directory and
+   the working directory are removed from `sys.path`; everything the guarded
+   files import from outside the candidate (`ast`, `json`, `re`, `contextlib`,
+   `functools`, `dataclasses`, `pathlib`, `pytest`) is imported first from the
+   real interpreter; the candidate `tests/` directory is appended **last**, so it
+   can only supply a name nothing earlier provides (the guarded siblings).
+3. **Loaded-module audit.** Afterwards every module loaded from under the
+   candidate root must be a guarded file or part of `arcs_verify/`; anything else
+   is `UNGUARDED_MODULE_LOADED`.
+
+A planted file with any other name is simply never imported (no guarded file
+imports it), and the audit catches a reviewed guarded change that starts to.
 
 Exit 0 pass, 1 violations, 2 base unresolved. An unresolvable base is a failure
 (`ARCS_VERIFY_RATCHET_REQUIRED=1` turns the in-suite skip into a failure; the
@@ -72,6 +101,8 @@ before merging. No CI gate is added by this change.
 
 ## Limits
 
+* Environment variables the operator sets (`PYTHONPATH`, `PYTHONSTARTUP`) are
+  outside the candidate's control; `-I` ignores them.
 * The commit that first adds the ratchet has no base copy to compare with; that
   one introduction is covered by owner review and is listed by the checker.
 * "Documented" keeps its existing meaning (the code appears in backticks in the

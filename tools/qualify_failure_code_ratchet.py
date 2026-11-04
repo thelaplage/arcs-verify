@@ -124,6 +124,24 @@ MUTANTS: list[tuple[str, str, tuple[str, str], list[str]]] = [
          "test_base_explicit_pin_must_be_a_full_resolvable_sha[origin/main]"],
     ),
     (
+        "sealed-import-removed",
+        "the candidate tests dir goes FIRST on sys.path with no preload (the reviewer-reproduced shadow bypass)",
+        (r"sys\.path\[:\] = keep\n    for name in .*?\n    sys\.path\.append\(str\(tests\)\)", "sys.path.insert(0, str(tests))"),
+        ["test_shadow_module_planted_in_candidate_tests_cannot_neuter_the_authoritative_checker[pytest]"],
+    ),
+    (
+        "hash-check-does-not-stop-the-import",
+        "a changed guarded file no longer stops the run before candidate code is imported",
+        (r"result\.not_evaluated = GROWTH_NOT_EVALUATED\n        return result", "result.not_evaluated = GROWTH_NOT_EVALUATED"),
+        ["test_candidate_code_is_not_executed_when_a_guarded_file_changed"],
+    ),
+    (
+        "loaded-module-audit-removed",
+        "the post-import audit of modules loaded from the candidate tree is disabled",
+        (r"if root in path\.parents and path not in allowed and [^\n]*:", "if False:"),
+        ["test_unguarded_module_loaded_by_an_accepted_guarded_change_is_reported"],
+    ),
+    (
         "unresolved-base-reads-as-pass",
         "failing to resolve a base records no problem",
         (r"sha, problems = resolve_base\(root, explicit_base\)\n    result\.violations \+= problems",

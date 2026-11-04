@@ -112,6 +112,7 @@ class Result:
     introduced: list[str] = field(default_factory=list)
     selection_accepted: bool = False
     modules_checked: int = 0
+    not_evaluated: str | None = None
 
     @property
     def ok(self) -> bool:
@@ -268,7 +269,70 @@ def candidate_undocumented(gate) -> dict[str, tuple[set[str], set[str]]]:
     return out
 
 
-def evaluate(root: Path, gate, explicit_base: str | None = None, accept: str | None = None) -> Result:
+UNGUARDED_MODULE_LOADED = "UNGUARDED_MODULE_LOADED"
+GATE_IMPORT_FAILED = "GATE_IMPORT_FAILED"
+GROWTH_NOT_EVALUATED = "growth not evaluated: a guarded file differs from the base and no out-of-band acceptance was given, so no candidate code was imported"
+
+
+def load_gate_sealed(root: Path):
+    """Import the candidate's census test WITHOUT letting any unguarded
+    candidate file execute in this process.
+
+    The candidate tree is the thing under test, so nothing in it may run before
+    the verdict unless a guarded (hash-checked) file asks for it. Python's
+    default of putting the candidate's ``tests/`` directory FIRST on ``sys.path``
+    lets a planted ``tests/pytest.py`` (or ``json.py``, ``functools.py``, ...)
+    shadow what the guarded files import and run inside the checker. So:
+
+    1. every ``sys.path`` entry that is, or resolves to, the candidate's
+       ``tests/`` directory or the working directory is removed;
+    2. everything the guarded files import from outside the candidate is
+       imported NOW, from the real interpreter and site-packages;
+    3. the candidate's ``tests/`` directory is appended LAST, so it can only
+       supply a name nothing earlier provides (the guarded siblings);
+    4. afterwards, every module loaded from under the candidate root must be a
+       guarded file; anything else is ``UNGUARDED_MODULE_LOADED``.
+
+    Returns (module, problems).
+    """
+    tests = (root / "tests").resolve()
+    keep = []
+    for entry in sys.path:
+        if entry in ("", "."):
+            continue
+        try:
+            if Path(entry).resolve() == tests:
+                continue
+        except OSError:
+            pass
+        keep.append(entry)
+    sys.path[:] = keep
+    for name in ("ast", "json", "re", "collections.abc", "contextlib", "functools", "dataclasses", "pathlib", "pytest"):
+        __import__(name)
+    sys.path.append(str(tests))
+    problems: list[Violation] = []
+    try:
+        import test_failure_code_census as gate  # noqa: PLC0415
+    except Exception as exc:  # a broken candidate must fail closed, not crash with a traceback-as-pass
+        return None, [Violation(GATE_IMPORT_FAILED, "tests/test_failure_code_census.py", f"{type(exc).__name__}: {exc}")]
+    allowed = {(root / g).resolve() for g in GUARDED}
+    for name, module in sorted(sys.modules.items()):
+        file = getattr(module, "__file__", None)
+        if not file:
+            continue
+        try:
+            path = Path(file).resolve()
+        except OSError:
+            continue
+        if root in path.parents and path not in allowed and "arcs_verify" not in path.relative_to(root).parts[:1]:
+            problems.append(Violation(UNGUARDED_MODULE_LOADED, path.relative_to(root).as_posix(), f"imported as {name!r}; it is not a guarded file"))
+    return gate, problems
+
+
+def evaluate(root: Path, gate=None, explicit_base: str | None = None, accept: str | None = None) -> Result:
+    """``gate`` is an already-imported census test module (in-process use under
+    pytest). When ``None`` (the CLI) the candidate's code is imported only after
+    its guarded files have been hash-checked against the base, and sealed."""
     result = Result()
     sha, problems = resolve_base(root, explicit_base)
     result.violations += problems
@@ -280,21 +344,30 @@ def evaluate(root: Path, gate, explicit_base: str | None = None, accept: str | N
     if base_ledger is None:
         return result
 
-    import failure_code_census as census_lib  # noqa: PLC0415
-
-    candidate = candidate_undocumented(gate)
-    result.modules_checked = len(census_lib.package_modules())
-    candidate_ledger = json.loads((root / LEDGER).read_text(encoding="utf-8"))["modules"]
-    result.violations += growth_violations(candidate, base_ledger, candidate_ledger)
-
+    # Hash checks first: they read bytes and import nothing from the candidate.
     manifest = selection_manifest(root)
     sel, introduced = selection_violations(manifest, base_manifest(root, sha))
     result.introduced = introduced
     accept = accept if accept is not None else os.environ.get(ENV_ACCEPT)
     if sel and accept and accept == selection_digest(manifest):
         result.selection_accepted = True
-    else:
+    elif sel:
         result.violations += sel
+        result.not_evaluated = GROWTH_NOT_EVALUATED
+        return result
+
+    if gate is None:
+        gate, problems = load_gate_sealed(root)
+        result.violations += problems
+        if gate is None or problems:
+            return result
+
+    import failure_code_census as census_lib  # noqa: PLC0415
+
+    candidate = candidate_undocumented(gate)
+    result.modules_checked = len(census_lib.package_modules())
+    candidate_ledger = json.loads((root / LEDGER).read_text(encoding="utf-8"))["modules"]
+    result.violations += growth_violations(candidate, base_ledger, candidate_ledger)
     return result
 
 
@@ -310,19 +383,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--print-selection-digest", action="store_true")
     args = parser.parse_args(argv)
     root = Path(args.root).resolve()
-    sys.path.insert(0, str(root / "tests"))
     if args.print_selection_digest:
         print(selection_digest(selection_manifest(root)))
         return 0
-    import test_failure_code_census as gate  # noqa: PLC0415
-
-    result = evaluate(root, gate, args.base, args.accept_selection_change)
+    result = evaluate(root, None, args.base, args.accept_selection_change)
     print(f"base: {result.base}")
     print(f"modules checked: {result.modules_checked}")
     if result.introduced:
         print("guarded files first introduced (absent at base; covered by owner review): " + ", ".join(result.introduced))
     if result.selection_accepted:
         print("selection change ACCEPTED by out-of-band digest")
+    if result.not_evaluated:
+        print("NOT_EVALUATED " + result.not_evaluated)
     for violation in result.violations:
         print(f"VIOLATION {violation}")
     print("RATCHET=PASS" if result.ok else "RATCHET=FAIL " + ",".join(sorted(result.codes())))
