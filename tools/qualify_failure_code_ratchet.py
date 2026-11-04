@@ -37,6 +37,7 @@ TARGET = "tests/failure_code_ratchet.py"
 TEST = "tests/test_failure_code_ratchet.py"
 GUARDED_FILES = (
     "tests/failure_code_ratchet.py",
+    "tests/failure_code_judge.py",
     "tests/test_failure_code_ratchet.py",
     "tests/failure_code_census.py",
     "tests/test_failure_code_census.py",
@@ -52,7 +53,7 @@ def _edit_ids(prefix: str) -> list[str]:
 
 
 # id, description, (regex, replacement) applied with DOTALL, named tests that must fail
-MUTANTS: list[tuple[str, str, tuple[str, str], list[str]]] = [
+MUTANTS: list[tuple] = [
     (
         "permission-from-candidate-ledger",
         "the permitted set is the candidate's own ledger (the original defect)",
@@ -124,22 +125,66 @@ MUTANTS: list[tuple[str, str, tuple[str, str], list[str]]] = [
          "test_base_explicit_pin_must_be_a_full_resolvable_sha[origin/main]"],
     ),
     (
-        "sealed-import-removed",
-        "the candidate tests dir goes FIRST on sys.path with no preload (the reviewer-reproduced shadow bypass)",
-        (r"sys\.path\[:\] = keep\n    for name in .*?\n    sys\.path\.append\(str\(tests\)\)", "sys.path.insert(0, str(tests))"),
-        ["test_shadow_module_planted_in_candidate_tests_cannot_neuter_the_authoritative_checker[pytest]"],
+        "judge-staged-from-candidate-tree",
+        "the judge runs from the candidate's tests/ directory instead of base bytes (both reviewer-reproduced bypasses)",
+        (r"judge_dir, result\.provenance, problems = stage_judge\(root, sha, stage, allow_introduction\)",
+         "judge_dir, result.provenance, problems = (root / 'tests'), f'base {sha}', []"),
+        ["test_source_shadow_of_any_stdlib_module_in_the_candidate_never_runs[ast]",
+         "test_a_candidate_modified_judge_and_census_do_not_affect_the_verdict"],
     ),
     (
-        "hash-check-does-not-stop-the-import",
-        "a changed guarded file no longer stops the run before candidate code is imported",
-        (r"result\.not_evaluated = GROWTH_NOT_EVALUATED\n        return result", "result.not_evaluated = GROWTH_NOT_EVALUATED"),
-        ["test_candidate_code_is_not_executed_when_a_guarded_file_changed"],
+        "judge-from-candidate-tree-with-bytecode-cache-enabled",
+        "the judge runs from the candidate's tests/ and the clean pycache prefix / -B are gone (the unchecked-hash .pyc bypass)",
+        [(r"judge_dir, result\.provenance, problems = stage_judge\(root, sha, stage, allow_introduction\)",
+          "judge_dir, result.provenance, problems = (root / 'tests'), f'base {sha}', []"),
+         (r"\"-I\", \"-S\", \"-B\", \"-X\", f\"pycache_prefix=\{pyc\}\",", "\"-I\", \"-S\","),
+         (r"\"PYTHONDONTWRITEBYTECODE\": \"1\", ", "")],
+        ["test_committed_unchecked_hash_pyc_of_a_guarded_module_never_runs_and_cannot_force_pass[tests/failure_code_census.py]"],
     ),
     (
-        "loaded-module-audit-removed",
-        "the post-import audit of modules loaded from the candidate tree is disabled",
-        (r"if root in path\.parents and path not in allowed and [^\n]*:", "if False:"),
-        ["test_unguarded_module_loaded_by_an_accepted_guarded_change_is_reported"],
+        "judge-isolation-removed",
+        "the judge interpreter loses -I -S -B, the pycache prefix and the cleared environment",
+        (r"env = \{\"PYTHONDONTWRITEBYTECODE\": \"1\", \"LC_ALL\": \"C\.UTF-8\"\}\n    cmd = \[\n        sys\.executable, \"-I\", \"-S\", \"-B\", \"-X\", f\"pycache_prefix=\{pyc\}\",",
+         "env = dict(os.environ)\n    cmd = [\n        sys.executable,"),
+        ["test_python_environment_variables_cannot_route_candidate_code_into_the_judge"],
+    ),
+    (
+        "introduction-reads-as-independent",
+        "a judge taken from the candidate is labelled as coming from the base",
+        (r"return target, \"INTRODUCTION\", \[\]", "return target, f'base {sha}', []"),
+        ["test_judge_introduction_is_labelled_and_never_reads_as_an_independent_pass"],
+    ),
+    (
+        "absent-judge-allowed-without-the-flag",
+        "a base without a judge silently falls back to the candidate's judge",
+        (r"if not allow_introduction:", "if False:"),
+        ["test_base_without_a_judge_is_not_established_not_a_pass"],
+    ),
+    (
+        "judge-failure-reads-as-pass",
+        "a judge that crashes or prints nothing is treated as an empty result",
+        (r"if done\.returncode != 0 or not isinstance\(payload, dict\) or \"modules\" not in payload:", "if False:"),
+        ["test_unparseable_candidate_source_fails_closed_not_as_an_empty_set"],
+    ),
+    (
+        "launcher-runs-without-isolation",
+        "the launcher no longer refuses a non-isolated interpreter",
+        (r"if not sys\.flags\.isolated:", "if False:"),
+        ["test_launcher_refuses_to_run_without_isolation"],
+    ),
+    (
+        "judge-drops-a-not-codes-entry",
+        "the judge's NOT_CODES table drifts from the census test's",
+        (r"NOT_CODES\.add\(\(\"arcs_verify/okf_attested_computation\.py\", \"unreadable:\"\)\)", "pass"),
+        ["test_judge_parity_with_the_census_test_on_the_real_tree"],
+        "tests/failure_code_judge.py",
+    ),
+    (
+        "judge-counts-documented-families-as-undocumented",
+        "the judge stops excluding documented family prefixes",
+        (r" and p not in registry\n", "\n"),
+        ["test_judge_parity_with_the_census_test_on_the_real_tree"],
+        "tests/failure_code_judge.py",
     ),
     (
         "unresolved-base-reads-as-pass",
@@ -226,17 +271,26 @@ def main() -> int:
                 print(f"    not passing: {name}: {cases[name][1][:300]}")
             return 1
 
-        for mid, description, (pattern, replacement), expected in MUTANTS:
+        for entry in MUTANTS:
+            mid, description, spec, expected = entry[:4]
+            pattern, replacement = spec if isinstance(spec, tuple) else (spec, None)
+            target = entry[4] if len(entry) > 4 else TARGET
             tree = work / "m"
             if tree.exists():
                 shutil.rmtree(tree)
             tree.mkdir()
             snapshot(tree, with_git=False)
-            path = tree / TARGET
+            path = tree / target
             text = path.read_text(encoding="utf-8")
-            mutated, count = re.subn(pattern, replacement, text, flags=re.S)
-            if count != 1:
-                print(f"HARNESS ERROR {mid}: the mutation matched {count} sites (must be exactly 1)")
+            edits = pattern if isinstance(pattern, list) else [(pattern, replacement)]
+            mutated, bad = text, None
+            for one_pattern, one_replacement in edits:
+                mutated, count = re.subn(one_pattern, one_replacement, mutated, flags=re.S)
+                if count != 1:
+                    bad = count
+                    break
+            if bad is not None:
+                print(f"HARNESS ERROR {mid}: a mutation matched {bad} sites (must be exactly 1)")
                 problems.append(mid)
                 continue
             path.write_text(mutated, encoding="utf-8")

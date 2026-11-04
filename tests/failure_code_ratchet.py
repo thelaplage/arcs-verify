@@ -1,55 +1,49 @@
-"""SCITT-RATCHET0: the failure-code known-gaps ledger is shrink-only against an
-INDEPENDENTLY PINNED base.
+"""SCITT-RATCHET0: the failure-code known-gaps ledger is shrink-only, judged by a
+SEALED JUDGE taken from an INDEPENDENTLY PINNED base.
 
 The defect this closes
 ----------------------
 ``tests/test_failure_code_census.py::test_known_gap_is_exactly_the_undocumented_set``
 compares the undocumented code-shaped emissions of the working tree with
 ``tests/failure_code_known_gaps.json`` *of the same working tree*. A commit that
-(a) introduces an undocumented failure code and (b) adds that code to the ledger
-satisfies it: the candidate wrote both sides of the comparison.
+adds an undocumented code and the matching ledger entry satisfies it: the
+candidate wrote both sides of the comparison. Review then showed the checker
+itself must not run candidate code either (a planted ``tests/pytest.py`` source
+shadow, and a committed unchecked-hash ``.pyc`` of a guarded module, each forced
+PASS on a real growth violation).
 
-The mechanism
--------------
-The permitted set is read from a commit the candidate cannot edit, and the
-candidate's ledger file is never an input to the permission decision:
+Architecture: the candidate checkout is DATA, never code
+--------------------------------------------------------
+1. BASELINE. Permitted set = ``git show <base>:tests/failure_code_known_gaps.json``.
+   Base = tip of ``refs/remotes/origin/main`` by default, or an explicit 40-hex
+   SHA supplied out of band (``--base`` / ``ARCS_VERIFY_RATCHET_BASE``) that must
+   be an ancestor of ``origin/main``. No file in the candidate tree selects it.
+2. JUDGE PROVENANCE. The code that analyses the candidate
+   (``failure_code_judge.py`` + ``failure_code_census.py``) is extracted with
+   ``git show`` from the BASE commit into a fresh directory. If the base does not
+   contain them the result is ``BASE_JUDGE_ABSENT`` (NOT_ESTABLISHED) unless an
+   out-of-band ``--allow-judge-introduction`` is given, in which case the
+   verdict is labelled ``PASS_INTRODUCTION`` and is NOT independently established.
+3. ISOLATION. The judge runs in a separate interpreter started ``-I -S -B -X
+   pycache_prefix=<fresh>`` with a cleared environment and its working directory
+   set to the fresh directory. The candidate tree is on no import path; candidate
+   source is read as bytes and ``ast.parse``d; candidate ``__pycache__``/``.pyc``,
+   ``.pth``, ``sitecustomize``/``usercustomize`` and ``PYTHON*`` variables cannot
+   reach it. The launcher itself imports nothing from the candidate either.
+4. DECISION (this file, taken from the base by the operator): every candidate
+   undocumented ``(module, code|family)`` must be in the BASE ledger; the
+   candidate ledger must be a subset of the base ledger; the candidate's ledger is
+   never an input to the permission decision.
+5. REVIEW PRESSURE. Files that define the judge or this launcher are GUARDED;
+   a difference from the base is ``SELECTION_CHANGED`` unless an out-of-band
+   digest of the candidate's guarded files is supplied after a human read the diff.
+   They cannot affect the verdict of the change that edits them (the judge is the
+   base's); they take effect from the next base.
 
-* BASE = the tip of ``refs/remotes/origin/main`` by default, or an explicit
-  40-hex commit supplied OUT OF BAND (``--base`` / ``ARCS_VERIFY_RATCHET_BASE``).
-  It is resolved with ``git rev-parse`` to a full SHA and the permitted set is
-  read with ``git show <sha>:tests/failure_code_known_gaps.json``. A commit on a
-  feature branch cannot move ``origin/main``, an environment variable, or a CLI
-  flag. An explicit pin must be an ancestor of (or equal to) ``origin/main``.
-* The tip, not the merge-base, is used on purpose: the ledger only shrinks, so
-  an older base is strictly more permissive. Branching from a stale commit
-  cannot buy a larger allowance; a branch behind a shrunk ledger must catch up.
-* CANDIDATE undocumented set = recomputed from the candidate's source and
-  registry by the census (every package module, registered or not). Every
-  ``(module, code)`` / ``(module, family)`` in it must appear in the BASE ledger.
-  Growth is rejected whatever the candidate's ledger says.
-* The candidate ledger must also be a subset of the base ledger (so the file
-  cannot be quietly widened for a later commit to lean on).
-* BASELINE-SELECTION INTEGRITY. Everything that decides what "undocumented"
-  means or which base is used is a GUARDED file (``GUARDED``). Each must be
-  byte-identical to the base commit's copy, or be absent from both, or be a
-  first introduction (absent at the base). A changed or deleted guarded file is
-  ``SELECTION_CHANGED``. The only release valve is a digest of the candidate's
-  guarded files supplied OUT OF BAND (``--accept-selection-change`` /
-  ``ARCS_VERIFY_RATCHET_ACCEPT_SELECTION``) after a human has read the diff. A
-  file in the tree cannot grant it.
-
-Honest limits
--------------
-* A candidate can edit this very file. The in-tree test therefore proves the
-  mechanism; the AUTHORITATIVE run executes the BASE's copy of this file against
-  the candidate tree (``git show <base>:tests/failure_code_ratchet.py`` then
-  ``python <copy> --root <candidate>``), which a candidate cannot weaken. The
-  guarded-digest comparison then reports any edit to the candidate's copy.
-* The first introduction of this mechanism (the commit that adds this file)
-  has no base copy to compare against; that one event is covered by owner review.
-* "Documented" keeps its existing meaning: the code appears in backticks in the
-  registry text. Adding a bogus registry row is a documentation edit, visible in
-  review, and is not what this ratchet polices.
+Threat model and limits: see ``docs/FAILURE_CODE_RATCHET.md``. In short: the
+operator must obtain THIS launcher from the base (``git show``), run it with
+``python -I``, and trust git, the Python interpreter and the host; this is a
+qualified local control, not a repository-enforced policy.
 """
 
 from __future__ import annotations
@@ -59,8 +53,10 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -70,10 +66,16 @@ DEFAULT_BASE_REF = "refs/remotes/origin/main"
 ENV_BASE = "ARCS_VERIFY_RATCHET_BASE"
 ENV_ACCEPT = "ARCS_VERIFY_RATCHET_ACCEPT_SELECTION"
 ENV_REQUIRED = "ARCS_VERIFY_RATCHET_REQUIRED"
+ENV_INTRO = "ARCS_VERIFY_RATCHET_ALLOW_INTRODUCTION"
+
+# Extracted from the BASE commit and run sealed. (repo path -> staged file name)
+JUDGE_FILES = ("tests/failure_code_judge.py", "tests/failure_code_census.py")
+JUDGE_TIMEOUT_SECONDS = 300
 
 # Everything that decides the base, the undocumented computation, or the verdict.
 GUARDED = (
     "tests/failure_code_ratchet.py",
+    "tests/failure_code_judge.py",
     "tests/test_failure_code_ratchet.py",
     "tests/failure_code_census.py",
     "tests/test_failure_code_census.py",
@@ -91,6 +93,8 @@ GROWTH_CODE = "GROWTH_CODE"
 GROWTH_FAMILY = "GROWTH_FAMILY"
 LEDGER_GROWTH = "LEDGER_GROWTH"
 SELECTION_CHANGED = "SELECTION_CHANGED"
+BASE_JUDGE_ABSENT = "BASE_JUDGE_ABSENT"
+JUDGE_ERROR = "JUDGE_ERROR"
 
 _HEX40 = re.compile(r"^[0-9a-f]{40}$")
 
@@ -112,7 +116,7 @@ class Result:
     introduced: list[str] = field(default_factory=list)
     selection_accepted: bool = False
     modules_checked: int = 0
-    not_evaluated: str | None = None
+    provenance: str = "unresolved"
 
     @property
     def ok(self) -> bool:
@@ -257,82 +261,64 @@ def base_manifest(root: Path, sha: str) -> dict[str, str | None]:
 # ---------------------------------------------------------------------------
 
 
-def candidate_undocumented(gate) -> dict[str, tuple[set[str], set[str]]]:
-    """module -> undocumented (codes, families) for EVERY package module."""
-    import failure_code_census as census_lib  # noqa: PLC0415
-
-    out: dict[str, tuple[set[str], set[str]]] = {}
-    for module in census_lib.package_modules():
-        codes, prefixes = gate._undocumented(module, gate._census(module), gate.REGISTRY)
-        if codes or prefixes:
-            out[module] = (codes, prefixes)
-    return out
+# ---------------------------------------------------------------------------
+# the sealed judge (taken from the base commit, run isolated)
+# ---------------------------------------------------------------------------
 
 
-UNGUARDED_MODULE_LOADED = "UNGUARDED_MODULE_LOADED"
-GATE_IMPORT_FAILED = "GATE_IMPORT_FAILED"
-GROWTH_NOT_EVALUATED = "growth not evaluated: a guarded file differs from the base and no out-of-band acceptance was given, so no candidate code was imported"
+def stage_judge(root: Path, sha: str, stage: Path, allow_introduction: bool) -> tuple[Path | None, str, list[Violation]]:
+    """Write the judge files into ``stage/judge`` from BASE bytes (``git show``).
+
+    Returns (directory, provenance, problems). The directory contains no file
+    that came from a working tree unless the out-of-band introduction flag was
+    given, in which case the provenance says so."""
+    target = stage / "judge"
+    target.mkdir(parents=True)
+    from_base = {path: show(root, sha, path) for path in JUDGE_FILES}
+    if all(raw is not None for raw in from_base.values()):
+        for path, raw in from_base.items():
+            (target / Path(path).name).write_bytes(raw)
+        return target, f"base {sha}", []
+    missing = sorted(path for path, raw in from_base.items() if raw is None)
+    if not allow_introduction:
+        return None, "NOT_ESTABLISHED", [
+            Violation(BASE_JUDGE_ABSENT, ", ".join(missing), f"not present at base {sha}; no independent judge exists to run")
+        ]
+    for path in JUDGE_FILES:  # candidate bytes, copied as DATA into the fresh directory
+        (target / Path(path).name).write_bytes((root / path).read_bytes())
+    return target, "INTRODUCTION", []
 
 
-def load_gate_sealed(root: Path):
-    """Import the candidate's census test WITHOUT letting any unguarded
-    candidate file execute in this process.
-
-    The candidate tree is the thing under test, so nothing in it may run before
-    the verdict unless a guarded (hash-checked) file asks for it. Python's
-    default of putting the candidate's ``tests/`` directory FIRST on ``sys.path``
-    lets a planted ``tests/pytest.py`` (or ``json.py``, ``functools.py``, ...)
-    shadow what the guarded files import and run inside the checker. So:
-
-    1. every ``sys.path`` entry that is, or resolves to, the candidate's
-       ``tests/`` directory or the working directory is removed;
-    2. everything the guarded files import from outside the candidate is
-       imported NOW, from the real interpreter and site-packages;
-    3. the candidate's ``tests/`` directory is appended LAST, so it can only
-       supply a name nothing earlier provides (the guarded siblings);
-    4. afterwards, every module loaded from under the candidate root must be a
-       guarded file; anything else is ``UNGUARDED_MODULE_LOADED``.
-
-    Returns (module, problems).
-    """
-    tests = (root / "tests").resolve()
-    keep = []
-    for entry in sys.path:
-        if entry in ("", "."):
-            continue
-        try:
-            if Path(entry).resolve() == tests:
-                continue
-        except OSError:
-            pass
-        keep.append(entry)
-    sys.path[:] = keep
-    for name in ("ast", "json", "re", "collections.abc", "contextlib", "functools", "dataclasses", "pathlib", "pytest"):
-        __import__(name)
-    sys.path.append(str(tests))
-    problems: list[Violation] = []
+def run_judge(root: Path, judge_dir: Path, stage: Path) -> tuple[dict | None, list[Violation]]:
+    pyc = stage / "pyc"
+    pyc.mkdir()
+    env = {"PYTHONDONTWRITEBYTECODE": "1", "LC_ALL": "C.UTF-8"}
+    cmd = [
+        sys.executable, "-I", "-S", "-B", "-X", f"pycache_prefix={pyc}",
+        str(judge_dir / "failure_code_judge.py"), "--root", str(root),
+    ]
     try:
-        import test_failure_code_census as gate  # noqa: PLC0415
-    except Exception as exc:  # a broken candidate must fail closed, not crash with a traceback-as-pass
-        return None, [Violation(GATE_IMPORT_FAILED, "tests/test_failure_code_census.py", f"{type(exc).__name__}: {exc}")]
-    allowed = {(root / g).resolve() for g in GUARDED}
-    for name, module in sorted(sys.modules.items()):
-        file = getattr(module, "__file__", None)
-        if not file:
-            continue
-        try:
-            path = Path(file).resolve()
-        except OSError:
-            continue
-        if root in path.parents and path not in allowed and "arcs_verify" not in path.relative_to(root).parts[:1]:
-            problems.append(Violation(UNGUARDED_MODULE_LOADED, path.relative_to(root).as_posix(), f"imported as {name!r}; it is not a guarded file"))
-    return gate, problems
+        done = subprocess.run(cmd, cwd=judge_dir, env=env, capture_output=True, timeout=JUDGE_TIMEOUT_SECONDS)
+    except subprocess.TimeoutExpired:
+        return None, [Violation(JUDGE_ERROR, "judge", f"timed out after {JUDGE_TIMEOUT_SECONDS}s")]
+    text = done.stdout.decode("utf-8", "replace").strip()
+    try:
+        payload = json.loads(text.splitlines()[-1]) if text else None
+    except ValueError:
+        payload = None
+    if done.returncode != 0 or not isinstance(payload, dict) or "modules" not in payload:
+        detail = (payload or {}).get("error") if isinstance(payload, dict) else None
+        detail = detail or (done.stderr.decode("utf-8", "replace").strip().splitlines() or ["no usable output"])[-1]
+        return None, [Violation(JUDGE_ERROR, "judge", f"exit {done.returncode}: {detail}")]
+    return payload, []
 
 
-def evaluate(root: Path, gate=None, explicit_base: str | None = None, accept: str | None = None) -> Result:
-    """``gate`` is an already-imported census test module (in-process use under
-    pytest). When ``None`` (the CLI) the candidate's code is imported only after
-    its guarded files have been hash-checked against the base, and sealed."""
+def evaluate(
+    root: Path,
+    explicit_base: str | None = None,
+    accept: str | None = None,
+    allow_introduction: bool | None = None,
+) -> Result:
     result = Result()
     sha, problems = resolve_base(root, explicit_base)
     result.violations += problems
@@ -343,31 +329,39 @@ def evaluate(root: Path, gate=None, explicit_base: str | None = None, accept: st
     result.violations += problems
     if base_ledger is None:
         return result
+    if allow_introduction is None:
+        allow_introduction = os.environ.get(ENV_INTRO, "") == "1"
 
-    # Hash checks first: they read bytes and import nothing from the candidate.
+    stage = Path(tempfile.mkdtemp(prefix="ratchet-judge."))
+    try:
+        judge_dir, result.provenance, problems = stage_judge(root, sha, stage, allow_introduction)
+        result.violations += problems
+        if judge_dir is None:
+            return result
+        payload, problems = run_judge(root, judge_dir, stage)
+        result.violations += problems
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
+
+    # The candidate ledger is read as JSON DATA; it only has to stay within the base ledger.
+    try:
+        candidate_ledger = json.loads((root / LEDGER).read_bytes().decode("utf-8"))["modules"]
+    except (OSError, ValueError, KeyError) as exc:
+        result.violations.append(Violation(JUDGE_ERROR, LEDGER, f"candidate ledger unreadable: {type(exc).__name__}"))
+        candidate_ledger = {}
+    if payload is not None:
+        result.modules_checked = int(payload["package_modules"])
+        candidate = {m: (set(v["codes"]), set(v["families"])) for m, v in payload["modules"].items()}
+        result.violations += growth_violations(candidate, base_ledger, candidate_ledger)
+
     manifest = selection_manifest(root)
     sel, introduced = selection_violations(manifest, base_manifest(root, sha))
     result.introduced = introduced
     accept = accept if accept is not None else os.environ.get(ENV_ACCEPT)
     if sel and accept and accept == selection_digest(manifest):
         result.selection_accepted = True
-    elif sel:
+    else:
         result.violations += sel
-        result.not_evaluated = GROWTH_NOT_EVALUATED
-        return result
-
-    if gate is None:
-        gate, problems = load_gate_sealed(root)
-        result.violations += problems
-        if gate is None or problems:
-            return result
-
-    import failure_code_census as census_lib  # noqa: PLC0415
-
-    candidate = candidate_undocumented(gate)
-    result.modules_checked = len(census_lib.package_modules())
-    candidate_ledger = json.loads((root / LEDGER).read_text(encoding="utf-8"))["modules"]
-    result.violations += growth_violations(candidate, base_ledger, candidate_ledger)
     return result
 
 
@@ -376,29 +370,37 @@ def required() -> bool:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser = argparse.ArgumentParser(description="SCITT-RATCHET0 launcher (see module docstring)")
     parser.add_argument("--root", default=str(ROOT), help="candidate checkout (default: this file's repository)")
     parser.add_argument("--base", default=None, help="full 40-hex base commit (must be on origin/main)")
     parser.add_argument("--accept-selection-change", default=None, help="out-of-band digest for a reviewed guarded-file change")
+    parser.add_argument("--allow-judge-introduction", action="store_true",
+                        help="out-of-band: the base has no judge yet (first introduction); verdict is PASS_INTRODUCTION, not independent")
     parser.add_argument("--print-selection-digest", action="store_true")
     args = parser.parse_args(argv)
+    if not sys.flags.isolated:
+        print("RATCHET=NOT_ESTABLISHED: run with `python3 -I` so PYTHON* variables, the working directory and user "
+              "site-packages cannot route code into this process (see docs/FAILURE_CODE_RATCHET.md)")
+        return 2
     root = Path(args.root).resolve()
     if args.print_selection_digest:
         print(selection_digest(selection_manifest(root)))
         return 0
-    result = evaluate(root, None, args.base, args.accept_selection_change)
+    result = evaluate(root, args.base, args.accept_selection_change, True if args.allow_judge_introduction else None)
     print(f"base: {result.base}")
+    print(f"judge provenance: {result.provenance}")
     print(f"modules checked: {result.modules_checked}")
     if result.introduced:
         print("guarded files first introduced (absent at base; covered by owner review): " + ", ".join(result.introduced))
     if result.selection_accepted:
         print("selection change ACCEPTED by out-of-band digest")
-    if result.not_evaluated:
-        print("NOT_EVALUATED " + result.not_evaluated)
     for violation in result.violations:
         print(f"VIOLATION {violation}")
-    print("RATCHET=PASS" if result.ok else "RATCHET=FAIL " + ",".join(sorted(result.codes())))
-    if not result.ok and result.codes() <= {BASE_UNRESOLVED, BASE_NOT_ON_MAIN, BASE_LEDGER_UNREADABLE}:
+    if result.ok:
+        print("RATCHET=PASS" if result.provenance.startswith("base ") else "RATCHET=PASS_INTRODUCTION")
+    else:
+        print("RATCHET=FAIL " + ",".join(sorted(result.codes())))
+    if not result.ok and result.codes() <= {BASE_UNRESOLVED, BASE_NOT_ON_MAIN, BASE_LEDGER_UNREADABLE, BASE_JUDGE_ABSENT}:
         return 2
     return 0 if result.ok else 1
 

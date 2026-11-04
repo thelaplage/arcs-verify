@@ -13,7 +13,11 @@ Cases
 * shrinkage permitted;
 * a fully documented new code permitted (no false positive);
 * baseline-selection integrity (every guarded file, edited and deleted; the
-  out-of-band acceptance valve; a neutered candidate checker; base resolution).
+  out-of-band acceptance valve; a neutered candidate checker; base resolution);
+* the SEALED JUDGE (CORR2): the verdict is computed by code extracted from the
+  base commit and run isolated; the candidate checkout is data. Source shadows,
+  committed unchecked-hash ``.pyc``, ``.pth``, ``sitecustomize``, environment and
+  a candidate-modified judge never execute / never change the verdict.
 """
 
 from __future__ import annotations
@@ -152,6 +156,7 @@ def commit_all(tree: Path, message: str = "candidate") -> str:
 def test_control_unmodified_candidate_passes(base_repo: dict, candidate: Path) -> None:
     code, out = run_cli(candidate)
     assert code == 0 and verdict(out) == "RATCHET=PASS", out
+    assert f"judge provenance: base {base_repo['sha']}" in out
     assert f"base: {base_repo['sha']}" in out
     assert int(re.search(r"modules checked: (\d+)", out).group(1)) >= 50 and violations(out) == []
 
@@ -383,8 +388,8 @@ def test_authoritative_base_copy_run_defeats_a_neutered_candidate_checker(base_r
     assert code_own == 0 and verdict(out_own) == "RATCHET=PASS", "the neutered candidate checker should self-approve"
     code, out = run_cli(candidate, script=base_repo["dir"] / "tests" / "failure_code_ratchet.py")
     assert code == 1
+    assert (ratchet.GROWTH_CODE, f"{GAP_MODULE}: ZZ_NEUTERED") in violations(out)
     assert (ratchet.SELECTION_CHANGED, "tests/failure_code_ratchet.py") in violations(out)
-    assert "NOT_EVALUATED growth not evaluated" in out, "refused before importing any candidate code"
 
 
 def test_selection_change_accepted_only_by_the_out_of_band_digest(base_repo: dict, candidate: Path) -> None:
@@ -546,16 +551,24 @@ def test_selection_digest_binds_every_guarded_file_and_its_name() -> None:
 
 
 def test_real_tree_does_not_grow_against_the_pinned_base() -> None:
-    import test_failure_code_census as gate
-
     sha, problems = ratchet.resolve_base(REAL, None)
     if sha is None:
         if ratchet.required():
             pytest.fail(f"NOT_EXERCISED is not acceptable here: {problems}")
         pytest.skip(f"NOT_EXERCISED: no pinned base is resolvable ({problems[0]})")
-    result = ratchet.evaluate(REAL, gate)
+    result = ratchet.evaluate(REAL)
+    if ratchet.BASE_JUDGE_ABSENT in result.codes():
+        # The base predates the judge: there is no independent judge to run.
+        # Reported as NOT_ESTABLISHED, never as PASS (set ARCS_VERIFY_RATCHET_ALLOW_INTRODUCTION=1
+        # to run the head's own judge and label the verdict PASS_INTRODUCTION).
+        if ratchet.required():
+            pytest.fail(f"NOT_ESTABLISHED: {result.violations[0]}")
+        pytest.skip(f"NOT_EXERCISED: {result.violations[0]}")
     assert result.ok, "\n".join(str(v) for v in result.violations)
     assert result.base == sha and result.modules_checked >= 50
+    assert result.provenance.startswith("base ") or (
+        result.provenance == "INTRODUCTION" and os.environ.get(ratchet.ENV_INTRO) == "1"
+    )
 
 
 P3_FILES = (
@@ -656,21 +669,195 @@ def test_candidate_code_is_not_executed_when_a_guarded_file_changed(base_repo: d
     assert not marker.exists(), "candidate code ran before the guarded-file hash check refused it"
 
 
-def test_unguarded_module_loaded_by_an_accepted_guarded_change_is_reported(base_repo: dict, candidate: Path) -> None:
-    """Defence in depth: even a reviewed (accepted) guarded change may not pull in
-    an unguarded sibling. The loaded-module audit names it."""
-    (candidate / "tests" / "zz_unguarded_helper.py").write_text("VALUE = 1\n", encoding="utf-8")
-    append_source(candidate, "tests/failure_code_census.py", "\nimport zz_unguarded_helper  # noqa: E402\n")
-    digest = ratchet.selection_digest(ratchet.selection_manifest(candidate))
-    code, out = run_cli(candidate, "--accept-selection-change", digest, script=base_repo["dir"] / "tests" / "failure_code_ratchet.py")
+# ---------------------------------------------------------------------------
+# 8. THE SEALED JUDGE (CORR2): the candidate checkout is data, never code
+# ---------------------------------------------------------------------------
+
+import importlib.util  # noqa: E402
+import py_compile  # noqa: E402
+
+PAYLOAD = """\
+import json, os, sys
+open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'PAYLOAD_EXECUTED'), 'w').write('x')
+print(json.dumps({'modules': {}, 'package_modules': 53}))
+sys.stdout.flush()
+os._exit(0)
+"""
+JUDGE_SCRIPT = lambda base_repo: base_repo["dir"] / "tests" / "failure_code_ratchet.py"  # noqa: E731
+
+
+def assert_payload_never_ran(tree: Path) -> None:
+    ran = sorted(p.relative_to(tree).as_posix() for p in tree.rglob("*") if p.name in ("PAYLOAD_EXECUTED", "SHADOW_EXECUTED"))
+    assert not ran, f"candidate-controlled code executed: {ran}"
+
+
+def plant_unchecked_hash_pyc(tree: Path, rel_py: str) -> Path:
+    """Compile PAYLOAD into the __pycache__ slot of an EXISTING guarded source file
+    with an UNCHECKED_HASH pyc, which CPython runs without comparing it to the source."""
+    payload = tree / "tests" / "_payload_source.txt"
+    payload.write_text(PAYLOAD, encoding="utf-8")
+    cfile = importlib.util.cache_from_source(str(tree / rel_py))
+    Path(cfile).parent.mkdir(parents=True, exist_ok=True)
+    py_compile.compile(str(payload), cfile=cfile, invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH, doraise=True)
+    payload.unlink()
+    return Path(cfile)
+
+
+def expect_growth_refused(base_repo: dict, tree: Path, **kw) -> str:
+    code, out = run_cli(tree, script=JUDGE_SCRIPT(base_repo), **kw)
+    assert code == 1 and verdict(out).startswith("RATCHET=FAIL"), out
+    assert (ratchet.GROWTH_CODE, f"{REPLAY}: zz_sneaky_code") in violations(out), out
+    assert f"judge provenance: base {base_repo['sha']}" in out
+    assert_payload_never_ran(tree)
+    return out
+
+
+@pytest.mark.parametrize("rel", ["tests/failure_code_census.py", "tests/failure_code_judge.py",
+                                 "tests/test_failure_code_census.py", "tests/failure_code_ratchet.py",
+                                 "tests/test_failure_code_registry.py"])
+def test_committed_unchecked_hash_pyc_of_a_guarded_module_never_runs_and_cannot_force_pass(
+    rel: str, base_repo: dict, candidate: Path
+) -> None:
+    """Second reviewer-reproduced bypass: a committed UNCHECKED_HASH .pyc for a
+    guarded module executed in the judge and forced PASS. The judge is now staged
+    from the base into a fresh directory with a clean cache prefix, so it never
+    looks at the candidate's __pycache__."""
+    plant_concealed_growth(candidate)
+    pyc = plant_unchecked_hash_pyc(candidate, rel)
+    assert pyc.is_file() and pyc.stat().st_size > 0
+    expect_growth_refused(base_repo, candidate)
+
+
+def test_sourceless_pyc_shadowing_stdlib_modules_never_runs(base_repo: dict, candidate: Path) -> None:
+    plant_concealed_growth(candidate)
+    for name in ("json", "ast", "re", "pathlib", "dataclasses", "sys", "os"):
+        shutil.copyfile(plant_unchecked_hash_pyc(candidate, "tests/failure_code_census.py"), candidate / "tests" / f"{name}.pyc")
+        shutil.copyfile(candidate / "tests" / f"{name}.pyc", candidate / f"{name}.pyc")
+    expect_growth_refused(base_repo, candidate)
+
+
+@pytest.mark.parametrize("name", ["json", "ast", "re", "pathlib", "dataclasses", "os", "sys", "importlib", "encodings", "site"])
+def test_source_shadow_of_any_stdlib_module_in_the_candidate_never_runs(name: str, base_repo: dict, candidate: Path) -> None:
+    plant_concealed_growth(candidate)
+    for where in (candidate / "tests", candidate, candidate / "arcs_verify"):
+        (where / f"{name}.py").write_text(PAYLOAD, encoding="utf-8")
+    expect_growth_refused(base_repo, candidate)
+
+
+@pytest.mark.parametrize("where", ["tests", "."])
+@pytest.mark.parametrize("hook", ["sitecustomize.py", "usercustomize.py"])
+def test_sitecustomize_and_usercustomize_in_the_candidate_never_run(hook: str, where: str, base_repo: dict, candidate: Path) -> None:
+    plant_concealed_growth(candidate)
+    (candidate / where / hook).write_text(PAYLOAD, encoding="utf-8")
+    expect_growth_refused(base_repo, candidate)
+
+
+@pytest.mark.parametrize("where", ["tests", ".", "arcs_verify"])
+def test_pth_file_in_the_candidate_never_runs(where: str, base_repo: dict, candidate: Path) -> None:
+    plant_concealed_growth(candidate)
+    marker = candidate / where / "PAYLOAD_EXECUTED"
+    (candidate / where / "zz_evil.pth").write_text(
+        f"import os; open({str(marker)!r}, 'w').write('x')\n{candidate / 'tests'}\n", encoding="utf-8"
+    )
+    expect_growth_refused(base_repo, candidate)
+    assert not marker.exists()
+
+
+def test_python_environment_variables_cannot_route_candidate_code_into_the_judge(base_repo: dict, candidate: Path) -> None:
+    plant_concealed_growth(candidate)
+    startup = candidate / "tests" / "startup.py"
+    startup.write_text(PAYLOAD, encoding="utf-8")
+    for name in ("json", "re", "ast"):
+        (candidate / "tests" / f"{name}.py").write_text(PAYLOAD, encoding="utf-8")
+    env = {
+        "PYTHONPATH": os.pathsep.join([str(candidate / "tests"), str(candidate)]),
+        "PYTHONSTARTUP": str(startup),
+        "PYTHONUSERBASE": str(candidate),
+        "PYTHONPYCACHEPREFIX": str(candidate / "tests"),
+        "PYTHONINSPECT": "1",
+    }
+    expect_growth_refused(base_repo, candidate, env=env)
+
+
+def test_a_candidate_modified_judge_and_census_do_not_affect_the_verdict(base_repo: dict, candidate: Path) -> None:
+    """The judge is the BASE's. A candidate that rewrites the judge (and the census
+    library) to report nothing is still judged by the base's code; the rewrite is
+    reported as SELECTION_CHANGED and never executed."""
+    plant_concealed_growth(candidate)
+    judge = candidate / "tests" / "failure_code_judge.py"
+    text = judge.read_text(encoding="utf-8")
+    patched = text.replace("        if codes or prefixes:", "        if False:")
+    assert patched != text
+    judge.write_text(patched + "\nopen(__file__ + '.PAYLOAD_EXECUTED', 'w').write('x')\n", encoding="utf-8")
+    append_source(candidate, "tests/failure_code_census.py", "\nopen(__file__ + '.PAYLOAD_EXECUTED', 'w').write('x')\n")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
     assert code == 1
-    assert (ratchet.UNGUARDED_MODULE_LOADED, "tests/zz_unguarded_helper.py") in violations(out), out
+    assert (ratchet.GROWTH_CODE, f"{REPLAY}: zz_sneaky_code") in violations(out), out
+    assert (ratchet.SELECTION_CHANGED, "tests/failure_code_judge.py") in violations(out)
+    assert (ratchet.SELECTION_CHANGED, "tests/failure_code_census.py") in violations(out)
+    assert not list(candidate.rglob("*PAYLOAD_EXECUTED")), "candidate-modified judge code executed"
 
 
-def test_candidate_tests_directory_is_removed_from_the_front_of_sys_path() -> None:
-    """Unit: load_gate_sealed drops the candidate tests dir and '' from sys.path
-    and, when it appends it back, appends it LAST."""
-    import inspect
+def test_unparseable_candidate_source_fails_closed_not_as_an_empty_set(base_repo: dict, candidate: Path) -> None:
+    (candidate / "arcs_verify" / "zz_broken.py").write_bytes(b"def f(:\n    pass\n")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and (ratchet.JUDGE_ERROR, "judge") in violations(out), out
+    (candidate / "arcs_verify" / "zz_broken.py").write_bytes(b"x = 1\x00\n")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and ratchet.JUDGE_ERROR in {c for c, _ in violations(out)}, out
 
-    source = inspect.getsource(ratchet.load_gate_sealed)
-    assert "sys.path.append(str(tests))" in source and "sys.path.insert" not in source
+
+def test_base_without_a_judge_is_not_established_not_a_pass(candidate: Path) -> None:
+    for path in ratchet.JUDGE_FILES:
+        _git(candidate, "rm", "-q", path)
+    tip = commit_all(candidate, "base without the judge")
+    _git(candidate, "update-ref", "refs/remotes/origin/main", tip)
+    for path in ratchet.JUDGE_FILES:
+        shutil.copyfile(REAL / path, candidate / path)
+    code, out = run_cli(candidate)
+    assert code == 2 and verdict(out) == "RATCHET=FAIL BASE_JUDGE_ABSENT", out
+    assert "judge provenance: NOT_ESTABLISHED" in out
+
+
+def test_judge_introduction_is_labelled_and_never_reads_as_an_independent_pass(candidate: Path) -> None:
+    for path in ratchet.JUDGE_FILES:
+        _git(candidate, "rm", "-q", path)
+    tip = commit_all(candidate, "base without the judge")
+    _git(candidate, "update-ref", "refs/remotes/origin/main", tip)
+    for path in ratchet.JUDGE_FILES:
+        shutil.copyfile(REAL / path, candidate / path)
+    code, out = run_cli(candidate, "--allow-judge-introduction")
+    assert code == 0 and verdict(out) == "RATCHET=PASS_INTRODUCTION" and "judge provenance: INTRODUCTION" in out, out
+    assert verdict(out) != "RATCHET=PASS"
+    plant_concealed_growth(candidate)
+    code, out = run_cli(candidate, "--allow-judge-introduction")
+    assert code == 1 and ratchet.GROWTH_CODE in verdict(out), out
+
+
+def test_launcher_refuses_to_run_without_isolation(base_repo: dict, candidate: Path) -> None:
+    done = subprocess.run(
+        [sys.executable, str(JUDGE_SCRIPT(base_repo)), "--root", str(candidate)],
+        capture_output=True, text=True, env={k: v for k, v in os.environ.items() if not k.startswith("ARCS_VERIFY_RATCHET")},
+    )
+    assert done.returncode == 2 and "RATCHET=NOT_ESTABLISHED" in done.stdout, done.stdout + done.stderr
+
+
+def test_judge_parity_with_the_census_test_on_the_real_tree() -> None:
+    """The judge duplicates the census test's NOT_CODES table and its undocumented
+    computation so it can run without pytest. They must not drift."""
+    import failure_code_census as census_lib
+    import failure_code_judge as judge
+    import test_failure_code_census as gate
+
+    assert judge.NOT_CODES == set(gate.NOT_CODES)
+    assert judge.NOT_CODE_PREFIXES == gate.NOT_CODE_PREFIXES
+    assert tuple(judge.REGISTRY_FILES) == tuple(p.relative_to(REAL).as_posix() for p in gate.legacy.REGISTRY_FILES)
+    produced = judge.undocumented_sets(REAL, census_lib)
+    expected = {}
+    for module in census_lib.package_modules():
+        codes, prefixes = gate._undocumented(module, gate._census(module), gate.REGISTRY)
+        if codes or prefixes:
+            expected[module] = {"codes": sorted(codes), "families": sorted(prefixes)}
+    assert produced["modules"] == expected
+    assert produced["package_modules"] == len(census_lib.package_modules())
+    assert set(expected) == set(gate._known_gaps()), "the judge sees exactly the ledger's gap modules on the real tree"
