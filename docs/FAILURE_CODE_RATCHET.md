@@ -62,6 +62,14 @@ Exit 0 pass, 1 violations, 2 base unresolved. An unresolvable base is a failure
 (`ARCS_VERIFY_RATCHET_REQUIRED=1` turns the in-suite skip into a failure; the
 qualifier sets it). The skip is reported as NOT_EXERCISED, never as a pass.
 
+## What this is, and is not, enforcing
+
+A passing ratchet run is a **qualified local control**, not an automatically
+enforced repository policy. This repository has no required status checks and
+GitHub Actions is not a merge gate, so GitHub will not block a violating merge.
+Enforcement is whoever runs the authoritative check (above) on the exact head
+before merging. No CI gate is added by this change.
+
 ## Limits
 
 * The commit that first adds the ratchet has no base copy to compare with; that

@@ -556,3 +556,29 @@ def test_real_tree_does_not_grow_against_the_pinned_base() -> None:
     result = ratchet.evaluate(REAL, gate)
     assert result.ok, "\n".join(str(v) for v in result.violations)
     assert result.base == sha and result.modules_checked >= 50
+
+
+P3_FILES = (
+    "tests/failure_code_census.py",
+    "tests/test_failure_code_census.py",
+    "tests/test_failure_code_registry.py",
+    "tests/failure_code_known_gaps.json",
+    "tools/qualify_failure_code_census.py",
+)
+
+
+def test_p3_census_battery_and_ledger_are_byte_identical_to_the_base() -> None:
+    """Acceptance 2e: this change is additive. The P3 census, its adversarial
+    deletion battery (the test file and the 66-mutant qualifier), the legacy
+    registry test and the ledger itself are unchanged from the pinned base, so
+    every P3 guarantee is exactly what it was. The suite and the qualifier
+    re-run on top of that are reported in the qualification, not assumed."""
+    sha, problems = ratchet.resolve_base(REAL, None)
+    if sha is None:
+        if ratchet.required():
+            pytest.fail(f"NOT_EXERCISED is not acceptable here: {problems}")
+        pytest.skip(f"NOT_EXERCISED: no pinned base is resolvable ({problems[0]})")
+    for path in P3_FILES:
+        theirs = ratchet.show(REAL, sha, path)
+        assert theirs is not None, f"{path} absent at the base"
+        assert (REAL / path).read_bytes() == theirs, f"{path} differs from the base commit's copy"
