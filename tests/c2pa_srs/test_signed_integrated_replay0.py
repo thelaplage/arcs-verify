@@ -56,6 +56,9 @@ def _retain_test_proof(name: str, artifact, combined: dict) -> None:
         "signed_observation_sha256": "sha256:" + hashlib.sha256(artifact.receipt_bytes).hexdigest(),
         "test_public_key_sha256": "sha256:" + hashlib.sha256(artifact.public_key_raw).hexdigest(),
         "test_key_id": artifact.key_id,
+        "source_integrity": combined["signature_test"]["source_integrity"],
+        "receipt_identity": combined["signature_test"]["receipt_identity"],
+        "verified_source_sha256": combined["signature_test"]["verified_source_sha256"],
         "cryptographic_finding": combined["signature_test"],
         "native_replay": combined["native_replay"],
         "native_stopped_at": combined["native_stopped_at"],
@@ -107,10 +110,14 @@ def test_cryptographically_signed_real_producer_specimen_is_test_only(name):
     artifact, selected = signed(name)
     result = verify_test_signed_observation(
         artifact.receipt_bytes, selected_test_keys=selected,
+        source_bytes=observation_bytes(name),
     ).as_dict()
     assert result["signature_valid"] == "pass"
     assert result["issuer_key_resolved"] == "pass"
     assert result["issuer_key_trusted"] == "pass"
+    assert result["source_integrity"] == "pass"
+    assert result["receipt_identity"] == "pass"
+    assert result["verified_source_sha256"] == artifact.original_observation_sha256
     assert result["issuer_standing"] == "not_evaluated"
     assert result["native_c2pa_signer_trust"] == "not_evaluated"
     assert result["independent_tsa_trust"] == "not_evaluated"
@@ -122,15 +129,54 @@ def test_signed_real_producer_receipt_follows_existing_profile_and_native_pipeli
     artifact, selected = signed(name)
     combined = verify_and_replay_test_signed_observation(
         artifact.receipt_bytes, evidence(name),
-        selected_test_keys=selected, executable=None,
+        selected_test_keys=selected, source_bytes=observation_bytes(name), executable=None,
     )
     assert combined["signature_test"]["signature_valid"] == "pass"
+    assert combined["signature_test"]["source_integrity"] == "pass"
+    assert combined["signature_test"]["receipt_identity"] == "pass"
     assert combined["native_replay"]["pipeline"]["stages"]["input_correspondence"]["status"] == "completed"
     assert combined["native_replay"]["pipeline"]["stages"]["profile_conformance"]["status"] == "completed"
     assert combined["native_replay"]["pipeline"]["stages"]["native_recomputation"]["status"] == "not_evaluated"
     assert combined["native_replay"]["axes"]["srs_receipt_authentication"]["issuance_authentication"] == "not_evaluated"
     assert combined["scope"] == "independent_axes_no_aggregate_result"
     assert combined["operational_issuer"] == "none_selected"
+
+
+@pytest.mark.parametrize("name", NAMES)
+def test_verified_signature_never_substitutes_for_source_bytes(name):
+    """A valid signature with no source bytes is not source verification."""
+    artifact, selected = signed(name)
+    result = verify_test_signed_observation(
+        artifact.receipt_bytes, selected_test_keys=selected,
+    ).as_dict()
+    assert result["signature_valid"] == "pass"
+    assert result["source_integrity"] == "not_evaluated"
+    assert result["source_failure_codes"] == ["source_bytes_missing"]
+    assert result["receipt_identity"] == "not_evaluated"
+
+
+@pytest.mark.parametrize("name", ("positive", "negative_native_invalid_exit0"))
+def test_substituted_or_modified_source_bytes_are_refused_on_genuine_artifacts(name):
+    artifact, selected = signed(name)
+    other = next(n for n in NAMES if n != name)
+    substituted = verify_test_signed_observation(
+        artifact.receipt_bytes, selected_test_keys=selected,
+        source_bytes=observation_bytes(other),
+    )
+    assert substituted.signature_valid == "pass"
+    assert substituted.source_integrity == "fail"
+    assert substituted.source_failure_codes == ("source_digest_mismatch",)
+    assert substituted.receipt_identity == "not_evaluated"
+
+    genuine = bytearray(observation_bytes(name))
+    genuine[len(genuine) // 3] ^= 0x20
+    modified = verify_test_signed_observation(
+        artifact.receipt_bytes, selected_test_keys=selected, source_bytes=bytes(genuine),
+    )
+    assert modified.signature_valid == "pass"
+    assert modified.source_integrity == "fail"
+    assert modified.source_failure_codes == ("source_digest_mismatch",)
+
 
 
 @pytest.mark.parametrize("name", ("positive", "negative_native_invalid_exit0"))
@@ -163,9 +209,11 @@ def test_real_signed_specimen_is_independently_recomputed_without_trust_promotio
     artifact, selected = signed(name)
     combined = verify_and_replay_test_signed_observation(
         artifact.receipt_bytes, evidence(name),
-        selected_test_keys=selected, executable=LIVE,
+        selected_test_keys=selected, source_bytes=observation_bytes(name), executable=LIVE,
     )
     assert combined["signature_test"]["signature_valid"] == "pass"
+    assert combined["signature_test"]["source_integrity"] == "pass"
+    assert combined["signature_test"]["receipt_identity"] == "pass"
     native = combined["native_replay"]
     assert native["pipeline"]["stages"]["profile_conformance"]["status"] == "completed"
     assert native["pipeline"]["stages"]["input_correspondence"]["status"] == "completed"

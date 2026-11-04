@@ -1,6 +1,6 @@
 # C2PA-SIGVERIFY0 — independent signed-observation test lane
 
-STATUS: DRAFT; IMPLEMENTATION NOT YET QUALIFIED OR MERGE AUTHORIZED.
+STATUS: HARDEN0-P1 IMPLEMENTATION; NOT YET QUALIFIED OR MERGE AUTHORIZED.
 Owner authorized bounded, offline, test-only verification of signed SRS
 C2PA observations, using arcs-verify as an independent receiver. Signing is
 implemented by separate dagr-ingest C2PA-SIGN0. No production issuer, key,
@@ -21,11 +21,32 @@ public key; key-id reuse or substitution is a typed refusal.
 There is no default trust bundle, key fetching, network egress or file-based
 key lookup.
 
-Three distinct findings: signature_valid, issuer_key_resolved, and
-issuer_key_trusted. Crypto verification and key trust are not native C2PA
-manifest validation, signer trust, TSA trust, content truth or operational
-issuer standing. Each remains separately not_evaluated unless a distinct
-receiver-owned proof is run.
+Five distinct findings: signature_valid, issuer_key_resolved,
+issuer_key_trusted, source_integrity and receipt_identity. Crypto verification
+and key trust are not native C2PA manifest validation, signer trust, TSA trust,
+content truth or operational issuer standing. Each remains separately
+not_evaluated unless a distinct receiver-owned proof is run.
+
+## Receiver-side source binding and receipt identity (HARDEN0-P1)
+
+A declared digest is not evidence. The receiver passes the unsigned observation
+bytes it holds as `source_bytes`; the verifier hashes them locally and compares
+that digest with the signed source reference and the frozen admission allowlist.
+
+- `source_integrity` is `pass` only when supplied bytes hash to the signed
+  reference. Missing bytes give `not_evaluated` with `source_bytes_missing`,
+  altered or substituted bytes give `fail` with `source_digest_mismatch`.
+- `receipt_identity` recomputes
+  `dagr-ingest-c2pa-TEST-SIGNED-<source_digest[-16:]><key_fingerprint[:16]>`
+  from the *verified* source digest and the fingerprint of the receiver-selected
+  key. It is `fail` for a malformed, missing or substituted id
+  (`receipt_id_malformed`, `receipt_id_mismatch`) and `not_evaluated` while the
+  source or key is unverified (`receipt_identity_unverified`).
+- The identity is a consistency label, not authentication: anyone who signs a
+  receipt can write any id into it. It binds a receipt to a source and key for
+  this test lane; it does not prove who produced either.
+- A valid signature never promotes a failed source or identity finding. The
+  fields are reported side by side and no aggregate result is produced.
 
 ## Genuine frozen source observations
 
@@ -45,6 +66,7 @@ test process, but no verifier runtime module imports it.
 The two independent tests are:
 
     python -m pytest -q tests/c2pa_srs/test_test_signature0.py
+    python -m pytest -q tests/c2pa_srs/test_receiver_binding0.py
     python -m pytest -q tests/c2pa_srs/test_signed_integrated_replay0.py
 
 Set C2PA_SIGN0_REQUIRED=1 for the integrated qualification, so a missing
@@ -56,8 +78,11 @@ validator is NOT_EXERCISED; never count that as an integrated proof PASS.
 Negative matrix: valid signature with key untrusted; missing key; wrong key;
 wrong issuer binding; altered receipt id, profile/version, signature, unknown
 extension; producer native Invalid with exit 0; Manifest Store unavailable;
-TSA trust material absent; no receipt-wide trust promotion. A signed test
-receipt is NOT a SCITT registration or an operational issuer receipt.
+TSA trust material absent; no receipt-wide trust promotion. HARDEN0-P1 adds:
+missing source bytes; substituted source bytes; a single modified source byte;
+malformed, empty and missing receipt ids; and a validly re-signed receipt whose
+identity is bound to the wrong key or source. A signed test receipt is NOT a
+SCITT registration or an operational issuer receipt.
 
 ### One-command macOS offline execution
 
@@ -66,11 +91,15 @@ dependencies. Create an empty evidence directory OUTSIDE both repositories.
 No installer or provider request runs inside the acceptance gate.
 
     export C2PA_SIGN0_REPO=/absolute/path/to/prepared/dagr-ingest-sign0
-    export C2PA_SIGN0_EXPECTED_HEAD=$(git -C "$C2PA_SIGN0_REPO" rev-parse HEAD)
-    export C2PA_SIGVERIFY_EXPECTED_HEAD=$(git rev-parse HEAD)
+    export C2PA_SIGN0_EXPECTED_HEAD=<literal full SIGN0 commit SHA under review>
+    export C2PA_SIGVERIFY_EXPECTED_HEAD=<literal full SIGVERIFY0 commit SHA under review>
     export ARCS_VERIFY_C2PATOOL=/absolute/path/to/pinned/c2patool
     export C2PA_SIGNED_TEST_EVIDENCE_DIR=/absolute/path/to/empty/evidence
     bash tools/run_c2pa_signed0_offline.sh
+
+Never derive either expected head from the checkout being tested: a head
+compared with itself verifies nothing. Record the literal commit SHAs under
+review in the qualification receipt.
 
 The runner checks both exact heads and clean worktrees, refuses a missing
 OS network-deny sandbox, sets C2PA_SIGN0_REQUIRED=1 and runs all affected
