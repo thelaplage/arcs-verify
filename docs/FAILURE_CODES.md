@@ -61,6 +61,9 @@ fields.
 |---|---|
 | `profile.unsupported_selection` | The selected profile name is not one this verifier evaluates. See `--list-profiles`. |
 | `profile.memory_not_yet_ratified` | Emitted by `verify_memory_receipt` while the `srs.memory` profile family is not yet ratified by arcs-srs. This is a stub response; the code will be removed once the profile is published and pinned. `not_evaluated` discipline is preserved — no Boolean is promoted to `True`. |
+| `profile.missing_or_non_string` | Emitted by `verify_claim_receipt` and `verify_action_receipt` (`arcs_verify/universal.py`): `profile_id` or `profile_version` is absent or not a string, so no composite profile key can be formed and the receipt is not routed. |
+| `profile.wrong_domain` | Emitted by the `arcs_verify/universal.py` routing entry points: the receipt's profile belongs to a different surface than the entry point (a non-claim profile to `verify_claim_receipt`, a non-action profile to `verify_action_receipt`, a non-memory profile to `verify_memory_receipt`). The report's `details` name the received profile. |
+| `receipt_decode_failed:<detail>` | Dynamic. Emitted by the `arcs_verify/universal.py` routing entry points when the receipt bytes cannot be decoded as JSON; the suffix carries the decoder's message. No profile routing or schema evaluation follows. |
 | `profile.missing_required:<field,field,...>` | Dynamic. Required top-level fields are absent; the code carries the sorted, comma-joined missing set. The base required set is: `artifact_classes_covered`, `artifact_classes_excluded`, `attestation_limits`, `boundary_id`, `boundary_type`, `extensions`, `issued_at`, `issuer_id`, `profile_id`, `profile_version`, `protocol_binding`, `receipt_id`, `receipt_kind`, `receipt_signature`, `receipt_type`, `receipt_version`, `runtime_instance_id`, `subject_ref` (the MCP profile adds `logical_call_id`; the connection profile adds `tenant_id`, `actor_ref`, `source_record_refs`). |
 | `profile.invalid_<key>` | Dynamic. A fixed-value field carries the wrong value. Completions in the current bytes: `receipt_version`, `profile_id`, `profile_version`, `receipt_type`, `boundary_type`, `protocol_binding` (MCP), and `receipt_version`, `profile_id`, `profile_version`, `receipt_type`, `boundary_type` (connection). The static codes `profile.invalid_disposition`, `profile.invalid_outcome`, `profile.invalid_protocol_binding`, `profile.invalid_receipt_kind`, `profile.invalid_retention_class`, `profile.invalid_source_record_refs` follow the same shape from explicit sites. |
 | `profile.extensions_not_object` | `extensions` is present but is not a JSON object. |
@@ -557,6 +560,26 @@ imply every profile can emit it; each code is scoped to the subcommand and
 profile family under which it is listed. `tests/test_failure_code_registry.py`
 enforces that every emitted code and family appears here.
 
+`tests/test_failure_code_census.py` (SCITT-HARDEN0-P3) closes the discovery gap
+in that sweep. The older extractor recognised a fixed list of call-site
+spellings, so a code emitted any other way (a tuple return, a helper whose
+parameter is a list, an if/else assignment, `list.insert`, an `identity_codes=`
+keyword) was never checked: 10 of the 20 `c2pa_test_signature0.py` codes were
+invisible. The census instead discovers emit sites by what they do: every
+function parameter whose name contains `code` is a sink, as are keyword
+arguments named `*code*`, `append`/`add`/`extend`/`insert` arguments,
+`raise ValueError(<const>)`, returns, assignments to `*code*` names, `{"code":
+...}` values and literals iterated by a loop whose variable is emitted. All
+modules under `arcs_verify/` are scanned. A module that emits codes is either
+registered (its codes must be documented here) or pinned in
+`tests/failure_code_known_gaps.json` with the exact codes still undocumented;
+that list is two-sided, so it can only shrink. The `C2PA-SIGNED0` section below
+is bound row for row to the codes `c2pa_test_signature0.py` emits.
+Adversarial tests delete one registry code, one emit site, or one signed-lane
+emission at a time and require a named test to fail;
+`tools/qualify_failure_code_census.py` repeats that against a throw-away copy
+of the tree and attributes each kill to its test.
+
 ## Analytics snapshot verification (analytics-snapshot subcommand)
 
 Independent recount of DAGR Analytics C1 snapshots (`arcs_verify/analytics_snapshot.py`).
@@ -783,6 +806,7 @@ their codes via AST, so codes are listed here as a manual registry entry.
 | `admission_event.missing_required_covered_classes` | The receipt does not cover the artifact classes the profile requires as covered. |
 | `admission_event.missing_required_excluded_classes` | The receipt does not exclude the artifact classes the profile requires as excluded. |
 | `attestation.missing_required_limit` | A profile-required attestation limit string is absent from `attestation_limits`. |
+| `admission_event.missing_required:<field,field,...>` | Dynamic. Required top-level fields are absent; the code carries the sorted, comma-joined missing set. |
 | `admission_event.invalid_<field>` | Dynamic. A fixed-value field carries the wrong value; the code names the field. |
 | `admission_event.invalid_digest:<field>` | Dynamic. A field required to be a `sha256:` digest is not well-formed; the code names the field. |
 | `admission_event.invalid_text:<field>` | Dynamic. A field required to be a non-empty text value is not; the code names the field. |
