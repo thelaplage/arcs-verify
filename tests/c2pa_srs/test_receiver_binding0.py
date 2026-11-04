@@ -99,7 +99,7 @@ def test_genuine_source_bytes_and_identity_both_pass():
     assert result.receipt_identity == "pass"
     assert result.source_failure_codes == ()
     assert result.identity_failure_codes == ()
-    assert result.verified_source_sha256 == "sha256:" + digest_of(data)
+    assert result.supplied_source_sha256 == "sha256:" + digest_of(data)
     assert result.as_dict()["scope"] == "offline_non_operational_test_only"
 
 
@@ -111,7 +111,7 @@ def test_declared_hash_alone_never_establishes_source_or_identity():
     assert result.source_failure_codes == ("source_bytes_missing",)
     assert result.receipt_identity == "not_evaluated"
     assert result.identity_failure_codes == ("receipt_identity_unverified",)
-    assert result.verified_source_sha256 is None
+    assert result.supplied_source_sha256 is None
 
 
 def test_substituted_source_bytes_are_refused_without_affecting_signature():
@@ -182,15 +182,82 @@ def test_validly_resigned_receipt_with_substituted_identity_is_refused():
     assert result.identity_failure_codes == ("receipt_id_mismatch",)
 
 
-def test_identity_uses_the_selected_key_not_the_declared_key_id():
+def test_identity_requires_the_selected_key_fingerprint():
+    """The id must carry the receiver-selected fingerprint, not just any fingerprint."""
     data = source_bytes("positive")
     declared = "sha256:" + digest_of(data)
     key, public, fingerprint = new_key()
-    wrong_key = build_receipt(declared, fingerprint, receipt_id=receipt_id_for(declared[7:], "f" * 64))
-    wire = sign(wrong_key, key)
+    unrelated = new_key()[2]
+    wire = sign(
+        build_receipt(declared, fingerprint, receipt_id=receipt_id_for(declared[7:], unrelated)), key,
+    )
     result = verify_test_signed_observation(wire, selected_test_keys=selected(public), source_bytes=data)
     assert result.signature_valid == "pass"
+    assert result.source_integrity == "pass"
     assert result.receipt_identity == "fail"
+    assert result.identity_failure_codes == ("receipt_id_mismatch",)
+
+    # A mapping that resolves the declared key id to different bytes never reaches
+    # the identity check at all: the key binding is refused first.
+    other_public = new_key()[1]
+    mismatched = verify_test_signed_observation(
+        wire,
+        selected_test_keys={
+            TEST_KEY_ID_PREFIX + hashlib.sha256(public).hexdigest(): TestReceiverKey(
+                issuer_id=TEST_ISSUER, public_key_raw=other_public, trusted_for_test=True,
+            )
+        },
+        source_bytes=data,
+    )
+    assert mismatched.signature_valid == "not_evaluated"
+    assert "key_id_public_key_mismatch" in mismatched.failure_codes
+    assert mismatched.receipt_identity == "not_evaluated"
+    assert mismatched.identity_failure_codes == ("receipt_identity_unverified",)
+
+
+def test_validly_resigned_receipt_bound_to_the_wrong_source_is_refused():
+    genuine = source_bytes("positive")
+    other = source_bytes("negative_native_invalid_exit0")
+    declared = "sha256:" + digest_of(genuine)
+    key, public, fingerprint = new_key()
+    wire = sign(
+        build_receipt(declared, fingerprint, receipt_id=receipt_id_for(digest_of(other), fingerprint)), key,
+    )
+    result = verify_test_signed_observation(wire, selected_test_keys=selected(public), source_bytes=genuine)
+    assert result.signature_valid == "pass"
+    assert result.source_integrity == "pass"
+    assert result.receipt_identity == "fail"
+    assert result.identity_failure_codes == ("receipt_id_mismatch",)
+
+
+def test_bytes_matching_an_unapproved_reference_are_refused():
+    """Byte consistency is not admission: the reference must be a frozen digest."""
+    data = b'{"not": "an approved frozen specimen"}'
+    declared = "sha256:" + digest_of(data)
+    key, public, fingerprint = new_key()
+    wire = sign(
+        build_receipt(declared, fingerprint, receipt_id=receipt_id_for(declared[7:], fingerprint)), key,
+    )
+    result = verify_test_signed_observation(wire, selected_test_keys=selected(public), source_bytes=data)
+    assert result.signature_valid == "not_evaluated"
+    assert result.failure_codes == ("test_provenance_not_admitted",)
+    assert result.source_integrity == "fail"
+    assert result.source_failure_codes == ("source_not_admitted",)
+
+
+def test_source_pass_is_independent_of_admission_and_signature():
+    """Matching bytes and an admitted reference do not depend on profile admission."""
+    data = source_bytes("positive")
+    declared = "sha256:" + digest_of(data)
+    key, public, fingerprint = new_key()
+    doc = build_receipt(declared, fingerprint)
+    doc["profile_version"] = "v9"
+    wire = sign(doc, key)
+    result = verify_test_signed_observation(wire, selected_test_keys=selected(public), source_bytes=data)
+    assert result.signature_valid == "not_evaluated"
+    assert result.source_integrity == "pass"
+    assert result.source_failure_codes == ()
+    assert result.receipt_identity == "not_evaluated"
 
 
 def test_unknown_provenance_still_reports_source_and_identity_states():
@@ -202,3 +269,5 @@ def test_unknown_provenance_still_reports_source_and_identity_states():
     assert result.failure_codes == ("test_provenance_not_admitted",)
     assert result.source_integrity == "fail"
     assert result.source_failure_codes == ("source_digest_mismatch",)
+    assert result.receipt_identity == "not_evaluated"
+    assert result.identity_failure_codes == ("receipt_identity_unverified",)

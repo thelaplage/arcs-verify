@@ -36,7 +36,9 @@ APPROVED_UNSIGNED_SHA256 = frozenset({
 })
 _B64URL = re.compile(r"^[A-Za-z0-9_-]+$")
 TEST_RECEIPT_ID_PREFIX = "dagr-ingest-c2pa-TEST-SIGNED-"
-_RECEIPT_ID = re.compile(r"^dagr-ingest-c2pa-TEST-SIGNED-[0-9a-f]{16}-[0-9a-f]{16}$")
+_RECEIPT_ID = re.compile(
+    "^" + re.escape(TEST_RECEIPT_ID_PREFIX) + r"[0-9a-f]{16}-[0-9a-f]{16}$"
+)
 MAX_SOURCE_BYTES = 8 * 1024 * 1024
 
 
@@ -60,7 +62,7 @@ class TestSignatureFinding:
     identity_failure_codes: tuple[str, ...]
     signed_receipt_sha256: str
     source_unsigned_sha256: str | None
-    verified_source_sha256: str | None
+    supplied_source_sha256: str | None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -75,7 +77,7 @@ class TestSignatureFinding:
             "identity_failure_codes": list(self.identity_failure_codes),
             "signed_receipt_sha256": self.signed_receipt_sha256,
             "source_unsigned_sha256": self.source_unsigned_sha256,
-            "verified_source_sha256": self.verified_source_sha256,
+            "supplied_source_sha256": self.supplied_source_sha256,
             "issuer_standing": "not_evaluated",
             "content_truth": "not_evaluated",
             "native_c2pa_signer_trust": "not_evaluated",
@@ -111,14 +113,15 @@ def _decode_signature(value: Any) -> bytes:
 
 
 def _finding(
-    receipt_bytes: bytes, valid: str, resolved: str, trusted: str,
-    codes: list[str], source: str | None = None,
+    receipt_bytes: bytes, codes: list[str],
+    valid: str = "not_evaluated", resolved: str = "not_evaluated",
+    trusted: str = "not_evaluated", source: str | None = None,
     *,
     source_state: str = "not_evaluated",
     identity_state: str = "not_evaluated",
     source_codes: tuple[str, ...] = (),
     identity_codes: tuple[str, ...] = (),
-    verified_source: str | None = None,
+    supplied_source: str | None = None,
 ) -> TestSignatureFinding:
     return TestSignatureFinding(
         signature_valid=valid,
@@ -131,7 +134,7 @@ def _finding(
         identity_failure_codes=tuple(dict.fromkeys(identity_codes)),
         signed_receipt_sha256="sha256:" + hashlib.sha256(receipt_bytes).hexdigest(),
         source_unsigned_sha256=source,
-        verified_source_sha256=None if verified_source is None else "sha256:" + verified_source,
+        supplied_source_sha256=None if supplied_source is None else "sha256:" + supplied_source,
     )
 
 
@@ -143,6 +146,11 @@ def _assess_source(
     A declared hash on its own never establishes source integrity: without bytes the
     finding stays ``not_evaluated``. The returned digest is the locally recomputed
     one, never a value echoed from the receipt.
+
+    ``pass`` requires two independent things: the supplied bytes hash to the
+    reference the receipt carries, and that reference is one of the frozen admitted
+    digests. It says nothing about whether the receipt itself was admitted, whether
+    its signature verifies, or who produced the bytes; those are separate findings.
     """
     if source_bytes is None:
         return "not_evaluated", None, ("source_bytes_missing",)
@@ -155,6 +163,8 @@ def _assess_source(
         return "not_evaluated", digest, ("source_reference_invalid",)
     if declared[7:] != digest:
         return "fail", digest, ("source_digest_mismatch",)
+    if digest not in APPROVED_UNSIGNED_SHA256:
+        return "fail", digest, ("source_not_admitted",)
     return "pass", digest, ()
 
 
@@ -191,11 +201,14 @@ def verify_test_signed_observation(
     implementation import. A trusted_for_test key grants only local test-bundle
     trust, not trusted operational issuance or C2PA signer trust.
 
-    ``source_bytes`` are the unsigned observation bytes the receiver holds. When
-    supplied they are hashed locally and compared with the signed source reference;
-    when absent the source finding is ``not_evaluated`` and the receipt identity
-    cannot be recomputed. Source integrity and receipt identity are reported beside
-    signature validity and never promote it.
+    ``source_bytes`` are the unsigned observation bytes the receiver holds: ``bytes``
+    only, at most 8 MiB. ``bytearray``, ``memoryview``, ``str`` and larger input
+    raise ``TypeError`` rather than being coerced or truncated; empty ``bytes`` are
+    hashed normally and fail the comparison. When supplied they are hashed locally
+    and compared with the signed source reference *and* the frozen admission
+    allowlist; when absent the source finding is ``not_evaluated`` and the receipt
+    identity cannot be recomputed. Source integrity and receipt identity are
+    reported beside signature validity and never promote it.
     """
     if type(signed_receipt_bytes) is not bytes or len(signed_receipt_bytes) > 1024 * 1024:
         raise TypeError("signed_receipt_bytes must be bytes of at most 1 MiB")
@@ -209,20 +222,24 @@ def verify_test_signed_observation(
     except (UnicodeError, ValueError, TypeError):
         source_state, source_digest, source_codes = _assess_source(source_bytes, None)
         return _finding(
-            signed_receipt_bytes, "not_evaluated", "not_evaluated", "not_evaluated",
-            ["receipt_parse_invalid"], None,
-            source_state=source_state, source_codes=source_codes,
-            identity_state="not_evaluated", identity_codes=("receipt_identity_not_assessed",),
-            verified_source=source_digest,
+            signed_receipt_bytes, ["receipt_parse_invalid"],
+            "not_evaluated", "not_evaluated", "not_evaluated", None,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state="not_evaluated",
+            identity_codes=("receipt_identity_not_assessed",),
+            supplied_source=source_digest,
         )
     if not isinstance(receipt, dict):
         source_state, source_digest, source_codes = _assess_source(source_bytes, None)
         return _finding(
-            signed_receipt_bytes, "not_evaluated", "not_evaluated", "not_evaluated",
-            ["receipt_object_invalid"], None,
-            source_state=source_state, source_codes=source_codes,
-            identity_state="not_evaluated", identity_codes=("receipt_identity_not_assessed",),
-            verified_source=source_digest,
+            signed_receipt_bytes, ["receipt_object_invalid"],
+            "not_evaluated", "not_evaluated", "not_evaluated", None,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state="not_evaluated",
+            identity_codes=("receipt_identity_not_assessed",),
+            supplied_source=source_digest,
         )
 
     source = None
@@ -249,21 +266,25 @@ def verify_test_signed_observation(
     ):
         identity_state, identity_codes = _identity(None)
         return _finding(
-            signed_receipt_bytes, "not_evaluated", "not_evaluated", "not_evaluated",
-            ["test_provenance_not_admitted"], source,
-            source_state=source_state, source_codes=source_codes,
-            identity_state=identity_state, identity_codes=identity_codes,
-            verified_source=source_digest,
+            signed_receipt_bytes, ["test_provenance_not_admitted"],
+            "not_evaluated", "not_evaluated", "not_evaluated", source,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state=identity_state,
+            identity_codes=identity_codes,
+            supplied_source=source_digest,
         )
     signature = receipt.get("receipt_signature")
     if not isinstance(signature, dict) or set(signature) != {"algorithm", "canonicalization", "key_id", "signature"}:
         identity_state, identity_codes = _identity(None)
         return _finding(
-            signed_receipt_bytes, "not_evaluated", "not_evaluated", "not_evaluated",
-            ["signature_object_invalid"], source,
-            source_state=source_state, source_codes=source_codes,
-            identity_state=identity_state, identity_codes=identity_codes,
-            verified_source=source_digest,
+            signed_receipt_bytes, ["signature_object_invalid"],
+            "not_evaluated", "not_evaluated", "not_evaluated", source,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state=identity_state,
+            identity_codes=identity_codes,
+            supplied_source=source_digest,
         )
     if (
         signature.get("algorithm") != "Ed25519"
@@ -274,11 +295,13 @@ def verify_test_signed_observation(
     ):
         identity_state, identity_codes = _identity(None)
         return _finding(
-            signed_receipt_bytes, "not_evaluated", "not_evaluated", "not_evaluated",
-            ["signature_object_invalid"], source,
-            source_state=source_state, source_codes=source_codes,
-            identity_state=identity_state, identity_codes=identity_codes,
-            verified_source=source_digest,
+            signed_receipt_bytes, ["signature_object_invalid"],
+            "not_evaluated", "not_evaluated", "not_evaluated", source,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state=identity_state,
+            identity_codes=identity_codes,
+            supplied_source=source_digest,
         )
     try:
         sigbytes = _decode_signature(signature.get("signature"))
@@ -289,50 +312,60 @@ def verify_test_signed_observation(
         code = "signature_encoding_invalid" if str(exc) == "signature_encoding_invalid" else "preimage_canonicalization_failed"
         identity_state, identity_codes = _identity(None)
         return _finding(
-            signed_receipt_bytes, "not_evaluated", "not_evaluated", "not_evaluated",
-            [code], source,
-            source_state=source_state, source_codes=source_codes,
-            identity_state=identity_state, identity_codes=identity_codes,
-            verified_source=source_digest,
+            signed_receipt_bytes, [code],
+            "not_evaluated", "not_evaluated", "not_evaluated", source,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state=identity_state,
+            identity_codes=identity_codes,
+            supplied_source=source_digest,
         )
     except (TypeError, OverflowError):
         identity_state, identity_codes = _identity(None)
         return _finding(
-            signed_receipt_bytes, "not_evaluated", "not_evaluated", "not_evaluated",
-            ["preimage_canonicalization_failed"], source,
-            source_state=source_state, source_codes=source_codes,
-            identity_state=identity_state, identity_codes=identity_codes,
-            verified_source=source_digest,
+            signed_receipt_bytes, ["preimage_canonicalization_failed"],
+            "not_evaluated", "not_evaluated", "not_evaluated", source,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state=identity_state,
+            identity_codes=identity_codes,
+            supplied_source=source_digest,
         )
 
     selected = selected_test_keys.get(signature["key_id"])
     if selected is None:
         identity_state, identity_codes = _identity(None)
         return _finding(
-            signed_receipt_bytes, "not_evaluated", "fail", "not_evaluated",
-            ["key_id_unresolved"], source,
-            source_state=source_state, source_codes=source_codes,
-            identity_state=identity_state, identity_codes=identity_codes,
-            verified_source=source_digest,
+            signed_receipt_bytes, ["key_id_unresolved"],
+            "not_evaluated", "fail", "not_evaluated", source,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state=identity_state,
+            identity_codes=identity_codes,
+            supplied_source=source_digest,
         )
     if not isinstance(selected, TestReceiverKey) or type(selected.public_key_raw) is not bytes or len(selected.public_key_raw) != 32:
         identity_state, identity_codes = _identity(None)
         return _finding(
-            signed_receipt_bytes, "not_evaluated", "fail", "not_evaluated",
-            ["public_key_invalid"], source,
-            source_state=source_state, source_codes=source_codes,
-            identity_state=identity_state, identity_codes=identity_codes,
-            verified_source=source_digest,
+            signed_receipt_bytes, ["public_key_invalid"],
+            "not_evaluated", "fail", "not_evaluated", source,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state=identity_state,
+            identity_codes=identity_codes,
+            supplied_source=source_digest,
         )
     key_fingerprint = hashlib.sha256(selected.public_key_raw).hexdigest()
     if signature["key_id"] != TEST_KEY_ID_PREFIX + key_fingerprint:
         identity_state, identity_codes = _identity(None)
         return _finding(
-            signed_receipt_bytes, "not_evaluated", "fail", "not_evaluated",
-            ["key_id_public_key_mismatch"], source,
-            source_state=source_state, source_codes=source_codes,
-            identity_state=identity_state, identity_codes=identity_codes,
-            verified_source=source_digest,
+            signed_receipt_bytes, ["key_id_public_key_mismatch"],
+            "not_evaluated", "fail", "not_evaluated", source,
+            source_state=source_state,
+            source_codes=source_codes,
+            identity_state=identity_state,
+            identity_codes=identity_codes,
+            supplied_source=source_digest,
         )
     trusted = selected.issuer_id == TEST_ISSUER and selected.trusted_for_test is True
     trust_state = "pass" if trusted else "fail"
@@ -345,10 +378,13 @@ def verify_test_signed_observation(
         codes.insert(0, "signature_invalid")
     identity_state, identity_codes = _identity(key_fingerprint)
     return _finding(
-        signed_receipt_bytes, sig_state, "pass", trust_state, codes, source,
-        source_state=source_state, source_codes=source_codes,
-        identity_state=identity_state, identity_codes=identity_codes,
-        verified_source=source_digest,
+        signed_receipt_bytes, codes,
+        sig_state, "pass", trust_state, source,
+        source_state=source_state,
+        source_codes=source_codes,
+        identity_state=identity_state,
+        identity_codes=identity_codes,
+        supplied_source=source_digest,
     )
 
 

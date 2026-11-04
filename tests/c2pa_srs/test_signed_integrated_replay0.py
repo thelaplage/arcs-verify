@@ -58,7 +58,7 @@ def _retain_test_proof(name: str, artifact, combined: dict) -> None:
         "test_key_id": artifact.key_id,
         "source_integrity": combined["signature_test"]["source_integrity"],
         "receipt_identity": combined["signature_test"]["receipt_identity"],
-        "verified_source_sha256": combined["signature_test"]["verified_source_sha256"],
+        "supplied_source_sha256": combined["signature_test"]["supplied_source_sha256"],
         "cryptographic_finding": combined["signature_test"],
         "native_replay": combined["native_replay"],
         "native_stopped_at": combined["native_stopped_at"],
@@ -117,7 +117,7 @@ def test_cryptographically_signed_real_producer_specimen_is_test_only(name):
     assert result["issuer_key_trusted"] == "pass"
     assert result["source_integrity"] == "pass"
     assert result["receipt_identity"] == "pass"
-    assert result["verified_source_sha256"] == artifact.original_observation_sha256
+    assert result["supplied_source_sha256"] == artifact.original_observation_sha256
     assert result["issuer_standing"] == "not_evaluated"
     assert result["native_c2pa_signer_trust"] == "not_evaluated"
     assert result["independent_tsa_trust"] == "not_evaluated"

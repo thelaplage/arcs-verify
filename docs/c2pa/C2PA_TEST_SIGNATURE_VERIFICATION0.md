@@ -30,14 +30,23 @@ not_evaluated unless a distinct receiver-owned proof is run.
 ## Receiver-side source binding and receipt identity (HARDEN0-P1)
 
 A declared digest is not evidence. The receiver passes the unsigned observation
-bytes it holds as `source_bytes`; the verifier hashes them locally and compares
-that digest with the signed source reference and the frozen admission allowlist.
+bytes it holds as `source_bytes` — `bytes` only, at most 8 MiB. `bytearray`,
+`memoryview`, `str` and oversized input raise `TypeError` instead of being
+coerced or truncated; empty `bytes` are hashed normally and fail the comparison.
+The verifier hashes them locally and compares that digest with the signed source
+reference and the frozen admission allowlist.
 
-- `source_integrity` is `pass` only when supplied bytes hash to the signed
-  reference. Missing bytes give `not_evaluated` with `source_bytes_missing`,
-  altered or substituted bytes give `fail` with `source_digest_mismatch`.
+- `source_integrity` is `pass` only when supplied bytes hash to the carried
+  reference **and** that reference is one of the frozen admitted digests. Missing
+  bytes give `not_evaluated` with `source_bytes_missing`; altered or substituted
+  bytes give `fail` with `source_digest_mismatch`; bytes that match a reference
+  outside the allowlist give `fail` with `source_not_admitted`.
+- Source integrity is byte consistency plus admission of the reference. It is
+  independent of whether the receipt itself is admitted (`test_provenance_not_admitted`)
+  and of whether its signature verifies (`signature_invalid`); it never implies who
+  produced the bytes.
 - `receipt_identity` recomputes
-  `dagr-ingest-c2pa-TEST-SIGNED-<source_digest[-16:]><key_fingerprint[:16]>`
+  `dagr-ingest-c2pa-TEST-SIGNED-<source_digest[-16:]>-<key_fingerprint[:16]>`
   from the *verified* source digest and the fingerprint of the receiver-selected
   key. It is `fail` for a malformed, missing or substituted id
   (`receipt_id_malformed`, `receipt_id_mismatch`) and `not_evaluated` while the
@@ -45,8 +54,12 @@ that digest with the signed source reference and the frozen admission allowlist.
 - The identity is a consistency label, not authentication: anyone who signs a
   receipt can write any id into it. It binds a receipt to a source and key for
   this test lane; it does not prove who produced either.
-- A valid signature never promotes a failed source or identity finding. The
-  fields are reported side by side and no aggregate result is produced.
+- A valid signature never promotes a failed source or identity finding, and a
+  passing source or identity never implies a valid signature. The fields are
+  reported side by side and no aggregate result is produced.
+- The retained proof report names the digest of the bytes the receiver actually
+  supplied as `supplied_source_sha256`; on a refusal that field can hold the digest
+  of rejected bytes, which is why it is not called *verified*.
 
 ## Genuine frozen source observations
 
