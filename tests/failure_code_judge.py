@@ -21,6 +21,21 @@ are reported (fail closed) because the interpreter can import what a source scan
 would never see. The census library is used only for per-module analysis and is
 handed the already-parsed tree and the sinks derived from the same trees.
 
+IMPORTABLE-SET SUPERSET (CORR4). Python imports a ``.py`` placed anywhere under
+the package, including inside a ``__pycache__`` directory (an ordinary namespace
+package). The walk therefore never prunes ``__pycache__``: compiled ``.pyc``
+caches inside it are ignored, but a ``.py`` there is scanned AND reported
+(``IMPORTABLE_IN_PYCACHE``), and symlinks / extension modules there are refused
+like anywhere else. CONSTANT FOLDING (CORR4): ``"a" + "b"``, ``"%s_x" % "a"``,
+``"ab" * 2`` and f-strings of constants are folded before the code-shape check,
+so a statically-apparent folded code is the value that is judged.
+
+Known limits, recorded rather than chased: an ALIASED sink
+(``from x import _sink as emit``) is matched by callee name only; codes emitted
+from modules OUTSIDE ``arcs_verify/`` are out of scope; runtime construction
+(``exec``/``eval``/``getattr``/``.format``/data files) is invisible to any static
+census. See ``docs/FAILURE_CODE_RATCHET.md``.
+
 stdlib only. Prints one JSON object on stdout.
 
 ``NOT_CODES`` mirrors the table in ``test_failure_code_census.py``; a parity
@@ -58,26 +73,28 @@ REGISTRY_FILES = ("docs/FAILURE_CODES.md", "docs/FAILURE_CODES_EXTERNAL_PROFILE.
 _UNSCANNED_SUFFIXES = (".pyc", ".pyo", ".so", ".pyd", ".dylib", ".dll")
 
 
-def enumerate_package(root: Path) -> tuple[list[str], list[str], list[str]]:
-    """(scannable module paths, symlinks, unscanned importable files), no symlink followed."""
+def enumerate_package(root: Path) -> tuple[list[str], list[str], list[str], list[str]]:
+    """(module paths to scan, symlinks, unscanned importable files, .py under __pycache__).
+
+    No symlink is followed and NOTHING is pruned: the scanned set must be a
+    superset of what the interpreter can import from the package."""
     package = root / "arcs_verify"
     modules: list[str] = []
     symlinks: list[str] = []
     unscanned: list[str] = []
+    in_cache_py: list[str] = []
     if package.is_symlink():
         symlinks.append("arcs_verify")
-        return modules, symlinks, unscanned
+        return modules, symlinks, unscanned, in_cache_py
     if not package.is_dir():
-        return modules, symlinks, unscanned
+        return modules, symlinks, unscanned, in_cache_py
     for current, dirs, files in os.walk(package, followlinks=False):
         here = Path(current)
         for name in list(dirs):
             if (here / name).is_symlink():
                 symlinks.append((here / name).relative_to(root).as_posix())
                 dirs.remove(name)  # never follow
-        if here.name == "__pycache__":
-            dirs[:] = []
-            continue
+        in_cache = "__pycache__" in here.relative_to(package).parts
         for name in files:
             path = here / name
             rel = path.relative_to(root).as_posix()
@@ -85,16 +102,85 @@ def enumerate_package(root: Path) -> tuple[list[str], list[str], list[str]]:
                 symlinks.append(rel)
             elif name.endswith(".py"):
                 modules.append(rel)
+                if in_cache:
+                    in_cache_py.append(rel)
+            elif in_cache and name.endswith((".pyc", ".pyo")):
+                continue  # an ordinary compiled cache; the source it came from is scanned
             elif name.endswith(_UNSCANNED_SUFFIXES) or ".cpython-" in name or ".abi3." in name:
                 unscanned.append(rel)
-    return sorted(modules), sorted(symlinks), sorted(unscanned)
+    return sorted(modules), sorted(symlinks), sorted(unscanned), sorted(in_cache_py)
+
+
+_MAX_FOLDED = 10_000
+
+
+def _constant(node: ast.AST):
+    """The compile-time value of a literal string/int node, else a sentinel."""
+    if isinstance(node, ast.Constant) and isinstance(node.value, (str, int)) and not isinstance(node.value, bool):
+        return node.value
+    if isinstance(node, ast.Tuple) and all(isinstance(e, ast.Constant) for e in node.elts):
+        return tuple(e.value for e in node.elts)
+    return _NOT_CONSTANT
+
+
+_NOT_CONSTANT = object()
+
+
+class _FoldConstants(ast.NodeTransformer):
+    """Replace compile-time-constant string expressions by their value, so what is
+    judged is what the interpreter computes (``"a" + "b"`` -> ``"ab"``)."""
+
+    def visit_BinOp(self, node: ast.BinOp):
+        self.generic_visit(node)
+        left, right = _constant(node.left), _constant(node.right)
+        if left is _NOT_CONSTANT or right is _NOT_CONSTANT:
+            return node
+        try:
+            if isinstance(node.op, ast.Add) and isinstance(left, str) and isinstance(right, str):
+                value = left + right
+            elif isinstance(node.op, ast.Mult) and isinstance(left, str) and isinstance(right, int) and 0 <= right <= 1000:
+                value = left * right
+            elif isinstance(node.op, ast.Mod) and isinstance(left, str):
+                value = left % right
+            else:
+                return node
+        except Exception:  # not foldable: leave the expression to the census as written
+            return node
+        if not isinstance(value, str) or len(value) > _MAX_FOLDED:
+            return node
+        return ast.copy_location(ast.Constant(value=value), node)
+
+    def visit_JoinedStr(self, node: ast.JoinedStr):
+        self.generic_visit(node)
+        parts: list[str] = []
+        for piece in node.values:
+            if isinstance(piece, ast.Constant) and isinstance(piece.value, str):
+                parts.append(piece.value)
+            elif (
+                isinstance(piece, ast.FormattedValue)
+                and piece.conversion == -1
+                and piece.format_spec is None
+                and isinstance(piece.value, ast.Constant)
+                and isinstance(piece.value.value, str)
+            ):
+                parts.append(piece.value.value)
+            else:
+                return node
+        value = "".join(parts)
+        if len(value) > _MAX_FOLDED:
+            return node
+        return ast.copy_location(ast.Constant(value=value), node)
 
 
 def undocumented_sets(root: Path, census_lib) -> dict:
     registry = "\n".join((root / rel).read_text(encoding="utf-8") for rel in REGISTRY_FILES)
-    modules, symlinks, unscanned = enumerate_package(root)
+    modules, symlinks, unscanned, in_cache_py = enumerate_package(root)
     # BYTES -> ast: the coding cookie and BOM are honoured as the interpreter honours them.
-    trees = {module: ast.parse((root / module).read_bytes(), filename=module) for module in modules}
+    # Then constant expressions are folded to the value the interpreter computes.
+    trees = {
+        module: ast.fix_missing_locations(_FoldConstants().visit(ast.parse((root / module).read_bytes(), filename=module)))
+        for module in modules
+    }
     sinks: dict[str, set] = {}
     for tree in trees.values():
         for name, spec in census_lib._defined_sinks(tree).items():
@@ -114,6 +200,7 @@ def undocumented_sets(root: Path, census_lib) -> dict:
         "package_modules": len(modules),
         "symlinks": symlinks,
         "unscanned_importable": unscanned,
+        "importable_in_pycache": in_cache_py,
     }
 
 

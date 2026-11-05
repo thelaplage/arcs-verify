@@ -1026,9 +1026,9 @@ def test_judge_module_enumeration_matches_the_census_on_the_real_tree() -> None:
     import failure_code_census as census_lib
     import failure_code_judge as judge
 
-    modules, symlinks, unscanned = judge.enumerate_package(REAL)
+    modules, symlinks, unscanned, in_cache = judge.enumerate_package(REAL)
     assert modules == census_lib.package_modules()
-    assert symlinks == [] and unscanned == []
+    assert symlinks == [] and unscanned == [] and in_cache == []
 
 
 def test_judge_decodes_exactly_like_the_interpreter_on_the_real_tree() -> None:
@@ -1040,3 +1040,115 @@ def test_judge_decodes_exactly_like_the_interpreter_on_the_real_tree() -> None:
     for module in census_lib.package_modules():
         raw = (REAL / module).read_bytes()
         assert ast.dump(ast.parse(raw)) == ast.dump(ast.parse(raw.decode("utf-8"))), module
+
+
+# ---------------------------------------------------------------------------
+# 10. CORR4: importable-set superset (__pycache__) and compile-time constant folding
+# ---------------------------------------------------------------------------
+
+DOCUMENTED_CODE = "schema_digest"  # a backticked code in docs/FAILURE_CODES.md
+
+
+def test_control_ordinary_compiled_caches_under_pycache_are_not_a_violation(base_repo: dict, candidate: Path) -> None:
+    """No false positive: every working tree that has run the tests carries .pyc caches."""
+    for cache in (candidate / "arcs_verify" / "__pycache__", candidate / "arcs_verify" / "amnesiac" / "__pycache__"):
+        cache.mkdir(exist_ok=True)
+        (cache / "zz.cpython-314.pyc").write_bytes(b"\x00\x00")
+        (cache / "zz.cpython-314.opt-1.pyc").write_bytes(b"\x00\x00")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 0 and verdict(out) == "RATCHET=PASS" and violations(out) == [], out
+
+
+@pytest.mark.parametrize("where", ["arcs_verify/__pycache__", "arcs_verify/amnesiac/__pycache__", "arcs_verify/__pycache__/nested"])
+def test_py_file_under_pycache_with_a_growth_code_is_refused_and_scanned(where: str, base_repo: dict, candidate: Path) -> None:
+    """CORR4 bug 1: the walker pruned __pycache__ wholesale, but a .py there is an
+    ordinary namespace-package module. The judge scans AND refuses it."""
+    cache = candidate / where
+    cache.mkdir(parents=True, exist_ok=True)
+    (cache / "zz_hid.py").write_bytes(PLAIN_CONTROL)
+    dotted = where.replace("/", ".") + ".zz_hid"
+    assert _importable(candidate, dotted), "control: the .py under __pycache__ really is importable"
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    rel = f"{where}/zz_hid.py"
+    assert code == 1 and verdict(out).startswith("RATCHET=FAIL"), out
+    assert (ratchet.IMPORTABLE_IN_PYCACHE, rel) in violations(out), out
+    assert ("GROWTH_NEW_MODULE", rel) in violations(out) and HIDDEN_CODE in out, "scanned as well as refused"
+
+
+def test_symlink_and_extension_module_under_pycache_are_refused(base_repo: dict, candidate: Path) -> None:
+    cache = candidate / "arcs_verify" / "__pycache__"
+    cache.mkdir(exist_ok=True)
+    (candidate / "zz_outside.py").write_bytes(PLAIN_CONTROL)
+    (cache / "zz_alias.py").symlink_to(Path("..") / ".." / "zz_outside.py")
+    suffix = importlib.machinery.EXTENSION_SUFFIXES[0]
+    (cache / f"zz_ext{suffix}").write_bytes(b"\x00")
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1
+    assert (ratchet.SYMLINK_IN_PACKAGE, "arcs_verify/__pycache__/zz_alias.py") in violations(out), out
+    assert (ratchet.UNSCANNED_IMPORTABLE, f"arcs_verify/__pycache__/zz_ext{suffix}") in violations(out), out
+
+
+# Each expression is evaluated by the interpreter to "zz_growth" (the control, below).
+FOLDED = {
+    "add": '"zz_" + "growth"',
+    "chained-add": '"zz_" + "gro" + "wth"',
+    "nested-add": '("zz_" + "gr") + ("ow" + "th")',
+    "percent": '"zz_%s" % "growth"',
+    "multiply": '"zz_growth" * 1',
+    "fstring-constants": "f\"zz_{'growth'}\"",
+}
+
+
+def _append_emission(tree: Path, module: str, expression: str) -> None:
+    append_source(tree, module, f"\n\ndef _zz_fold_probe(report):\n    report.append({expression})\n")
+
+
+@pytest.mark.parametrize("shape", sorted(FOLDED))
+def test_compile_time_constant_string_expression_is_judged_by_its_folded_value(shape: str, base_repo: dict, candidate: Path, tmp_path: Path) -> None:
+    """CORR4 bug 2: ``"a" + "b"`` was harvested as two literals; the folded value
+    (what the interpreter computes) was never judged."""
+    probe = tmp_path / "probe.py"
+    probe.write_text(f"HIDDEN = {FOLDED[shape]}\n", encoding="utf-8")
+    assert interpreter_value(probe) == HIDDEN_CODE, "control: the interpreter evaluates it to the growth code"
+    _append_emission(candidate, REGISTERED_MODULE, FOLDED[shape])
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and ("GROWTH_NEW_MODULE", REGISTERED_MODULE) in violations(out), out
+    assert f"'{HIDDEN_CODE}'" in out, "the FOLDED value is what is named, not its fragments"
+
+
+def test_folded_code_whose_fragments_are_individually_harmless_is_refused(base_repo: dict, candidate: Path) -> None:
+    """The reviewer's shape: a documented fragment plus a non-code-shaped one. Each
+    literal alone passes the shape/documentation check; only the folded value fails."""
+    _append_emission(candidate, REGISTERED_MODULE, f'"{DOCUMENTED_CODE}" + "_zzgrowth"')
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 1 and ("GROWTH_NEW_MODULE", REGISTERED_MODULE) in violations(out), out
+    assert f"'{DOCUMENTED_CODE}_zzgrowth'" in out
+
+
+def test_folding_a_documented_value_is_not_a_false_positive(base_repo: dict, candidate: Path) -> None:
+    _append_emission(candidate, REGISTERED_MODULE, '"schema" + "_digest"')
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert code == 0 and verdict(out) == "RATCHET=PASS" and violations(out) == [], out
+
+
+def test_non_constant_concatenation_is_still_a_family_not_folded(base_repo: dict, candidate: Path) -> None:
+    """``"prefix" + variable`` must keep its family-prefix treatment."""
+    append_source(candidate, GAP_MODULE, "\n\ndef _zz_fam(report, x):\n    report.append('zz_fold_family.' + x)\n")
+    edit_ledger(candidate, lambda m: m[GAP_MODULE]["families"].append("zz_fold_family."))
+    code, out = run_cli(candidate, script=JUDGE_SCRIPT(base_repo))
+    assert (ratchet.GROWTH_FAMILY, f"{GAP_MODULE}: zz_fold_family.<...>") in violations(out), out
+
+
+def test_folding_changes_nothing_on_the_real_tree() -> None:
+    """The judge folds; the census test does not. On the real tree they agree."""
+    import failure_code_census as census_lib
+    import failure_code_judge as judge
+    import test_failure_code_census as gate
+
+    produced = judge.undocumented_sets(REAL, census_lib)["modules"]
+    expected = {}
+    for module in census_lib.package_modules():
+        codes, prefixes = gate._undocumented(module, gate._census(module), gate.REGISTRY)
+        if codes or prefixes:
+            expected[module] = {"codes": sorted(codes), "families": sorted(prefixes)}
+    assert produced == expected

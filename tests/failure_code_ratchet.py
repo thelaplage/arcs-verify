@@ -35,8 +35,9 @@ Architecture: the candidate checkout is DATA, never code
    candidate ledger must be a subset of the base ledger; the candidate's ledger is
    never an input to the permission decision.
 5. READ-AS-PYTHON-RUNS. The judge parses bytes (coding cookie and BOM honoured),
-   enumerates the package itself, and refuses symlinks and source-less importable
-   files under ``arcs_verify/``; this launcher refuses a package that is missing
+   folds compile-time-constant strings, enumerates the package itself without
+   pruning (a ``.py`` under ``__pycache__`` is scanned and refused), and refuses
+   symlinks and source-less importable files under ``arcs_verify/``; this launcher refuses a package that is missing
    or collapsed relative to the BASE commit's module count (no hard-coded floor).
 6. REVIEW PRESSURE. Files that define the judge or this launcher are GUARDED;
    a difference from the base is ``SELECTION_CHANGED`` unless an out-of-band
@@ -44,6 +45,9 @@ Architecture: the candidate checkout is DATA, never code
    They cannot affect the verdict of the change that edits them (the judge is the
    base's); they take effect from the next base.
 
+Claim: a sealed-judge, best-effort growth detector for statically-apparent,
+honestly-written codes -- NOT an adversary-proof completeness gate (aliased
+sinks, codes outside the package and runtime construction are known evasions).
 Threat model and limits: see ``docs/FAILURE_CODE_RATCHET.md``. In short: the
 operator must obtain THIS launcher from the base (``git show``), run it with
 ``python -I``, and trust git, the Python interpreter and the host; this is a
@@ -103,6 +107,7 @@ PACKAGE_MISSING = "PACKAGE_MISSING"
 PACKAGE_COLLAPSED = "PACKAGE_COLLAPSED"
 SYMLINK_IN_PACKAGE = "SYMLINK_IN_PACKAGE"
 UNSCANNED_IMPORTABLE = "UNSCANNED_IMPORTABLE"
+IMPORTABLE_IN_PYCACHE = "IMPORTABLE_IN_PYCACHE"
 # A candidate that keeps fewer than this fraction of the BASE's package modules
 # is a collapse (moved/emptied package), not a refactor. Relative to the base on
 # purpose: no hard-coded module count.
@@ -345,6 +350,8 @@ def package_violations(payload: dict, base_count: int) -> list[Violation]:
         out.append(Violation(SYMLINK_IN_PACKAGE, path, "a symlink under the package is importable but was not scanned; refused"))
     for path in payload.get("unscanned_importable", []):
         out.append(Violation(UNSCANNED_IMPORTABLE, path, "a source-less importable file cannot be censused; refused"))
+    for path in payload.get("importable_in_pycache", []):
+        out.append(Violation(IMPORTABLE_IN_PYCACHE, path, "a .py under __pycache__ is importable as a namespace package; refused (it was also scanned)"))
     return out
 
 
