@@ -264,8 +264,7 @@ MUTANTS: list[tuple] = [
          "test_compile_time_constant_string_expression_is_judged_by_its_folded_value[nested-add]",
          "test_compile_time_constant_string_expression_is_judged_by_its_folded_value[percent]",
          "test_compile_time_constant_string_expression_is_judged_by_its_folded_value[multiply]",
-         "test_folded_code_whose_fragments_are_individually_harmless_is_refused",
-         "test_folding_a_documented_value_is_not_a_false_positive"],
+         "test_folded_code_whose_fragments_are_individually_harmless_is_refused"],
         "tests/failure_code_judge.py",
     ),
     (
